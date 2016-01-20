@@ -100,24 +100,16 @@ public class ClientEventHandler
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glPushMatrix();
 				double angle = getInitialAngle(mode);
-				if (mode == 3)
+				if (mode == 0)
 				{
-					if (side % 2 == 1) angle += 180;
-					if (side >= 4) angle -= 90;
+					if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
 				}
 				else
 				{
-					if (mode == 0)
-    				{
-    					if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-    				}
-    				else
-    				{
-    					if (side < 2 || side > 3) angle *= -1;
-    				}
-    				if (eastWest) angle += 90;
-    				if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
+					if (side < 2 || side > 3) angle *= -1;
 				}
+				if (eastWest) angle += 90;
+				if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
 				double diffX = playerX - x;
 				double diffY = playerY - y;
 				double diffZ = playerZ - z;
@@ -126,8 +118,17 @@ public class ClientEventHandler
 				double offsetZ2 = 0.5 * invOffsetZ;
 				
 				double mirTravel = mode == 1 ? Configs.MIRROR_AMPLITUDE * Math.cos(Math.PI * 2 * frameCounter / Configs.MIRROR_PERIOD) : 0;
+				double mirTravel1 = mirTravel;
+				double mirTravel2 = 0;
+				boolean mirrorInversion = invertDirection && mode == 1;
+				if (mirrorInversion && side <= 1 && player.getHorizontalFacing().ordinal() > 3)
+				{
+					angle += 90;
+					mirTravel1 = 0;
+    				mirTravel2 = mirTravel;
+				}
 				translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
-						offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel, 0);
+						offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
 				
 				Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? arrowCyclical : (mode == 1 ? arrowBidirectional : circle));
 				float minU = 0;
@@ -173,70 +174,58 @@ public class ClientEventHandler
 	    				
 						boolean oppRotation = false;
 						int mode2 = mode;
-						if (mode != 3)
+						oppRotation = dir == EnumFacing.getFront(side).getOpposite();
+						if (mode == 0)
 	    				{
-							if (mode == 0)
-		    				{
-		    					oppRotation = dir == EnumFacing.getFront(side).getOpposite();
-		    					if (!oppRotation)
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
-		    						angle = 90;
-		    						if (side % 2 == 0) angle += 180;
-		    						if (invertDirection) angle += 180;
-		    						mode2 = 2;
-		    					}
-		    					else
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
-		    						mode2 = 0;
-		    					}
-		    				}
-		    				else if (mode == 2)
-		    				{
-		    					oppRotation = dir == EnumFacing.getFront(side).getOpposite();
-		    					if (!oppRotation)
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
-		    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
-		    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
-		    						if (invertDirection) angle += 180;
-		    					}
-		    					else
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
-		    					}
-		    				}
+	    					if (!oppRotation)
+	    					{
+	    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+	    						angle = 90;
+	    						if (side % 2 == 0) angle += 180;
+	    						if (invertDirection) angle += 180;
+	    						mode2 = 2;
+	    					}
+	    					else
+	    					{
+	    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
+	    						mode2 = 0;
+	    					}
 	    				}
-	    				double mirTravel1 = mirTravel;
-	    				double mirTravel2 = 0;
-	    				if (mode != 3 && ((side <= 1 && s > 1) || ((side == 2 || side == 3) && s <= 1)))
+	    				else if (mode == 2)
+	    				{
+	    					if (!oppRotation)
+	    					{
+	    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+	    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
+	    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
+	    						if (invertDirection) angle += 180;
+	    					}
+	    					else
+	    					{
+	    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
+	    					}
+	    				}
+	    				mirTravel1 = mirTravel;
+	    				mirTravel2 = 0;
+	    				if (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
+	    						|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3) : (side == 2 || side == 3)) && s <= 1))
 	    				{
 	    					angle += 90;
 	    					mirTravel1 = 0;
 		    				mirTravel2 = mirTravel;
 	    				}
 	    				
-	    				
-	    				if (mode == 3)
+	    				if (mode2 == 0)
 	    				{
-	    					if (s % 2 == 1) angle += 180;
-	    					if (s >= 4) angle -= 90;
+	    					if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
+	    					if (oppRotation) angle *= -1;
 	    				}
 	    				else
 	    				{
-	    					if (mode2 == 0)
-		    				{
-		    					if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-		    					if (oppRotation) angle *= -1;
-		    				}
-		    				else
-		    				{
-		    					if (s < 2 || s > 3) angle *= -1;
-		    				}
-		    				if (eastWest) angle -= 90;
-		    				if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
+	    					if (s < 2 || s > 3) angle *= -1;
 	    				}
+	    				if (eastWest) angle -= 90;
+	    				if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
 	    				offsetX = Math.abs(dir.getFrontOffsetX());
 		                offsetY = Math.abs(dir.getFrontOffsetY());
 		                offsetZ = Math.abs(dir.getFrontOffsetZ());
