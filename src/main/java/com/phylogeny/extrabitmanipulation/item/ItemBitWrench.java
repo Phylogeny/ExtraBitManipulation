@@ -59,7 +59,8 @@ public class ItemBitWrench extends Item
 			int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger("mode");
 			int increment = 1; //currently fixed
 			boolean invertDirection = player.isSneaking();
-			int s = player.isSneaking() ? side.getOpposite().ordinal() : side.ordinal();
+			int s = (player.isSneaking() ? (mode == 1 ? (side.rotateAround((side.getAxis().isHorizontal()
+					? EnumFacing.UP : player.getHorizontalFacing()).getAxis())) : side.getOpposite()) : side).ordinal();
 			boolean canTranslate = true;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
 			for (int i = 0; i < 16; i++)
@@ -181,11 +182,8 @@ public class ItemBitWrench extends Item
 			setWrenchDisplayName(stack, mode);
 		}
 		String text = modeText[mode];
-		list.add("Right click blocks to " + text + ".");
-		if (mode != 1)
-		{
-			list.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : " towards you."));
-		}
+		list.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : " away from you.")));
+		list.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
 		list.add("Mouse wheel while sneaking to cycle mode.");
 	}
 	
