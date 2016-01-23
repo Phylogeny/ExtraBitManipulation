@@ -12,12 +12,26 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PacketCycleWrench implements IMessage
 {
+	private boolean forward;
+	
+	public PacketCycleWrench() {}
+	
+	public PacketCycleWrench(boolean forward)
+	{
+		this.forward = forward;
+	}
 	
 	@Override
-	public void fromBytes(ByteBuf buffer) {}
-
+	public void toBytes(ByteBuf buffer)
+	{
+		buffer.writeBoolean(forward);
+	}
+	
 	@Override
-	public void toBytes(ByteBuf buffer) {}
+	public void fromBytes(ByteBuf buffer)
+	{
+		forward = buffer.readBoolean();
+	}
 	
 	public static class Handler implements IMessageHandler<PacketCycleWrench, IMessage>
 	{
@@ -33,7 +47,7 @@ public class PacketCycleWrench implements IMessage
 				stack.setTagCompound(new NBTTagCompound());
 			}
 			NBTTagCompound nbt = stack.getTagCompound();
-			int mode = (nbt.getInteger("mode") + 1) % 3;
+			int mode = (nbt.getInteger("mode") + (message.forward ? 1 : 2)) % 3;
 			nbt.setInteger("mode", mode);
 			if (setTag)
 			{

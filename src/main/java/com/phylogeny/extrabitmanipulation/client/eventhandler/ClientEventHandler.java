@@ -45,7 +45,7 @@ public class ClientEventHandler
 			if (stack != null && stack.getItem() instanceof ItemBitWrench && event.isCancelable())
 			{
 				event.setCanceled(true);
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleWrench());
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleWrench(event.dwheel < 0));
 			}
 		}
 	}
