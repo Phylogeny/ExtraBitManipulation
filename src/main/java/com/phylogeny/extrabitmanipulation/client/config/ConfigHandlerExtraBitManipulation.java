@@ -41,7 +41,7 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.TAKES_DAMAGE_BIT_WRENCH = configFile.getBoolean("Bit Wrench Takes Damage", BALANCE, true,
 					"Causes the Bit Wrench to take a point of damage when used. (default = true)");
 			
-			Configs.MAX_DAMAGE_BIT_WRENCH = configFile.getInt("Bit Wrench Max Damage", BALANCE, 1500, 1, Integer.MAX_VALUE,
+			Configs.MAX_DAMAGE_BIT_WRENCH = configFile.getInt("Bit Wrench Max Damage", BALANCE, 5000, 1, Integer.MAX_VALUE,
 					"The Bit Wrench will have this many uses if it is configured to take damage. (default = 1500)");
 			ItemsExtraBitManipulation.BitWrench.setMaxDamage(Configs.MAX_DAMAGE_BIT_WRENCH);
 			
@@ -52,6 +52,9 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.RECIPE_BIT_WRENCH = getRecipeList(RECIPE_BIT_WRENCH, Configs.RECIPE_BIT_WRENCH_DEFAULT);
 			
 			//RENDER_OVERLAYS
+			Configs.DISABLE_OVERLAYS = configFile.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
+					"Prevents overlays from rendering. (default = false)");
+			
 			Configs.ROTATION_PERIOD = getDouble(configFile, "Rotation Period", RENDER_OVERLAYS, 180, 1, Double.MAX_VALUE,
 					"Number of frames over which the cyclical arrow overlay used in block/texture rotation will complete one rotation. If this is " +
 					"set to the minimum value of 1, no rotation will occur. (default = 3 seconds at 60 fps)");
