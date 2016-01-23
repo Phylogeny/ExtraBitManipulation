@@ -104,64 +104,71 @@ public class ItemBitWrench extends Item
 			int increment2 = invertDirection ? -increment : increment;
 			if (mode != 2 || canTranslate)
 			{
+				int x, y, z;
 				for (int i = 0; i < 16; i++)
 				{
 					for (int j = 0; j < 16; j++)
 					{
 						for (int k = 0; k < 16; k++)
 						{
+							IBitBrush bit = bitArray[i][j][k];
+							x = i;
+							y = j;
+							z = k;
+							switch (mode)
+							{
+								case 0:	switch (s)
+										{
+											case 0: x = k; y = j; z = 16 - 1 - i; break;
+											case 1: x = 16 - 1 - k; y =  j; z = i; break;
+											case 2: x = 16 - 1 - j; y = i; z = k; break;
+											case 3: x = j; y = 16 - 1 - i; z = k; break;
+											case 4: x = i; y = 16 - 1 - k; z = j; break;
+											case 5: x = i; y = k; z = 16 - 1 - j;
+										}
+										break;
+								case 1: if (s <= 1)
+										{
+											y = 16 - 1 - j;
+										}
+										else if (s <= 3)
+										{
+											z = 16 - 1 - k;
+										}
+										else
+										{
+											x = 16 - 1 - i;
+										}
+										break;
+								case 2: int i2 = i + side.getFrontOffsetX() * increment2;
+										int j2 = j + side.getFrontOffsetY() * increment2;
+										int k2 = k + side.getFrontOffsetZ() * increment2;
+										if (!(i2 < 0 || j2 < 0 || k2 < 0
+												|| i2 >= 16 || j2 >= 16 || k2 >= 16))
+										{
+											bit = bitArray[i2][j2][k2];
+										}
+										if ((s == 4 && i < removalLayer + increment)
+												|| (s == 5 && i > removalLayer - increment)
+												|| (s == 0 && j < removalLayer + increment)
+												|| (s == 1 && j > removalLayer - increment)
+												|| (s == 2 && k < removalLayer + increment)
+												|| (s == 3 && k > removalLayer - increment))
+										{
+											bit = null;
+										}
+							}
 							try
 							{
-								IBitBrush bit = bitArray[i][j][k];
-								switch (mode)
+								bitAccess.setBitAt(x, y, z, bit);
+							}
+							catch (SpaceOccupied e)
+							{
+								if (bit != null && !bit.isAir() && bitAccess.getBitAt(x, y, z).isAir())
 								{
-									case 0:	switch (s)
-											{
-												case 0: bitAccess.setBitAt(k, j, 16 - 1 - i, bit); break;
-												case 1: bitAccess.setBitAt(16 - 1 - k, j, i, bit); break;
-												case 2: bitAccess.setBitAt(16 - 1 - j, i, k, bit); break;
-												case 3: bitAccess.setBitAt(j, 16 - 1 - i, k, bit); break;
-												case 4: bitAccess.setBitAt(i, 16 - 1 - k, j, bit); break;
-												case 5: bitAccess.setBitAt(i, k, 16 - 1 - j, bit);
-											}
-											break;
-									case 1: if (s <= 1)
-											{
-												bitAccess.setBitAt(i, 16 - 1 - j, k, bit);
-											}
-											else if (s <= 3)
-											{
-												bitAccess.setBitAt(i, j, 16 - 1 - k, bit);
-											}
-											else
-											{
-												bitAccess.setBitAt(16 - 1 - i, j, k, bit);
-											}
-											break;
-									case 2: if (canTranslate)
-											{
-												int i2 = i + side.getFrontOffsetX() * increment2;
-												int j2 = j + side.getFrontOffsetY() * increment2;
-												int k2 = k + side.getFrontOffsetZ() * increment2;
-												if (!(i2 < 0 || j2 < 0 || k2 < 0
-														|| i2 >= 16 || j2 >= 16 || k2 >= 16))
-												{
-													bitAccess.setBitAt(i, j, k, bitArray[i2][j2][k2]);
-												}
-												if ((s == 4 && i < removalLayer + increment)
-														|| (s == 5 && i > removalLayer - increment)
-														|| (s == 0 && j < removalLayer + increment)
-														|| (s == 1 && j > removalLayer - increment)
-														|| (s == 2 && k < removalLayer + increment)
-														|| (s == 3 && k > removalLayer - increment))
-												{
-													bitAccess.setBitAt(i, j, k, null);
-												}
-											}
-										break;
+									return false;
 								}
 							}
-							catch (SpaceOccupied e) {}
 						}
 					}
 				}
