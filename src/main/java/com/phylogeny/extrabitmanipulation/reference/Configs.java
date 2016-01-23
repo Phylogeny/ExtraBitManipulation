@@ -14,6 +14,7 @@ public class Configs
 	public static boolean RECIPE_BIT_WRENCH_ORE_DICTIONARY;
 	
 	//RENDER_OVERLAYS
+	public static boolean DISABLE_OVERLAYS;
 	public static double ROTATION_PERIOD;
 	public static double MIRROR_PERIOD;
 	public static double MIRROR_AMPLITUDE;
