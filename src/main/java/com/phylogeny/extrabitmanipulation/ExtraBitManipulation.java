@@ -24,7 +24,8 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 public class ExtraBitManipulation
 {
 	public static SimpleNetworkWrapper packetNetwork = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
-    @EventHandler
+	
+	@EventHandler
 	public void preinit(FMLPreInitializationEvent event)
 	{
     	ItemsExtraBitManipulation.itemsInit();
