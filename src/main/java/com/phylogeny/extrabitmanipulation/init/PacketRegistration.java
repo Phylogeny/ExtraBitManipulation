@@ -3,7 +3,7 @@ package com.phylogeny.extrabitmanipulation.init;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.packet.PacketCycleWrench;
+import com.phylogeny.extrabitmanipulation.packet.PacketCycleData;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 
 public class PacketRegistration
@@ -12,7 +12,7 @@ public class PacketRegistration
 	
 	public static void registerPackets()
 	{
-		registerPacket(PacketCycleWrench.Handler.class, PacketCycleWrench.class, Side.SERVER);
+		registerPacket(PacketCycleData.Handler.class, PacketCycleData.class, Side.SERVER);
 		registerPacket(PacketSculpt.Handler.class, PacketSculpt.class, Side.SERVER);
 	}
 	
