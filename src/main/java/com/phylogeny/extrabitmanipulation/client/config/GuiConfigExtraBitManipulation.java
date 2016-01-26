@@ -23,33 +23,50 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	private static List<IConfigElement> getConfigElements()
 	{
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
-		addElements(ConfigHandlerExtraBitManipulation.BALANCE,
-				"Configures the damage characteristics of the Bit Wrench", configElements);
-		addElementsToSubCategory(configElements, 1,
+		
+		addElementsToSubCategory(configElements, false,
+				ConfigHandlerExtraBitManipulation.BIT_WRENCH_PROPERTIES,
+				"Configures the damage characteristics of the Bit Wrench",
+				ConfigHandlerExtraBitManipulation.SCULPTING_LOOP_PROPERTIES,
+				"Configures the damage characteristics and default data of the Sculpting Loop",
+				"Item Properties", "Configures the damage characteristics and default data of the Sculpting Loop and Bit Wrench");
+		addElementsToSubCategory(configElements, true,
 				ConfigHandlerExtraBitManipulation.RECIPE_BIT_WRENCH,
+				ConfigHandlerExtraBitManipulation.RECIPE_SCULPTING_LOOP,
 				"Recipies", "Configures the recipie for the Bit Wrench");
-		addElements(ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS,
-				"Configures the way wrench overlays are rendered", configElements);
+		String sculptingLoppText1 = "Configures the color/alpha/line-width of the ";
+		String sculptingLoppText2 = "Sculpting Loop's removal area, as well as which portions of it are rendered";
+		addElementsToSubCategory(configElements, false,
+				ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS,
+				"Configures the way the Bit Wrench overlays are rendered",
+				ConfigHandlerExtraBitManipulation.RENDER_SPHERE,
+				sculptingLoppText1 + sculptingLoppText2,
+				ConfigHandlerExtraBitManipulation.RENDER_BOX,
+				sculptingLoppText1 + "box around the " + sculptingLoppText2,
+				"Rendering", "Configures the rendering of the Bit Wrench's overlays and the Sculpting Loop's removal sphere/box");
 		return configElements;
 	}
 	
-	private static void addElementsToSubCategory(List<IConfigElement> configElements, int type, String... names)
+	private static void addElementsToSubCategory(List<IConfigElement> configElements, boolean isRecipe, String... names)
 	{
-		addElementsToSubCategory(configElements, new ArrayList<IConfigElement>(), type, names);
+		addElementsToSubCategory(configElements, new ArrayList<IConfigElement>(), isRecipe, names);
 	}
 	
-	private static void addElementsToSubCategory(List<IConfigElement> configElements, List<IConfigElement> childElements, int type, String... names)
+	private static void addElementsToSubCategory(List<IConfigElement> configElements, List<IConfigElement> childElements, boolean isRecipe, String... names)
 	{
 		int len = names.length;
 		if (len >= 2)
 		{
-			int inc = type == 1 ? 1 : 2;
+			int inc = isRecipe ? 1 : 2;
 			for (int i = 0; i < names.length - 2; i += inc)
 			{
-				switch(type)
+				if (isRecipe)
 				{
-					case 0: addElements(names[i], names[i + 1], childElements); break;
-					case 1: addRecipeElements(names[i], childElements); break;
+					addRecipeElements(names[i], childElements);
+				}
+				else
+				{
+					addElements(names[i], names[i + 1], childElements);
 				}
 			}
 			addElements(names[len - 2], names[len - 1], configElements, childElements);
