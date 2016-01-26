@@ -16,6 +16,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -37,8 +38,9 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
     {
 		if (!world.isRemote)
 		{
-			cycleModes(stack, true);
-			player.inventoryContainer.detectAndSendChanges();
+			//Mode cycling disabled until global bit removal is implemented
+//			cycleModes(stack, true);
+//			player.inventoryContainer.detectAndSendChanges();
 		}
         return stack;
     }
@@ -120,7 +122,12 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 							int quota;
 							while (total > 0)
 							{
-								boolean added = false;
+								/* C&B normally utilizes a 'Bit Bag --> Bit stack --> empty slot --> ground' priority.
+								 * Since the API does not currently allow Bit Bag inventory access, the only way to
+								 * allow removed bits to enter a player's bag(s) is to throw them all on the ground and
+								 * allow C&B to put them in the bag upon pickup. Thus the code below will remain 
+								 * commented out until direct bag access is granted.
+								 */
 								if (total > 64)
 								{
 									quota = 64;
@@ -128,7 +135,7 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 								else
 								{
 									quota = total;
-									for (int i = 0; i < inv.getSizeInventory(); i++)
+									/*for (int i = 0; i < inv.getSizeInventory(); i++)
 									{
 										ItemStack invStack = inv.getStackInSlot(i);
 										if (invStack != null && api.getItemType(invStack) == ItemType.CHISLED_BIT
@@ -144,12 +151,12 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 												if (quota == 0) break;
 											}
 										}
-									}
+									}*/
 								}
 								if (quota > 0)
 								{
 									ItemStack stack2 = bit.getItemStack(quota);
-									int emptySlot = inv.getFirstEmptyStack();
+									/*int emptySlot = inv.getFirstEmptyStack();
 									if (emptySlot >= 0)
 									{
 										inv.setInventorySlotContents(emptySlot, stack2);
@@ -157,7 +164,8 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 									else
 									{
 										player.dropItem(stack2, false, false);
-									}
+									}*/
+									player.dropItem(stack2, false, false);
 									total -= quota;
 								}
 							}
@@ -195,9 +203,11 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 			list.add(text + "all blocks");
 			list.add("    intersecting removal area.");
 		}
-		list.add("Right click to cycle modes.");
+		//Mode cycling disabled until global bit removal is implemented
+//		list.add("Right click to cycle modes.");
 		list.add("Mouse wheel while sneaking");
 		list.add("    to change removal radius.");
+		list.add(EnumChatFormatting.ITALIC + "[global mode coming soon]");
 	}
 	
 }
