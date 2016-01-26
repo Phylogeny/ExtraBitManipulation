@@ -20,6 +20,11 @@ public class RecipesExtraBitManipulation
 			registerRecipe(ItemsExtraBitManipulation.BitWrench, Configs.RECIPE_BIT_WRENCH_IS_SHAPED,
 					Configs.RECIPE_BIT_WRENCH_ORE_DICTIONARY, Configs.RECIPE_BIT_WRENCH, Configs.RECIPE_BIT_WRENCH_DEFAULT);
 		}
+		if (Configs.RECIPE_SCULPTING_LOOP_IS_ENABLED)
+		{
+			registerRecipe(ItemsExtraBitManipulation.SculptingLoop, Configs.RECIPE_SCULPTING_LOOP_IS_SHAPED,
+					Configs.RECIPE_SCULPTING_LOOP_ORE_DICTIONARY, Configs.RECIPE_SCULPTING_LOOP, Configs.RECIPE_SCULPTING_LOOP_DEFAULT);
+		}
 	}
 	
 	private static void registerRecipe(Item item, boolean isShaped, boolean useOreDictionary,
