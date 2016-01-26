@@ -17,7 +17,7 @@ public class CreativeTabExtraBitManipulation
 		@SideOnly(Side.CLIENT)
 		public Item getTabIconItem()
 		{
-			return ItemsExtraBitManipulation.BitWrench;
+			return ItemsExtraBitManipulation.SculptingLoop;
 		}
 	};
 	
