@@ -9,7 +9,7 @@
   "updateUrl": "",
   "authorList": ["Phylogeny"],
   "credits": "To Algorithm for an excellent implementation of a great idea.",
-  "logoFile": "",
+  "logoFile": "assets/extrabitmanipulation/logo/ExtraBitManipulationLogo.png",
   "screenshots": [],
   "requiredMods": ["chiselsandbits"],
   "dependencies": ["chiselsandbits"]
