@@ -3,7 +3,6 @@ package com.phylogeny.extrabitmanipulation.item;
 import java.util.List;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.client.creativetab.CreativeTabExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
@@ -11,37 +10,23 @@ import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class ItemBitWrench extends Item
+public class ItemBitWrench extends ItemExtraBitManipulationBase
 {
-	private static final String name = "BitWrench";
-	public static final String[] modeTitles = new String[]{"Rotation", "Mirroring", "Translation"};
-	public static final String[] modeText = new String[]{"rotate", "mirror", "translate"};
+	private static final String[] modeText = new String[]{"rotate", "mirror", "translate"};
 	
 	public ItemBitWrench()
 	{
-		setUnlocalizedName(name);
-		setCreativeTab(CreativeTabExtraBitManipulation.bitWrench);
-		if (Configs.TAKES_DAMAGE_BIT_WRENCH)
-		{
-			setMaxDamage(Configs.MAX_DAMAGE_BIT_WRENCH);
-		}
-		maxStackSize = 1;
+		super("BitWrench", Configs.TAKES_DAMAGE_BIT_WRENCH, Configs.MAX_DAMAGE_BIT_WRENCH);
+		modeTitles = new String[]{"Rotation", "Mirroring", "Translation"};
 	}
 	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+			EnumFacing side, float hitX, float hitY, float hitZ)
     {
 		if (ChiselsAndBitsAPIAccess.apiInstance.isBlockChiseled(world, pos))
 		{
@@ -183,32 +168,12 @@ public class ItemBitWrench extends Item
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger("mode") : 0;
-		if (!stack.hasTagCompound())
-		{
-			setWrenchDisplayName(stack, mode);
-		}
+		super.addInformation(stack, player, list, par4);
+		int mode = stack.getTagCompound().getInteger("mode");
 		String text = modeText[mode];
 		list.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : " away from you.")));
 		list.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
-		list.add("Mouse wheel while sneaking to cycle mode.");
-	}
-	
-	
-	public void onCreated(ItemStack stack, World world, EntityPlayer player)
-    {
-		stack.setTagCompound(new NBTTagCompound());
-		setWrenchDisplayName(stack, 0);
-    }
-	
-	public static void setWrenchDisplayName(ItemStack stack, int mode)
-	{
-		setWrenchDisplayName(stack, stack.getDisplayName(), mode);
-	}
-	
-	public static void setWrenchDisplayName(ItemStack stack, String name, int mode)
-	{
-		stack.setStackDisplayName(EnumChatFormatting.RESET + name + " - " + modeTitles[mode]);
+		list.add("Mouse wheel while sneaking to cycle modes.");
 	}
 	
 }
