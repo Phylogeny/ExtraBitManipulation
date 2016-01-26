@@ -1,19 +1,30 @@
 package com.phylogeny.extrabitmanipulation.client.eventhandler;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.Sphere;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
-import com.phylogeny.extrabitmanipulation.packet.PacketCycleWrench;
+import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
+import com.phylogeny.extrabitmanipulation.packet.PacketCycleData;
+import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
+import mod.chiselsandbits.api.IBitLocation;
+import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -23,6 +34,7 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,6 +42,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ClientEventHandler
 {
 	private int frameCounter;
+	private static final double pixel = 1 / 16.0;
 	private static final ResourceLocation arrowHead = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
 	private static final ResourceLocation arrowBidirectional = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
 	private static final ResourceLocation arrowCyclical = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
@@ -42,16 +55,54 @@ public class ClientEventHandler
 		if (event.dwheel != 0 && player.isSneaking())
 		{
 			ItemStack stack = player.getCurrentEquippedItem();
-			if (stack != null && stack.getItem() instanceof ItemBitWrench && event.isCancelable())
+			if (stack != null && stack.getItem() instanceof ItemExtraBitManipulationBase)
 			{
 				event.setCanceled(true);
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleWrench(event.dwheel < 0));
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(event.dwheel < 0));
+			}
+		}
+		else if (event.button == 0 && event.buttonstate)
+		{
+			if (!player.capabilities.allowEdit) return;
+			ItemStack itemStack = player.inventory.getCurrentItem();
+			if (itemStack != null)
+			{
+				Item item = itemStack.getItem();
+				if (item != null && item instanceof ItemSculptingLoop)
+				{
+					MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
+					if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+					{
+						BlockPos pos = target.getBlockPos();
+						EnumFacing side = target.sideHit;
+						Vec3 hit = target.hitVec;
+						ItemSculptingLoop.sculptBlock(itemStack, player, player.worldObj, pos, side, hit);
+						ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit));
+						player.swingItem();
+						event.setCanceled(true);
+					}
+				}
 			}
 		}
 	}
 	
 	@SubscribeEvent
-	public void renderBoxesBlocksAndOverlays(RenderWorldLastEvent event)
+	public void cancelBoundingBoxDraw(DrawBlockHighlightEvent event)
+	{
+		ItemStack itemStack = event.player.inventory.getCurrentItem();
+		if (itemStack != null)
+		{
+			Item item = itemStack.getItem();
+			if (item != null && item instanceof ItemSculptingLoop && itemStack.hasTagCompound()
+					&& itemStack.getTagCompound().getInteger("mode") == 1)
+			{
+				event.setCanceled(true);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void renderRemovalAreasAndOverlays(RenderWorldLastEvent event)
 	{
 		if (!Configs.DISABLE_OVERLAYS)
 		{
@@ -62,11 +113,9 @@ public class ClientEventHandler
 			{
 				MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
 				if (target != null && target.typeOfHit.equals(MovingObjectType.BLOCK)
-						&& ChiselsAndBitsAPIAccess.apiInstance.isBlockChiseled(world, target.getBlockPos())
-						&& stack.getItem() instanceof ItemBitWrench)
+						&& stack.getItem() instanceof ItemExtraBitManipulationBase)
 				{
-					int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger("mode");
-					frameCounter++;
+					IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 					float ticks = event.partialTicks;
 	        		double playerX = player.lastTickPosX + (player.posX - player.lastTickPosX) * ticks;
 	        		double playerY = player.lastTickPosY + (player.posY - player.lastTickPosY) * ticks;
@@ -78,206 +127,292 @@ public class ClientEventHandler
 	                int x = pos.getX();
 	                int y = pos.getY();
 	                int z = pos.getZ();
-	                Vec3 hit = target.hitVec;
-	                int side = dir.ordinal();
-	                boolean upDown = side <= 1;
-	                boolean eastWest = side >= 4;
-	                boolean northSouth = !upDown && !eastWest;
-	                AxisAlignedBB box = new AxisAlignedBB(eastWest ? hit.xCoord : x, upDown ? hit.yCoord : y, northSouth ? hit.zCoord : z,
-	                		eastWest ? hit.xCoord : x + 1, upDown ? hit.yCoord : y + 1, northSouth ? hit.zCoord : z + 1);
-	                
-	                int offsetX = Math.abs(dir.getFrontOffsetX());
-	                int offsetY = Math.abs(dir.getFrontOffsetY());
-	                int offsetZ = Math.abs(dir.getFrontOffsetZ());
-	                double invOffsetX = offsetX ^ 1;
-	                double invOffsetY = offsetY ^ 1;
-	                double invOffsetZ = offsetZ ^ 1;
-	                
-	                boolean invertDirection = player.isSneaking();
-	                GL11.glPushMatrix();
-	                GL11.glDisable(GL11.GL_LIGHTING);
-					GL11.glEnable(GL11.GL_ALPHA_TEST);
-					GL11.glEnable(GL11.GL_BLEND);
-					GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-					GL11.glEnable(GL11.GL_TEXTURE_2D);
-					GL11.glPushMatrix();
-					double angle = getInitialAngle(mode);
-					if (mode == 0)
-					{
-						if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-					}
-					else
-					{
-						if (side < 2 || side > 3) angle *= -1;
-					}
-					if (eastWest) angle += 90;
-					if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
-					double diffX = playerX - x;
+	                double diffX = playerX - x;
 					double diffY = playerY - y;
 					double diffZ = playerZ - z;
-					double offsetX2 = 0.5 * invOffsetX;
-					double offsetY2 = 0.5 * invOffsetY;
-					double offsetZ2 = 0.5 * invOffsetZ;
-					
-					double mirTravel = mode == 1 ? Configs.MIRROR_AMPLITUDE * Math.cos(Math.PI * 2 * frameCounter / Configs.MIRROR_PERIOD) : 0;
-					double mirTravel1 = mirTravel;
-					double mirTravel2 = 0;
-					boolean mirrorInversion = invertDirection && mode == 1;
-					if (mirrorInversion && side <= 1 && player.getHorizontalFacing().ordinal() > 3)
+					Vec3 hit = target.hitVec;
+					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
 					{
-						angle += 90;
-						mirTravel1 = 0;
-	    				mirTravel2 = mirTravel;
-					}
-					translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
-							offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
-					
-					Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? arrowCyclical : (mode == 1 ? arrowBidirectional : circle));
-					float minU = 0;
-	        		float maxU = 1;
-	        		float minV = 0;
-	        		float maxV = 1;
-	        		if (mode == 0)
-					{
-	        			if (invertDirection)
-	        			{
-	        				float minU2 = minU;
-	        				minU = maxU;
-	        				maxU = minU2;
-	        			}
-					}
-	        		else if (mode == 2)
-	        		{
-	        			EnumFacing dir2 = side <= 1 ? EnumFacing.WEST : (side <= 3 ? EnumFacing.WEST : EnumFacing.DOWN);
-	        			box = contractBoxOrRenderArrows(true, t, wr, side, northSouth, dir2, box, invOffsetX,
-	        					invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
-	        		}
-	        		
-					renderTexturedSide(t, wr, side, northSouth, box, minU, maxU, minV, maxV, 1);
-	        		GL11.glPopMatrix();
-	        		
-	        		AxisAlignedBB box3 = world.getBlockState(pos).getBlock().getSelectedBoundingBox(world, pos);
-					for (int s = 0; s < 6; s++)
-	        		{
-						if (s != side)
+						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger("mode");
+						frameCounter++;
+		                int side = dir.ordinal();
+		                boolean upDown = side <= 1;
+		                boolean eastWest = side >= 4;
+		                boolean northSouth = !upDown && !eastWest;
+		                AxisAlignedBB box = new AxisAlignedBB(eastWest ? hit.xCoord : x, upDown ? hit.yCoord : y, northSouth ? hit.zCoord : z,
+		                		eastWest ? hit.xCoord : x + 1, upDown ? hit.yCoord : y + 1, northSouth ? hit.zCoord : z + 1);
+		                
+		                int offsetX = Math.abs(dir.getFrontOffsetX());
+		                int offsetY = Math.abs(dir.getFrontOffsetY());
+		                int offsetZ = Math.abs(dir.getFrontOffsetZ());
+		                double invOffsetX = offsetX ^ 1;
+		                double invOffsetY = offsetY ^ 1;
+		                double invOffsetZ = offsetZ ^ 1;
+		                
+		                boolean invertDirection = player.isSneaking();
+		                GlStateManager.pushMatrix();
+		                GlStateManager.disableLighting();
+		                GlStateManager.enableAlpha();
+						GlStateManager.enableBlend();
+						GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+						GlStateManager.enableTexture2D();
+						GlStateManager.pushMatrix();
+						double angle = getInitialAngle(mode);
+						if (mode == 0)
 						{
-							GL11.glPushMatrix();
-							upDown = s <= 1;
-			                eastWest = s >= 4;
-			                northSouth = !upDown && !eastWest;
-							dir = EnumFacing.getFront(s);
-							box = new AxisAlignedBB(eastWest ? (s == 5 ? box3.maxX : box3.minX) : x,
-																upDown ? (s == 1 ? box3.maxY : box3.minY) : y,
-																northSouth ? (s == 3 ? box3.maxZ : box3.minZ) : z,
-																eastWest ? (s == 4 ? box3.minX : box3.maxX) : x + 1,
-																upDown ? (s == 0 ? box3.minY : box3.maxY) : y + 1,
-																northSouth ? (s == 2 ? box3.minZ : box3.maxZ) : z + 1);
-							angle = getInitialAngle(mode);
-		    				
-							boolean oppRotation = false;
-							int mode2 = mode;
-							oppRotation = dir == EnumFacing.getFront(side).getOpposite();
-							if (mode == 0)
-		    				{
-		    					if (!oppRotation)
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
-		    						angle = 90;
-		    						if (side % 2 == 0) angle += 180;
-		    						if (invertDirection) angle += 180;
-		    						mode2 = 2;
-		    					}
-		    					else
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
-		    						mode2 = 0;
-		    					}
-		    				}
-		    				else if (mode == 2)
-		    				{
-		    					if (!oppRotation)
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
-		    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
-		    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
-		    						if (invertDirection) angle += 180;
-		    					}
-		    					else
-		    					{
-		    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
-		    					}
-		    				}
-		    				mirTravel1 = mirTravel;
-		    				mirTravel2 = 0;
-		    				if (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
-		    						|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3) : (side == 2 || side == 3)) && s <= 1))
-		    				{
-		    					angle += 90;
-		    					mirTravel1 = 0;
-			    				mirTravel2 = mirTravel;
-		    				}
-		    				
-		    				if (mode2 == 0)
-		    				{
-		    					if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-		    					if (oppRotation) angle *= -1;
-		    				}
-		    				else
-		    				{
-		    					if (s < 2 || s > 3) angle *= -1;
-		    				}
-		    				if (eastWest) angle -= 90;
-		    				if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
-		    				offsetX = Math.abs(dir.getFrontOffsetX());
-			                offsetY = Math.abs(dir.getFrontOffsetY());
-			                offsetZ = Math.abs(dir.getFrontOffsetZ());
-			                invOffsetX = offsetX ^ 1;
-			                invOffsetY = offsetY ^ 1;
-			                invOffsetZ = offsetZ ^ 1;
-		    				offsetX2 = 0.5 * invOffsetX;
-		    				offsetY2 = 0.5 * invOffsetY;
-		    				offsetZ2 = 0.5 * invOffsetZ;
-		    				translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
-		    						offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
-		    				minU = 0;
-		            		maxU = 1;
-		            		minV = 0;
-		            		maxV = 1;
-		            		if (mode2 == 0)
-		    				{
-		            			if (oppRotation)
-			    				{
-		            				minU = 1;
-				            		maxU = 0;
-			    				}
-		            			if (invertDirection)
-		            			{
-		            				float minU2 = minU;
-		            				minU = maxU;
-		            				maxU = minU2;
-		            			}
-		    				}
-		            		else if (mode2 == 2)
-		            		{
-		            			EnumFacing dir2 = side <= 1 ? (s == 2 || s == 3 ? EnumFacing.WEST : EnumFacing.DOWN)
-	            						: (side >= 4 ? EnumFacing.WEST : (s <= 1 ? EnumFacing.WEST : EnumFacing.DOWN));
-		            			box = contractBoxOrRenderArrows(oppRotation, t, wr, side, northSouth, dir2, box, invOffsetX,
-		            					invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
-		            		}
-		            		if (mode2 != 2 || oppRotation) renderTexturedSide(t, wr, s, northSouth, box, minU, maxU, minV, maxV, 1);
-		            		GL11.glPopMatrix();
+							if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
 						}
-	        		}
-					
-					GL11.glEnable(GL11.GL_LIGHTING);
-					GL11.glDisable(GL11.GL_BLEND);
-					GL11.glEnable(GL11.GL_TEXTURE_2D);
-					GL11.glPopMatrix();
+						else
+						{
+							if (side < 2 || side > 3) angle *= -1;
+						}
+						if (eastWest) angle += 90;
+						if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
+						double offsetX2 = 0.5 * invOffsetX;
+						double offsetY2 = 0.5 * invOffsetY;
+						double offsetZ2 = 0.5 * invOffsetZ;
+						
+						double mirTravel = mode == 1 ? Configs.MIRROR_AMPLITUDE * Math.cos(Math.PI * 2 * frameCounter / Configs.MIRROR_PERIOD) : 0;
+						double mirTravel1 = mirTravel;
+						double mirTravel2 = 0;
+						boolean mirrorInversion = invertDirection && mode == 1;
+						if (mirrorInversion && side <= 1 && player.getHorizontalFacing().ordinal() > 3)
+						{
+							angle += 90;
+							mirTravel1 = 0;
+		    				mirTravel2 = mirTravel;
+						}
+						translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
+								offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
+						
+						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? arrowCyclical : (mode == 1 ? arrowBidirectional : circle));
+						float minU = 0;
+		        		float maxU = 1;
+		        		float minV = 0;
+		        		float maxV = 1;
+		        		if (mode == 0)
+						{
+		        			if (invertDirection)
+		        			{
+		        				float minU2 = minU;
+		        				minU = maxU;
+		        				maxU = minU2;
+		        			}
+						}
+		        		else if (mode == 2)
+		        		{
+		        			EnumFacing dir2 = side <= 1 ? EnumFacing.WEST : (side <= 3 ? EnumFacing.WEST : EnumFacing.DOWN);
+		        			box = contractBoxOrRenderArrows(true, t, wr, side, northSouth, dir2, box, invOffsetX,
+		        					invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
+		        		}
+		        		
+						renderTexturedSide(t, wr, side, northSouth, box, minU, maxU, minV, maxV, 1);
+						GlStateManager.popMatrix();
+		        		
+		        		AxisAlignedBB box3 = world.getBlockState(pos).getBlock().getSelectedBoundingBox(world, pos);
+						for (int s = 0; s < 6; s++)
+		        		{
+							if (s != side)
+							{
+								GlStateManager.pushMatrix();
+								upDown = s <= 1;
+				                eastWest = s >= 4;
+				                northSouth = !upDown && !eastWest;
+								dir = EnumFacing.getFront(s);
+								box = new AxisAlignedBB(eastWest ? (s == 5 ? box3.maxX : box3.minX) : x,
+																	upDown ? (s == 1 ? box3.maxY : box3.minY) : y,
+																	northSouth ? (s == 3 ? box3.maxZ : box3.minZ) : z,
+																	eastWest ? (s == 4 ? box3.minX : box3.maxX) : x + 1,
+																	upDown ? (s == 0 ? box3.minY : box3.maxY) : y + 1,
+																	northSouth ? (s == 2 ? box3.minZ : box3.maxZ) : z + 1);
+								angle = getInitialAngle(mode);
+			    				
+								boolean oppRotation = false;
+								int mode2 = mode;
+								oppRotation = dir == EnumFacing.getFront(side).getOpposite();
+								if (mode == 0)
+			    				{
+			    					if (!oppRotation)
+			    					{
+			    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+			    						angle = 90;
+			    						if (side % 2 == 0) angle += 180;
+			    						if (invertDirection) angle += 180;
+			    						mode2 = 2;
+			    					}
+			    					else
+			    					{
+			    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
+			    						mode2 = 0;
+			    					}
+			    				}
+			    				else if (mode == 2)
+			    				{
+			    					if (!oppRotation)
+			    					{
+			    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+			    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
+			    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
+			    						if (invertDirection) angle += 180;
+			    					}
+			    					else
+			    					{
+			    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
+			    					}
+			    				}
+			    				mirTravel1 = mirTravel;
+			    				mirTravel2 = 0;
+			    				if (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
+			    						|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3) : (side == 2 || side == 3)) && s <= 1))
+			    				{
+			    					angle += 90;
+			    					mirTravel1 = 0;
+				    				mirTravel2 = mirTravel;
+			    				}
+			    				
+			    				if (mode2 == 0)
+			    				{
+			    					if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
+			    					if (oppRotation) angle *= -1;
+			    				}
+			    				else
+			    				{
+			    					if (s < 2 || s > 3) angle *= -1;
+			    				}
+			    				if (eastWest) angle -= 90;
+			    				if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
+			    				offsetX = Math.abs(dir.getFrontOffsetX());
+				                offsetY = Math.abs(dir.getFrontOffsetY());
+				                offsetZ = Math.abs(dir.getFrontOffsetZ());
+				                invOffsetX = offsetX ^ 1;
+				                invOffsetY = offsetY ^ 1;
+				                invOffsetZ = offsetZ ^ 1;
+			    				offsetX2 = 0.5 * invOffsetX;
+			    				offsetY2 = 0.5 * invOffsetY;
+			    				offsetZ2 = 0.5 * invOffsetZ;
+			    				translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
+			    						offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
+			    				minU = 0;
+			            		maxU = 1;
+			            		minV = 0;
+			            		maxV = 1;
+			            		if (mode2 == 0)
+			    				{
+			            			if (oppRotation)
+				    				{
+			            				minU = 1;
+					            		maxU = 0;
+				    				}
+			            			if (invertDirection)
+			            			{
+			            				float minU2 = minU;
+			            				minU = maxU;
+			            				maxU = minU2;
+			            			}
+			    				}
+			            		else if (mode2 == 2)
+			            		{
+			            			EnumFacing dir2 = side <= 1 ? (s == 2 || s == 3 ? EnumFacing.WEST : EnumFacing.DOWN)
+		            						: (side >= 4 ? EnumFacing.WEST : (s <= 1 ? EnumFacing.WEST : EnumFacing.DOWN));
+			            			box = contractBoxOrRenderArrows(oppRotation, t, wr, side, northSouth, dir2, box, invOffsetX,
+			            					invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
+			            		}
+			            		if (mode2 != 2 || oppRotation) renderTexturedSide(t, wr, s, northSouth, box, minU, maxU, minV, maxV, 1);
+			            		GlStateManager.popMatrix();
+							}
+		        		}
+						
+						GlStateManager.enableLighting();
+						GlStateManager.disableBlend();
+						GlStateManager.enableTexture2D();
+						GlStateManager.popMatrix();
+					}
+					else if (stack.getItem() instanceof ItemSculptingLoop && api.canBeChiseled(world, target.getBlockPos()))
+					{
+						IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
+								(float) hit.zCoord - pos.getZ(), dir, pos, false);
+						if (bitLoc != null)
+						{
+							GlStateManager.enableBlend();
+							GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+							GlStateManager.disableTexture2D();
+							GlStateManager.depthMask(false);
+							
+							GlStateManager.pushMatrix();
+							
+							GlStateManager.color(0.0F, 0.0F, 0.0F, 0.45F);
+							GL11.glLineWidth(2.0F);
+							double r = (stack.hasTagCompound() && stack.getTagCompound().hasKey("sculptRadius")
+									? stack.getTagCompound().getInteger("sculptRadius") : Configs.DEFAULT_REMOVAL_RADIUS) * pixel;
+							AxisAlignedBB box = new AxisAlignedBB(x - r, y - r, z - r, x + r + pixel, y + r + pixel, z + r + pixel)
+									.offset(bitLoc.getBitX() * pixel, bitLoc.getBitY() * pixel, bitLoc.getBitZ() * pixel);
+							if (!stack.hasTagCompound() || stack.getTagCompound().getInteger("mode") == 0)
+							{
+								Block block = world.getBlockState(pos).getBlock();
+								box = limitBox(box, block.getSelectedBoundingBox(world, pos));
+							}
+							double f = 0.0020000000949949026;
+							RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+							GlStateManager.color(0.0F, 0.0F, 0.0F, 0.11F);
+							GlStateManager.depthFunc(GL11.GL_GREATER);
+							RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+							GlStateManager.depthFunc(GL11.GL_LEQUAL);
+							
+							GlStateManager.popMatrix();
+							
+							Sphere sphere = new Sphere();
+							sphere.setDrawStyle(GLU.GLU_LINE);
+							
+							r += pixel * 0.5;
+							
+							int sphereID = GL11.glGenLists(1);
+							GL11.glNewList(sphereID, GL11.GL_COMPILE);
+							GlStateManager.color(0.0F, 0.0F, 1.0F, 0.45F);
+							sphere.draw((float) r, 32, 32);
+							GL11.glEndList();
+							
+							int sphereID2 = GL11.glGenLists(1);
+							GL11.glNewList(sphereID2, GL11.GL_COMPILE);
+							GlStateManager.color(0.0F, 0.0F, 1.0F, 0.15F);
+							sphere.draw((float) r, 32, 32);
+							GL11.glEndList();
+							
+							GlStateManager.pushMatrix();
+							
+							GL11.glLineWidth(Configs.SPHERE_LINE_WIDTH);
+							GlStateManager.translate(bitLoc.getBitX() * pixel + x - playerX + (pixel * 0.5),
+									bitLoc.getBitY() * pixel + y - playerY + (pixel * 0.5),
+									bitLoc.getBitZ() * pixel + z - playerZ + (pixel * 0.5));
+							GlStateManager.rotate(90, 1, 0, 0);
+							
+							if (Configs.RENDER_WHOLE_SPHERE) GL11.glCallList(sphereID);
+							GlStateManager.depthFunc(GL11.GL_GREATER);
+							GL11.glCallList(Configs.RENDER_WHOLE_SPHERE ? sphereID2 : sphereID);
+							GlStateManager.depthFunc(GL11.GL_LEQUAL);
+							
+							GlStateManager.popMatrix();
+							
+							GlStateManager.depthMask(true);
+							GlStateManager.enableTexture2D();
+							GlStateManager.disableBlend();
+						}
+					}
 				}
 			}
 		}
 	}
 	
+	private AxisAlignedBB limitBox(AxisAlignedBB box, AxisAlignedBB mask)
+	{
+		double d0 = Math.max(box.minX, mask.minX);
+        double d1 = Math.max(box.minY, mask.minY);
+        double d2 = Math.max(box.minZ, mask.minZ);
+        double d3 = Math.min(box.maxX, mask.maxX);
+        double d4 = Math.min(box.maxY, mask.maxY);
+        double d5 = Math.min(box.maxZ, mask.maxZ);
+        return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
+	}
+
 	private double getInitialAngle(int mode)
 	{
 		return mode == 0 ? (frameCounter * (360 / Configs.ROTATION_PERIOD)) % 360 : 0;
