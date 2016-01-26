@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.client.config;
 
 import java.io.File;
 
+import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
@@ -14,9 +15,14 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 public class ConfigHandlerExtraBitManipulation
 {
 	public static Configuration configFile;
-	public static final String RENDER_OVERLAYS = "Render Overlays";
-	public static final String RECIPE_BIT_WRENCH = "Bit Wrench";
-	public static final String BALANCE = "Balance";
+	public static final String BIT_WRENCH_PROPERTIES = "Bit Wrench Properties";
+	public static final String SCULPTING_LOOP_PROPERTIES = "Sculpting Loop Properties";
+	public static final String RECIPE_BIT_WRENCH = "Bit Wrench Recipe";
+	public static final String RECIPE_SCULPTING_LOOP = "Sculpting Loop Recipe";
+	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
+	public static final String RENDER_SPHERE = "Sculpting Loop Shpere";
+	public static final String RENDER_BOX = "Sculpting Loop Box";
+	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	
 	public static void setUpConfigs(File file)
 	{
@@ -37,19 +43,29 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		try
 		{
-			//BALANCE
-			Configs.TAKES_DAMAGE_BIT_WRENCH = configFile.getBoolean("Bit Wrench Takes Damage", BALANCE, true,
-					"Causes the Bit Wrench to take a point of damage when used. (default = true)");
+			//ITEM PROPERTIES
+			Configs.TAKES_DAMAGE_BIT_WRENCH = getToolTakesDamage(BIT_WRENCH_PROPERTIES, BIT_WRENCH_PROPERTIES, true);
+			getToolMaxDamage(RECIPE_BIT_WRENCH, BIT_WRENCH_PROPERTIES, 5000, 1, Integer.MAX_VALUE, ItemsExtraBitManipulation.BitWrench);
 			
-			Configs.MAX_DAMAGE_BIT_WRENCH = configFile.getInt("Bit Wrench Max Damage", BALANCE, 5000, 1, Integer.MAX_VALUE,
-					"The Bit Wrench will have this many uses if it is configured to take damage. (default = 1500)");
-			ItemsExtraBitManipulation.BitWrench.setMaxDamage(Configs.MAX_DAMAGE_BIT_WRENCH);
+			Configs.TAKES_DAMAGE_SCULPTING_LOOP = getToolTakesDamage(SCULPTING_LOOP_PROPERTIES, SCULPTING_LOOP_PROPERTIES, true);
+			getToolMaxDamage(SCULPTING_LOOP_PROPERTIES, SCULPTING_LOOP_PROPERTIES, 5000, 1, Integer.MAX_VALUE, ItemsExtraBitManipulation.SculptingLoop);
+			
+			Configs.DEFAULT_REMOVAL_RADIUS = configFile.getInt("Default Removal Radius", SCULPTING_LOOP_PROPERTIES, 5, 0, Integer.MAX_VALUE,
+					"The radius of the removal sphere (Ex: 0 = only the bit clicked - diameter = 1; 1 = bit clicked +- 1 - diameter = 3, etc). (default = 5)");
+			
+			Configs.MAX_REMOVAL_RADIUS = configFile.getInt("Max Removal Radius", SCULPTING_LOOP_PROPERTIES, 32, 0, Integer.MAX_VALUE,
+					"The maximum radius of the removal sphere (continual increasing/decreasing of radius will cause cycling from 0 to this number). (default = 2 meters)");
 			
 			//RECIPES
 			Configs.RECIPE_BIT_WRENCH_IS_ENABLED = getRecipeEnabled(RECIPE_BIT_WRENCH, true);
-			Configs.RECIPE_BIT_WRENCH_IS_SHAPED = getRecipeShaped(RECIPE_BIT_WRENCH, false);
+			Configs.RECIPE_BIT_WRENCH_IS_SHAPED = getRecipeShaped(RECIPE_BIT_WRENCH, true);
 			Configs.RECIPE_BIT_WRENCH_ORE_DICTIONARY = getRecipeOreDictionary(RECIPE_BIT_WRENCH, true);
 			Configs.RECIPE_BIT_WRENCH = getRecipeList(RECIPE_BIT_WRENCH, Configs.RECIPE_BIT_WRENCH_DEFAULT);
+			
+			Configs.RECIPE_SCULPTING_LOOP_IS_ENABLED = getRecipeEnabled(RECIPE_SCULPTING_LOOP, true);
+			Configs.RECIPE_SCULPTING_LOOP_IS_SHAPED = getRecipeShaped(RECIPE_SCULPTING_LOOP, true);
+			Configs.RECIPE_SCULPTING_LOOP_ORE_DICTIONARY = getRecipeOreDictionary(RECIPE_SCULPTING_LOOP, true);
+			Configs.RECIPE_SCULPTING_LOOP = getRecipeList(RECIPE_SCULPTING_LOOP, Configs.RECIPE_SCULPTING_LOOP_DEFAULT);
 			
 			//RENDER_OVERLAYS
 			Configs.DISABLE_OVERLAYS = configFile.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
@@ -88,6 +104,27 @@ public class ConfigHandlerExtraBitManipulation
 					"Number of frames over which the arrowhead overlay used in block/texture translation/rotation will travel from one end to the " +
 					"other of the distance specified by 'Arrow Movement Distance'. If this is set to the minimum value of 1, no movement will occur. " +
 					"(default = 2 seconds at 60 fps)");
+			
+			//RENDER_SCULPTING_LOOP_SPHERE
+			Configs.RENDER_INNER_SPHERE = getShapeRender(RENDER_SPHERE, true, true);
+			Configs.RENDER_OUTER_SPHERE = getShapeRender(RENDER_SPHERE, false, false);
+			Configs.INNER_SPHERE_ALPHA = getShapeAlpha(RENDER_SPHERE, true, 115);
+			Configs.OUTER_SPHERE_ALPHA = getShapeAlpha(RENDER_SPHERE, false, 38);
+			Configs.SPHERE_RED = getShapeColor(RENDER_SPHERE, 0, 0);
+			Configs.SPHERE_GREEN = getShapeColor(RENDER_SPHERE, 1, 0);
+			Configs.SPHERE_BLUE = getShapeColor(RENDER_SPHERE, 2, 255);
+			Configs.SPHERE_LINE_WIDTH = getShapeLineWidth(RENDER_SPHERE, 2.0F);
+			
+			//RENDER_SCULPTING_LOOP_BOX
+			Configs.RENDER_INNER_BOX = getShapeRender(RENDER_BOX, true, true);
+			Configs.RENDER_OUTER_BOX = getShapeRender(RENDER_BOX, false, true);
+			Configs.INNER_BOX_ALPHA = getShapeAlpha(RENDER_BOX, true, 28);
+			Configs.OUTER_BOX_ALPHA = getShapeAlpha(RENDER_BOX, false, 115);
+			Configs.BOX_RED = getShapeColor(RENDER_BOX, 0, 0);
+			Configs.BOX_GREEN = getShapeColor(RENDER_BOX, 1, 0);
+			Configs.BOX_BLUE = getShapeColor(RENDER_BOX, 2, 0);
+			Configs.BOX_LINE_WIDTH = getShapeLineWidth(RENDER_BOX, 2.0F);
+			
 		}
 		catch (Exception e)
 		{
@@ -101,6 +138,57 @@ public class ConfigHandlerExtraBitManipulation
 				configFile.save();
 			}
 		}
+	}
+	
+	private static boolean getShapeRender(String category, boolean inner, boolean defaultValue)
+	{
+		String shape = getShape(category);
+		return configFile.getBoolean("Render " + (inner ? "Inner " : "Outer ") + shape, category, defaultValue,
+				"Causes " + getSidedShapeText(shape, inner) + " to be rendered. (default = " + defaultValue + ")");
+	}
+	
+	private static float getShapeAlpha(String category, boolean inner, int defaultValue)
+	{
+		String shape = getShape(category);
+		return configFile.getInt("Alpha " + (inner ? "Inner " : "Outer ") + shape, category, defaultValue, 0, 255,
+				"Sets the alpha value of " + getSidedShapeText(shape, inner) + ". (default = " + defaultValue + ")") / 255F;
+	}
+	
+	private static String getSidedShapeText(String shape, boolean inner)
+	{
+		return "the portion of the " + shape.toLowerCase() + " that is " + (inner ? "behind" : "in front of") + " other textures";
+	}
+	
+	private static float getShapeColor(String category, int colorFlag, int defaultValue)
+	{
+		String name = COLOR_NAMES[colorFlag];
+		return configFile.getInt("Color - " + name, category, defaultValue, 0, 255,
+				"Sets the " + name.toLowerCase() + " value of the " + getShape(category).toLowerCase() + ". (default = " + defaultValue + ")") / 255F;
+	}
+	
+	private static float getShapeLineWidth(String category, float defaultValue)
+	{
+		return configFile.getFloat("Line Width", category, defaultValue, 0, Float.MAX_VALUE, 
+				"Sets the line width of the " + getShape(category).toLowerCase() + ". (default = " + defaultValue + ")");
+	}
+	
+	private static String getShape(String category)
+	{
+		return category == RENDER_SPHERE ? "Sphere" : "Box";
+	}
+
+	private static int getToolMaxDamage(String name, String category, int defaultValue, int min, int max, Item item)
+	{
+		int returnValue = configFile.getInt("Max Damage", category, defaultValue, min, max,
+				"The " + name + " will have this many uses if it is configured to take damage. (default = " + defaultValue + ")");
+		item.setMaxDamage(returnValue);
+		return returnValue;
+	}
+
+	private static boolean getToolTakesDamage(String name, String category, boolean defaultValue)
+	{
+		return configFile.getBoolean("Takes Damage", category, defaultValue,
+				"Causes the " + name + " to take a point of damage when used. (default = " + defaultValue + ")");
 	}
 	
 	private static boolean getRecipeEnabled(String name, boolean defaultValue)
