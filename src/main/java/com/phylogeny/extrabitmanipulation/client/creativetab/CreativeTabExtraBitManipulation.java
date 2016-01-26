@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CreativeTabExtraBitManipulation
 {
 	
-	public static final CreativeTabs bitWrench = new CreativeTabs(Reference.MOD_ID)
+	public static final CreativeTabs creativeTab = new CreativeTabs(Reference.MOD_ID)
 	{
 		@Override
 		@SideOnly(Side.CLIENT)
