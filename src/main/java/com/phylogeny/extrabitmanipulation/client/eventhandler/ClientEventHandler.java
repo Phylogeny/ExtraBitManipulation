@@ -102,7 +102,7 @@ public class ClientEventHandler
 	}
 	
 	@SubscribeEvent
-	public void renderRemovalAreasAndOverlays(RenderWorldLastEvent event)
+	public void renderBoxesSpheresAndOverlays(RenderWorldLastEvent event)
 	{
 		if (!Configs.DISABLE_OVERLAYS)
 		{
@@ -337,61 +337,75 @@ public class ClientEventHandler
 							GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 							GlStateManager.disableTexture2D();
 							GlStateManager.depthMask(false);
-							
-							GlStateManager.pushMatrix();
-							
-							GlStateManager.color(0.0F, 0.0F, 0.0F, 0.45F);
-							GL11.glLineWidth(2.0F);
 							double r = (stack.hasTagCompound() && stack.getTagCompound().hasKey("sculptRadius")
 									? stack.getTagCompound().getInteger("sculptRadius") : Configs.DEFAULT_REMOVAL_RADIUS) * pixel;
-							AxisAlignedBB box = new AxisAlignedBB(x - r, y - r, z - r, x + r + pixel, y + r + pixel, z + r + pixel)
-									.offset(bitLoc.getBitX() * pixel, bitLoc.getBitY() * pixel, bitLoc.getBitZ() * pixel);
-							if (!stack.hasTagCompound() || stack.getTagCompound().getInteger("mode") == 0)
+							if (Configs.RENDER_INNER_BOX || Configs.RENDER_OUTER_BOX)
 							{
-								Block block = world.getBlockState(pos).getBlock();
-								box = limitBox(box, block.getSelectedBoundingBox(world, pos));
+								GlStateManager.pushMatrix();
+								GL11.glLineWidth(Configs.BOX_LINE_WIDTH);
+								AxisAlignedBB box = new AxisAlignedBB(x - r, y - r, z - r, x + r + pixel, y + r + pixel, z + r + pixel)
+										.offset(bitLoc.getBitX() * pixel, bitLoc.getBitY() * pixel, bitLoc.getBitZ() * pixel);
+								if (!stack.hasTagCompound() || stack.getTagCompound().getInteger("mode") == 0)
+								{
+									Block block = world.getBlockState(pos).getBlock();
+									box = limitBox(box, block.getSelectedBoundingBox(world, pos));
+								}
+								double f = 0.0020000000949949026;
+								if (Configs.RENDER_OUTER_BOX)
+								{
+									GlStateManager.color(Configs.BOX_RED, Configs.BOX_GREEN,
+											Configs.BOX_BLUE, Configs.OUTER_BOX_ALPHA);
+									RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+								}
+								if (Configs.RENDER_INNER_BOX)
+								{
+									GlStateManager.color(Configs.BOX_RED, Configs.BOX_GREEN,
+											Configs.BOX_BLUE, Configs.INNER_BOX_ALPHA);
+									GlStateManager.depthFunc(GL11.GL_GREATER);
+									RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+									GlStateManager.depthFunc(GL11.GL_LEQUAL);
+								}
+								GlStateManager.popMatrix();
 							}
-							double f = 0.0020000000949949026;
-							RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
-							GlStateManager.color(0.0F, 0.0F, 0.0F, 0.11F);
-							GlStateManager.depthFunc(GL11.GL_GREATER);
-							RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
-							GlStateManager.depthFunc(GL11.GL_LEQUAL);
-							
-							GlStateManager.popMatrix();
-							
-							Sphere sphere = new Sphere();
-							sphere.setDrawStyle(GLU.GLU_LINE);
-							
-							r += pixel * 0.5;
-							
-							int sphereID = GL11.glGenLists(1);
-							GL11.glNewList(sphereID, GL11.GL_COMPILE);
-							GlStateManager.color(0.0F, 0.0F, 1.0F, 0.45F);
-							sphere.draw((float) r, 32, 32);
-							GL11.glEndList();
-							
-							int sphereID2 = GL11.glGenLists(1);
-							GL11.glNewList(sphereID2, GL11.GL_COMPILE);
-							GlStateManager.color(0.0F, 0.0F, 1.0F, 0.15F);
-							sphere.draw((float) r, 32, 32);
-							GL11.glEndList();
-							
-							GlStateManager.pushMatrix();
-							
-							GL11.glLineWidth(Configs.SPHERE_LINE_WIDTH);
-							GlStateManager.translate(bitLoc.getBitX() * pixel + x - playerX + (pixel * 0.5),
-									bitLoc.getBitY() * pixel + y - playerY + (pixel * 0.5),
-									bitLoc.getBitZ() * pixel + z - playerZ + (pixel * 0.5));
-							GlStateManager.rotate(90, 1, 0, 0);
-							
-							if (Configs.RENDER_WHOLE_SPHERE) GL11.glCallList(sphereID);
-							GlStateManager.depthFunc(GL11.GL_GREATER);
-							GL11.glCallList(Configs.RENDER_WHOLE_SPHERE ? sphereID2 : sphereID);
-							GlStateManager.depthFunc(GL11.GL_LEQUAL);
-							
-							GlStateManager.popMatrix();
-							
+							if (Configs.RENDER_INNER_SPHERE || Configs.RENDER_OUTER_SPHERE)
+							{
+								r += pixel * 0.5;
+								Sphere sphere = new Sphere();
+								sphere.setDrawStyle(GLU.GLU_LINE);
+								int outerSphereID = 0, innerSphereID = 0;
+								if (Configs.RENDER_OUTER_SPHERE)
+								{
+									outerSphereID = GL11.glGenLists(1);
+									GL11.glNewList(outerSphereID, GL11.GL_COMPILE);
+									GlStateManager.color(Configs.SPHERE_RED, Configs.SPHERE_GREEN,
+											Configs.SPHERE_BLUE, Configs.OUTER_SPHERE_ALPHA);
+									sphere.draw((float) r, 32, 32);
+									GL11.glEndList();
+								}
+								if (Configs.RENDER_INNER_SPHERE)
+								{
+									innerSphereID = GL11.glGenLists(1);
+									GL11.glNewList(innerSphereID, GL11.GL_COMPILE);
+									GlStateManager.color(Configs.SPHERE_RED, Configs.SPHERE_GREEN,
+											Configs.SPHERE_BLUE, Configs.INNER_SPHERE_ALPHA);
+									sphere.draw((float) r, 32, 32);
+									GL11.glEndList();
+								}
+								GlStateManager.pushMatrix();
+								GL11.glLineWidth(Configs.SPHERE_LINE_WIDTH);
+								GlStateManager.translate(bitLoc.getBitX() * pixel + x - playerX + (pixel * 0.5),
+										bitLoc.getBitY() * pixel + y - playerY + (pixel * 0.5),
+										bitLoc.getBitZ() * pixel + z - playerZ + (pixel * 0.5));
+								GlStateManager.rotate(90, 1, 0, 0);
+								if (Configs.RENDER_OUTER_SPHERE) GL11.glCallList(outerSphereID);
+								if (Configs.RENDER_INNER_SPHERE)
+								{
+									GlStateManager.depthFunc(GL11.GL_GREATER);
+									GL11.glCallList(innerSphereID);
+									GlStateManager.depthFunc(GL11.GL_LEQUAL);
+								}
+								GlStateManager.popMatrix();
+							}
 							GlStateManager.depthMask(true);
 							GlStateManager.enableTexture2D();
 							GlStateManager.disableBlend();
