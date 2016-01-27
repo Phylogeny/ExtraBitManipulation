@@ -1,30 +1,27 @@
 package com.phylogeny.extrabitmanipulation;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.item.Item;
+import com.phylogeny.extrabitmanipulation.client.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
+import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
-
-import com.phylogeny.extrabitmanipulation.client.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
-import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
-import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 @Mod(modid = Reference.MOD_ID, version = Reference.VERSION, guiFactory = Reference.GUI_FACTORY_CLASSPATH, dependencies = "required-after:chiselsandbits")
 public class ExtraBitManipulation
 {
+	@SidedProxy(clientSide = Reference.CLIENT_CLASSPATH, serverSide = Reference.COMMON_CLASSPATH)
+    public static ProxyCommon proxy;
+	
 	public static SimpleNetworkWrapper packetNetwork = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
 	
 	@EventHandler
@@ -40,18 +37,7 @@ public class ExtraBitManipulation
 	public void init(FMLInitializationEvent event)
 	{
 		RecipesExtraBitManipulation.recipeInit();
-		if(event.getSide() == Side.CLIENT)
-		{
-			MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-			RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-			register(renderItem, ItemsExtraBitManipulation.BitWrench, ((ItemBitWrench) ItemsExtraBitManipulation.BitWrench).getName());
-			register(renderItem, ItemsExtraBitManipulation.SculptingLoop, ((ItemSculptingLoop) ItemsExtraBitManipulation.SculptingLoop).getName());
-		}
-	}
-	
-	private void register(RenderItem renderItem, Item item, String name)
-	{
-		renderItem.getItemModelMesher().register(item, 0, new ModelResourceLocation(Reference.MOD_ID + ":" + name, "inventory"));
+		proxy.registerRenderInformation();
 	}
     
 }
