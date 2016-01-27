@@ -69,12 +69,8 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 				int x = bitLoc.getBitX();
 				int y = bitLoc.getBitY();
 				int z = bitLoc.getBitZ();
-				NBTTagCompound nbt = stack.getTagCompound();
-				if (!nbt.hasKey("sculptRadius"))
-				{
-					nbt.setInteger("sculptRadius", Configs.DEFAULT_REMOVAL_RADIUS);
-				}
-				int r = stack.getTagCompound().getInteger("sculptRadius");
+				int r = stack.hasTagCompound() && stack.getTagCompound().hasKey("sculptRadius")
+						? stack.getTagCompound().getInteger("sculptRadius") : Configs.DEFAULT_REMOVAL_RADIUS;
 				double r2 = r + 0.2;
 				for (int i = x - r; i <= x + r; i++)
 				{
@@ -190,8 +186,7 @@ public class ItemSculptingLoop extends ItemExtraBitManipulationBase
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
-		super.addInformation(stack, player, list, par4);
-		int mode = stack.getTagCompound().getInteger("mode");
+		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger("mode") : 0;
 		String text = "Left click to sculpt ";
 		if (mode == 0)
 		{
