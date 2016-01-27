@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class ItemExtraBitManipulationBase extends Item
@@ -35,18 +36,7 @@ public class ItemExtraBitManipulationBase extends Item
 	
 	public void cycleModes(ItemStack stack, boolean forward)
 	{
-		String key = "mode";
-		if (cycleData(stack, key, forward, modeTitles.length))
-		{
-			setToolDisplayName(stack, 1);
-		}
-		else
-		{
-			String name = stack.getDisplayName();
-			int i = name.indexOf(" - ");
-			setToolDisplayName(stack, i < 0 ? name : name.substring(0, i),
-					stack.getTagCompound().getInteger(key));
-		}
+		cycleData(stack, "mode", forward, modeTitles.length);
 	}
 	
 	public boolean cycleData(ItemStack stack, String key, boolean forward, int max)
@@ -63,30 +53,16 @@ public class ItemExtraBitManipulationBase extends Item
 		return setTag;
 	}
 	
+	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player)
     {
 		stack.setTagCompound(new NBTTagCompound());
-		setToolDisplayName(stack, 0);
     }
 	
-	public void setToolDisplayName(ItemStack stack, int mode)
-	{
-		setToolDisplayName(stack, stack.getDisplayName(), mode);
-	}
-	
-	public void setToolDisplayName(ItemStack stack, String name, int mode)
-	{
-		stack.setStackDisplayName(EnumChatFormatting.RESET + name + " - " + modeTitles[mode]);
-	}
-	
-	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
-	{
+	public String getItemStackDisplayName(ItemStack stack)
+    {
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger("mode") : 0;
-		if (!stack.hasTagCompound())
-		{
-			setToolDisplayName(stack, mode);
-		}
-	}
+        return ("" + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim() + " - " + modeTitles[mode];
+    }
 	
 }
