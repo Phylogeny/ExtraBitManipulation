@@ -51,10 +51,11 @@ public class PacketCycleData implements IMessage
 				}
 				else
 				{
-					NBTTagCompound nbt = stack.getTagCompound();
-					if (!nbt.hasKey("sculptRadius"))
+					if (!stack.hasTagCompound())
 					{
+						NBTTagCompound nbt = new NBTTagCompound();
 						nbt.setInteger("sculptRadius", Configs.DEFAULT_REMOVAL_RADIUS);
+						stack.setTagCompound(nbt);
 					}
 					((ItemSculptingLoop) stack.getItem()).cycleData(stack, "sculptRadius", message.forward, Configs.MAX_REMOVAL_RADIUS);
 				}
