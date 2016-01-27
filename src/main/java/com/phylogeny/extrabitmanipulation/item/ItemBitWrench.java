@@ -168,8 +168,7 @@ public class ItemBitWrench extends ItemExtraBitManipulationBase
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
-		super.addInformation(stack, player, list, par4);
-		int mode = stack.getTagCompound().getInteger("mode");
+		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger("mode") : 0;
 		String text = modeText[mode];
 		list.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : " away from you.")));
 		list.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
