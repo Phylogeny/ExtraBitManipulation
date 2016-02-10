@@ -2,10 +2,16 @@ package com.phylogeny.extrabitmanipulation.client.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.phylogeny.extrabitmanipulation.config.Config;
+import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.fml.client.config.DummyConfigElement;
 import net.minecraftforge.fml.client.config.GuiConfig;
@@ -23,37 +29,85 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	private static List<IConfigElement> getConfigElements()
 	{
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
-		
-		addElementsToSubCategory(configElements, false,
-				ConfigHandlerExtraBitManipulation.BIT_WRENCH_PROPERTIES,
-				"Configures the damage characteristics of the Bit Wrench",
-				ConfigHandlerExtraBitManipulation.SCULPTING_LOOP_PROPERTIES,
-				"Configures the damage characteristics and default data of the Sculpting Loop",
-				"Item Properties", "Configures the damage characteristics and default data of the Sculpting Loop and Bit Wrench");
-		addElementsToSubCategory(configElements, true,
-				ConfigHandlerExtraBitManipulation.RECIPE_BIT_WRENCH,
-				ConfigHandlerExtraBitManipulation.RECIPE_SCULPTING_LOOP,
-				"Recipies", "Configures the recipie for the Bit Wrench");
-		String sculptingLoppText1 = "Configures the color/alpha/line-width of the ";
-		String sculptingLoppText2 = "Sculpting Loop's removal area, as well as which portions of it are rendered";
-		addElementsToSubCategory(configElements, false,
-				ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS,
-				"Configures the way the Bit Wrench overlays are rendered",
-				ConfigHandlerExtraBitManipulation.RENDER_SPHERE,
-				sculptingLoppText1 + sculptingLoppText2,
-				ConfigHandlerExtraBitManipulation.RENDER_BOX,
-				sculptingLoppText1 + "box around the " + sculptingLoppText2,
-				"Rendering", "Configures the rendering of the Bit Wrench's overlays and the Sculpting Loop's removal sphere/box");
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_SETTINGS,
+				"Configures sculpting dimensions, the way bits are handled when removed from the world, and the way bit removal/addition " +
+				"areas are displayed. (applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)", configElements);
+		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemPropertyMap, "Item Properties",
+				"Configures the damage characteristics and default data of the Bit Wrench and Sculpting Tools", false);
+		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemRecipeMap,
+				"Recipies", "Configures the recipie for the Bit Wrench", true);
+		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemShapes,
+				ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
+				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
+				"Rendering", "Configures the rendering of the Bit Wrench's overlays and the Sculpting Tools' bit removal/addition shapes/boxes");
 		return configElements;
 	}
 	
-	private static void addElementsToSubCategory(List<IConfigElement> configElements, boolean isRecipe, String... names)
+	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(List<IConfigElement> configElements,
+			ConfigShapeRender[] config, String... names)
 	{
-		addElementsToSubCategory(configElements, new ArrayList<IConfigElement>(), isRecipe, names);
+		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
+		int startLen = names.length;
+		for (int i = 0; i < startLen - 4; i += 2)
+		{
+			addChildElementsToDummyElement(names[i], names[i + 1], childElements);
+		}
+		int endLen = config.length * 2 + 2;
+		String[] processedNames = new String[endLen];
+		for (int i = 0; i < endLen - 2; i++)
+		{
+			int shapeIndex = i / 2;
+			if (i % 2 == 0)
+			{
+				processedNames[i] = config[shapeIndex].getTitle();
+			}
+			else
+			{
+				processedNames[i] = "Configures the color/alpha/line-width of the " + getInsertText(shapeIndex) +
+						(shapeIndex < 2 ? (" and the bounding box around the " + getInsertText(shapeIndex + 2)) : "")
+						+ ", as well as which portions of it are rendered";
+			}
+		}
+		processedNames[endLen - 2] = names[startLen - 4];
+		processedNames[endLen - 1] = names[startLen - 3];
+		addDummyElementsOfChildElementSetsToDummyElement(childElements, false, processedNames);
+		addElementsToDummyElement(names[startLen - 2], names[startLen - 1], configElements, childElements);
 	}
 	
-	private static void addElementsToSubCategory(List<IConfigElement> configElements, List<IConfigElement> childElements, boolean isRecipe, String... names)
+	private static String getInsertText(int shapeIndex)
 	{
+		boolean removeBits = shapeIndex % 2 == 0;
+		return (shapeIndex == 0 ? "Straight" : (shapeIndex == 1 ? "Flat" : "Curved")) + " Sculpting " + (removeBits ? "Wire's " : "Spade's ") +
+				(shapeIndex > 1 ? "spherical/ellipsoidal" : "cubic/cuboidal") + " bit " + (removeBits ? "removal" : "addition") + " area";
+	}
+
+	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(List<IConfigElement> configElements,
+			Map<Item, Config> configs, String name, String toolTip, boolean isRecipe)
+	{
+		int len = configs.size();
+		if (!isRecipe) len *= 2;
+		len += 2;
+		String[] processedNames = new String[len];
+		int i = 0;
+		for (Item item : configs.keySet())
+		{
+			Config config = configs.get(item);
+			String itemTitle = config.getTitle();
+			processedNames[i++] = itemTitle + (isRecipe ? " Recipe" : " Properties");
+			if (!isRecipe)
+			{
+				processedNames[i++] = "Configures the damage characteristics " + (config instanceof ConfigProperty &&
+						((ConfigProperty) config).hasSemiDiameter() ? "and semi-diameter settings " : "") + "of the " + itemTitle;
+			}
+		}
+		processedNames[len - 2] = name;
+		processedNames[len - 1] = toolTip;
+		addDummyElementsOfChildElementSetsToDummyElement(configElements, isRecipe, processedNames);
+	}
+	
+	private static void addDummyElementsOfChildElementSetsToDummyElement(List<IConfigElement> configElements, boolean isRecipe, String... names)
+	{
+		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
 		int len = names.length;
 		if (len >= 2)
 		{
@@ -62,30 +116,31 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 			{
 				if (isRecipe)
 				{
-					addRecipeElements(names[i], childElements);
+					addRecipeChildElementsToDummyElement(names[i], childElements);
 				}
 				else
 				{
-					addElements(names[i], names[i + 1], childElements);
+					addChildElementsToDummyElement(names[i], names[i + 1], childElements);
 				}
 			}
-			addElements(names[len - 2], names[len - 1], configElements, childElements);
+			addElementsToDummyElement(names[len - 2], names[len - 1], configElements, childElements);
 		}
 	}
 	
-	private static void addRecipeElements(String name, List<IConfigElement> configElements)
+	private static void addRecipeChildElementsToDummyElement(String name, List<IConfigElement> configElements)
 	{
-		addElements(name, "Configures the recipe type and configuration for the " + name, configElements);
+		addChildElementsToDummyElement(name, "Configures the recipe type and configuration for the " + name, configElements);
 	}
 	
-	private static void addElements(String text, String toolTip, List<IConfigElement> configElements, List<IConfigElement> childElements)
+	private static void addElementsToDummyElement(String text, String toolTip, List<IConfigElement> configElements, List<IConfigElement> childElements)
 	{
 		configElements.add(new DummyConfigElement.DummyCategoryElement(text, toolTip, childElements));
 	}
 	
-	private static void addElements(String text, String toolTip, List<IConfigElement> configElements)
+	private static void addChildElementsToDummyElement(String text, String toolTip, List<IConfigElement> configElements)
 	{
-		addElements(text, toolTip, configElements, new ConfigElement(ConfigHandlerExtraBitManipulation.configFile.getCategory(text.toLowerCase())).getChildElements());
+		addElementsToDummyElement(text, toolTip, configElements, new ConfigElement(
+				ConfigHandlerExtraBitManipulation.configFile.getCategory(text.toLowerCase())).getChildElements());
 	}
 	
 }
