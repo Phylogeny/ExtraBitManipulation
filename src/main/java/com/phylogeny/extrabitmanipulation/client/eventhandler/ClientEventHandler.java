@@ -94,7 +94,7 @@ public class ClientEventHandler
 		{
 			Item item = itemStack.getItem();
 			if (item != null && item instanceof ItemSculptingLoop && itemStack.hasTagCompound()
-					&& itemStack.getTagCompound().getInteger("mode") == 1)
+					&& itemStack.getTagCompound().getInteger(NBTKeys.MODE) == 1)
 			{
 				event.setCanceled(true);
 			}
@@ -133,7 +133,7 @@ public class ClientEventHandler
 					Vec3 hit = target.hitVec;
 					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
 					{
-						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger("mode");
+						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
 						frameCounter++;
 		                int side = dir.ordinal();
 		                boolean upDown = side <= 1;
