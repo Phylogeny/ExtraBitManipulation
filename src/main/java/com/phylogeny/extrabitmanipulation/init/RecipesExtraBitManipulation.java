@@ -2,6 +2,10 @@ package com.phylogeny.extrabitmanipulation.init;
 
 import java.util.ArrayList;
 
+import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -9,21 +13,32 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-
 public class RecipesExtraBitManipulation
 {
 	public static void recipeInit()
 	{
-		if (Configs.RECIPE_BIT_WRENCH_IS_ENABLED)
+		if (!OreDictionary.doesOreNameExist("nuggetDiamond"))
 		{
-			registerRecipe(ItemsExtraBitManipulation.BitWrench, Configs.RECIPE_BIT_WRENCH_IS_SHAPED,
-					Configs.RECIPE_BIT_WRENCH_ORE_DICTIONARY, Configs.RECIPE_BIT_WRENCH, Configs.RECIPE_BIT_WRENCH_DEFAULT);
+			OreDictionary.registerOre("nuggetDiamond", ItemsExtraBitManipulation.DiamondNugget);
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.diamond),
+					new Object[]{
+						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
+						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
+						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond"
+			}));
+			GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.DiamondNugget, 9),
+					new Object[]{
+						Items.diamond
+			});
 		}
-		if (Configs.RECIPE_SCULPTING_LOOP_IS_ENABLED)
+		for (Item item : Configs.itemRecipeMap.keySet())
 		{
-			registerRecipe(ItemsExtraBitManipulation.SculptingLoop, Configs.RECIPE_SCULPTING_LOOP_IS_SHAPED,
-					Configs.RECIPE_SCULPTING_LOOP_ORE_DICTIONARY, Configs.RECIPE_SCULPTING_LOOP, Configs.RECIPE_SCULPTING_LOOP_DEFAULT);
+			ConfigRecipe configRecipe = (ConfigRecipe) Configs.itemRecipeMap.get(item);
+			if (configRecipe.isEnabled)
+			{
+				registerRecipe(item, configRecipe.isShaped,
+						configRecipe.useOreDictionary, configRecipe.recipe, configRecipe.getRecipeDefault());
+			}
 		}
 	}
 	
@@ -145,25 +160,12 @@ public class RecipesExtraBitManipulation
 	{
 		if (useOreDictionary)
 		{
-			return doesOreNameExist(name);
+			return OreDictionary.doesOreNameExist(name);
 		}
 		else
 		{
 			return Item.getByNameOrId(name) != null;
 		}
-	}
-	
-	private static boolean doesOreNameExist(String name)
-	{
-		String[] names = OreDictionary.getOreNames();
-		for (int i = 0; i < names.length; i++)
-		{
-			if (names[i].equals(name))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static ItemStack getStack(Item item)
