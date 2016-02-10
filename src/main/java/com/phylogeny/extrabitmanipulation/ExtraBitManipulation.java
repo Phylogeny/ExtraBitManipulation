@@ -27,7 +27,7 @@ public class ExtraBitManipulation
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event)
 	{
-    	ItemsExtraBitManipulation.itemsInit();
+		ItemsExtraBitManipulation.itemsInit();
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getSuggestedConfigurationFile());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		PacketRegistration.registerPackets();
