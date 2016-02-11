@@ -180,13 +180,32 @@ public class ItemBitWrench extends ItemBitToolBase
     }
 	
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
+	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger("mode") : 0;
+		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 		String text = modeText[mode];
-		list.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : " away from you.")));
-		list.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
-		list.add("Mouse wheel while sneaking to cycle modes.");
+		if (GuiScreen.isShiftKeyDown())
+		{
+			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : " away from you.")));
+			tooltip.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
+			tooltip.add("Mouse wheel while sneaking to cycle modes.");
+		}
+		else
+		{
+			tooltip.add("Hold SHIFT for info.");
+		}
 	}
+	
+	@Override
+	public String getItemStackDisplayName(ItemStack stack)
+    {
+		String displayName = super.getItemStackDisplayName(stack);
+		int i = displayName.lastIndexOf(" - ");
+		if (i >= 0)
+		{
+			displayName = displayName.substring(0, i);
+		}
+		return displayName;
+    }
 	
 }
