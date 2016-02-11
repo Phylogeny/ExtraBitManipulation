@@ -12,7 +12,7 @@ import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.ItemType;
-import net.minecraft.block.Block;
+import net.minecraft.block.Block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.item.EntityItem;
@@ -209,12 +209,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 					player.renderBrokenItemStack(stack);
 				}
 				boolean changed = possibleUses < initialpossibleUses;
-				if (removeBits && changed)
+				if (changed)
 				{
-					Block block = Blocks.stone;
-					System.out.println(block.stepSound.getVolume());
+					SoundType sound = Blocks.stone.stepSound;
 					world.playSoundEffect((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F),
-							block.stepSound.getBreakSound(), (block.stepSound.getVolume()) / 8.0F, block.stepSound.getFrequency() * 0.8F);
+							removeBits ? sound.getBreakSound() : sound.getPlaceSound(), (sound.getVolume()) / 8.0F, sound.getFrequency() * 0.8F);
 				}
 				return changed;
 			}
