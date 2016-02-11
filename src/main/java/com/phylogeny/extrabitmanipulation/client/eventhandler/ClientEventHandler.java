@@ -54,7 +54,7 @@ public class ClientEventHandler
 		if (event.dwheel != 0 && player.isSneaking())
 		{
 			ItemStack stack = player.getCurrentEquippedItem();
-			if (stack != null && stack.getItem() instanceof ItemExtraBitManipulationBase)
+			if (stack != null && stack.getItem() instanceof ItemBitToolBase)
 			{
 				event.setCanceled(true);
 				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(event.dwheel < 0));
@@ -112,7 +112,7 @@ public class ClientEventHandler
 			{
 				MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
 				if (target != null && target.typeOfHit.equals(MovingObjectType.BLOCK)
-						&& stack.getItem() instanceof ItemExtraBitManipulationBase)
+						&& stack.getItem() instanceof ItemBitToolBase)
 				{
 					IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 					float ticks = event.partialTicks;
