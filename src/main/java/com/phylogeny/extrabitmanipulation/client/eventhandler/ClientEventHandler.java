@@ -67,7 +67,11 @@ public class ClientEventHandler
 			if (itemStack != null)
 			{
 				Item item = itemStack.getItem();
-				if (item != null && item instanceof ItemSculptingLoop)
+				if (item instanceof ItemBitWrench)
+				{
+					event.setCanceled(true);
+				}
+				else if (item != null && item instanceof ItemSculptingLoop)
 				{
 					MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
 					if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
