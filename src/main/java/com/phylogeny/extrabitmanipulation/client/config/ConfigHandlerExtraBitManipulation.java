@@ -8,20 +8,20 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ConfigHandlerExtraBitManipulation
 {
 	public static Configuration configFile;
-	public static final String BIT_WRENCH_PROPERTIES = "Bit Wrench Properties";
-	public static final String SCULPTING_LOOP_PROPERTIES = "Sculpting Loop Properties";
-	public static final String RECIPE_BIT_WRENCH = "Bit Wrench Recipe";
-	public static final String RECIPE_SCULPTING_LOOP = "Sculpting Loop Recipe";
+	public static final String VERSION = "Version";
+	public static final String SCULPTING_SETTINGS = "Sculpting Settings";
 	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
-	public static final String RENDER_SPHERE = "Sculpting Loop Shpere";
-	public static final String RENDER_BOX = "Sculpting Loop Box";
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	
 	public static void setUpConfigs(File file)
@@ -43,31 +43,101 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		try
 		{
+			String version = getVersion(VERSION);
+			if (!version.equals(Reference.VERSION))
+			{
+				removeCategory("bit wrench recipe");
+			}
+			removeCategory(VERSION);
+			getVersion(Reference.VERSION);
+			
+			//SCULPTING SETTINGS
+			Configs.DISPLAY_NAME_DIAMETER = configFile.getBoolean("Display Name Diameter", SCULPTING_SETTINGS, true, 
+					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
+					"If set to false, they will indicate the radius (default = true)");
+			
+			Configs.DISPLAY_NAME_USE_METER_UNITS = configFile.getBoolean("Display Name Size Units", SCULPTING_SETTINGS, false, 
+					"If set to true, sculpting tool display names will indicate the size of their bit removal/addition areas in meters. " +
+					"If set to false, they will be in bits (default = false)");
+			
+			Configs.SEMI_DIAMETER_PADDING = configFile.getFloat("Semi-Diameter Padding", SCULPTING_SETTINGS, 0.2F, 0, 1, 
+					"Distance (in bits) to add to the semi-diameter of a sculpting tool's bit removal/addition area shape. If set to zero, no padding " +
+					"will be added; spheres, for example, will have single bits protruding from each cardinal direction at any size, since only those " +
+					"bits of those layers will be exactly on the sphere's perimeter. If set to 1, there will effectively be no padding for the same reason, " +
+					"but the radius will be one bit larger than specified. A value between 0 and 1 is suggested. (default = 0.2 bits)");
+			
+			Configs.PLACE_BITS_IN_INVENTORY = configFile.getBoolean("Place Bits In Inventory", SCULPTING_SETTINGS, true, 
+					"If set to true, when bits are removed from blocks with a sculpting tool, as many of them will be given to the player as is possible. " +
+					"Any bits that cannot fit in the player's inventory will be spawned in the world. If set to false, no attempt will be made to give them " +
+					"to the player; they will always be spawned in the world. (default = true)");
+			
+			Configs.DROP_BITS_IN_BLOCKSPACE = configFile.getBoolean("Drop Bits In Block Space", SCULPTING_SETTINGS, true, 
+					"If set to true, when bits removed from blocks with a sculpting tool are spawned in the world, they will be spawned at a random " +
+					"point within the area that intersects the block space and the removal area bounding box (if 'Drop Bits Per Block' is true, they " +
+					"will be spawned in the block they are removed from; otherwise they will be spawned at the block they player right-clicked). " +
+					"If set to false, they will be spawned at the player, in the same way that items are spawned when throwing them on the ground " +
+					"by pressing Q. (default = true)");
+			
+			Configs.BIT_SPAWN_BOX_CONTRACTION = configFile.getFloat("Bit Spawn Box Contraction", SCULPTING_SETTINGS, 0.25F, 0, 0.5F, 
+					"Amount in meters to contract the box that removed bits randomly spawn in (assuming they spawn in the block space as per 'Drop Bits In Block Space') " +
+					"If set to 0, there will be no contraction and they will be able to spawn anywhere in the box. If set to 0.5, the box will contract by half in all " +
+					"directions down to a point in the center of the original box and they will always spawn from that central point. The default of 0.25 (which is the " +
+					"default behavior when spawning items with Block.spawnAsEntity) contracts the box to half its original size. (default = 0.25 meters)");
+			
+			Configs.DROP_BITS_PER_BLOCK = configFile.getBoolean("Drop Bits Per Block", SCULPTING_SETTINGS, true, 
+					"When bits are removed from blocks with a sculpting tool, all the removed bits of each type are counted and a collection of item stacks are created " +
+					"of each item. For the sake of efficiency, the number of stacks generated is the minimum number necessary for that amount (Ex: 179 bits would become " +
+					"2 stacks of 64 and 1 stack of 51). If this config is set to true, the counts for each block will be added up and spawned after each block is modified. " +
+					"This means that when removing bits in global mode, the bits have the ability to spawn in the respective block spaces they are removed from. However, " +
+					"it also means that more stacks may be generated than necessary if all bits from all blocks removed were to be pooled. If this config is set to false, " +
+					"the bits will be added up and pooled together as they are removed from each block. Only once all blocks are modified will the entire collection of bits " +
+					"be spawned in the world or given to the player. While this is more efficient, it means that the effect of bits spawning in the block spaces they are removed " +
+					"from is not possible. Rather, the bits will either spawn in the space of the block clicked or spawn at the player as per 'Drop Bits In Block Space'. " +
+					"(default = true)");
+			
+			Configs.DROP_BITS_AS_FULL_CHISELED_BLOCKS = configFile.getBoolean("Drop Bits As Full Chiseled Blocks", SCULPTING_SETTINGS, false, 
+					"If set to true, full meter cubed blocks of bits that have all their bits removed will drop as full chiseled blocks. " +
+					"If set to false, they will drop normally as item stacks of bits (64 stacks of size 64). (default = false)");
+			
 			//ITEM PROPERTIES
-			Configs.TAKES_DAMAGE_BIT_WRENCH = getToolTakesDamage(BIT_WRENCH_PROPERTIES, BIT_WRENCH_PROPERTIES, true);
-			getToolMaxDamage(RECIPE_BIT_WRENCH, BIT_WRENCH_PROPERTIES, 5000, 1, Integer.MAX_VALUE, ItemsExtraBitManipulation.BitWrench);
+			for (Item item : Configs.itemPropertyMap.keySet())
+			{
+				ConfigProperty configProperty = (ConfigProperty) Configs.itemPropertyMap.get(item);
+				String itemTitle = configProperty.getTitle();
+				String category = itemTitle + " Properties";
+				boolean isWrench = item instanceof ItemBitWrench;
+				configProperty.takesDamage = getToolTakesDamage(itemTitle, category, configProperty.getTakesDamageDefault(), !isWrench);
+				configProperty.maxDamage = getToolMaxDamage(itemTitle, category, configProperty.getMaxDamageDefault(), 1, Integer.MAX_VALUE, !isWrench);
+				if (isWrench)
+				{
+					ItemsExtraBitManipulation.BitWrench.setMaxDamage(configProperty.takesDamage ? configProperty.maxDamage : 0);
+				}
+				else
+				{
+					configProperty.defaultRemovalSemiDiameter = configFile.getInt("Default Removal Semi-Diameter",
+							category, configProperty.getDefaultRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
+							"The semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
+									"(Ex: 0 = only the bit clicked - diameter = 1; 1 = bit clicked +- 1 - diameter = 3, etc). (default = 5)");
+					configProperty.maxRemovalSemiDiameter = configFile.getInt("Max Removal Semi-Diameter", category,
+							configProperty.getMaxRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
+							"The maximum semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
+									"(continual increasing/decreasing of radius will cause cycling from 0 to this number). (default = 2 meters)");
+				}
+			}
 			
-			Configs.TAKES_DAMAGE_SCULPTING_LOOP = getToolTakesDamage(SCULPTING_LOOP_PROPERTIES, SCULPTING_LOOP_PROPERTIES, true);
-			getToolMaxDamage(SCULPTING_LOOP_PROPERTIES, SCULPTING_LOOP_PROPERTIES, 5000, 1, Integer.MAX_VALUE, ItemsExtraBitManipulation.SculptingLoop);
+			//ITEM RECIPES
+			for (Item item : Configs.itemRecipeMap.keySet())
+			{
+				ConfigRecipe configRecipe = (ConfigRecipe) Configs.itemRecipeMap.get(item);
+				String itemTitle = configRecipe.getTitle();
+				String category = itemTitle + " Recipe";
+				configRecipe.isEnabled = getRecipeEnabled(itemTitle, category, configRecipe.getIsEnabledDefault());
+				configRecipe.isShaped = getRecipeShaped(itemTitle, category, configRecipe.getIsShapedDefault());
+				configRecipe.useOreDictionary = getRecipeOreDictionary(itemTitle, category, configRecipe.getUseOreDictionaryDefault());
+				configRecipe.recipe = getRecipeList(itemTitle, category, configRecipe.getRecipeDefault());
+			}
 			
-			Configs.DEFAULT_REMOVAL_RADIUS = configFile.getInt("Default Removal Radius", SCULPTING_LOOP_PROPERTIES, 5, 0, Integer.MAX_VALUE,
-					"The radius of the removal sphere (Ex: 0 = only the bit clicked - diameter = 1; 1 = bit clicked +- 1 - diameter = 3, etc). (default = 5)");
-			
-			Configs.MAX_REMOVAL_RADIUS = configFile.getInt("Max Removal Radius", SCULPTING_LOOP_PROPERTIES, 32, 0, Integer.MAX_VALUE,
-					"The maximum radius of the removal sphere (continual increasing/decreasing of radius will cause cycling from 0 to this number). (default = 2 meters)");
-			
-			//RECIPES
-			Configs.RECIPE_BIT_WRENCH_IS_ENABLED = getRecipeEnabled(RECIPE_BIT_WRENCH, true);
-			Configs.RECIPE_BIT_WRENCH_IS_SHAPED = getRecipeShaped(RECIPE_BIT_WRENCH, true);
-			Configs.RECIPE_BIT_WRENCH_ORE_DICTIONARY = getRecipeOreDictionary(RECIPE_BIT_WRENCH, true);
-			Configs.RECIPE_BIT_WRENCH = getRecipeList(RECIPE_BIT_WRENCH, Configs.RECIPE_BIT_WRENCH_DEFAULT);
-			
-			Configs.RECIPE_SCULPTING_LOOP_IS_ENABLED = getRecipeEnabled(RECIPE_SCULPTING_LOOP, true);
-			Configs.RECIPE_SCULPTING_LOOP_IS_SHAPED = getRecipeShaped(RECIPE_SCULPTING_LOOP, true);
-			Configs.RECIPE_SCULPTING_LOOP_ORE_DICTIONARY = getRecipeOreDictionary(RECIPE_SCULPTING_LOOP, true);
-			Configs.RECIPE_SCULPTING_LOOP = getRecipeList(RECIPE_SCULPTING_LOOP, Configs.RECIPE_SCULPTING_LOOP_DEFAULT);
-			
-			//RENDER_OVERLAYS
+			//RENDER OVERLAYS
 			Configs.DISABLE_OVERLAYS = configFile.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
 					"Prevents overlays from rendering. (default = false)");
 			
@@ -105,26 +175,20 @@ public class ConfigHandlerExtraBitManipulation
 					"other of the distance specified by 'Arrow Movement Distance'. If this is set to the minimum value of 1, no movement will occur. " +
 					"(default = 2 seconds at 60 fps)");
 			
-			//RENDER_SCULPTING_LOOP_SPHERE
-			Configs.RENDER_INNER_SPHERE = getShapeRender(RENDER_SPHERE, true, true);
-			Configs.RENDER_OUTER_SPHERE = getShapeRender(RENDER_SPHERE, false, false);
-			Configs.INNER_SPHERE_ALPHA = getShapeAlpha(RENDER_SPHERE, true, 115);
-			Configs.OUTER_SPHERE_ALPHA = getShapeAlpha(RENDER_SPHERE, false, 38);
-			Configs.SPHERE_RED = getShapeColor(RENDER_SPHERE, 0, 0);
-			Configs.SPHERE_GREEN = getShapeColor(RENDER_SPHERE, 1, 0);
-			Configs.SPHERE_BLUE = getShapeColor(RENDER_SPHERE, 2, 255);
-			Configs.SPHERE_LINE_WIDTH = getShapeLineWidth(RENDER_SPHERE, 2.0F);
-			
-			//RENDER_SCULPTING_LOOP_BOX
-			Configs.RENDER_INNER_BOX = getShapeRender(RENDER_BOX, true, true);
-			Configs.RENDER_OUTER_BOX = getShapeRender(RENDER_BOX, false, true);
-			Configs.INNER_BOX_ALPHA = getShapeAlpha(RENDER_BOX, true, 28);
-			Configs.OUTER_BOX_ALPHA = getShapeAlpha(RENDER_BOX, false, 115);
-			Configs.BOX_RED = getShapeColor(RENDER_BOX, 0, 0);
-			Configs.BOX_GREEN = getShapeColor(RENDER_BOX, 1, 0);
-			Configs.BOX_BLUE = getShapeColor(RENDER_BOX, 2, 0);
-			Configs.BOX_LINE_WIDTH = getShapeLineWidth(RENDER_BOX, 2.0F);
-			
+			//RENDER SCULPTING TOOL SHAPES
+			for (int i = 0; i < Configs.itemShapes.length; i++)
+			{
+				ConfigShapeRender configShapeRender = Configs.itemShapes[i];
+				String category = configShapeRender.getTitle();
+				configShapeRender.renderInnerShape = getShapeRender(category, true, configShapeRender.getRenderInnerShapeDefault());
+				configShapeRender.renderOuterShape = getShapeRender(category, false, configShapeRender.getRenderOuterShapeDefault());
+				configShapeRender.innerShapeAlpha = getShapeAlpha(category, true, configShapeRender.getInnerShapeAlphaDefault());
+				configShapeRender.outerShapeAlpha = getShapeAlpha(category, false, configShapeRender.getOuterShapeAlphaDefault());
+				configShapeRender.red = getShapeColor(category, 0, configShapeRender.getRedDefault());
+				configShapeRender.green = getShapeColor(category, 1, configShapeRender.getGreenDefault());
+				configShapeRender.blue = getShapeColor(category, 2, configShapeRender.getBlueDefault());
+				configShapeRender.lineWidth = getShapeLineWidth(category, configShapeRender.getLineWidthDefault());
+			}
 		}
 		catch (Exception e)
 		{
@@ -138,6 +202,16 @@ public class ConfigHandlerExtraBitManipulation
 				configFile.save();
 			}
 		}
+	}
+
+	private static void removeCategory(String category)
+	{
+		configFile.removeCategory(configFile.getCategory(category.toLowerCase()));
+	}
+
+	private static String getVersion(String defaultValue)
+	{
+		return configFile.getString(VERSION, VERSION, defaultValue.toLowerCase(), "Used for cofig updating when updating mod version. Do not change.");
 	}
 	
 	private static boolean getShapeRender(String category, boolean inner, boolean defaultValue)
@@ -174,46 +248,46 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static String getShape(String category)
 	{
-		return category == RENDER_SPHERE ? "Sphere" : "Box";
+		return category.substring(category.lastIndexOf(" ") + 1, category.length());
 	}
 
-	private static int getToolMaxDamage(String name, String category, int defaultValue, int min, int max, Item item)
+	private static int getToolMaxDamage(String name, String category, int defaultValue, int min, int max, boolean perBit)
 	{
-		int returnValue = configFile.getInt("Max Damage", category, defaultValue, min, max,
-				"The " + name + " will have this many uses if it is configured to take damage. (default = " + defaultValue + ")");
-		item.setMaxDamage(returnValue);
-		return returnValue;
+		return configFile.getInt("Max Damage", category, defaultValue, min, max,
+				"The " + name + " will " + (perBit ? "be able to add/remove this many bits " : "have this many uses ")
+				+ "if it is configured to take damage. (default = " + defaultValue + ")");
 	}
 
-	private static boolean getToolTakesDamage(String name, String category, boolean defaultValue)
+	private static boolean getToolTakesDamage(String name, String category, boolean defaultValue, boolean perBit)
 	{
 		return configFile.getBoolean("Takes Damage", category, defaultValue,
-				"Causes the " + name + " to take a point of damage when used. (default = " + defaultValue + ")");
+				"Causes the " + name + " to take a point of damage " + (perBit ? " for every bit added/removed " : "")
+				+ "when used. (default = " + defaultValue + ")");
 	}
 	
-	private static boolean getRecipeEnabled(String name, boolean defaultValue)
+	private static boolean getRecipeEnabled(String name, String category, boolean defaultValue)
 	{
-		return configFile.getBoolean("Is Enabled", name, defaultValue,
+		return configFile.getBoolean("Is Enabled", category, defaultValue,
 				"If set to true, the " + name + " will be craftable, otherwise it will not be. (default = " + defaultValue + ")");
 	}
 
-	private static boolean getRecipeShaped(String name, boolean defaultValue)
+	private static boolean getRecipeShaped(String name, String category, boolean defaultValue)
 	{
-		return configFile.getBoolean("Is Shaped", name, defaultValue,
+		return configFile.getBoolean("Is Shaped", category, defaultValue,
 				"If set to true, the recipe for the " + name + " will be shaped, and thus depend on the order/number of elements." +
 				". If set to false, it will be shapeless and will be order-independent. (default = " + defaultValue + ")");
 	}
 	
-	private static boolean getRecipeOreDictionary(String name, boolean defaultValue)
+	private static boolean getRecipeOreDictionary(String name, String category, boolean defaultValue)
 	{
-		return configFile.getBoolean("Use Ore Dictionary", name, defaultValue,
+		return configFile.getBoolean("Use Ore Dictionary", category, defaultValue,
 				"If set to true, the string names given for the " + name + " recipe will be used to look up entries in the Ore Dictionary. " +
 				"If set to false, they will be used to look up Items by name or ID. (default = " + defaultValue + ")");
 	}
 
-	private static String[] getRecipeList(String name, String[] defaultValue)
+	private static String[] getRecipeList(String name, String category, String[] defaultValue)
 	{
-		return configFile.getStringList("Recipe", name, defaultValue,
+		return configFile.getStringList("Recipe", category, defaultValue,
 				"The Ore Dictionary names or Item names/IDs of components of the crafting recipe for the " + name + ". The elements of the list " +
 				"correspond to the slots of the crafting grid (left to right / top to bottom). If the recipe shaped, the list must have 4 " +
 				"elements to be a 2x2 recipe, 9 elements to be a 3x3 recipe, etc (i.e. must make a whole grid; root n elements for an n by n " +
