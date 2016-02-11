@@ -7,7 +7,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
@@ -24,10 +24,10 @@ public class ItemsExtraBitManipulation
 	{
 		DiamondNugget = new ItemExtraBitManipulationBase("DiamondNugget"); 
 		BitWrench = new ItemBitWrench("BitWrench"); 
-		SculptingLoop = new ItemSculptingLoop(true, true, "SculptingLoop");
-		SculptingSquare = new ItemSculptingLoop(false, true, "SculptingSquare");
-		SculptingSpadeCurved = new ItemSculptingLoop(true, false, "SculptingSpadeCurved");
-		SculptingSpadeSquared = new ItemSculptingLoop(false, false, "SculptingSpadeSquared");
+		SculptingLoop = new ItemSculptingTool(true, true, "SculptingLoop");
+		SculptingSquare = new ItemSculptingTool(false, true, "SculptingSquare");
+		SculptingSpadeCurved = new ItemSculptingTool(true, false, "SculptingSpadeCurved");
+		SculptingSpadeSquared = new ItemSculptingTool(false, false, "SculptingSpadeSquared");
 		BitWrenchHead = new ItemExtraBitManipulationBase("BitWrenchHead"); 
 		SculptingLoopHead = new ItemExtraBitManipulationBase("SculptingLoopHead");
 		SculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
@@ -89,9 +89,9 @@ public class ItemsExtraBitManipulation
 				config = new ConfigProperty(itemTitle, true, 2000000, 5, 32);
 			}
 			Configs.itemPropertyMap.put(item, config);
-			if (item instanceof ItemSculptingLoop)
+			if (item instanceof ItemSculptingTool)
 			{
-				ItemSculptingLoop itemTool = (ItemSculptingLoop) item;
+				ItemSculptingTool itemTool = (ItemSculptingTool) item;
 				ConfigShapeRender boundingBox = itemTool.removeBits() ? Configs.itemShapes[0] : Configs.itemShapes[1];
 				ConfigShapeRender envelopedShape = null;
 				if (itemTool.isCurved())

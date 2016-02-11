@@ -11,7 +11,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleData;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -78,7 +78,7 @@ public class ClientEventHandler
 				{
 					event.setCanceled(true);
 				}
-				else if (item != null && item instanceof ItemSculptingLoop)
+				else if (item != null && item instanceof ItemSculptingTool)
 				{
 					MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
 					if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
@@ -86,7 +86,7 @@ public class ClientEventHandler
 						BlockPos pos = target.getBlockPos();
 						EnumFacing side = target.sideHit;
 						Vec3 hit = target.hitVec;
-						ItemSculptingLoop toolItem = (ItemSculptingLoop) item;
+						ItemSculptingTool toolItem = (ItemSculptingTool) item;
 						boolean swingTool = true;
 						if (!player.isSneaking() || toolItem.removeBits())
 						{
@@ -126,7 +126,7 @@ public class ClientEventHandler
 		if (itemStack != null)
 		{
 			Item item = itemStack.getItem();
-			if (item != null && item instanceof ItemSculptingLoop && itemStack.hasTagCompound()
+			if (item != null && item instanceof ItemSculptingTool && itemStack.hasTagCompound()
 					&& itemStack.getTagCompound().getInteger(NBTKeys.MODE) == 1)
 			{
 				event.setCanceled(true);
@@ -360,9 +360,9 @@ public class ClientEventHandler
 						GlStateManager.enableTexture2D();
 						GlStateManager.popMatrix();
 					}
-					else if (stack.getItem() instanceof ItemSculptingLoop)
+					else if (stack.getItem() instanceof ItemSculptingTool)
 					{
-						ItemSculptingLoop toolItem = (ItemSculptingLoop) stack.getItem();
+						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
 						boolean removeBits = toolItem.removeBits();
 						if (!removeBits || (stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.MODE) == 1) || api.canBeChiseled(world, target.getBlockPos()))
 						{
@@ -387,7 +387,7 @@ public class ClientEventHandler
 											.offset(bitLoc.getBitX() * Utility.pixelD, bitLoc.getBitY() * Utility.pixelD, bitLoc.getBitZ() * Utility.pixelD);
 									if (!stack.hasTagCompound() || stack.getTagCompound().getInteger(NBTKeys.MODE) == 0)
 									{
-										BlockPos pos2 = !removeBits && !ItemSculptingLoop.wasInsideClicked(dir, hit, pos) ? pos.offset(dir) : pos;
+										BlockPos pos2 = !removeBits && !ItemSculptingTool.wasInsideClicked(dir, hit, pos) ? pos.offset(dir) : pos;
 										Block block = world.getBlockState(pos2).getBlock();
 										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2.getX(), pos2.getY(), pos2.getZ(),
 												pos2.getX() + 1, pos2.getY() + 1, pos2.getZ() + 1) :

@@ -35,11 +35,11 @@ import com.phylogeny.extrabitmanipulation.shape.Cube;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
 
-public class ItemSculptingLoop extends ItemBitToolBase
+public class ItemSculptingTool extends ItemBitToolBase
 {
 	private boolean curved, removeBits;
 	
-	public ItemSculptingLoop(boolean curved, boolean removeBits, String name)
+	public ItemSculptingTool(boolean curved, boolean removeBits, String name)
 	{
 		super(name);
 		modeTitles = new String[]{"Local", "Global"};

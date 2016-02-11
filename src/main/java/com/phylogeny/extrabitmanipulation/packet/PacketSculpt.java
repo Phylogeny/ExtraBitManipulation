@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
@@ -70,9 +70,9 @@ public class PacketSculpt implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (stack != null && stack.getItem() instanceof ItemSculptingLoop)
+					if (stack != null && stack.getItem() instanceof ItemSculptingTool)
 					{
-						ItemSculptingLoop toolItem = (ItemSculptingLoop) stack.getItem();
+						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
 						if (!player.isSneaking() || toolItem.removeBits())
 						{
 							toolItem.sculptBlocks(stack, player, player.worldObj, message.pos, message.side, message.hit);
