@@ -41,7 +41,7 @@ public class ItemBitWrench extends ItemExtraBitManipulationBase
 				return false;
 			}
 			IBitBrush[][][] bitArray = new IBitBrush[16][16][16];
-			int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger("mode");
+			int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
 			int increment = 1; //currently fixed
 			boolean invertDirection = player.isSneaking();
 			int s = (player.isSneaking() ? (mode == 1 ? (side.rotateAround((side.getAxis().isHorizontal()
