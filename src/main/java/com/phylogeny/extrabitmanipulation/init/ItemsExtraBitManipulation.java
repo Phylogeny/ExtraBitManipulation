@@ -48,9 +48,7 @@ public class ItemsExtraBitManipulation
 				"", "nuggetDiamond", "", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
 		registerItemAndDefaultRecipe(SculptingSpadeSquaredHead, "Flat Sculpting Spade Head", true, true,
 				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
-		registerItemAndDefaultRecipe(DiamondNugget, "Diamond Nugget", false, true,
-				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
-				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond");
+		GameRegistry.registerItem(DiamondNugget, ((ItemExtraBitManipulationBase) DiamondNugget).getName());
 	}
 
 	private static void registerItemAndDefaultRecipe(Item item, String itemTitle, boolean isShapedDefault,
