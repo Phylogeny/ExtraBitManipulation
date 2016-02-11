@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.config;
+package com.phylogeny.extrabitmanipulation.config;
 
 import java.io.File;
 
@@ -8,9 +8,6 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
-import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
-import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.reference.Configs;

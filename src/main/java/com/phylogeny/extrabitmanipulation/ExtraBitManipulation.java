@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation;
 
-import com.phylogeny.extrabitmanipulation.client.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.config.Config;
+import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
