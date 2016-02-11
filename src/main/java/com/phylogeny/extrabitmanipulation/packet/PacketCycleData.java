@@ -1,13 +1,18 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IThreadListener;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -38,28 +43,31 @@ public class PacketCycleData implements IMessage
 	public static class Handler implements IMessageHandler<PacketCycleData, IMessage>
 	{
 		@Override
-		public IMessage onMessage(PacketCycleData message, MessageContext ctx)
+		public IMessage onMessage(final PacketCycleData message, final MessageContext ctx)
 		{
-			EntityPlayer player = ctx.getServerHandler().playerEntity;
-			ItemStack stack = player.getCurrentEquippedItem();
-			boolean isWrench = stack.getItem() instanceof ItemBitWrench;
-			if (stack != null && (isWrench || stack.getItem() instanceof ItemSculptingLoop))
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			mainThread.addScheduledTask(new Runnable()
 			{
-				if (isWrench)
+				@Override
+				public void run()
 				{
-					((ItemBitWrench) stack.getItem()).cycleModes(stack, message.forward);
-				}
-				else
-				{
-					if (!stack.hasTagCompound())
+					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					ItemStack stack = player.getCurrentEquippedItem();
+					if (stack != null && stack.getItem() instanceof ItemBitToolBase)
 					{
-						NBTTagCompound nbt = new NBTTagCompound();
-						nbt.setInteger("sculptRadius", Configs.DEFAULT_REMOVAL_RADIUS);
-						stack.setTagCompound(nbt);
+						ItemBitToolBase itemTool = (ItemBitToolBase) stack.getItem();
+						if (stack.getItem() instanceof ItemBitWrench)
+						{
+							itemTool.cycleModes(stack, message.forward);
+						}
+						else
+						{
+							ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(itemTool);
+							itemTool.cycleData(stack, NBTKeys.SCULPT_SEMI_DIAMETER, message.forward, config.maxDamage);
+						}
 					}
-					((ItemSculptingLoop) stack.getItem()).cycleData(stack, "sculptRadius", message.forward, Configs.MAX_REMOVAL_RADIUS);
 				}
-			}
+			});
 			return null;
 		}
 		
