@@ -42,7 +42,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ClientEventHandler
 {
 	private int frameCounter;
-	private static final double pixel = 1 / 16.0;
 	private static final ResourceLocation arrowHead = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
 	private static final ResourceLocation arrowBidirectional = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
 	private static final ResourceLocation arrowCyclical = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
