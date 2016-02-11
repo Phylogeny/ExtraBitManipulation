@@ -86,9 +86,32 @@ public class ClientEventHandler
 						BlockPos pos = target.getBlockPos();
 						EnumFacing side = target.sideHit;
 						Vec3 hit = target.hitVec;
-						ItemSculptingLoop.sculptBlock(itemStack, player, player.worldObj, pos, side, hit);
+						ItemSculptingLoop toolItem = (ItemSculptingLoop) item;
+						boolean swingTool = true;
+						if (!player.isSneaking() || toolItem.removeBits())
+						{
+							swingTool = toolItem.sculptBlocks(itemStack, player, player.worldObj, pos, side, hit);
+						}
+						else
+						{
+							IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+							IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
+									(float) hit.zCoord - pos.getZ(), side, pos, false);
+							if (bitLoc != null)
+							{
+								try
+								{
+									IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
+								}
+								catch (CannotBeChiseled e)
+								{
+									event.setCanceled(true);
+									return;
+								}
+							}
+						}
 						ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit));
-						player.swingItem();
+						if (swingTool) player.swingItem();
 						event.setCanceled(true);
 					}
 				}
