@@ -6,14 +6,21 @@ import org.lwjgl.util.glu.Sphere;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
-import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
+import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingLoop;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleData;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
 
+import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
+import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.Block;
@@ -330,88 +337,104 @@ public class ClientEventHandler
 						GlStateManager.enableTexture2D();
 						GlStateManager.popMatrix();
 					}
-					else if (stack.getItem() instanceof ItemSculptingLoop && api.canBeChiseled(world, target.getBlockPos()))
+					else if (stack.getItem() instanceof ItemSculptingLoop)
 					{
-						IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-								(float) hit.zCoord - pos.getZ(), dir, pos, false);
-						if (bitLoc != null)
+						ItemSculptingLoop toolItem = (ItemSculptingLoop) stack.getItem();
+						boolean removeBits = toolItem.removeBits();
+						if (!removeBits || (stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.MODE) == 1) || api.canBeChiseled(world, target.getBlockPos()))
 						{
-							GlStateManager.enableBlend();
-							GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-							GlStateManager.disableTexture2D();
-							GlStateManager.depthMask(false);
-							double r = (stack.hasTagCompound() && stack.getTagCompound().hasKey("sculptRadius")
-									? stack.getTagCompound().getInteger("sculptRadius") : Configs.DEFAULT_REMOVAL_RADIUS) * pixel;
-							if (Configs.RENDER_INNER_BOX || Configs.RENDER_OUTER_BOX)
+							IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
+									(float) hit.zCoord - pos.getZ(), dir, pos, false);
+							if (bitLoc != null)
 							{
-								GlStateManager.pushMatrix();
-								GL11.glLineWidth(Configs.BOX_LINE_WIDTH);
-								AxisAlignedBB box = new AxisAlignedBB(x - r, y - r, z - r, x + r + pixel, y + r + pixel, z + r + pixel)
-										.offset(bitLoc.getBitX() * pixel, bitLoc.getBitY() * pixel, bitLoc.getBitZ() * pixel);
-								if (!stack.hasTagCompound() || stack.getTagCompound().getInteger("mode") == 0)
+								GlStateManager.enableBlend();
+								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+								GlStateManager.disableTexture2D();
+								GlStateManager.depthMask(false);
+								double r = (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)
+										? stack.getTagCompound().getInteger(NBTKeys.SCULPT_SEMI_DIAMETER)
+												: ((ConfigProperty) Configs.itemPropertyMap.get(toolItem)).defaultRemovalSemiDiameter) * Utility.pixelD;
+								ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
+								ConfigShapeRender configBox = configPair.boundingBox;
+								if (configBox.renderInnerShape || configBox.renderOuterShape)
 								{
-									Block block = world.getBlockState(pos).getBlock();
-									box = limitBox(box, block.getSelectedBoundingBox(world, pos));
+									GlStateManager.pushMatrix();
+									GL11.glLineWidth(configBox.lineWidth);
+									AxisAlignedBB box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.pixelD, y + r + Utility.pixelD, z + r + Utility.pixelD)
+											.offset(bitLoc.getBitX() * Utility.pixelD, bitLoc.getBitY() * Utility.pixelD, bitLoc.getBitZ() * Utility.pixelD);
+									if (!stack.hasTagCompound() || stack.getTagCompound().getInteger(NBTKeys.MODE) == 0)
+									{
+										BlockPos pos2 = !removeBits && !ItemSculptingLoop.wasInsideClicked(dir, hit, pos) ? pos.offset(dir) : pos;
+										Block block = world.getBlockState(pos2).getBlock();
+										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2.getX(), pos2.getY(), pos2.getZ(),
+												pos2.getX() + 1, pos2.getY() + 1, pos2.getZ() + 1) :
+											block.getSelectedBoundingBox(world, pos2);
+										box = limitBox(box, box2);
+									}
+									double f = 0.0020000000949949026;
+									if (configBox.renderOuterShape)
+									{
+										GlStateManager.color(configBox.red, configBox.green,
+												configBox.blue, configBox.outerShapeAlpha);
+										RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+									}
+									if (configBox.renderInnerShape)
+									{
+										GlStateManager.color(configBox.red, configBox.green,
+												configBox.blue, configBox.innerShapeAlpha);
+										GlStateManager.depthFunc(GL11.GL_GREATER);
+										RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+										GlStateManager.depthFunc(GL11.GL_LEQUAL);
+									}
+									GlStateManager.popMatrix();
 								}
-								double f = 0.0020000000949949026;
-								if (Configs.RENDER_OUTER_BOX)
+								if (configPair.hasEnvelopedShape())
 								{
-									GlStateManager.color(Configs.BOX_RED, Configs.BOX_GREEN,
-											Configs.BOX_BLUE, Configs.OUTER_BOX_ALPHA);
-									RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+									ConfigShapeRender configShape = configPair.envelopedShape;
+									if (configShape.renderInnerShape || configShape.renderOuterShape)
+									{
+										r += Utility.pixelD * 0.5;
+										Sphere sphere = new Sphere();
+										sphere.setDrawStyle(GLU.GLU_LINE);
+										int outerSphereID = 0, innerSphereID = 0;
+										if (configShape.renderOuterShape)
+										{
+											outerSphereID = GL11.glGenLists(1);
+											GL11.glNewList(outerSphereID, GL11.GL_COMPILE);
+											GlStateManager.color(configShape.red, configShape.green,
+													configShape.blue, configShape.outerShapeAlpha);
+											sphere.draw((float) r, 32, 32);
+											GL11.glEndList();
+										}
+										if (configShape.renderInnerShape)
+										{
+											innerSphereID = GL11.glGenLists(1);
+											GL11.glNewList(innerSphereID, GL11.GL_COMPILE);
+											GlStateManager.color(configShape.red, configShape.green,
+													configShape.blue, configShape.innerShapeAlpha);
+											sphere.draw((float) r, 32, 32);
+											GL11.glEndList();
+										}
+										GlStateManager.pushMatrix();
+										GL11.glLineWidth(configShape.lineWidth);
+										GlStateManager.translate(bitLoc.getBitX() * Utility.pixelD + x - playerX + (Utility.pixelD * 0.5),
+												bitLoc.getBitY() * Utility.pixelD + y - playerY + (Utility.pixelD * 0.5),
+												bitLoc.getBitZ() * Utility.pixelD + z - playerZ + (Utility.pixelD * 0.5));
+										GlStateManager.rotate(90, 1, 0, 0);
+										if (configShape.renderOuterShape) GL11.glCallList(outerSphereID);
+										if (configShape.renderInnerShape)
+										{
+											GlStateManager.depthFunc(GL11.GL_GREATER);
+											GL11.glCallList(innerSphereID);
+											GlStateManager.depthFunc(GL11.GL_LEQUAL);
+										}
+										GlStateManager.popMatrix();
+									}
 								}
-								if (Configs.RENDER_INNER_BOX)
-								{
-									GlStateManager.color(Configs.BOX_RED, Configs.BOX_GREEN,
-											Configs.BOX_BLUE, Configs.INNER_BOX_ALPHA);
-									GlStateManager.depthFunc(GL11.GL_GREATER);
-									RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
-									GlStateManager.depthFunc(GL11.GL_LEQUAL);
-								}
-								GlStateManager.popMatrix();
+								GlStateManager.depthMask(true);
+								GlStateManager.enableTexture2D();
+								GlStateManager.disableBlend();
 							}
-							if (Configs.RENDER_INNER_SPHERE || Configs.RENDER_OUTER_SPHERE)
-							{
-								r += pixel * 0.5;
-								Sphere sphere = new Sphere();
-								sphere.setDrawStyle(GLU.GLU_LINE);
-								int outerSphereID = 0, innerSphereID = 0;
-								if (Configs.RENDER_OUTER_SPHERE)
-								{
-									outerSphereID = GL11.glGenLists(1);
-									GL11.glNewList(outerSphereID, GL11.GL_COMPILE);
-									GlStateManager.color(Configs.SPHERE_RED, Configs.SPHERE_GREEN,
-											Configs.SPHERE_BLUE, Configs.OUTER_SPHERE_ALPHA);
-									sphere.draw((float) r, 32, 32);
-									GL11.glEndList();
-								}
-								if (Configs.RENDER_INNER_SPHERE)
-								{
-									innerSphereID = GL11.glGenLists(1);
-									GL11.glNewList(innerSphereID, GL11.GL_COMPILE);
-									GlStateManager.color(Configs.SPHERE_RED, Configs.SPHERE_GREEN,
-											Configs.SPHERE_BLUE, Configs.INNER_SPHERE_ALPHA);
-									sphere.draw((float) r, 32, 32);
-									GL11.glEndList();
-								}
-								GlStateManager.pushMatrix();
-								GL11.glLineWidth(Configs.SPHERE_LINE_WIDTH);
-								GlStateManager.translate(bitLoc.getBitX() * pixel + x - playerX + (pixel * 0.5),
-										bitLoc.getBitY() * pixel + y - playerY + (pixel * 0.5),
-										bitLoc.getBitZ() * pixel + z - playerZ + (pixel * 0.5));
-								GlStateManager.rotate(90, 1, 0, 0);
-								if (Configs.RENDER_OUTER_SPHERE) GL11.glCallList(outerSphereID);
-								if (Configs.RENDER_INNER_SPHERE)
-								{
-									GlStateManager.depthFunc(GL11.GL_GREATER);
-									GL11.glCallList(innerSphereID);
-									GlStateManager.depthFunc(GL11.GL_LEQUAL);
-								}
-								GlStateManager.popMatrix();
-							}
-							GlStateManager.depthMask(true);
-							GlStateManager.enableTexture2D();
-							GlStateManager.disableBlend();
 						}
 					}
 				}
