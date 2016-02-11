@@ -3,37 +3,43 @@ package com.phylogeny.extrabitmanipulation.item;
 import java.util.List;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
+import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class ItemBitWrench extends ItemExtraBitManipulationBase
+public class ItemBitWrench extends ItemBitToolBase
 {
 	private static final String[] modeText = new String[]{"rotate", "mirror", "translate"};
 	
-	public ItemBitWrench()
+	public ItemBitWrench(String name)
 	{
-		super("BitWrench", Configs.TAKES_DAMAGE_BIT_WRENCH, Configs.MAX_DAMAGE_BIT_WRENCH);
+		super(name);
 		modeTitles = new String[]{"Rotation", "Mirroring", "Translation"};
 	}
 	
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
 			EnumFacing side, float hitX, float hitY, float hitZ)
     {
-		if (ChiselsAndBitsAPIAccess.apiInstance.isBlockChiseled(world, pos))
+		initialize(stack);
+		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+		if (api.isBlockChiseled(world, pos))
 		{
 			IBitAccess bitAccess;
 			try
 			{
-				bitAccess = ChiselsAndBitsAPIAccess.apiInstance.getBitAccess(world, pos);
+				bitAccess = api.getBitAccess(world, pos);
 			}
 			catch (CannotBeChiseled e)
 			{
@@ -158,7 +164,15 @@ public class ItemBitWrench extends ItemExtraBitManipulationBase
 					}
 				}
 				bitAccess.commitChanges();
-				if (Configs.TAKES_DAMAGE_BIT_WRENCH) stack.damageItem(1, player);
+				ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
+				if (config.takesDamage)
+				{
+					stack.damageItem(1, player);
+					if (stack.getItemDamage() > config.maxDamage)
+					{
+						player.renderBrokenItemStack(stack);
+					}
+				}
 				return true;
 			}
 		}
