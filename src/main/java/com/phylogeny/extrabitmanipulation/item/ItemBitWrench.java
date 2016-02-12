@@ -56,60 +56,57 @@ public class ItemBitWrench extends ItemBitToolBase
 			boolean canInvert = false;
 			IBitBrush invertbit = null;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
-			if (mode >= 2)
+			for (int i = 0; i < 16; i++)
 			{
-				for (int i = 0; i < 16; i++)
+				for (int j = 0; j < 16; j++)
 				{
-					for (int j = 0; j < 16; j++)
+					for (int k = 0; k < 16; k++)
 					{
-						for (int k = 0; k < 16; k++)
+						IBitBrush bit = bitAccess.getBitAt(i, j, k);
+						bitArray[i][j][k] = bit;
+						if (mode == 2)
 						{
-							IBitBrush bit = bitAccess.getBitAt(i, j, k);
-							bitArray[i][j][k] = bit;
-							if (mode == 2)
+							if (!bit.isAir() && ((s == 4 && i == 16 - increment)
+									|| (s == 0 && j == 16 - increment)
+									|| (s == 2 && k == 16 - increment)
+									|| (s == 5 && i == increment - 1)
+									|| (s == 1 && j == increment - 1)
+									|| (s == 3 && k == increment - 1)))
 							{
-								if (!bit.isAir() && ((s == 4 && i == 16 - increment)
-										|| (s == 0 && j == 16 - increment)
-										|| (s == 2 && k == 16 - increment)
-										|| (s == 5 && i == increment - 1)
-										|| (s == 1 && j == increment - 1)
-										|| (s == 3 && k == increment - 1)))
+								canTranslate = false;
+							}
+							if (!bit.isAir())
+							{
+								if ((s == 4 && i < removalLayer) || (s == 5 && i > removalLayer))	
 								{
-									canTranslate = false;
+									removalLayer = i;
 								}
-								if (!bit.isAir())
+								else if ((s == 0 && j < removalLayer) || (s == 1 && j > removalLayer))
 								{
-									if ((s == 4 && i < removalLayer) || (s == 5 && i > removalLayer))	
-									{
-										removalLayer = i;
-									}
-									else if ((s == 0 && j < removalLayer) || (s == 1 && j > removalLayer))
-									{
-										removalLayer = j;
-									}
-									else if ((s == 2 && k < removalLayer) || (s == 3 && k > removalLayer))
-									{
-										removalLayer = k;
-									}
+									removalLayer = j;
 								}
+								else if ((s == 2 && k < removalLayer) || (s == 3 && k > removalLayer))
+								{
+									removalLayer = k;
+								}
+							}
+						}
+						else if (mode == 3)
+						{
+							if (bit.isAir())
+							{
+								canInvert = true;
 							}
 							else
 							{
-								if (bit.isAir())
-								{
-									canInvert = true;
-								}
-								else
-								{
-									invertbit = bit;
-								}
+								invertbit = bit;
 							}
 						}
 					}
 				}
 			}
 			int increment2 = invertDirection ? -increment : increment;
-			if (!(mode == 2 && !canTranslate) || !(mode == 3 && !canInvert))
+			if (!(mode == 2 && !canTranslate) && !(mode == 3 && !canInvert))
 			{
 				int x, y, z;
 				for (int i = 0; i < 16; i++)
