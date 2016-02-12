@@ -202,8 +202,11 @@ public class ItemBitWrench extends ItemBitToolBase
 		String text = modeText[mode];
 		if (GuiScreen.isShiftKeyDown())
 		{
-			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : " away from you.")));
-			tooltip.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
+			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : (mode == 2 ? " front-to-back." : " their bits."))));
+			if (mode != 3)
+			{
+				tooltip.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
+			}
 			tooltip.add("Mouse wheel while sneaking to cycle modes.");
 		}
 		else
