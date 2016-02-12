@@ -34,7 +34,8 @@ public class ItemBitWrench extends ItemBitToolBase
     {
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-		if (api.isBlockChiseled(world, pos))
+		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
+		if ((player.capabilities.isCreativeMode || mode != 3) && api.isBlockChiseled(world, pos))
 		{
 			IBitAccess bitAccess;
 			try
@@ -223,6 +224,10 @@ public class ItemBitWrench extends ItemBitToolBase
 		if (i >= 0)
 		{
 			displayName = displayName.substring(0, i);
+		}
+		if (displayName.contains(modeTitles[3]))
+		{
+			displayName += " (WIP / Creative Only)";
 		}
 		return displayName;
     }
