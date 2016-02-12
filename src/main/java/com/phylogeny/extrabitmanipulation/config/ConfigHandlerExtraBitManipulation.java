@@ -53,7 +53,7 @@ public class ConfigHandlerExtraBitManipulation
 					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
 					"If set to false, they will indicate the radius (default = true)");
 			
-			Configs.DISPLAY_NAME_USE_METER_UNITS = configFile.getBoolean("Display Name Size Units", SCULPTING_SETTINGS, false, 
+			Configs.DISPLAY_NAME_USE_METER_UNITS = configFile.getBoolean("Display Name Meter Units", SCULPTING_SETTINGS, false, 
 					"If set to true, sculpting tool display names will indicate the size of their bit removal/addition areas in meters. " +
 					"If set to false, they will be in bits (default = false)");
 			
