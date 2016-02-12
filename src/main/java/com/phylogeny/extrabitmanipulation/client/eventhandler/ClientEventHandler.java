@@ -53,6 +53,7 @@ public class ClientEventHandler
 	private static final ResourceLocation arrowBidirectional = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
 	private static final ResourceLocation arrowCyclical = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
 	private static final ResourceLocation circle = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Circle.png");
+	private static final ResourceLocation inversion = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Inversion.png");
 	
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
@@ -191,16 +192,24 @@ public class ClientEventHandler
 						GlStateManager.enableTexture2D();
 						GlStateManager.pushMatrix();
 						double angle = getInitialAngle(mode);
-						if (mode == 0)
-						{
-							if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-						}
+						if (mode == 3)
+	    				{
+	    					if (side % 2 == 1) angle += 180;
+	    					if (side >= 4) angle -= 90;
+	    				}
 						else
 						{
-							if (side < 2 || side > 3) angle *= -1;
+							if (mode == 0)
+							{
+								if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
+							}
+							else
+							{
+								if (side < 2 || side > 3) angle *= -1;
+							}
+							if (eastWest) angle += 90;
+							if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
 						}
-						if (eastWest) angle += 90;
-						if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
 						double offsetX2 = 0.5 * invOffsetX;
 						double offsetY2 = 0.5 * invOffsetY;
 						double offsetZ2 = 0.5 * invOffsetZ;
@@ -218,7 +227,7 @@ public class ClientEventHandler
 						translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
 								offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
 						
-						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? arrowCyclical : (mode == 1 ? arrowBidirectional : circle));
+						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? arrowCyclical : (mode == 1 ? arrowBidirectional : (mode == 2 ? circle : inversion)));
 						float minU = 0;
 		        		float maxU = 1;
 		        		float minV = 0;
@@ -262,58 +271,69 @@ public class ClientEventHandler
 			    				
 								boolean oppRotation = false;
 								int mode2 = mode;
-								oppRotation = dir == EnumFacing.getFront(side).getOpposite();
-								if (mode == 0)
+								if (mode != 3)
 			    				{
-			    					if (!oppRotation)
-			    					{
-			    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
-			    						angle = 90;
-			    						if (side % 2 == 0) angle += 180;
-			    						if (invertDirection) angle += 180;
-			    						mode2 = 2;
-			    					}
-			    					else
-			    					{
-			    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
-			    						mode2 = 0;
-			    					}
-			    				}
-			    				else if (mode == 2)
-			    				{
-			    					if (!oppRotation)
-			    					{
-			    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
-			    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
-			    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
-			    						if (invertDirection) angle += 180;
-			    					}
-			    					else
-			    					{
-			    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
-			    					}
+									oppRotation = dir == EnumFacing.getFront(side).getOpposite();
+									if (mode == 0)
+				    				{
+				    					if (!oppRotation)
+				    					{
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+				    						angle = 90;
+				    						if (side % 2 == 0) angle += 180;
+				    						if (invertDirection) angle += 180;
+				    						mode2 = 2;
+				    					}
+				    					else
+				    					{
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
+				    						mode2 = 0;
+				    					}
+				    				}
+				    				else if (mode == 2)
+				    				{
+				    					if (!oppRotation)
+				    					{
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+				    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
+				    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
+				    						if (invertDirection) angle += 180;
+				    					}
+				    					else
+				    					{
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
+				    					}
+				    				}
 			    				}
 			    				mirTravel1 = mirTravel;
 			    				mirTravel2 = 0;
-			    				if (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
-			    						|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3) : (side == 2 || side == 3)) && s <= 1))
+			    				if (mode != 3 && (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
+			    						|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3)
+			    								: (side == 2 || side == 3)) && s <= 1)))
 			    				{
 			    					angle += 90;
 			    					mirTravel1 = 0;
 				    				mirTravel2 = mirTravel;
 			    				}
-			    				
-			    				if (mode2 == 0)
+			    				if (mode == 3)
 			    				{
-			    					if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-			    					if (oppRotation) angle *= -1;
+			    					if (s % 2 == 1) angle += 180;
+			    					if (s >= 4) angle -= 90;
 			    				}
 			    				else
 			    				{
-			    					if (s < 2 || s > 3) angle *= -1;
+			    					if (mode2 == 0)
+				    				{
+				    					if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
+				    					if (oppRotation) angle *= -1;
+				    				}
+				    				else
+				    				{
+				    					if (s < 2 || s > 3) angle *= -1;
+				    				}
+				    				if (eastWest) angle -= 90;
+				    				if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
 			    				}
-			    				if (eastWest) angle -= 90;
-			    				if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
 			    				offsetX = Math.abs(dir.getFrontOffsetX());
 				                offsetY = Math.abs(dir.getFrontOffsetY());
 				                offsetZ = Math.abs(dir.getFrontOffsetZ());
