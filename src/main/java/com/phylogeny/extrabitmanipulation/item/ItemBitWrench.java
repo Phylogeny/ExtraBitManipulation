@@ -21,12 +21,12 @@ import net.minecraft.world.World;
 
 public class ItemBitWrench extends ItemBitToolBase
 {
-	private static final String[] modeText = new String[]{"rotate", "mirror", "translate"};
+	private static final String[] modeText = new String[]{"rotate", "mirror", "translate", "invert"};
 	
 	public ItemBitWrench(String name)
 	{
 		super(name);
-		modeTitles = new String[]{"Rotation", "Mirroring", "Translation"};
+		modeTitles = new String[]{"Rotation", "Mirroring", "Translation", "Inversion"};
 	}
 	
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
@@ -47,45 +47,60 @@ public class ItemBitWrench extends ItemBitToolBase
 				return false;
 			}
 			IBitBrush[][][] bitArray = new IBitBrush[16][16][16];
-			int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
 			int increment = 1; //currently fixed
 			boolean invertDirection = player.isSneaking();
 			int s = (player.isSneaking() ? (mode == 1 ? (side.rotateAround((side.getAxis().isHorizontal()
 					? EnumFacing.UP : player.getHorizontalFacing()).getAxis())) : side.getOpposite()) : side).ordinal();
 			boolean canTranslate = true;
+			boolean canInvert = false;
+			IBitBrush invertbit = null;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
-			for (int i = 0; i < 16; i++)
+			if (mode >= 2)
 			{
-				for (int j = 0; j < 16; j++)
+				for (int i = 0; i < 16; i++)
 				{
-					for (int k = 0; k < 16; k++)
+					for (int j = 0; j < 16; j++)
 					{
-						IBitBrush bit = bitAccess.getBitAt(i, j, k);
-						bitArray[i][j][k] = bit;
-						if (mode == 2)
+						for (int k = 0; k < 16; k++)
 						{
-							if (!bit.isAir() && ((s == 4 && i == 16 - increment)
-									|| (s == 0 && j == 16 - increment)
-									|| (s == 2 && k == 16 - increment)
-									|| (s == 5 && i == increment - 1)
-									|| (s == 1 && j == increment - 1)
-									|| (s == 3 && k == increment - 1)))
+							IBitBrush bit = bitAccess.getBitAt(i, j, k);
+							bitArray[i][j][k] = bit;
+							if (mode == 2)
 							{
-								canTranslate = false;
+								if (!bit.isAir() && ((s == 4 && i == 16 - increment)
+										|| (s == 0 && j == 16 - increment)
+										|| (s == 2 && k == 16 - increment)
+										|| (s == 5 && i == increment - 1)
+										|| (s == 1 && j == increment - 1)
+										|| (s == 3 && k == increment - 1)))
+								{
+									canTranslate = false;
+								}
+								if (!bit.isAir())
+								{
+									if ((s == 4 && i < removalLayer) || (s == 5 && i > removalLayer))	
+									{
+										removalLayer = i;
+									}
+									else if ((s == 0 && j < removalLayer) || (s == 1 && j > removalLayer))
+									{
+										removalLayer = j;
+									}
+									else if ((s == 2 && k < removalLayer) || (s == 3 && k > removalLayer))
+									{
+										removalLayer = k;
+									}
+								}
 							}
-							if (!bit.isAir())
+							else
 							{
-								if ((s == 4 && i < removalLayer) || (s == 5 && i > removalLayer))	
+								if (bit.isAir())
 								{
-									removalLayer = i;
+									canInvert = true;
 								}
-								else if ((s == 0 && j < removalLayer) || (s == 1 && j > removalLayer))
+								else
 								{
-									removalLayer = j;
-								}
-								else if ((s == 2 && k < removalLayer) || (s == 3 && k > removalLayer))
-								{
-									removalLayer = k;
+									invertbit = bit;
 								}
 							}
 						}
@@ -93,7 +108,7 @@ public class ItemBitWrench extends ItemBitToolBase
 				}
 			}
 			int increment2 = invertDirection ? -increment : increment;
-			if (mode != 2 || canTranslate)
+			if (!(mode == 2 && !canTranslate) || !(mode == 3 && !canInvert))
 			{
 				int x, y, z;
 				for (int i = 0; i < 16; i++)
@@ -148,6 +163,7 @@ public class ItemBitWrench extends ItemBitToolBase
 										{
 											bit = null;
 										}
+								case 3: bit = bit.isAir() ? invertbit : null;
 							}
 							try
 							{
