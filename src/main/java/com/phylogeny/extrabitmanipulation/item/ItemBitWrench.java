@@ -164,6 +164,7 @@ public class ItemBitWrench extends ItemBitToolBase
 										{
 											bit = null;
 										}
+										break;
 								case 3: bit = bit.isAir() ? invertbit : null;
 							}
 							try
