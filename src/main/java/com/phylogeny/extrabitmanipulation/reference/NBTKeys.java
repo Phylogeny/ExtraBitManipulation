@@ -4,6 +4,7 @@ public class NBTKeys
 {
 	public static final String MODE = "mode";
 	public static final String SCULPT_SEMI_DIAMETER = "sculptSemiDiameter";
+	public static final String SCULPT_HOLLOW_SHAPE = "sculptHollowShape";
 	public static final String PAINT_BIT = "paintBit";
 	
 }

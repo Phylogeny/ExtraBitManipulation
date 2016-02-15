@@ -14,13 +14,16 @@ public class Cuboid extends AsymmetricalShape
 	}
 	
 	@Override
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
 	{
 		float x = pos.getX() + i * Utility.pixelF;
 		float y = pos.getY() + j * Utility.pixelF;
 		float z = pos.getZ() + k * Utility.pixelF;
-		return x <= centerX + a && x >= centerX - a && y <= centerY + b
+		boolean inShape = x <= centerX + a && x >= centerX - a && y <= centerY + b
 				&& y >= centerY - b && z <= centerZ + c && z >= centerZ - c;
+		if (isSolid) return inShape;
+		return inShape && !(x <= centerX + aInset && x >= centerX - aInset && y <= centerY + bInset
+				&& y >= centerY - bInset && z <= centerZ + cInset && z >= centerZ - cInset);
 	}
 	
 }

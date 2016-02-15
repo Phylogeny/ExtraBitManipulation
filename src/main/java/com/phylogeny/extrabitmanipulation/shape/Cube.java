@@ -12,13 +12,16 @@ public class Cube extends SymmetricalShape
 	}
 	
 	@Override
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
 	{
 		float x = pos.getX() + i * Utility.pixelF;
 		float y = pos.getY() + j * Utility.pixelF;
 		float z = pos.getZ() + k * Utility.pixelF;
-		return x <= centerX + semiDiameter && x >= centerX - semiDiameter && y <= centerY + semiDiameter
+		boolean inShape = x <= centerX + semiDiameter && x >= centerX - semiDiameter && y <= centerY + semiDiameter
 				&& y >= centerY - semiDiameter && z <= centerZ + semiDiameter && z >= centerZ - semiDiameter;
+		if (isSolid) return inShape;
+		return inShape && !(x <= centerX + semiDiameterInset && x >= centerX - semiDiameterInset && y <= centerY + semiDiameterInset
+				&& y >= centerY - semiDiameterInset && z <= centerZ + semiDiameterInset && z >= centerZ - semiDiameterInset);
 	}
 	
 }

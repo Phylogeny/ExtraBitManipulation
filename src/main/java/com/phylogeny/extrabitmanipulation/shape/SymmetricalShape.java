@@ -4,12 +4,13 @@ import net.minecraft.util.AxisAlignedBB;
 
 public class SymmetricalShape extends Shape
 {
-	protected float semiDiameter;
+	protected float semiDiameter, semiDiameterInset;
 	
 	public SymmetricalShape(float centerX, float centerY, float centerZ, float semiDiameter)
 	{
 		super(centerX, centerY, centerZ);
 		this.semiDiameter = semiDiameter;
+		this.semiDiameterInset = reduceLength(semiDiameter);
 	}
 	
 	@Override

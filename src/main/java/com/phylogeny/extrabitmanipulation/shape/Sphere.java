@@ -13,12 +13,15 @@ public class Sphere extends SymmetricalShape
 	}
 	
 	@Override
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
 	{
 		float dx = pos.getX() + i * Utility.pixelF - centerX;
 		float dy = pos.getY() + j * Utility.pixelF - centerY;
 		float dz = pos.getZ() + k * Utility.pixelF - centerZ;
-		return Math.sqrt(dx * dx + dy * dy + dz * dz) <= semiDiameter;
+		double val = Math.sqrt(dx * dx + dy * dy + dz * dz);
+		boolean inShape = val <= semiDiameter;
+		if (isSolid) return inShape;
+		return inShape && val > semiDiameterInset;
 	}
 	
 }

@@ -222,7 +222,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 						{
 							if (possibleUses > 0)
 							{
-								possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes, possibleUses, Configs.DROP_BITS_PER_BLOCK, paintBit);
+								possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
+										possibleUses, Configs.DROP_BITS_PER_BLOCK, paintBit, nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));
 							}
 						}
 					}
@@ -341,7 +342,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return false;
 	}
 	
-	private int sculptBlock(IChiselAndBitsAPI api, ItemStack stack, EntityPlayer player, World world, BlockPos pos, Shape shape, HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush paintBit)
+	private int sculptBlock(IChiselAndBitsAPI api, ItemStack stack, EntityPlayer player, World world, BlockPos pos, Shape shape,
+			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush paintBit, boolean isSolid)
     {
 		if (isValidBlock(api, world, pos))
 		{
@@ -355,7 +357,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				e.printStackTrace();
 				return remainingUses;
 			}
-			boolean byPassBitChecks = shape.isBlockInsideShape(pos);
+			boolean byPassBitChecks = shape.isBlockInsideShape(pos, isSolid);
 			for (int i = 0; i < 16; i++)
 			{
 				for (int j = 0; j < 16; j++)
@@ -364,7 +366,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					{
 						IBitBrush bit = bitAccess.getBitAt(i, j, k);
 						if ((removeBits ? (!bit.isAir() && !(paintBit != null && !paintBit.isAir() && !paintBit.getState().equals(bit.getState()))) : bit.isAir())
-								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k)))
+								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k, isSolid)))
 						{
 							if (bitTypes != null)
 					    	{

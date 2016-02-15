@@ -4,7 +4,7 @@ import net.minecraft.util.AxisAlignedBB;
 
 public class AsymmetricalShape extends Shape
 {
-	protected float a, b, c;
+	protected float a, b, c, aInset, bInset, cInset;
 	
 	public AsymmetricalShape(float centerX, float centerY, float centerZ, float a, float b, float c)
 	{
@@ -12,6 +12,9 @@ public class AsymmetricalShape extends Shape
 		this.a = a; 
 		this.b = b;
 		this.c = c;
+		aInset = reduceLength(a);
+		bInset = reduceLength(b);
+		cInset = reduceLength(c);
 	}
 	
 	@Override

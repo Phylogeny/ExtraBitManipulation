@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 import java.util.Random;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.AxisAlignedBB;
@@ -21,7 +22,7 @@ public class Shape
 		this.centerZ = centerZ;
 	}
 	
-	public boolean isBlockInsideShape(BlockPos pos)
+	public boolean isBlockInsideShape(BlockPos pos, boolean isSolid)
 	{
 		for (int i = 0; i < 16; i += 15)
 		{
@@ -29,7 +30,7 @@ public class Shape
 			{
 				for (int k = 0; k < 16; k += 15)
 				{
-					if (!isPointInsideShape(pos, i, j, k))
+					if (!isPointInsideShape(pos, i, j, k, isSolid))
 					{
 						return false;
 					}
@@ -39,7 +40,7 @@ public class Shape
 		return true;
 	}
 	
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
 	{
 		return false;
 	}
@@ -98,6 +99,11 @@ public class Shape
 		double maxY = Math.min(box1.maxY, box2.maxY);
 		double maxZ = Math.min(box1.maxZ, box2.maxZ);
 		return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+	}
+	
+	protected float reduceLength(float value)
+	{
+		return Utility.pixelF < value ? value - Utility.pixelF : 0.0000000001F;
 	}
 	
 }
