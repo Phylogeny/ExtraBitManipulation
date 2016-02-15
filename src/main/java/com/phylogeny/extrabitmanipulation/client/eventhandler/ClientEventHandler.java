@@ -140,8 +140,7 @@ public class ClientEventHandler
 											{
 												IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
 												ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
-												boolean configPaintBitNameInChat = true;
-												if (configPaintBitNameInChat)
+												if (Configs.BIT_TYPE_IN_CHAT)
 												{
 													printChatMessageWithDeletion("Now " + (toolItem.removeBits() ? "only removing " : "sculpting with ")
 															+ bitStack.getDisplayName().substring(15));
@@ -171,10 +170,8 @@ public class ClientEventHandler
 						}
 						else if (player.isSneaking() && event.buttonstate && toolItem.removeBits())
 						{
-							System.out.println("yes");
 							ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(true));
-							boolean configPaintBitNameInChat = true;
-							if (configPaintBitNameInChat)
+							if (Configs.BIT_TYPE_IN_CHAT)
 							{
 								String text = "Now removing any/all bit type";
 								printChatMessageWithDeletion(text);
