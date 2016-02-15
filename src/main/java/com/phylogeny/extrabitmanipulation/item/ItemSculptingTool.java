@@ -529,25 +529,24 @@ public class ItemSculptingTool extends ItemBitToolBase
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
-		if (!removeBits)
+		ItemStack paintStack = null;
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.PAINT_BIT))
 		{
-			ItemStack paintStack = null;
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.PAINT_BIT))
+			paintStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+		}
+		else if (!removeBits)
+		{
+			try
 			{
-				paintStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+				paintStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(Blocks.stone.getDefaultState());
 			}
-			else
-			{
-				try
-				{
-					paintStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(Blocks.stone.getDefaultState());
-				}
-				catch (InvalidBitItem e) {}
-			}
-			if (paintStack != null)
-			{
-				tooltip.add("Bit Type: " + paintStack.getDisplayName().substring(15));
-			}
+			catch (InvalidBitItem e) {}
+		}
+		String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
+		if (paintStack != null)
+		{
+			String stackName = paintStack.getDisplayName();
+			tooltip.add(bitType + (stackName.length() == 12 ? "Any" : stackName.substring(15)));
 		}
 		if (GuiScreen.isShiftKeyDown())
 		{
