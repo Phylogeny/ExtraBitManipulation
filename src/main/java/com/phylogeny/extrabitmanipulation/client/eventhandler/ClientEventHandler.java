@@ -432,12 +432,23 @@ public class ClientEventHandler
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
 						boolean removeBits = toolItem.removeBits();
-						if (!removeBits || (stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.MODE) == 1) || api.canBeChiseled(world, target.getBlockPos()))
+						int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
+						if (!removeBits || mode > 0 || api.canBeChiseled(world, target.getBlockPos()))
 						{
 							IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
 									(float) hit.zCoord - pos.getZ(), dir, pos, false);
 							if (bitLoc != null)
 							{
+								int x2 = bitLoc.getBitX();
+								int y2 = bitLoc.getBitY();
+								int z2 = bitLoc.getBitZ();
+								if (!toolItem.removeBits())
+								{
+									x2 += dir.getFrontOffsetX();
+									y2 += dir.getFrontOffsetY();
+									z2 += dir.getFrontOffsetZ();
+								}
+								boolean drawnBox = mode == 2 && drawnStartPoint != null;
 								GlStateManager.enableBlend();
 								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 								GlStateManager.disableTexture2D();
@@ -447,13 +458,52 @@ public class ClientEventHandler
 												: ((ConfigProperty) Configs.itemPropertyMap.get(toolItem)).defaultRemovalSemiDiameter) * Utility.pixelD;
 								ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
 								ConfigShapeRender configBox = configPair.boundingBox;
+								AxisAlignedBB box = null;
+								double x3 = x + x2 * Utility.pixelD;
+								double y3 = y + y2 * Utility.pixelD;
+								double z3 = z + z2 * Utility.pixelD;
 								if (configBox.renderInnerShape || configBox.renderOuterShape)
 								{
 									GlStateManager.pushMatrix();
 									GL11.glLineWidth(configBox.lineWidth);
-									AxisAlignedBB box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.pixelD, y + r + Utility.pixelD, z + r + Utility.pixelD)
-											.offset(bitLoc.getBitX() * Utility.pixelD, bitLoc.getBitY() * Utility.pixelD, bitLoc.getBitZ() * Utility.pixelD);
-									if (!stack.hasTagCompound() || stack.getTagCompound().getInteger(NBTKeys.MODE) == 0)
+									if (drawnBox)
+									{
+										double x4 = drawnStartPoint.xCoord;
+										double y4 = drawnStartPoint.yCoord;
+										double z4 = drawnStartPoint.zCoord;
+										if (Math.max(x3, x4) == x3)
+										{
+											x3 += Utility.pixelD;
+										}
+										else
+										{
+											x4 += Utility.pixelD;
+										}
+										if (Math.max(y3, y4) == y3)
+										{
+											y3 += Utility.pixelD;
+										}
+										else
+										{
+											y4 += Utility.pixelD;
+										}
+										if (Math.max(z3, z4) == z3)
+										{
+											z3 += Utility.pixelD;
+										}
+										else
+										{
+											z4 += Utility.pixelD;
+										}
+										box = new AxisAlignedBB(x4, y4, z4, x3, y3, z3);
+									}
+									else
+									{
+										if (mode == 2) r = 0;
+										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.pixelD, y + r + Utility.pixelD, z + r + Utility.pixelD)
+										.offset(x2 * Utility.pixelD, y2 * Utility.pixelD, z2 * Utility.pixelD);
+									}
+									if (mode == 0)
 									{
 										BlockPos pos2 = !removeBits && !ItemSculptingTool.wasInsideClicked(dir, hit, pos) ? pos.offset(dir) : pos;
 										Block block = world.getBlockState(pos2).getBlock();
@@ -479,12 +529,36 @@ public class ClientEventHandler
 									}
 									GlStateManager.popMatrix();
 								}
+								double a = 0;
+								double b = 0;
+								double c = 0;
 								if (configPair.hasEnvelopedShape())
 								{
 									ConfigShapeRender configShape = configPair.envelopedShape;
 									if (configShape.renderInnerShape || configShape.renderOuterShape)
 									{
 										r += Utility.pixelD * 0.5;
+										if (drawnBox)
+										{
+											double f = 0.5;
+											double minX = box.minX * f;
+											double minY = box.minY * f;
+											double minZ = box.minZ * f;
+											double maxX = box.maxX * f;
+											double maxY = box.maxY * f;
+											double maxZ = box.maxZ * f;
+											a = maxX - minX;
+											b = maxY - minY;
+											c = maxZ - minZ;
+											r = Math.max(Math.max(a, b), c);
+											x3 = maxX + minX;
+											y3 = maxY + minY;
+											z3 = maxZ + minZ;
+//											double a = box.maxX - box.minX;
+//											double b = box.maxY - box.minY;
+//											double c = box.maxZ - box.minZ;
+//											r = Math.max(Math.max(a, b), c) * 0.5;
+										}
 										Sphere sphere = new Sphere();
 										sphere.setDrawStyle(GLU.GLU_LINE);
 										int outerSphereID = 0, innerSphereID = 0;
@@ -508,9 +582,10 @@ public class ClientEventHandler
 										}
 										GlStateManager.pushMatrix();
 										GL11.glLineWidth(configShape.lineWidth);
-										GlStateManager.translate(bitLoc.getBitX() * Utility.pixelD + x - playerX + (Utility.pixelD * 0.5),
-												bitLoc.getBitY() * Utility.pixelD + y - playerY + (Utility.pixelD * 0.5),
-												bitLoc.getBitZ() * Utility.pixelD + z - playerZ + (Utility.pixelD * 0.5));
+										GlStateManager.translate(x3 - playerX + (Utility.pixelD * 0.5),
+												y3 - playerY + (Utility.pixelD * 0.5),
+												z3 - playerZ + (Utility.pixelD * 0.5));
+										if (drawnBox) GlStateManager.scale(a / r, b / r, c / r);
 										GlStateManager.rotate(90, 1, 0, 0);
 										if (configShape.renderOuterShape) GL11.glCallList(outerSphereID);
 										if (configShape.renderInnerShape)
