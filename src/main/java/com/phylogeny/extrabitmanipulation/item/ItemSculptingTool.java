@@ -12,6 +12,7 @@ import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.ItemType;
+import net.minecraft.block.Block;
 import net.minecraft.block.Block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -96,11 +97,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 		NBTTagCompound nbt = stack.getTagCompound();
 		if (!nbt.hasKey("remainingUses")) nbt.setInteger("remainingUses", config.maxDamage);
 		if (!nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)) nbt.setInteger(NBTKeys.SCULPT_SEMI_DIAMETER, config.defaultRemovalSemiDiameter);
-		if (!removeBits && !nbt.hasKey(NBTKeys.PAINT_BIT))
+		if (!nbt.hasKey(NBTKeys.PAINT_BIT))
 		{
 			try
 			{
-				ItemStack bitStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(Blocks.stone.getDefaultState());
+				Block block = removeBits ? Blocks.air : Blocks.stone;
+				ItemStack bitStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(block.getDefaultState());
 				NBTTagCompound nbt2 = new NBTTagCompound();
 				bitStack.writeToNBT(nbt2);
 				nbt.setTag(NBTKeys.PAINT_BIT, nbt2);
@@ -198,19 +200,16 @@ public class ItemSculptingTool extends ItemBitToolBase
 				int initialpossibleUses = Integer.MAX_VALUE;
 				ItemStack paintStack = null;
 				IBitBrush paintBit = null;
-				if (!removeBits)
+				paintStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+				try
 				{
-					paintStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
-					try
+					paintBit = api.createBrush(paintStack);
+					if (!removeBits && !creativeMode)
 					{
-						paintBit = api.createBrush(paintStack);
-						if (!creativeMode)
-						{
-							initialpossibleUses = countInventoryBits(api, player, paintStack);
-						}
+						initialpossibleUses = countInventoryBits(api, player, paintStack);
 					}
-					catch (InvalidBitItem e) {}
 				}
+				catch (InvalidBitItem e) {}
 				int remainingUses = nbt.getInteger("remainingUses");
 				if (!creativeMode && initialpossibleUses > remainingUses) initialpossibleUses = remainingUses;
 				int possibleUses = initialpossibleUses;
@@ -364,7 +363,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 					for (int k = 0; k < 16; k++)
 					{
 						IBitBrush bit = bitAccess.getBitAt(i, j, k);
-						if ((removeBits ? !bit.isAir() : bit.isAir()) && (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k)))
+						if ((removeBits ? (!bit.isAir() && !(paintBit != null && !paintBit.isAir() && !paintBit.getState().equals(bit.getState()))) : bit.isAir())
+								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k)))
 						{
 							if (bitTypes != null)
 					    	{

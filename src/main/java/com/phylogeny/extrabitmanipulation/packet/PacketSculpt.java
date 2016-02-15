@@ -1,11 +1,13 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import io.netty.buffer.ByteBuf;
+import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
@@ -27,46 +29,61 @@ public class PacketSculpt implements IMessage
 	private BlockPos pos;
 	private EnumFacing side;
 	private Vec3 hit, drawnStartPoint;
+	private boolean setAir = true;
 	
 	public PacketSculpt() {}
 	
-	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3 hit, Vec3 drawnStartPoint)
+	public PacketSculpt(boolean setAir)
+	{
+		this(null, null, null, null, true);
+	}
+	
+	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3 hit, Vec3 drawnStartPoint, boolean setAir)
 	{
 		this.pos = pos;
 		this.side = side;
 		this.hit = hit;
 		this.drawnStartPoint = drawnStartPoint;
+		this.setAir = setAir;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeInt(pos.getX());
-		buffer.writeInt(pos.getY());
-		buffer.writeInt(pos.getZ());
-		buffer.writeInt(side.ordinal());
-		buffer.writeDouble(hit.xCoord);
-		buffer.writeDouble(hit.yCoord);
-		buffer.writeDouble(hit.zCoord);
-		boolean notNull = drawnStartPoint != null;
-		buffer.writeBoolean(notNull);
-		if (notNull)
+		buffer.writeBoolean(setAir);
+		if (!setAir)
 		{
-			buffer.writeDouble(drawnStartPoint.xCoord);
-			buffer.writeDouble(drawnStartPoint.yCoord);
-			buffer.writeDouble(drawnStartPoint.zCoord);
+			buffer.writeInt(pos.getX());
+			buffer.writeInt(pos.getY());
+			buffer.writeInt(pos.getZ());
+			buffer.writeInt(side.ordinal());
+			buffer.writeDouble(hit.xCoord);
+			buffer.writeDouble(hit.yCoord);
+			buffer.writeDouble(hit.zCoord);
+			boolean notNull = drawnStartPoint != null;
+			buffer.writeBoolean(notNull);
+			if (notNull)
+			{
+				buffer.writeDouble(drawnStartPoint.xCoord);
+				buffer.writeDouble(drawnStartPoint.yCoord);
+				buffer.writeDouble(drawnStartPoint.zCoord);
+			}
 		}
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-		side = EnumFacing.getFront(buffer.readInt());
-		hit = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-		if (buffer.readBoolean())
+		setAir = buffer.readBoolean();
+		if (!setAir)
 		{
-			drawnStartPoint = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+			pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
+			side = EnumFacing.getFront(buffer.readInt());
+			hit = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+			if (buffer.readBoolean())
+			{
+				drawnStartPoint = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+			}
 		}
 	}
 	
@@ -86,31 +103,57 @@ public class PacketSculpt implements IMessage
 					if (stack != null && stack.getItem() instanceof ItemSculptingTool)
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
-						if (!player.isSneaking() || toolItem.removeBits() || message.drawnStartPoint != null)
+						IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+						if (message.setAir)
 						{
-							toolItem.sculptBlocks(stack, player, player.worldObj, message.pos, message.side, message.hit, message.drawnStartPoint);
+							toolItem.initialize(stack);
+							ItemStack bitStack;
+							try
+							{
+								bitStack = api.getBitItem(Blocks.air.getDefaultState());
+							}
+							catch (InvalidBitItem e)
+							{
+								return;
+							}
+							saveBitStackToNBT(player, stack, bitStack);
 						}
 						else
 						{
-							IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-							IBitLocation bitLoc = api.getBitPos((float) message.hit.xCoord - message.pos.getX(), (float) message.hit.yCoord - message.pos.getY(),
-									(float) message.hit.zCoord - message.pos.getZ(), message.side, message.pos, false);
-							if (bitLoc != null)
+							if (!player.isSneaking() || message.drawnStartPoint != null)
 							{
-								try
+								toolItem.sculptBlocks(stack, player, player.worldObj, message.pos, message.side, message.hit, message.drawnStartPoint);
+							}
+							else
+							{
+								IBitLocation bitLoc = api.getBitPos((float) message.hit.xCoord - message.pos.getX(), (float) message.hit.yCoord - message.pos.getY(),
+										(float) message.hit.zCoord - message.pos.getZ(), message.side, message.pos, false);
+								if (bitLoc != null)
 								{
-									IBitAccess bitAccess = api.getBitAccess(player.worldObj, message.pos);
-									toolItem.initialize(stack);
-									ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
-									NBTTagCompound nbt = new NBTTagCompound();
-									bitStack.writeToNBT(nbt);
-									stack.getTagCompound().setTag(NBTKeys.PAINT_BIT, nbt);
-									player.inventoryContainer.detectAndSendChanges();
+									ItemStack bitStack;
+									try
+									{
+										IBitAccess bitAccess = api.getBitAccess(player.worldObj, message.pos);
+										toolItem.initialize(stack);
+										bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
+									}
+									catch (CannotBeChiseled e)
+									{
+										return;
+									}
+									saveBitStackToNBT(player, stack, bitStack);
 								}
-								catch (CannotBeChiseled e) {}
 							}
 						}
 					}
+				}
+
+				private void saveBitStackToNBT(EntityPlayer player, ItemStack stack, ItemStack bitStack)
+				{
+					NBTTagCompound nbt = new NBTTagCompound();
+					bitStack.writeToNBT(nbt);
+					stack.getTagCompound().setTag(NBTKeys.PAINT_BIT, nbt);
+					player.inventoryContainer.detectAndSendChanges();
 				}
 			});
 			return null;

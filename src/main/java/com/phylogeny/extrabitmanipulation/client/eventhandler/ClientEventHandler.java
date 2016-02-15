@@ -91,82 +91,94 @@ public class ClientEventHandler
 					}
 					if (event.buttonstate || drawnMode)
 					{
+						ItemSculptingTool toolItem = (ItemSculptingTool) item;
 						MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
-						if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+						if (target != null && target.typeOfHit != MovingObjectPosition.MovingObjectType.MISS)
 						{
-							BlockPos pos = target.getBlockPos();
-							EnumFacing side = target.sideHit;
-							Vec3 hit = target.hitVec;
-							ItemSculptingTool toolItem = (ItemSculptingTool) item;
-							boolean readBit = player.isSneaking() && !toolItem.removeBits();
-							boolean swingTool = true;
-							if (!readBit && drawnMode && event.buttonstate)
+							if (target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
 							{
-								IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
-										(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
-								if (bitLoc != null)
+								BlockPos pos = target.getBlockPos();
+								EnumFacing side = target.sideHit;
+								Vec3 hit = target.hitVec;
+								boolean swingTool = true;
+								if (!player.isSneaking() && drawnMode && event.buttonstate)
 								{
-									int x = pos.getX();
-									int y = pos.getY();
-									int z = pos.getZ();
-									float x2 = x + bitLoc.getBitX() * Utility.pixelF;
-									float y2 = y + bitLoc.getBitY() * Utility.pixelF;
-									float z2 = z + bitLoc.getBitZ() * Utility.pixelF;
-									if (!toolItem.removeBits())
+									IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
+											(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
+									if (bitLoc != null)
 									{
-										x2 += side.getFrontOffsetX() * Utility.pixelF;
-										y2 += side.getFrontOffsetY() * Utility.pixelF;
-										z2 += side.getFrontOffsetZ() * Utility.pixelF;
+										int x = pos.getX();
+										int y = pos.getY();
+										int z = pos.getZ();
+										float x2 = x + bitLoc.getBitX() * Utility.pixelF;
+										float y2 = y + bitLoc.getBitY() * Utility.pixelF;
+										float z2 = z + bitLoc.getBitZ() * Utility.pixelF;
+										if (!toolItem.removeBits())
+										{
+											x2 += side.getFrontOffsetX() * Utility.pixelF;
+											y2 += side.getFrontOffsetY() * Utility.pixelF;
+											z2 += side.getFrontOffsetZ() * Utility.pixelF;
+										}
+										drawnStartPoint = new Vec3(x2, y2, z2);
 									}
-									drawnStartPoint = new Vec3(x2, y2, z2);
+									else
+									{
+										drawnStartPoint = null;
+										swingTool = false;
+									}
 								}
 								else
 								{
-									drawnStartPoint = null;
-									swingTool = false;
-								}
-							}
-							else
-							{
-								if (readBit)
-								{
-									IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-									IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-											(float) hit.zCoord - pos.getZ(), side, pos, false);
-									if (bitLoc != null)
+									if (player.isSneaking())
 									{
-										try
+										IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+										IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
+												(float) hit.zCoord - pos.getZ(), side, pos, false);
+										if (bitLoc != null)
 										{
-											IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
-											ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
-											boolean configPaintBitNameInChat = true;
-											if (configPaintBitNameInChat)
+											try
 											{
-												GuiNewChat chatGUI = Minecraft.getMinecraft().ingameGUI.getChatGUI();
-												chatGUI.printChatMessageWithOptionalDeletion(new ChatComponentText("Now sculpting with "
-												+ bitStack.getDisplayName().substring(15)), 123456);
+												IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
+												ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
+												boolean configPaintBitNameInChat = true;
+												if (configPaintBitNameInChat)
+												{
+													printChatMessageWithDeletion("Now " + (toolItem.removeBits() ? "only removing " : "sculpting with ")
+															+ bitStack.getDisplayName().substring(15));
+												}
+											}
+											catch (CannotBeChiseled e)
+											{
+												event.setCanceled(true);
+												return;
 											}
 										}
-										catch (CannotBeChiseled e)
-										{
-											event.setCanceled(true);
-											return;
-										}
+									}
+									else if (!player.isSneaking() || toolItem.removeBits() || drawnMode)
+									{
+										swingTool = toolItem.sculptBlocks(itemStack, player, player.worldObj, pos, side, hit, drawnStartPoint);
+										if (drawnMode) swingTool = true;
+									}
+									ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint, false));
+									if (drawnMode && !event.buttonstate)
+									{
+										drawnStartPoint = null;
 									}
 								}
-								else if (!player.isSneaking() || toolItem.removeBits() || drawnMode)
-								{
-									swingTool = toolItem.sculptBlocks(itemStack, player, player.worldObj, pos, side, hit, drawnStartPoint);
-									if (drawnMode) swingTool = true;
-								}
-								ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint));
-								if (drawnMode && !event.buttonstate)
-								{
-									drawnStartPoint = null;
-								}
+								if (swingTool) player.swingItem();
+								event.setCanceled(true);
 							}
-							if (swingTool) player.swingItem();
-							event.setCanceled(true);
+						}
+						else if (player.isSneaking() && event.buttonstate && toolItem.removeBits())
+						{
+							System.out.println("yes");
+							ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(true));
+							boolean configPaintBitNameInChat = true;
+							if (configPaintBitNameInChat)
+							{
+								String text = "Now removing any/all bit type";
+								printChatMessageWithDeletion(text);
+							}
 						}
 						else if (drawnMode)
 						{
@@ -176,6 +188,12 @@ public class ClientEventHandler
 				}
 			}
 		}
+	}
+
+	private void printChatMessageWithDeletion(String text)
+	{
+		GuiNewChat chatGUI = Minecraft.getMinecraft().ingameGUI.getChatGUI();
+		chatGUI.printChatMessageWithOptionalDeletion(new ChatComponentText(text), 627250);
 	}
 	
 	@SubscribeEvent
