@@ -198,15 +198,15 @@ public class ItemSculptingTool extends ItemBitToolBase
 				HashMap<IBlockState, Integer> bitTypes = null;
 				if (removeBits && !world.isRemote && !creativeMode) bitTypes = new HashMap<IBlockState, Integer>();
 				int initialpossibleUses = Integer.MAX_VALUE;
-				ItemStack paintStack = null;
-				IBitBrush paintBit = null;
-				paintStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+				ItemStack setBitStack = null;
+				IBitBrush setBit = null;
+				setBitStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
 				try
 				{
-					paintBit = api.createBrush(paintStack);
+					setBit = api.createBrush(setBitStack);
 					if (!removeBits && !creativeMode)
 					{
-						initialpossibleUses = countInventoryBits(api, player, paintStack);
+						initialpossibleUses = countInventoryBits(api, player, setBitStack);
 					}
 				}
 				catch (InvalidBitItem e) {}
@@ -223,7 +223,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 							if (possibleUses > 0)
 							{
 								possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
-										possibleUses, Configs.DROP_BITS_PER_BLOCK, paintBit, nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));
+										possibleUses, Configs.DROP_BITS_PER_BLOCK, setBit, nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));
 							}
 						}
 					}
@@ -240,7 +240,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					nbt.setInteger("remainingUses", newRemainingUses);
 					if (!removeBits)
 					{
-						removeInventoryBits(api, player, paintStack, change);
+						removeInventoryBits(api, player, setBitStack, change);
 					}
 					if (newRemainingUses <= 0)
 					{
@@ -281,7 +281,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return Math.max(value1, value2) + Configs.SEMI_DIAMETER_PADDING * Utility.pixelF;
 	}
 	
-	private int countInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack paintStack)
+	private int countInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack setBitStack)
 	{
 		int count = 0;
 		InventoryPlayer inventoy = player.inventory;
@@ -289,7 +289,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		{
 			ItemStack stack = inventoy.getStackInSlot(i);
 			if (stack != null && api.getItemType(stack) == ItemType.CHISLED_BIT
-					&& ItemStack.areItemStackTagsEqual(stack, paintStack))
+					&& ItemStack.areItemStackTagsEqual(stack, setBitStack))
 			{
 				count += stack.stackSize;
 			}
@@ -297,7 +297,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return count;
 	}
 	
-	private void removeInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack paintStack, int quota)
+	private void removeInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack setBitStack, int quota)
 	{
 		if (quota > 0)
 		{
@@ -306,7 +306,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			{
 				ItemStack stack = inventoy.getStackInSlot(i);
 				if (stack != null && api.getItemType(stack) == ItemType.CHISLED_BIT
-						&& ItemStack.areItemStackTagsEqual(stack, paintStack))
+						&& ItemStack.areItemStackTagsEqual(stack, setBitStack))
 				{
 					int size = stack.stackSize;
 					if (size > quota)
@@ -343,7 +343,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	private int sculptBlock(IChiselAndBitsAPI api, ItemStack stack, EntityPlayer player, World world, BlockPos pos, Shape shape,
-			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush paintBit, boolean isSolid)
+			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush setBit, boolean isSolid)
     {
 		if (isValidBlock(api, world, pos))
 		{
@@ -365,7 +365,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					for (int k = 0; k < 16; k++)
 					{
 						IBitBrush bit = bitAccess.getBitAt(i, j, k);
-						if ((removeBits ? (!bit.isAir() && !(paintBit != null && !paintBit.isAir() && !paintBit.getState().equals(bit.getState()))) : bit.isAir())
+						if ((removeBits ? (!bit.isAir() && !(setBit != null && !setBit.isAir() && !setBit.getState().equals(bit.getState()))) : bit.isAir())
 								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k, isSolid)))
 						{
 							if (bitTypes != null)
@@ -382,7 +382,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					    	}
 							try
 							{
-								bitAccess.setBitAt(i, j, k, removeBits ? null : paintBit);
+								bitAccess.setBitAt(i, j, k, removeBits ? null : setBit);
 								remainingUses--;
 							}
 							catch (SpaceOccupied e) {}
@@ -531,23 +531,23 @@ public class ItemSculptingTool extends ItemBitToolBase
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
-		ItemStack paintStack = null;
+		ItemStack setBitStack = null;
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.PAINT_BIT))
 		{
-			paintStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+			setBitStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
 		}
 		else if (!removeBits)
 		{
 			try
 			{
-				paintStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(Blocks.stone.getDefaultState());
+				setBitStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(Blocks.stone.getDefaultState());
 			}
 			catch (InvalidBitItem e) {}
 		}
 		String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
-		if (paintStack != null)
+		if (setBitStack != null)
 		{
-			String stackName = paintStack.getDisplayName();
+			String stackName = setBitStack.getDisplayName();
 			tooltip.add(bitType + (stackName.length() == 12 ? "Any" : stackName.substring(15)));
 		}
 		if (GuiScreen.isShiftKeyDown())
