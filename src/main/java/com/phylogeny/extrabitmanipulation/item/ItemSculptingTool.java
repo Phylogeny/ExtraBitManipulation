@@ -97,7 +97,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		NBTTagCompound nbt = stack.getTagCompound();
 		if (!nbt.hasKey("remainingUses")) nbt.setInteger("remainingUses", config.maxDamage);
 		if (!nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)) nbt.setInteger(NBTKeys.SCULPT_SEMI_DIAMETER, config.defaultRemovalSemiDiameter);
-		if (!nbt.hasKey(NBTKeys.PAINT_BIT))
+		if (!nbt.hasKey(NBTKeys.SET_BIT))
 		{
 			try
 			{
@@ -105,7 +105,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				ItemStack bitStack = ChiselsAndBitsAPIAccess.apiInstance.getBitItem(block.getDefaultState());
 				NBTTagCompound nbt2 = new NBTTagCompound();
 				bitStack.writeToNBT(nbt2);
-				nbt.setTag(NBTKeys.PAINT_BIT, nbt2);
+				nbt.setTag(NBTKeys.SET_BIT, nbt2);
 			}
 			catch (InvalidBitItem e) {}
 		}
@@ -200,7 +200,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				int initialpossibleUses = Integer.MAX_VALUE;
 				ItemStack setBitStack = null;
 				IBitBrush setBit = null;
-				setBitStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+				setBitStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.SET_BIT));
 				try
 				{
 					setBit = api.createBrush(setBitStack);
@@ -532,9 +532,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 	{
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 		ItemStack setBitStack = null;
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.PAINT_BIT))
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.SET_BIT))
 		{
-			setBitStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.PAINT_BIT));
+			setBitStack = ItemStack.loadItemStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag(NBTKeys.SET_BIT));
 		}
 		else if (!removeBits)
 		{

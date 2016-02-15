@@ -152,7 +152,7 @@ public class PacketSculpt implements IMessage
 				{
 					NBTTagCompound nbt = new NBTTagCompound();
 					bitStack.writeToNBT(nbt);
-					stack.getTagCompound().setTag(NBTKeys.PAINT_BIT, nbt);
+					stack.getTagCompound().setTag(NBTKeys.SET_BIT, nbt);
 					player.inventoryContainer.detectAndSendChanges();
 				}
 			});
