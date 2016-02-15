@@ -63,7 +63,7 @@ public class PacketCycleData implements IMessage
 						else
 						{
 							ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(itemTool);
-							itemTool.cycleData(stack, NBTKeys.SCULPT_SEMI_DIAMETER, message.forward, config.maxDamage);
+							itemTool.cycleData(stack, NBTKeys.SCULPT_SEMI_DIAMETER, message.forward, config.maxRemovalSemiDiameter);
 						}
 					}
 				}
