@@ -82,7 +82,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		if (!world.isRemote)
 		{
 			initialize(stack);
-			cycleModes(stack, player.isSneaking());
+			cycleModes(stack, !player.isSneaking());
 			player.inventoryContainer.detectAndSendChanges();
 		}
         return stack;
