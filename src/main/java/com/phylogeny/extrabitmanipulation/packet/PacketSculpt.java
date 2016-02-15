@@ -26,15 +26,16 @@ public class PacketSculpt implements IMessage
 {
 	private BlockPos pos;
 	private EnumFacing side;
-	private Vec3 hit;
+	private Vec3 hit, drawnStartPoint;
 	
 	public PacketSculpt() {}
 	
-	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3 hit)
+	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3 hit, Vec3 drawnStartPoint)
 	{
 		this.pos = pos;
 		this.side = side;
 		this.hit = hit;
+		this.drawnStartPoint = drawnStartPoint;
 	}
 	
 	@Override
@@ -47,6 +48,14 @@ public class PacketSculpt implements IMessage
 		buffer.writeDouble(hit.xCoord);
 		buffer.writeDouble(hit.yCoord);
 		buffer.writeDouble(hit.zCoord);
+		boolean notNull = drawnStartPoint != null;
+		buffer.writeBoolean(notNull);
+		if (notNull)
+		{
+			buffer.writeDouble(drawnStartPoint.xCoord);
+			buffer.writeDouble(drawnStartPoint.yCoord);
+			buffer.writeDouble(drawnStartPoint.zCoord);
+		}
 	}
 	
 	@Override
@@ -55,6 +64,10 @@ public class PacketSculpt implements IMessage
 		pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
 		side = EnumFacing.getFront(buffer.readInt());
 		hit = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+		if (buffer.readBoolean())
+		{
+			drawnStartPoint = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+		}
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSculpt, IMessage>
@@ -73,9 +86,9 @@ public class PacketSculpt implements IMessage
 					if (stack != null && stack.getItem() instanceof ItemSculptingTool)
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
-						if (!player.isSneaking() || toolItem.removeBits())
+						if (!player.isSneaking() || toolItem.removeBits() || message.drawnStartPoint != null)
 						{
-							toolItem.sculptBlocks(stack, player, player.worldObj, message.pos, message.side, message.hit);
+							toolItem.sculptBlocks(stack, player, player.worldObj, message.pos, message.side, message.hit, message.drawnStartPoint);
 						}
 						else
 						{

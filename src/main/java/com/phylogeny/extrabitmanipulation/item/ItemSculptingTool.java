@@ -21,6 +21,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
@@ -32,6 +33,8 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Cube;
+import com.phylogeny.extrabitmanipulation.shape.Cuboid;
+import com.phylogeny.extrabitmanipulation.shape.Ellipsoid;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
 
@@ -42,7 +45,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	public ItemSculptingTool(boolean curved, boolean removeBits, String name)
 	{
 		super(name);
-		modeTitles = new String[]{"Local", "Global"};
+		modeTitles = new String[]{"Local", "Global", "Drawn"};
 		this.curved = curved;
 		this.removeBits = removeBits;
 	}
@@ -79,7 +82,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		if (!world.isRemote)
 		{
 			initialize(stack);
-			cycleModes(stack, true);
+			cycleModes(stack, player.isSneaking());
 			player.inventoryContainer.detectAndSendChanges();
 		}
         return stack;
@@ -108,7 +111,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumFacing side, Vec3 hit)
+			EnumFacing side, Vec3 hit, Vec3 drawnStartPoint)
     {
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
@@ -118,7 +121,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 		NBTTagCompound nbt = stack.getTagCompound();
 		boolean globalMode = nbt.getInteger(NBTKeys.MODE) == 1;
-		if (globalMode || isValidBlock(api, world, pos))
+		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
 		{
 			IBitAccess bitAccess = null;
 			try
@@ -131,22 +134,63 @@ public class ItemSculptingTool extends ItemBitToolBase
 			if (bitLoc != null)
 			{
 				int sculptSemiDiameter = nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER);
-				float shapeSemiDiameter = (sculptSemiDiameter + Configs.SEMI_DIAMETER_PADDING) * Utility.pixelF;
-				int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 				int x = pos.getX();
 				int y = pos.getY();
 				int z = pos.getZ();
 				float x2 = x + bitLoc.getBitX() * Utility.pixelF;
 				float y2 = y + bitLoc.getBitY() * Utility.pixelF;
 				float z2 = z + bitLoc.getBitZ() * Utility.pixelF;
-				Shape shape;
-				if (curved)
+				if (!removeBits)
 				{
-					shape = new Sphere(x2, y2, z2, shapeSemiDiameter);
+					x2 += side.getFrontOffsetX() * Utility.pixelF;
+					y2 += side.getFrontOffsetY() * Utility.pixelF;
+					z2 += side.getFrontOffsetZ() * Utility.pixelF;
+				}
+				Shape shape;
+				AxisAlignedBB box;
+				if (drawnStartPoint != null)
+				{
+					float x3 = (float) drawnStartPoint.xCoord;
+					float y3 = (float) drawnStartPoint.yCoord;
+					float z3 = (float) drawnStartPoint.zCoord;
+					float minX = addPaddingToMin(x2, x3);
+					float minY = addPaddingToMin(y2, y3);
+					float minZ = addPaddingToMin(z2, z3);
+					float maxX = addPaddingToMax(x2, x3);
+					float maxY = addPaddingToMax(y2, y3);
+					float maxZ = addPaddingToMax(z2, z3);
+					box = new AxisAlignedBB(Math.floor(minX), Math.floor(minY), Math.floor(minZ),
+							Math.ceil(maxX), Math.ceil(maxY), Math.ceil(maxZ));
+					float f = 0.5F;
+					minX *= f;
+					minY *= f;
+					minZ *= f;
+					maxX *= f;
+					maxY *= f;
+					maxZ *= f;
+					if (curved)
+					{
+						shape = new Ellipsoid(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ);
+					}
+					else
+					{
+						shape = new Cuboid(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ);
+					}
+					
 				}
 				else
 				{
-					shape = new Cube(x2, y2, z2, shapeSemiDiameter);
+					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
+					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
+							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
+					if (curved)
+					{
+						shape = new Sphere(x2, y2, z2, addPadding(sculptSemiDiameter));
+					}
+					else
+					{
+						shape = new Cube(x2, y2, z2, addPadding(sculptSemiDiameter));
+					}
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
@@ -170,11 +214,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 				int remainingUses = nbt.getInteger("remainingUses");
 				if (!creativeMode && initialpossibleUses > remainingUses) initialpossibleUses = remainingUses;
 				int possibleUses = initialpossibleUses;
-				for (int i = x - blockSemiDiameter; i <= x + blockSemiDiameter; i++)
+				
+				for (int i = (int) box.minX; i <= box.maxX; i++)
 				{
-					for (int j = y - blockSemiDiameter; j <= y + blockSemiDiameter; j++)
+					for (int j = (int) box.minY; j <= box.maxY; j++)
 					{
-						for (int k = z - blockSemiDiameter; k <= z + blockSemiDiameter; k++)
+						for (int k = (int) box.minZ; k <= box.maxZ; k++)
 						{
 							if (possibleUses > 0)
 							{
@@ -220,6 +265,21 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 		return false;
     }
+
+	private float addPadding(float value)
+	{
+		return (value + Configs.SEMI_DIAMETER_PADDING) * Utility.pixelF;
+	}
+	
+	private float addPaddingToMin(float value1, float value2)
+	{
+		return Math.min(value1, value2) - Configs.SEMI_DIAMETER_PADDING * Utility.pixelF;
+	}
+	
+	private float addPaddingToMax(float value1, float value2)
+	{
+		return Math.max(value1, value2) + Configs.SEMI_DIAMETER_PADDING * Utility.pixelF;
+	}
 	
 	private int countInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack paintStack)
 	{

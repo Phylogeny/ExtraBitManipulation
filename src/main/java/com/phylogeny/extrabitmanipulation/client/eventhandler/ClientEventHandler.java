@@ -49,6 +49,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ClientEventHandler
 {
 	private int frameCounter;
+	private Vec3 drawnStartPoint = null;
 	private static final ResourceLocation arrowHead = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
 	private static final ResourceLocation arrowBidirectional = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
 	private static final ResourceLocation arrowCyclical = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
@@ -68,52 +69,99 @@ public class ClientEventHandler
 				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(event.dwheel < 0));
 			}
 		}
-		else if (event.button == 0 && event.buttonstate)
+		else if (event.button == 0)
 		{
 			if (!player.capabilities.allowEdit) return;
 			ItemStack itemStack = player.inventory.getCurrentItem();
 			if (itemStack != null)
 			{
 				Item item = itemStack.getItem();
-				if (item instanceof ItemBitWrench)
+				if (event.buttonstate && item instanceof ItemBitWrench)
 				{
 					event.setCanceled(true);
 				}
 				else if (item != null && item instanceof ItemSculptingTool)
 				{
-					MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
-					if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+					boolean drawnMode = (itemStack.hasTagCompound() && itemStack.getTagCompound().getInteger(NBTKeys.MODE) == 2);
+					if (!drawnMode)
 					{
-						BlockPos pos = target.getBlockPos();
-						EnumFacing side = target.sideHit;
-						Vec3 hit = target.hitVec;
-						ItemSculptingTool toolItem = (ItemSculptingTool) item;
-						boolean swingTool = true;
-						if (!player.isSneaking() || toolItem.removeBits())
+						drawnStartPoint = null;
+					}
+					if (event.buttonstate || drawnMode)
+					{
+						MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
+						if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
 						{
-							swingTool = toolItem.sculptBlocks(itemStack, player, player.worldObj, pos, side, hit);
-						}
-						else
-						{
-							IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-							IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-									(float) hit.zCoord - pos.getZ(), side, pos, false);
-							if (bitLoc != null)
+							BlockPos pos = target.getBlockPos();
+							EnumFacing side = target.sideHit;
+							Vec3 hit = target.hitVec;
+							ItemSculptingTool toolItem = (ItemSculptingTool) item;
+							boolean readBit = player.isSneaking() && !toolItem.removeBits();
+							boolean swingTool = true;
+							if (!readBit && drawnMode && event.buttonstate)
 							{
-								try
+								IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
+										(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
+								if (bitLoc != null)
 								{
-									IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
+									int x = pos.getX();
+									int y = pos.getY();
+									int z = pos.getZ();
+									float x2 = x + bitLoc.getBitX() * Utility.pixelF;
+									float y2 = y + bitLoc.getBitY() * Utility.pixelF;
+									float z2 = z + bitLoc.getBitZ() * Utility.pixelF;
+									if (!toolItem.removeBits())
+									{
+										x2 += side.getFrontOffsetX() * Utility.pixelF;
+										y2 += side.getFrontOffsetY() * Utility.pixelF;
+										z2 += side.getFrontOffsetZ() * Utility.pixelF;
+									}
+									drawnStartPoint = new Vec3(x2, y2, z2);
 								}
-								catch (CannotBeChiseled e)
+								else
 								{
-									event.setCanceled(true);
-									return;
+									drawnStartPoint = null;
+									swingTool = false;
 								}
 							}
+							else
+							{
+								if (readBit)
+								{
+									IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+									IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
+											(float) hit.zCoord - pos.getZ(), side, pos, false);
+									if (bitLoc != null)
+									{
+										try
+										{
+											IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
+										}
+										catch (CannotBeChiseled e)
+										{
+											event.setCanceled(true);
+											return;
+										}
+									}
+								}
+								else if (!player.isSneaking() || toolItem.removeBits() || drawnMode)
+								{
+									swingTool = toolItem.sculptBlocks(itemStack, player, player.worldObj, pos, side, hit, drawnStartPoint);
+									if (drawnMode) swingTool = true;
+								}
+								ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint));
+								if (drawnMode && !event.buttonstate)
+								{
+									drawnStartPoint = null;
+								}
+							}
+							if (swingTool) player.swingItem();
+							event.setCanceled(true);
 						}
-						ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit));
-						if (swingTool) player.swingItem();
-						event.setCanceled(true);
+						else if (drawnMode)
+						{
+							drawnStartPoint = null;
+						}
 					}
 				}
 			}
