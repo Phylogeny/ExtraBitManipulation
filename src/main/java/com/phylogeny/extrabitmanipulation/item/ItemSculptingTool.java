@@ -554,23 +554,32 @@ public class ItemSculptingTool extends ItemBitToolBase
 		{
 			if (!removeBits)
 			{
-				tooltip.add("Left click while sneaking");
-				tooltip.add("    to set bit type.");
+				tooltip.add("Left click while sneaking to set bit type.");
 			}
-			tooltip.add("Left click block to remove ");
-			String text = (curved ? "spherical" : "cubic") + " area ";
-			if (mode == 0)
+			if (mode == 2)
 			{
-				tooltip.add("    " + text + "from it.");
+				tooltip.add("Left click point on block, drag to");
+				tooltip.add("    another point, then release");
+				tooltip.add("    to remove " + (curved ? "spherical" : "cubic") + " area of bits");
+				tooltip.add("    from all intersecting blocks.");
 			}
 			else
 			{
-				tooltip.add("    " + text + "from" + (curved ? "" : " all"));
-				tooltip.add("    " + (curved ? "all " : "") + "intersecting blocks.");
+				tooltip.add("Left click block to remove " + (curved ? "spherical " : "cubic "));
+				String text = "area of bits from ";
+				if (mode == 0)
+				{
+					tooltip.add("    " + text + "it.");
+				}
+				else
+				{
+					tooltip.add("    " + text + "all intersecting");
+					tooltip.add("    blocks.");
+				}
 			}
 			tooltip.add("Right click to cycle modes.");
-			tooltip.add("Mouse wheel while sneaking");
-			tooltip.add("    to change removal diameter.");
+			tooltip.add("Mouse wheel while sneaking to change");
+			tooltip.add("    " + (removeBits ? "removal" : "addition") + " diameter.");
 		}
 		else
 		{
