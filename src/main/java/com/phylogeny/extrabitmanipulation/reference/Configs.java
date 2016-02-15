@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 public class Configs
 {
 	//SCULPTING SETTINGS
+		public static boolean BIT_TYPE_IN_CHAT;
 		public static boolean DISPLAY_NAME_DIAMETER;
 		public static boolean DISPLAY_NAME_USE_METER_UNITS;
 		public static float SEMI_DIAMETER_PADDING;

@@ -49,6 +49,11 @@ public class ConfigHandlerExtraBitManipulation
 			getVersion(Reference.VERSION);
 			
 			//SCULPTING SETTINGS
+			Configs.BIT_TYPE_IN_CHAT = configFile.getBoolean("Chat Message For Bit Type Change", SCULPTING_SETTINGS, true, 
+					"If set to true, changing the set bit type of a sculpting tool (for adding bits with spades or filtering bits with wires)" +
+					"will add the change to chat (does so without generating spam by deleting previous entry of the same type). " +
+					"If set to false, it will not be added. Either way, the bit type is displayed in the tooltip. (default = true)");
+			
 			Configs.DISPLAY_NAME_DIAMETER = configFile.getBoolean("Display Name Diameter", SCULPTING_SETTINGS, true, 
 					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
 					"If set to false, they will indicate the radius (default = true)");

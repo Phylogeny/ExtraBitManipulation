@@ -25,6 +25,7 @@ import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
@@ -35,6 +36,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -136,6 +138,14 @@ public class ClientEventHandler
 										try
 										{
 											IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
+											ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
+											boolean configPaintBitNameInChat = true;
+											if (configPaintBitNameInChat)
+											{
+												GuiNewChat chatGUI = Minecraft.getMinecraft().ingameGUI.getChatGUI();
+												chatGUI.printChatMessageWithOptionalDeletion(new ChatComponentText("Now sculpting with "
+												+ bitStack.getDisplayName().substring(15)), 123456);
+											}
 										}
 										catch (CannotBeChiseled e)
 										{
