@@ -546,8 +546,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			}
 			if (paintStack != null)
 			{
-				String name = paintStack.getDisplayName();
-				tooltip.add("Bit Type: " + name.substring(15));
+				tooltip.add("Bit Type: " + paintStack.getDisplayName().substring(15));
 			}
 		}
 		if (GuiScreen.isShiftKeyDown())
