@@ -552,8 +552,13 @@ public class ItemSculptingTool extends ItemBitToolBase
 		if (setBitStack != null)
 		{
 			String stackName = setBitStack.getDisplayName();
-			tooltip.add(bitType + (stackName.length() == 12 ? "Any" : stackName.substring(15)));
+			bitType += (stackName.length() == 12 ? "Any" : stackName.substring(15));
 		}
+		else
+		{
+			bitType += "Any";
+		}
+		tooltip.add(bitType);
 		if (GuiScreen.isShiftKeyDown())
 		{
 			if (!removeBits)
