@@ -14,7 +14,7 @@ public class Ellipsoid extends AsymmetricalShape
 	}
 	
 	@Override
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		float vx = pos.getX() + i * Utility.pixelF - centerX;
 		float vy = pos.getY() + j * Utility.pixelF - centerY;

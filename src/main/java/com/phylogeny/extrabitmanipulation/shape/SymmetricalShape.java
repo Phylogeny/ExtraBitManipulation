@@ -10,7 +10,13 @@ public class SymmetricalShape extends Shape
 	{
 		super(centerX, centerY, centerZ);
 		this.semiDiameter = semiDiameter;
-		this.semiDiameterInset = reduceLength(semiDiameter);
+	}
+	
+	@Override
+	public void setWallThickness(float wallThickness)
+	{
+		super.setWallThickness(wallThickness);
+		semiDiameterInset = reduceLength(semiDiameter);
 	}
 	
 	@Override

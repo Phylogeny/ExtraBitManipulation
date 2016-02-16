@@ -97,6 +97,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		NBTTagCompound nbt = stack.getTagCompound();
 		if (!nbt.hasKey("remainingUses")) nbt.setInteger("remainingUses", config.maxDamage);
 		if (!nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)) nbt.setInteger(NBTKeys.SCULPT_SEMI_DIAMETER, config.defaultRemovalSemiDiameter);
+		if (!nbt.hasKey(NBTKeys.WALL_THICKNESS)) nbt.setInteger(NBTKeys.WALL_THICKNESS, 1);
 		if (!nbt.hasKey(NBTKeys.SET_BIT))
 		{
 			try
@@ -194,6 +195,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 						shape = new Cube(x2, y2, z2, addPadding(sculptSemiDiameter));
 					}
 				}
+				//Add controls to set shape solid/hollow and thickness of shape hollow walls
+				shape.setSolid(!nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));//TODO
+				shape.setWallThickness(nbt.getInteger(NBTKeys.WALL_THICKNESS) + 2);//TODO
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
 				if (removeBits && !world.isRemote && !creativeMode) bitTypes = new HashMap<IBlockState, Integer>();
@@ -223,7 +227,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 							if (possibleUses > 0)
 							{
 								possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
-										possibleUses, Configs.DROP_BITS_PER_BLOCK, setBit, nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));
+										possibleUses, Configs.DROP_BITS_PER_BLOCK, setBit);
 							}
 						}
 					}
@@ -343,7 +347,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	private int sculptBlock(IChiselAndBitsAPI api, ItemStack stack, EntityPlayer player, World world, BlockPos pos, Shape shape,
-			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush setBit, boolean isSolid)
+			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush setBit)
     {
 		if (isValidBlock(api, world, pos))
 		{
@@ -357,7 +361,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				e.printStackTrace();
 				return remainingUses;
 			}
-			boolean byPassBitChecks = shape.isBlockInsideShape(pos, isSolid);
+			boolean byPassBitChecks = shape.isBlockInsideShape(pos);
 			for (int i = 0; i < 16; i++)
 			{
 				for (int j = 0; j < 16; j++)
@@ -366,7 +370,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					{
 						IBitBrush bit = bitAccess.getBitAt(i, j, k);
 						if ((removeBits ? (!bit.isAir() && !(setBit != null && !setBit.isAir() && !setBit.getState().equals(bit.getState()))) : bit.isAir())
-								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k, isSolid)))
+								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k)))
 						{
 							if (bitTypes != null)
 					    	{

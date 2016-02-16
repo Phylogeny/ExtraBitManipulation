@@ -13,6 +13,8 @@ import net.minecraft.world.World;
 
 public class Shape
 {
+	private float wallThickness;
+	protected boolean isSolid;
 	protected float centerX, centerY, centerZ;
 	
 	public Shape(float centerX, float centerY, float centerZ)
@@ -21,8 +23,18 @@ public class Shape
 		this.centerY = centerY;
 		this.centerZ = centerZ;
 	}
+
+	public void setWallThickness(float wallThickness)
+	{
+		this.wallThickness = wallThickness;
+	}
+
+	public void setSolid(boolean isSolid)
+	{
+		this.isSolid = isSolid;
+	}
 	
-	public boolean isBlockInsideShape(BlockPos pos, boolean isSolid)
+	public boolean isBlockInsideShape(BlockPos pos)
 	{
 		for (int i = 0; i < 16; i += 15)
 		{
@@ -30,7 +42,7 @@ public class Shape
 			{
 				for (int k = 0; k < 16; k += 15)
 				{
-					if (!isPointInsideShape(pos, i, j, k, isSolid))
+					if (!isPointInsideShape(pos, i, j, k))
 					{
 						return false;
 					}
@@ -40,7 +52,7 @@ public class Shape
 		return true;
 	}
 	
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		return false;
 	}
@@ -103,7 +115,7 @@ public class Shape
 	
 	protected float reduceLength(float value)
 	{
-		return Utility.pixelF < value ? value - Utility.pixelF : 0.0000000001F;
+		return Utility.pixelF < value ? value - Utility.pixelF * wallThickness : 0.0000000001F;
 	}
 	
 }

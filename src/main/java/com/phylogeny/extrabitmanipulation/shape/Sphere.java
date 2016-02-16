@@ -13,7 +13,7 @@ public class Sphere extends SymmetricalShape
 	}
 	
 	@Override
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k, boolean isSolid)
+	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		float dx = pos.getX() + i * Utility.pixelF - centerX;
 		float dy = pos.getY() + j * Utility.pixelF - centerY;

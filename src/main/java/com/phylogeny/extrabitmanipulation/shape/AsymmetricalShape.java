@@ -12,6 +12,12 @@ public class AsymmetricalShape extends Shape
 		this.a = a; 
 		this.b = b;
 		this.c = c;
+	}
+	
+	@Override
+	public void setWallThickness(float wallThickness)
+	{
+		super.setWallThickness(wallThickness);
 		aInset = reduceLength(a);
 		bInset = reduceLength(b);
 		cInset = reduceLength(c);
