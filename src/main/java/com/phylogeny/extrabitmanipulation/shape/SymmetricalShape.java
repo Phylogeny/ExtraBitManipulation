@@ -6,16 +6,10 @@ public class SymmetricalShape extends Shape
 {
 	protected float semiDiameter, semiDiameterInset;
 	
-	public SymmetricalShape(float centerX, float centerY, float centerZ, float semiDiameter)
+	public void init(float centerX, float centerY, float centerZ, float semiDiameter, float wallThickness, boolean isSolid)
 	{
-		super(centerX, centerY, centerZ);
+		super.init(centerX, centerY, centerZ, wallThickness, isSolid);
 		this.semiDiameter = semiDiameter;
-	}
-	
-	@Override
-	public void setWallThickness(float wallThickness)
-	{
-		super.setWallThickness(wallThickness);
 		semiDiameterInset = reduceLength(semiDiameter);
 	}
 	

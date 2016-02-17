@@ -33,11 +33,13 @@ import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
+import com.phylogeny.extrabitmanipulation.shape.AsymmetricalShape;
 import com.phylogeny.extrabitmanipulation.shape.Cube;
 import com.phylogeny.extrabitmanipulation.shape.Cuboid;
 import com.phylogeny.extrabitmanipulation.shape.Ellipsoid;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
+import com.phylogeny.extrabitmanipulation.shape.SymmetricalShape;
 
 public class ItemSculptingTool extends ItemBitToolBase
 {
@@ -151,8 +153,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				Shape shape;
 				AxisAlignedBB box;
+				//Add controls to set shape solid/hollow and thickness of shape hollow walls
+				boolean isSolid = !nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE);//TODO
+				int wallThickness = nbt.getInteger(NBTKeys.WALL_THICKNESS);//TODO
 				if (drawnStartPoint != null)
 				{
+					shape = curved ? new Ellipsoid() : new Cuboid();
 					float x3 = (float) drawnStartPoint.xCoord;
 					float y3 = (float) drawnStartPoint.yCoord;
 					float z3 = (float) drawnStartPoint.zCoord;
@@ -171,33 +177,16 @@ public class ItemSculptingTool extends ItemBitToolBase
 					maxX *= f;
 					maxY *= f;
 					maxZ *= f;
-					if (curved)
-					{
-						shape = new Ellipsoid(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ);
-					}
-					else
-					{
-						shape = new Cuboid(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ);
-					}
-					
+					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ, wallThickness, isSolid);
 				}
 				else
 				{
+					shape = curved ? new Sphere() : new Cube();
 					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
-					if (curved)
-					{
-						shape = new Sphere(x2, y2, z2, addPadding(sculptSemiDiameter));
-					}
-					else
-					{
-						shape = new Cube(x2, y2, z2, addPadding(sculptSemiDiameter));
-					}
+					((SymmetricalShape) shape).init(x2, y2, z2, addPadding(sculptSemiDiameter), wallThickness, isSolid);
 				}
-				//Add controls to set shape solid/hollow and thickness of shape hollow walls
-				shape.setSolid(!nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));//TODO
-				shape.setWallThickness(nbt.getInteger(NBTKeys.WALL_THICKNESS));//TODO
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
 				if (removeBits && !world.isRemote && !creativeMode) bitTypes = new HashMap<IBlockState, Integer>();

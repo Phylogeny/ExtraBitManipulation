@@ -17,21 +17,11 @@ public class Shape
 	protected boolean isSolid;
 	protected float centerX, centerY, centerZ;
 	
-	public Shape(float centerX, float centerY, float centerZ)
+	public void init(float centerX, float centerY, float centerZ, float wallThickness, boolean isSolid)
 	{
 		this.centerX = centerX; 
 		this.centerY = centerY;
 		this.centerZ = centerZ;
-	}
-
-	public void setWallThickness(float wallThickness)
-	{
-		this.wallThickness = wallThickness;
-	}
-
-	public void setSolid(boolean isSolid)
-	{
-		this.isSolid = isSolid;
 	}
 	
 	public boolean isBlockInsideShape(BlockPos pos)
@@ -116,6 +106,21 @@ public class Shape
 	protected float reduceLength(float value)
 	{
 		return Utility.pixelF < value ? value - Utility.pixelF * wallThickness : 0.0000000001F;
+	}
+	
+	protected float getBitPosDiff(BlockPos pos, int value, float center)
+	{
+		return getBitPos(pos, value) - center;
+	}
+	
+	protected float getBitPos(BlockPos pos, int value)
+	{
+		return pos.getX() + value * Utility.pixelF;
+	}
+	
+	protected boolean isPointOffLine(float val, float centerVal, float semiDiameter)
+	{
+		return val < centerVal - semiDiameter || val > centerVal + semiDiameter;
 	}
 	
 }

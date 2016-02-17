@@ -2,26 +2,27 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.BlockPos;
 
-import com.phylogeny.extrabitmanipulation.reference.Utility;
-
 public class Cube extends SymmetricalShape
 {
-	public Cube(float centerX, float centerY, float centerZ, float semiDiameter)
+	public void init(float centerX, float centerY, float centerZ, float semiDiameter, float wallThickness, boolean isSolid)
 	{
-		super(centerX, centerY, centerZ, semiDiameter);
+		super.init(centerX, centerY, centerZ, semiDiameter, wallThickness, isSolid);
 	}
 	
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float x = pos.getX() + i * Utility.pixelF;
-		float y = pos.getY() + j * Utility.pixelF;
-		float z = pos.getZ() + k * Utility.pixelF;
-		boolean inShape = x <= centerX + semiDiameter && x >= centerX - semiDiameter && y <= centerY + semiDiameter
+		float x = getBitPos(pos, i);
+		float y = getBitPos(pos, j);
+		float z = getBitPos(pos, k);
+		boolean inShape = isPointInsideisCube(x, y, z, semiDiameter);
+		return isSolid ? inShape : inShape && !isPointInsideisCube(x, y, z, semiDiameterInset);
+	}
+	
+	private boolean isPointInsideisCube(float x, float y, float z, float semiDiameter)
+	{
+		return x <= centerX + semiDiameter && x >= centerX - semiDiameter && y <= centerY + semiDiameter
 				&& y >= centerY - semiDiameter && z <= centerZ + semiDiameter && z >= centerZ - semiDiameter;
-		if (isSolid) return inShape;
-		return inShape && !(x <= centerX + semiDiameterInset && x >= centerX - semiDiameterInset && y <= centerY + semiDiameterInset
-				&& y >= centerY - semiDiameterInset && z <= centerZ + semiDiameterInset && z >= centerZ - semiDiameterInset);
 	}
 	
 }

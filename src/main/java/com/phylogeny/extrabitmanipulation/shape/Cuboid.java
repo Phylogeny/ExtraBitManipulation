@@ -2,28 +2,29 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.BlockPos;
 
-import com.phylogeny.extrabitmanipulation.reference.Utility;
-
 public class Cuboid extends AsymmetricalShape
 {
 
-	public Cuboid(float centerX, float centerY, float centerZ,
-			float a, float b, float c)
+	public void init(float centerX, float centerY, float centerZ,
+			float a, float b, float c, float wallThickness, boolean isSolid)
 	{
-		super(centerX, centerY, centerZ, a, b, c);
+		super.init(centerX, centerY, centerZ, a, b, c, wallThickness, isSolid);
 	}
 	
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float x = pos.getX() + i * Utility.pixelF;
-		float y = pos.getY() + j * Utility.pixelF;
-		float z = pos.getZ() + k * Utility.pixelF;
-		boolean inShape = x <= centerX + a && x >= centerX - a && y <= centerY + b
+		float x = getBitPos(pos, i);
+		float y = getBitPos(pos, j);
+		float z = getBitPos(pos, k);
+		boolean inShape = isPointInsideisCuboid(x, y, z, a, b, c);
+		return isSolid ? inShape : inShape && !isPointInsideisCuboid(x, y, z, aInset, bInset, cInset);
+	}
+	
+	private boolean isPointInsideisCuboid(float x, float y, float z, float a, float b, float c)
+	{
+		return x <= centerX + a && x >= centerX - a && y <= centerY + b
 				&& y >= centerY - b && z <= centerZ + c && z >= centerZ - c;
-		if (isSolid) return inShape;
-		return inShape && !(x <= centerX + aInset && x >= centerX - aInset && y <= centerY + bInset
-				&& y >= centerY - bInset && z <= centerZ + cInset && z >= centerZ - cInset);
 	}
 	
 }
