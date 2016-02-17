@@ -4,6 +4,8 @@ import net.minecraft.util.BlockPos;
 
 public class Cube extends SymmetricalShape
 {
+	
+	@Override
 	public void init(float centerX, float centerY, float centerZ, float semiDiameter, float wallThickness, boolean isSolid)
 	{
 		super.init(centerX, centerY, centerZ, semiDiameter, wallThickness, isSolid);
@@ -12,9 +14,9 @@ public class Cube extends SymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float x = getBitPos(pos, i);
-		float y = getBitPos(pos, j);
-		float z = getBitPos(pos, k);
+		float x = getBitPosX(pos, i);
+		float y = getBitPosY(pos, j);
+		float z = getBitPosZ(pos, k);
 		boolean inShape = isPointInsideisCube(x, y, z, semiDiameter);
 		return isSolid ? inShape : inShape && !isPointInsideisCube(x, y, z, semiDiameterInset);
 	}

@@ -4,7 +4,8 @@ import net.minecraft.util.BlockPos;
 
 public class Cuboid extends AsymmetricalShape
 {
-
+	
+	@Override
 	public void init(float centerX, float centerY, float centerZ,
 			float a, float b, float c, float wallThickness, boolean isSolid)
 	{
@@ -14,9 +15,9 @@ public class Cuboid extends AsymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float x = getBitPos(pos, i);
-		float y = getBitPos(pos, j);
-		float z = getBitPos(pos, k);
+		float x = getBitPosX(pos, i);
+		float y = getBitPosY(pos, j);
+		float z = getBitPosZ(pos, k);
 		boolean inShape = isPointInsideisCuboid(x, y, z, a, b, c);
 		return isSolid ? inShape : inShape && !isPointInsideisCuboid(x, y, z, aInset, bInset, cInset);
 	}

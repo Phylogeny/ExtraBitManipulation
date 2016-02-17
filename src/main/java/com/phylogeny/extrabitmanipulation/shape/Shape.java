@@ -22,6 +22,8 @@ public class Shape
 		this.centerX = centerX; 
 		this.centerY = centerY;
 		this.centerZ = centerZ;
+		this.wallThickness = wallThickness;
+		this.isSolid = isSolid;
 	}
 	
 	public boolean isBlockInsideShape(BlockPos pos)
@@ -108,14 +110,34 @@ public class Shape
 		return Utility.pixelF < value ? value - Utility.pixelF * wallThickness : 0.0000000001F;
 	}
 	
-	protected float getBitPosDiff(BlockPos pos, int value, float center)
+	protected float getBitPosDiffX(BlockPos pos, int x, float center)
 	{
-		return getBitPos(pos, value) - center;
+		return getBitPosX(pos, x) - center;
 	}
 	
-	protected float getBitPos(BlockPos pos, int value)
+	protected float getBitPosDiffY(BlockPos pos, int y, float center)
 	{
-		return pos.getX() + value * Utility.pixelF;
+		return getBitPosY(pos, y) - center;
+	}
+	
+	protected float getBitPosDiffZ(BlockPos pos, int z, float center)
+	{
+		return getBitPosZ(pos, z) - center;
+	}
+	
+	protected float getBitPosX(BlockPos pos, int x)
+	{
+		return pos.getX() + x * Utility.pixelF;
+	}
+	
+	protected float getBitPosY(BlockPos pos, int y)
+	{
+		return pos.getY() + y * Utility.pixelF;
+	}
+	
+	protected float getBitPosZ(BlockPos pos, int z)
+	{
+		return pos.getZ() + z * Utility.pixelF;
 	}
 	
 	protected boolean isPointOffLine(float val, float centerVal, float semiDiameter)

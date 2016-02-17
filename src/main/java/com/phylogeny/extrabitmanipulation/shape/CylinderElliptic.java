@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.BlockPos;
 
-public class Ellipsoid extends AsymmetricalShape
+public class CylinderElliptic extends AsymmetricalShape
 {
 	
 	@Override
@@ -15,19 +15,13 @@ public class Ellipsoid extends AsymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
+		float z = getBitPosZ(pos, k);
+		if (isPointOffLine(z, centerZ, c)) return false;
 		float dx = getBitPosDiffX(pos, i, centerX);
 		float dy = getBitPosDiffY(pos, j, centerY);
-		float dz = getBitPosDiffZ(pos, k, centerZ);
-		boolean inShape = isPointInsideisEllipsoid(dx, dy, dz, a, b, c);
-		return isSolid ? inShape : inShape && !isPointInsideisEllipsoid(dx, dy, dz, aInset, bInset, cInset);
-	}
-	
-	private boolean isPointInsideisEllipsoid(float dx, float dy, float dz, float a, float b, float c)
-	{
-		float vx = dx / a;
-		float vy = dy / b;
-		float vz = dz / c;
-		return vx * vx + vy * vy + vz * vz <= 1;
+		boolean inShape = isPointInEllipse(dx, dy, a, b);
+		return isSolid ? inShape : inShape && !(isPointInEllipse(dx, dy, aInset, bInset)
+				&& !isPointOffLine(z, centerZ, cInset));
 	}
 	
 }

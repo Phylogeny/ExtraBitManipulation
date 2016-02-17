@@ -8,7 +8,7 @@ public class SymmetricalShape extends Shape
 	
 	public void init(float centerX, float centerY, float centerZ, float semiDiameter, float wallThickness, boolean isSolid)
 	{
-		super.init(centerX, centerY, centerZ, wallThickness, isSolid);
+		init(centerX, centerY, centerZ, wallThickness, isSolid);
 		this.semiDiameter = semiDiameter;
 		semiDiameterInset = reduceLength(semiDiameter);
 	}

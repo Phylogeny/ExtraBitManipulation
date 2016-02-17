@@ -8,7 +8,7 @@ public class AsymmetricalShape extends Shape
 	
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c, float wallThickness, boolean isSolid)
 	{
-		super.init(centerX, centerY, centerZ, wallThickness, isSolid);
+		init(centerX, centerY, centerZ, wallThickness, isSolid);
 		this.a = a; 
 		this.b = b;
 		this.c = c;

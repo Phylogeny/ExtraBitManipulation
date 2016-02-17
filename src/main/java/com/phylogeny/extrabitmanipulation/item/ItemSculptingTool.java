@@ -34,8 +34,12 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.AsymmetricalShape;
+import com.phylogeny.extrabitmanipulation.shape.Cone;
+import com.phylogeny.extrabitmanipulation.shape.ConeElliptic;
 import com.phylogeny.extrabitmanipulation.shape.Cube;
 import com.phylogeny.extrabitmanipulation.shape.Cuboid;
+import com.phylogeny.extrabitmanipulation.shape.Cylinder;
+import com.phylogeny.extrabitmanipulation.shape.CylinderElliptic;
 import com.phylogeny.extrabitmanipulation.shape.Ellipsoid;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
@@ -153,12 +157,13 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				Shape shape;
 				AxisAlignedBB box;
-				//Add controls to set shape solid/hollow and thickness of shape hollow walls
+				//Add controls to set/change the following data:
 				boolean isSolid = !nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE);//TODO
 				int wallThickness = nbt.getInteger(NBTKeys.WALL_THICKNESS);//TODO
+				int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
 				if (drawnStartPoint != null)
 				{
-					shape = curved ? new Ellipsoid() : new Cuboid();
+					shape = curved ? (shapeType == 0 ? new Ellipsoid() : (shapeType == 1 ? new CylinderElliptic() : new ConeElliptic())) : new Cuboid();
 					float x3 = (float) drawnStartPoint.xCoord;
 					float y3 = (float) drawnStartPoint.yCoord;
 					float z3 = (float) drawnStartPoint.zCoord;
@@ -181,7 +186,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				else
 				{
-					shape = curved ? new Sphere() : new Cube();
+					shape = curved ? (shapeType == 0 ? new Sphere() : (shapeType == 1 ? new Cylinder() : new Cone())) : new Cube();
 					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
