@@ -97,7 +97,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		NBTTagCompound nbt = stack.getTagCompound();
 		if (!nbt.hasKey("remainingUses")) nbt.setInteger("remainingUses", config.maxDamage);
 		if (!nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)) nbt.setInteger(NBTKeys.SCULPT_SEMI_DIAMETER, config.defaultRemovalSemiDiameter);
-		if (!nbt.hasKey(NBTKeys.WALL_THICKNESS)) nbt.setInteger(NBTKeys.WALL_THICKNESS, 1);
+		if (!nbt.hasKey(NBTKeys.WALL_THICKNESS)) nbt.setInteger(NBTKeys.WALL_THICKNESS, 2);
 		if (!nbt.hasKey(NBTKeys.SET_BIT))
 		{
 			try
@@ -197,7 +197,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				//Add controls to set shape solid/hollow and thickness of shape hollow walls
 				shape.setSolid(!nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE));//TODO
-				shape.setWallThickness(nbt.getInteger(NBTKeys.WALL_THICKNESS) + 2);//TODO
+				shape.setWallThickness(nbt.getInteger(NBTKeys.WALL_THICKNESS));//TODO
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
 				if (removeBits && !world.isRemote && !creativeMode) bitTypes = new HashMap<IBlockState, Integer>();
