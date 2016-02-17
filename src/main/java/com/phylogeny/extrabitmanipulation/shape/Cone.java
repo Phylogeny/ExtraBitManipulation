@@ -14,14 +14,14 @@ public class Cone extends SymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float z = getBitPosZ(pos, k);
-		if (isPointOffLine(z, centerZ, semiDiameter)) return false;
+		float y = getBitPosY(pos, j);
+		if (isPointOffLine(y, centerY, semiDiameter)) return false;
 		float dx = getBitPosDiffX(pos, i, centerX);
-		float dy = getBitPosDiffY(pos, j, centerY);
-		double dist = Math.sqrt(dx * dx + dy * dy);
-		boolean inShape = isPointInCircle(z, centerZ, semiDiameter, dist);
-		return isSolid ? inShape : inShape && !(isPointInCircle(z, centerZ, semiDiameterInset, dist)
-				&& !(isPointOffLine(z, centerZ, semiDiameterInset)));
+		float dz = getBitPosDiffZ(pos, k, centerZ);
+		double dist = Math.sqrt(dx * dx + dz * dz);
+		boolean inShape = isPointInCircle(y, centerY, semiDiameter, dist);
+		return isSolid ? inShape : inShape && !(isPointInCircle(y, centerY, semiDiameterInset, dist)
+				&& !(isPointOffLine(y, centerY, semiDiameterInset)));
 	}
 	
 	private boolean isPointInCircle(float val, float centerVal, float semiDiameter, double dist)

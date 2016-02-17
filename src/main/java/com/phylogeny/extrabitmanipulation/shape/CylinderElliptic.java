@@ -15,13 +15,13 @@ public class CylinderElliptic extends AsymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float z = getBitPosZ(pos, k);
-		if (isPointOffLine(z, centerZ, c)) return false;
+		float y = getBitPosY(pos, j);
+		if (isPointOffLine(y, centerY, b)) return false;
 		float dx = getBitPosDiffX(pos, i, centerX);
-		float dy = getBitPosDiffY(pos, j, centerY);
-		boolean inShape = isPointInEllipse(dx, dy, a, b);
-		return isSolid ? inShape : inShape && !(isPointInEllipse(dx, dy, aInset, bInset)
-				&& !isPointOffLine(z, centerZ, cInset));
+		float dz = getBitPosDiffZ(pos, k, centerZ);
+		boolean inShape = isPointInEllipse(dx, dz, a, c);
+		return isSolid ? inShape : inShape && !(isPointInEllipse(dx, dz, aInset, cInset)
+				&& !isPointOffLine(y, centerY, bInset));
 	}
 	
 }

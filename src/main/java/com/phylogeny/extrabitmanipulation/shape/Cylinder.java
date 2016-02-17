@@ -14,14 +14,14 @@ public class Cylinder extends SymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float z = getBitPosZ(pos, k);
-		if (isPointOffLine(z, centerZ, semiDiameter)) return false;
+		float y = getBitPosY(pos, j);
+		if (isPointOffLine(y, centerY, semiDiameter)) return false;
 		float dx = getBitPosDiffX(pos, i, centerX);
-		float dy = getBitPosDiffY(pos, j, centerY);
-		float dist = dx * dx + dy * dy;
+		float dz = getBitPosDiffZ(pos, k, centerZ);
+		float dist = dx * dx + dz * dz;
 		boolean inShape = isPointInCircle(semiDiameter, dist);
 		return isSolid ? inShape : inShape && !(isPointInCircle(semiDiameterInset, dist)
-				&& !(isPointOffLine(z, centerZ, semiDiameterInset)));
+				&& !(isPointOffLine(y, centerY, semiDiameterInset)));
 	}
 	
 	private boolean isPointInCircle(float semiDiameter, float dist)

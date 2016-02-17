@@ -15,13 +15,13 @@ public class ConeElliptic extends AsymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float z = getBitPosZ(pos, k);
-		if (isPointOffLine(z, centerZ, c)) return false;
+		float y = getBitPosY(pos, j);
+		if (isPointOffLine(y, centerY, b)) return false;
 		float dx = getBitPosDiffX(pos, i, centerX);
-		float dy = getBitPosDiffY(pos, j, centerY);
-		boolean inShape = isPointInEllipse(z, centerZ, c, a, b, dx, dy);
-		return isSolid ? inShape : inShape && !(isPointInEllipse(z, centerZ, cInset, aInset, bInset, dx, dy)
-				&& !isPointOffLine(z, centerZ, cInset));
+		float dz = getBitPosDiffZ(pos, k, centerZ);
+		boolean inShape = isPointInEllipse(y, centerY, b, a, c, dx, dz);
+		return isSolid ? inShape : inShape && !(isPointInEllipse(y, centerY, bInset, aInset, cInset, dx, dz)
+				&& !isPointOffLine(y, centerY, bInset));
 	}
 	
 	private boolean isPointInEllipse(float val, float centerVal, float semiDiameter, float s1, float s2, float dv1, float dv2)
