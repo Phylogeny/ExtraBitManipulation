@@ -95,7 +95,7 @@ public class ClientEventHandler
 					{
 						drawnStartPoint = null;
 					}
-					if (event.buttonstate || drawnMode)
+					if (event.buttonstate || (drawnMode && drawnStartPoint != null))
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) item;
 						MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
