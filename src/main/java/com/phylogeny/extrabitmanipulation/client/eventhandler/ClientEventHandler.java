@@ -1,7 +1,9 @@
 package com.phylogeny.extrabitmanipulation.client.eventhandler;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.Quadric;
 import org.lwjgl.util.glu.Sphere;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
@@ -477,7 +479,8 @@ public class ClientEventHandler
 									y2 += dir.getFrontOffsetY();
 									z2 += dir.getFrontOffsetZ();
 								}
-								boolean drawnBox = mode == 2 && drawnStartPoint != null;
+								boolean isDrawn = drawnStartPoint != null;
+								boolean drawnBox = mode == 2 && isDrawn;
 								GlStateManager.enableBlend();
 								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 								GlStateManager.disableTexture2D();
@@ -583,37 +586,38 @@ public class ClientEventHandler
 											x3 = maxX + minX;
 											y3 = maxY + minY;
 											z3 = maxZ + minZ;
-//											double a = box.maxX - box.minX;
-//											double b = box.maxY - box.minY;
-//											double c = box.maxZ - box.minZ;
-//											r = Math.max(Math.max(a, b), c) * 0.5;
 										}
-										Sphere sphere = new Sphere();
-										sphere.setDrawStyle(GLU.GLU_LINE);
+										int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) : 0;
+										Quadric shape = shapeType > 0 ? new Cylinder() : new Sphere();
+										shape.setDrawStyle(GLU.GLU_LINE);
 										int outerSphereID = 0, innerSphereID = 0;
 										if (configShape.renderOuterShape)
 										{
 											outerSphereID = GL11.glGenLists(1);
-											GL11.glNewList(outerSphereID, GL11.GL_COMPILE);
-											GlStateManager.color(configShape.red, configShape.green,
-													configShape.blue, configShape.outerShapeAlpha);
-											sphere.draw((float) r, 32, 32);
-											GL11.glEndList();
+											renderEnvelopedShape(shape, outerSphereID, r, true, configShape, shapeType == 2);
 										}
 										if (configShape.renderInnerShape)
 										{
 											innerSphereID = GL11.glGenLists(1);
-											GL11.glNewList(innerSphereID, GL11.GL_COMPILE);
-											GlStateManager.color(configShape.red, configShape.green,
-													configShape.blue, configShape.innerShapeAlpha);
-											sphere.draw((float) r, 32, 32);
-											GL11.glEndList();
+											renderEnvelopedShape(shape, innerSphereID, r, false, configShape, shapeType == 2);
 										}
 										GlStateManager.pushMatrix();
 										GL11.glLineWidth(configShape.lineWidth);
-										GlStateManager.translate(x3 - playerX + (Utility.pixelD * 0.5),
-												y3 - playerY + (Utility.pixelD * 0.5),
-												z3 - playerZ + (Utility.pixelD * 0.5));
+										double x4 = x3 - playerX;
+										double y4 = y3 - playerY;
+										double z4 = z3 - playerZ;
+										if (!isDrawn)
+										{
+											double hp = (Utility.pixelD * 0.5);
+											x4 += hp;
+											y4 += hp;
+											z4 += hp;
+										}
+										if (shapeType > 0)
+										{
+											y4 += isDrawn ? b : r;
+										}
+										GlStateManager.translate(x4, y4, z4);
 										if (drawnBox) GlStateManager.scale(a / r, b / r, c / r);
 										GlStateManager.rotate(90, 1, 0, 0);
 										if (configShape.renderOuterShape) GL11.glCallList(outerSphereID);
@@ -635,6 +639,23 @@ public class ClientEventHandler
 				}
 			}
 		}
+	}
+	
+	private void renderEnvelopedShape(Quadric shape, int shapeID, double radius, boolean outer, ConfigShapeRender configShape, boolean isCone)
+	{
+		GL11.glNewList(shapeID, GL11.GL_COMPILE);
+		GlStateManager.color(configShape.red, configShape.green,
+				configShape.blue, outer ? configShape.outerShapeAlpha : configShape.innerShapeAlpha);
+		float r = (float) radius;
+		if (shape instanceof Sphere)
+		{
+			((Sphere) shape).draw(r, 32, 32);
+		}
+		else if (shape instanceof Cylinder)
+		{
+			((Cylinder) shape).draw(isCone ? 0 : r, r, r * 2, 32, 32);
+		}
+		GL11.glEndList();
 	}
 	
 	private AxisAlignedBB limitBox(AxisAlignedBB box, AxisAlignedBB mask)
