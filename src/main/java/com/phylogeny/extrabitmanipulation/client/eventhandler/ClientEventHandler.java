@@ -62,14 +62,18 @@ public class ClientEventHandler
 	public void interceptMouseInput(MouseEvent event)
 	{
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		if (event.dwheel != 0 && player.isSneaking())
+		if (event.dwheel != 0)
 		{
-			ItemStack stack = player.getCurrentEquippedItem();
-			if (stack != null && stack.getItem() instanceof ItemBitToolBase)
+			if (player.isSneaking())
 			{
-				event.setCanceled(true);
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(event.dwheel < 0));
+				ItemStack stack = player.getCurrentEquippedItem();
+				if (stack != null && stack.getItem() instanceof ItemBitToolBase)
+				{
+					event.setCanceled(true);
+					ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(event.dwheel < 0));
+				}
 			}
+			drawnStartPoint = null;
 		}
 		else if (event.button == 0)
 		{
