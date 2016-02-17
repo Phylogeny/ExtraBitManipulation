@@ -132,12 +132,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 		boolean globalMode = nbt.getInteger(NBTKeys.MODE) == 1;
 		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
 		{
-			IBitAccess bitAccess = null;
-			try
-			{
-				bitAccess = api.getBitAccess(world, pos);
-			}
-			catch (CannotBeChiseled e) {}
 			IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
 					(float) hit.zCoord - pos.getZ(), side, pos, false);
 			if (bitLoc != null)
@@ -228,7 +222,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				if (!Configs.DROP_BITS_PER_BLOCK)
 				{
-					giveOrDropStacks(player, world, pos, shape, api, bitAccess, bitTypes);
+					giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 				}
 				int change = initialpossibleUses - possibleUses;
 				ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
@@ -395,7 +389,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			}
 			if (dropsPerBlock)
 			{
-				giveOrDropStacks(player, world, pos, shape, api, bitAccess, bitTypes);
+				giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			}
 			bitAccess.commitChanges();
 		}
@@ -407,8 +401,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return api.canBeChiseled(world, pos) && (!removeBits || !world.isAirBlock(pos));
 	}
 
-	private void giveOrDropStacks(EntityPlayer player, World world, BlockPos pos, Shape shape, IChiselAndBitsAPI api,
-			IBitAccess bitAccess, HashMap<IBlockState, Integer> bitTypes)
+	private void giveOrDropStacks(EntityPlayer player, World world, BlockPos pos, Shape shape,
+			IChiselAndBitsAPI api, HashMap<IBlockState, Integer> bitTypes)
 	{
 		if (bitTypes != null)
 		{
@@ -437,8 +431,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 					InventoryPlayer inv = player.inventory;
 					int totalBits = bitTypes.get(state);
-					if (Configs.DROP_BITS_AS_FULL_CHISELED_BLOCKS && totalBits >= 4096 && bitAccess != null)
+					if (Configs.DROP_BITS_AS_FULL_CHISELED_BLOCKS && totalBits >= 4096)
 					{
+						IBitAccess bitAccess = api.createBitItem(null);
 						setAllBits(bitAccess, bit);
 						int blockCount = totalBits / 4096;
 						totalBits -= blockCount * 4096;
@@ -453,7 +448,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 							}
 							blockCount -= stackSize;
 						}
-						setAllBits(bitAccess, null);
 					}
 					int quota;
 					while (totalBits > 0)
