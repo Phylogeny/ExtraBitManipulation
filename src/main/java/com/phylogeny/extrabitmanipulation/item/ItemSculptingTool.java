@@ -32,6 +32,7 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.AsymmetricalShape;
 import com.phylogeny.extrabitmanipulation.shape.Cone;
@@ -103,7 +104,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 		NBTTagCompound nbt = stack.getTagCompound();
 		if (!nbt.hasKey("remainingUses")) nbt.setInteger("remainingUses", config.maxDamage);
 		if (!nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)) nbt.setInteger(NBTKeys.SCULPT_SEMI_DIAMETER, config.defaultRemovalSemiDiameter);
-		if (!nbt.hasKey(NBTKeys.WALL_THICKNESS)) nbt.setInteger(NBTKeys.WALL_THICKNESS, 2);
 		if (!nbt.hasKey(NBTKeys.SET_BIT))
 		{
 			try
@@ -151,9 +151,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				Shape shape;
 				AxisAlignedBB box;
-				//Add controls to set/change the following data:
-				boolean isSolid = !nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE);//TODO
-				int wallThickness = nbt.getInteger(NBTKeys.WALL_THICKNESS);//TODO
 				int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
 				if (drawnStartPoint != null)
 				{
@@ -176,7 +173,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					maxX *= f;
 					maxY *= f;
 					maxZ *= f;
-					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ, wallThickness, isSolid);
+					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ);
 				}
 				else
 				{
@@ -184,7 +181,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
-					((SymmetricalShape) shape).init(x2, y2, z2, addPadding(sculptSemiDiameter), wallThickness, isSolid);
+					((SymmetricalShape) shape).init(x2, y2, z2, addPadding(sculptSemiDiameter));
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;

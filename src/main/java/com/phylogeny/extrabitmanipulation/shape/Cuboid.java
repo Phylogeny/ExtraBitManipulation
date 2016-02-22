@@ -1,15 +1,16 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
+
 import net.minecraft.util.BlockPos;
 
 public class Cuboid extends AsymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ,
-			float a, float b, float c, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ, float a, float b, float c)
 	{
-		super.init(centerX, centerY, centerZ, a, b, c, wallThickness, isSolid);
+		super.init(centerX, centerY, centerZ, a, b, c);
 	}
 	
 	@Override
@@ -19,7 +20,7 @@ public class Cuboid extends AsymmetricalShape
 		float y = getBitPosY(pos, j);
 		float z = getBitPosZ(pos, k);
 		boolean inShape = isPointInsideisCuboid(x, y, z, a, b, c);
-		return isSolid ? inShape : inShape && !isPointInsideisCuboid(x, y, z, aInset, bInset, cInset);
+		return SculptSettings.SCULPT_HOLLOW_SHAPE ? inShape && !isPointInsideisCuboid(x, y, z, aInset, bInset, cInset) : inShape;
 	}
 	
 	private boolean isPointInsideisCuboid(float x, float y, float z, float a, float b, float c)

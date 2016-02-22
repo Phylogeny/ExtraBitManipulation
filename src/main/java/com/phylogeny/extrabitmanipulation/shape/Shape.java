@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 import java.util.Random;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import net.minecraft.block.Block;
@@ -13,17 +14,13 @@ import net.minecraft.world.World;
 
 public class Shape
 {
-	private float wallThickness;
-	protected boolean isSolid;
 	protected float centerX, centerY, centerZ;
 	
-	public void init(float centerX, float centerY, float centerZ, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ)
 	{
 		this.centerX = centerX; 
 		this.centerY = centerY;
 		this.centerZ = centerZ;
-		this.wallThickness = wallThickness;
-		this.isSolid = isSolid;
 	}
 	
 	public boolean isBlockInsideShape(BlockPos pos)
@@ -107,7 +104,7 @@ public class Shape
 	
 	protected float reduceLength(float value)
 	{
-		return Utility.pixelF < value ? value - Utility.pixelF * wallThickness : 0.0000000001F;
+		return Utility.pixelF < value ? value - SculptSettings.WALL_THICKNESS : 0.0000000001F;
 	}
 	
 	protected float getBitPosDiffX(BlockPos pos, int x, float center)

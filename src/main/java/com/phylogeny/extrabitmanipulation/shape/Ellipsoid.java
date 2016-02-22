@@ -1,15 +1,16 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
+
 import net.minecraft.util.BlockPos;
 
 public class Ellipsoid extends AsymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ,
-			float a, float b, float c, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ, float a, float b, float c)
 	{
-		super.init(centerX, centerY, centerZ, a, b, c, wallThickness, isSolid);
+		super.init(centerX, centerY, centerZ, a, b, c);
 	}
 	
 	@Override
@@ -19,7 +20,7 @@ public class Ellipsoid extends AsymmetricalShape
 		float dy = getBitPosDiffY(pos, j, centerY);
 		float dz = getBitPosDiffZ(pos, k, centerZ);
 		boolean inShape = isPointInsideisEllipsoid(dx, dy, dz, a, b, c);
-		return isSolid ? inShape : inShape && !isPointInsideisEllipsoid(dx, dy, dz, aInset, bInset, cInset);
+		return SculptSettings.SCULPT_HOLLOW_SHAPE ? inShape && !isPointInsideisEllipsoid(dx, dy, dz, aInset, bInset, cInset) : inShape;
 	}
 	
 	private boolean isPointInsideisEllipsoid(float dx, float dy, float dz, float a, float b, float c)

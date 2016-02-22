@@ -6,9 +6,9 @@ public class AsymmetricalShape extends Shape
 {
 	protected float a, b, c, aInset, bInset, cInset;
 	
-	public void init(float centerX, float centerY, float centerZ, float a, float b, float c, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ, float a, float b, float c)
 	{
-		init(centerX, centerY, centerZ, wallThickness, isSolid);
+		init(centerX, centerY, centerZ);
 		this.a = a; 
 		this.b = b;
 		this.c = c;
@@ -16,7 +16,7 @@ public class AsymmetricalShape extends Shape
 		bInset = reduceLength(b);
 		cInset = reduceLength(c);
 	}
-	
+
 	@Override
 	protected AxisAlignedBB getBoundingBox()
 	{

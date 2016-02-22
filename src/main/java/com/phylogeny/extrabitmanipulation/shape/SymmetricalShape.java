@@ -6,9 +6,9 @@ public class SymmetricalShape extends Shape
 {
 	protected float semiDiameter, semiDiameterInset;
 	
-	public void init(float centerX, float centerY, float centerZ, float semiDiameter, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ, float semiDiameter)
 	{
-		init(centerX, centerY, centerZ, wallThickness, isSolid);
+		init(centerX, centerY, centerZ);
 		this.semiDiameter = semiDiameter;
 		semiDiameterInset = reduceLength(semiDiameter);
 	}

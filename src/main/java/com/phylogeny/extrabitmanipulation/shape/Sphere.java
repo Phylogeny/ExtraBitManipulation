@@ -1,14 +1,16 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
+
 import net.minecraft.util.BlockPos;
 
 public class Sphere extends SymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ, float radius, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ, float radius)
 	{
-		super.init(centerX, centerY, centerZ, radius, wallThickness, isSolid);
+		super.init(centerX, centerY, centerZ, radius);
 	}
 	
 	@Override
@@ -18,7 +20,7 @@ public class Sphere extends SymmetricalShape
 		float dy = getBitPosDiffY(pos, j, centerY);
 		float dz = getBitPosDiffZ(pos, k, centerZ);
 		double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-		return isSolid ? dist <= semiDiameter : dist <= semiDiameter && dist > semiDiameterInset;
+		return SculptSettings.SCULPT_HOLLOW_SHAPE ? dist <= semiDiameter && dist > semiDiameterInset : dist <= semiDiameter;
 	}
 	
 }

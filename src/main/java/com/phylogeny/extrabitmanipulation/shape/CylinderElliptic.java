@@ -1,15 +1,16 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
+
 import net.minecraft.util.BlockPos;
 
 public class CylinderElliptic extends AsymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ,
-			float a, float b, float c, float wallThickness, boolean isSolid)
+	public void init(float centerX, float centerY, float centerZ, float a, float b, float c)
 	{
-		super.init(centerX, centerY, centerZ, a, b, c, wallThickness, isSolid);
+		super.init(centerX, centerY, centerZ, a, b, c);
 	}
 	
 	@Override
@@ -20,8 +21,8 @@ public class CylinderElliptic extends AsymmetricalShape
 		float dx = getBitPosDiffX(pos, i, centerX);
 		float dz = getBitPosDiffZ(pos, k, centerZ);
 		boolean inShape = isPointInEllipse(dx, dz, a, c);
-		return isSolid ? inShape : inShape && !(isPointInEllipse(dx, dz, aInset, cInset)
-				&& !isPointOffLine(y, centerY, bInset));
+		return SculptSettings.SCULPT_HOLLOW_SHAPE ? inShape && !(isPointInEllipse(dx, dz, aInset, cInset)
+				&& (SculptSettings.OPEN_ENDS || !isPointOffLine(y, centerY, bInset))) : inShape;
 	}
 	
 }
