@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.client.eventhandler;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
+import org.lwjgl.util.glu.Disk;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Quadric;
 import org.lwjgl.util.glu.Sphere;
@@ -19,6 +20,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
+import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
@@ -36,6 +38,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -470,6 +473,7 @@ public class ClientEventHandler
 									(float) hit.zCoord - pos.getZ(), dir, pos, false);
 							if (bitLoc != null)
 							{
+								NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
 								int x2 = bitLoc.getBitX();
 								int y2 = bitLoc.getBitY();
 								int z2 = bitLoc.getBitZ();
@@ -481,16 +485,17 @@ public class ClientEventHandler
 								}
 								boolean isDrawn = drawnStartPoint != null;
 								boolean drawnBox = mode == 2 && isDrawn;
+								boolean fixedCone = !drawnBox && stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) == 2;//TODO
 								GlStateManager.enableBlend();
 								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 								GlStateManager.disableTexture2D();
 								GlStateManager.depthMask(false);
-								double r = (stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)
-										? stack.getTagCompound().getInteger(NBTKeys.SCULPT_SEMI_DIAMETER)
+								double r = (nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)
+										? nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER)
 												: ((ConfigProperty) Configs.itemPropertyMap.get(toolItem)).defaultRemovalSemiDiameter) * Utility.pixelD;
 								ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
 								ConfigShapeRender configBox = configPair.boundingBox;
-								AxisAlignedBB box = null;
+								AxisAlignedBB box = null, shapeBox = null;
 								double x3 = x + x2 * Utility.pixelD;
 								double y3 = y + y2 * Utility.pixelD;
 								double z3 = z + z2 * Utility.pixelD;
@@ -535,6 +540,10 @@ public class ClientEventHandler
 										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.pixelD, y + r + Utility.pixelD, z + r + Utility.pixelD)
 										.offset(x2 * Utility.pixelD, y2 * Utility.pixelD, z2 * Utility.pixelD);
 									}
+									if (fixedCone)
+									{
+										shapeBox = box.expand(0, 0, 0);
+									}
 									if (mode == 0)
 									{
 										BlockPos pos2 = !removeBits && !ItemSculptingTool.wasInsideClicked(dir, hit, pos) ? pos.offset(dir) : pos;
@@ -566,68 +575,16 @@ public class ClientEventHandler
 								double c = 0;
 								if (configPair.hasEnvelopedShape())
 								{
-									ConfigShapeRender configShape = configPair.envelopedShape;
-									if (configShape.renderInnerShape || configShape.renderOuterShape)
+									if (!fixedCone)
 									{
-										r += Utility.pixelD * 0.5;
-										if (drawnBox)
-										{
-											double f = 0.5;
-											double minX = box.minX * f;
-											double minY = box.minY * f;
-											double minZ = box.minZ * f;
-											double maxX = box.maxX * f;
-											double maxY = box.maxY * f;
-											double maxZ = box.maxZ * f;
-											a = maxX - minX;
-											b = maxY - minY;
-											c = maxZ - minZ;
-											r = Math.max(Math.max(a, b), c);
-											x3 = maxX + minX;
-											y3 = maxY + minY;
-											z3 = maxZ + minZ;
-										}
-										int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) : 0;
-										Quadric shape = shapeType > 0 ? new Cylinder() : new Sphere();
-										shape.setDrawStyle(GLU.GLU_LINE);
-										int outerSphereID = 0, innerSphereID = 0;
-										if (configShape.renderOuterShape)
-										{
-											outerSphereID = GL11.glGenLists(1);
-											renderEnvelopedShape(shape, outerSphereID, r, true, configShape, shapeType == 2);
-										}
-										if (configShape.renderInnerShape)
-										{
-											innerSphereID = GL11.glGenLists(1);
-											renderEnvelopedShape(shape, innerSphereID, r, false, configShape, shapeType == 2);
-										}
-										GlStateManager.pushMatrix();
-										GL11.glLineWidth(configShape.lineWidth);
-										double x4 = x3 - playerX;
-										double y4 = y3 - playerY;
-										double z4 = z3 - playerZ;
-										if (!isDrawn)
-										{
-											double hp = (Utility.pixelD * 0.5);
-											x4 += hp;
-											y4 += hp;
-											z4 += hp;
-										}
-										if (shapeType > 0)
-										{
-											y4 += isDrawn ? b : r;
-										}
-										GlStateManager.translate(x4, y4, z4);
-										if (drawnBox) GlStateManager.scale(a / r, b / r, c / r);
-										GlStateManager.rotate(90, 1, 0, 0);
-										if (configShape.renderOuterShape) GL11.glCallList(outerSphereID);
-										if (configShape.renderInnerShape)
-										{
-											GlStateManager.depthFunc(GL11.GL_GREATER);
-											GL11.glCallList(innerSphereID);
-											GlStateManager.depthFunc(GL11.GL_LEQUAL);
-										}
-										GlStateManager.popMatrix();
+										shapeBox = box.expand(0, 0, 0);
+									}
+									renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn,
+											drawnBox, r, configPair, shapeBox, x3, y3, z3, a, b, c, 0, SculptSettings.OPEN_ENDS);
+									if (SculptSettings.SCULPT_HOLLOW_SHAPE)
+									{
+										renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
+												x3, y3, z3, a, b, c, SculptSettings.WALL_THICKNESS * Utility.pixelD, SculptSettings.OPEN_ENDS);
 									}
 								}
 								GlStateManager.depthMask(true);
@@ -640,12 +597,136 @@ public class ClientEventHandler
 			}
 		}
 	}
-	
-	private void renderEnvelopedShape(Quadric shape, int shapeID, double radius, boolean outer, ConfigShapeRender configShape, boolean isCone)
+
+	private void renderEnvelopedShapes(ItemStack stack, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
+			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double a, double b, double c, double contraction, boolean isOpen)
 	{
-		GL11.glNewList(shapeID, GL11.GL_COMPILE);
+		ConfigShapeRender configShape = configPair.envelopedShape;
+		if (configShape.renderInnerShape || configShape.renderOuterShape)
+		{
+			int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
+			boolean isNotSphere = shapeType != 0;
+			boolean isCylinder = shapeType == 1;
+			boolean isCone = shapeType == 2;
+			r += Utility.pixelD * 0.5 - contraction;
+			boolean dawnCone = isCone && drawnBox;
+			double base = 0;
+			if (drawnBox || isCone)
+			{
+				double f = 0.5;
+				double minX = box.minX * f;
+				double minY = box.minY * f;
+				double minZ = box.minZ * f;
+				double maxX = box.maxX * f;
+				double maxY = box.maxY * f;
+				double maxZ = box.maxZ * f;
+				double x2 = maxX - minX;
+				double y2 = maxY - minY;
+				double z2 = maxZ - minZ;
+				if (isCone && contraction > 0)
+				{
+					if (!isOpen) base = contraction;
+					y2 *= 2;
+					double y2sq = y2 * y2;
+					double aInset = (Math.sqrt(x2 * x2 + y2sq) * contraction) / x2 + base;
+					double cInset = (Math.sqrt(z2 * z2 + y2sq) * contraction) / z2 + base;
+					a = Math.max((y2 - aInset) * (x2 / y2), 0);
+					c = Math.max((y2 - cInset) * (z2 / y2), 0);
+					contraction = Math.min(aInset - base, cInset - base);
+					b = Math.max(y2 * 0.5 - contraction * 0.5 - base * 0.5, 0);
+				}
+				else
+				{
+					a = Math.max(x2 - contraction, 0);
+					c = Math.max(z2 - contraction, 0);
+					b = Math.max(y2 - (isNotSphere && isOpen && isDrawn ? 0 : contraction), 0);
+				}
+				r = Math.max(Math.max(a, b), c);
+				x = maxX + minX;
+				y = maxY + minY;
+				z = maxZ + minZ;
+			}
+			else
+			{
+				a = b = c = r;
+				if (isNotSphere && isOpen)
+				{
+					b += contraction * (isDrawn ? 0 : 1);
+				}
+			}
+			if (r < 0) r = 0;
+			Quadric shape = isNotSphere ? new Cylinder() : new Sphere();
+			Quadric lid = new Disk();
+			shape.setDrawStyle(GLU.GLU_LINE);
+			lid.setDrawStyle(GLU.GLU_LINE);
+			double lidHoleDiameter = contraction == 0 && isOpen && !SculptSettings.SCULPT_HOLLOW_SHAPE
+					? r - SculptSettings.WALL_THICKNESS * Utility.pixelD : 0;
+			GlStateManager.pushMatrix();
+			GL11.glLineWidth(configShape.lineWidth);
+			double x2 = x - playerX;
+			double y2 = y - playerY;
+			double z2 = z - playerZ;
+			if (!isCone && !isDrawn)
+			{
+				double hp = (Utility.pixelD * 0.5);
+				x2 += hp;
+				y2 += hp;
+				z2 += hp;
+			}
+			if (shapeType > 0)
+			{
+				y2 += isDrawn ? b : r;
+				if (isNotSphere && isOpen && contraction > 0 && (!isCone || drawnBox))
+				{
+					y2 -= contraction * (isCone ? 0.5 : (drawnBox ? 0 : -1));
+				}
+				else if (isCone && contraction > 0)
+				{
+					y2 -= contraction * 0.5 - base * 0.5;
+				}
+			}
+			GlStateManager.translate(x2, y2, z2);
+			GlStateManager.scale(a / r, b / r, c / r);
+			GlStateManager.rotate(90, 1, 0, 0);
+			if (configShape.renderOuterShape)
+			{
+				drawEnvelopedShapes(r, configShape, shapeType, shape,
+						lid, true, isCone, lidHoleDiameter, isOpen);
+			}
+			if (configShape.renderInnerShape)
+			{
+				GlStateManager.depthFunc(GL11.GL_GREATER);
+				drawEnvelopedShapes(r, configShape, shapeType, shape,
+						lid, false, isCone, lidHoleDiameter, isOpen);
+				GlStateManager.depthFunc(GL11.GL_LEQUAL);
+			}
+			GlStateManager.popMatrix();
+		}
+	}
+
+	private void drawEnvelopedShapes(double r, ConfigShapeRender configShape, int shapeType, Quadric shape,
+			Quadric lid, boolean isOuter, boolean isCylinder, double lidHoleDiameter, boolean isOpen)
+	{
+		drawEnvelopedShape(shape, r, isOuter, configShape, isCylinder, lidHoleDiameter);
+		if (shapeType > 0)
+		{
+			if (!SculptSettings.SCULPT_HOLLOW_SHAPE || (!isOpen || lidHoleDiameter > 0))
+			{
+				if (shapeType == 1)
+				{
+					drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, lidHoleDiameter);
+				}
+				GlStateManager.translate(0, 0, r * 2);
+				drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, lidHoleDiameter);
+			}
+		}
+	}
+	
+	private void drawEnvelopedShape(Quadric shape, double radius, boolean isOuter,
+			ConfigShapeRender configShape, boolean isCone, double lidHoleDiameter)
+	{
 		GlStateManager.color(configShape.red, configShape.green,
-				configShape.blue, outer ? configShape.outerShapeAlpha : configShape.innerShapeAlpha);
+				configShape.blue, isOuter ? configShape.outerShapeAlpha : configShape.innerShapeAlpha);
 		float r = (float) radius;
 		if (shape instanceof Sphere)
 		{
@@ -655,7 +736,10 @@ public class ClientEventHandler
 		{
 			((Cylinder) shape).draw(isCone ? 0 : r, r, r * 2, 32, 32);
 		}
-		GL11.glEndList();
+		else if (shape instanceof Disk)
+		{
+			((Disk) shape).draw((float) lidHoleDiameter, r, 32, (int) (((r - lidHoleDiameter) / r) * 32));
+		}
 	}
 	
 	private AxisAlignedBB limitBox(AxisAlignedBB box, AxisAlignedBB mask)
