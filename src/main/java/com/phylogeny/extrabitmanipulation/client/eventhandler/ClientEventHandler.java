@@ -469,8 +469,10 @@ public class ClientEventHandler
 						int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 						if (!removeBits || mode > 0 || api.canBeChiseled(world, target.getBlockPos()))
 						{
-							IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-									(float) hit.zCoord - pos.getZ(), dir, pos, false);
+							float hitX = (float) hit.xCoord - pos.getX();
+							float hitY = (float) hit.yCoord - pos.getY();
+							float hitZ = (float) hit.zCoord - pos.getZ();
+							IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, dir, pos, false);
 							if (bitLoc != null)
 							{
 								NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
@@ -503,6 +505,7 @@ public class ClientEventHandler
 								{
 									GlStateManager.pushMatrix();
 									GL11.glLineWidth(configBox.lineWidth);
+									boolean inside = ItemSculptingTool.wasInsideClicked(dir, hit, pos);
 									if (drawnBox)
 									{
 										double x4 = drawnStartPoint.xCoord;
@@ -536,9 +539,41 @@ public class ClientEventHandler
 									}
 									else
 									{
-										if (mode == 2) r = 0;
+										double f = 0;
+										float x4 = 0, y4 = 0, z4 = 0;
+										if (mode == 2)
+										{
+											r = 0;
+										}
+										else if (SculptSettings.TARGET_BIT_CORNERS)
+										{
+											f = Utility.pixelD * 0.5;
+											x4 = hitX < (Math.round(hitX/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+											y4 = hitY < (Math.round(hitY/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+											z4 = hitZ < (Math.round(hitZ/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+											double offsetX = Math.abs(dir.getFrontOffsetX());
+											double offsetY = Math.abs(dir.getFrontOffsetY());
+											double offsetZ = Math.abs(dir.getFrontOffsetZ());
+											int s = dir.ordinal();
+											if (s % 2 == 0)
+											{
+												if (offsetX > 0) x4 *= -1;
+												if (offsetY > 0) y4 *= -1;
+												if (offsetZ > 0) z4 *= -1;
+											}
+											boolean su = s== 1 || s == 3;
+											if (removeBits ? (!inside || !su) : (inside && su))
+											{
+												if (offsetX > 0) x4 *= -1;
+												if (offsetY > 0) y4 *= -1;
+												if (offsetZ > 0) z4 *= -1;
+											}
+											r -= f;
+										}
 										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.pixelD, y + r + Utility.pixelD, z + r + Utility.pixelD)
-										.offset(x2 * Utility.pixelD, y2 * Utility.pixelD, z2 * Utility.pixelD);
+										.offset(x2 * Utility.pixelD + f * x4,
+												y2 * Utility.pixelD + f * y4,
+												z2 * Utility.pixelD + f * z4);
 									}
 									if (fixedCone)
 									{
@@ -546,7 +581,7 @@ public class ClientEventHandler
 									}
 									if (mode == 0)
 									{
-										BlockPos pos2 = !removeBits && !ItemSculptingTool.wasInsideClicked(dir, hit, pos) ? pos.offset(dir) : pos;
+										BlockPos pos2 = !removeBits && !inside ? pos.offset(dir) : pos;
 										Block block = world.getBlockState(pos2).getBlock();
 										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2.getX(), pos2.getY(), pos2.getZ(),
 												pos2.getX() + 1, pos2.getY() + 1, pos2.getZ() + 1) :

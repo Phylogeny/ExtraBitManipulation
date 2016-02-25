@@ -124,7 +124,8 @@ public class ItemSculptingTool extends ItemBitToolBase
     {
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-		if (!removeBits && !wasInsideClicked(side, hit, pos))
+		boolean inside = wasInsideClicked(side, hit, pos);
+		if (!removeBits && !inside)
 		{
 			pos = pos.offset(side);
 		}
@@ -132,8 +133,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 		boolean globalMode = nbt.getInteger(NBTKeys.MODE) == 1;
 		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
 		{
-			IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-					(float) hit.zCoord - pos.getZ(), side, pos, false);
+			float hitX = (float) hit.xCoord - pos.getX();
+			float hitY = (float) hit.yCoord - pos.getY();
+			float hitZ = (float) hit.zCoord - pos.getZ();
+			IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, side, pos, false);
 			if (bitLoc != null)
 			{
 				int sculptSemiDiameter = nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER);
@@ -181,7 +184,34 @@ public class ItemSculptingTool extends ItemBitToolBase
 					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
-					((SymmetricalShape) shape).init(x2, y2, z2, addPadding(sculptSemiDiameter));
+					float f = 0;
+					float x3 = 0, y3 = 0, z3 = 0;
+					if (SculptSettings.TARGET_BIT_CORNERS)
+					{
+						f = Utility.pixelF * 0.5F;
+						x3 = hitX < (Math.round(hitX/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+						y3 = hitY < (Math.round(hitY/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+						z3 = hitZ < (Math.round(hitZ/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+						int s = side.ordinal();
+						double offsetX = Math.abs(side.getFrontOffsetX());
+						double offsetY = Math.abs(side.getFrontOffsetY());
+						double offsetZ = Math.abs(side.getFrontOffsetZ());
+						if (s % 2 == 0)
+						{
+							if (offsetX > 0) x3 *= -1;
+							if (offsetY > 0) y3 *= -1;
+							if (offsetZ > 0) z3 *= -1;
+						}
+						boolean su = s== 1 || s == 3;
+						if (removeBits ? (!inside || !su) : (inside && su))
+						{
+							if (offsetX > 0) x3 *= -1;
+							if (offsetY > 0) y3 *= -1;
+							if (offsetZ > 0) z3 *= -1;
+						}
+					}
+					((SymmetricalShape) shape).init(x2 + f * x3, y2 + f * y3,
+							z2 + f * z3, addPadding(sculptSemiDiameter) - f);
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
