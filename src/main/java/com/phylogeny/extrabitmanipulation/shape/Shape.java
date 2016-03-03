@@ -25,6 +25,7 @@ public class Shape
 	
 	public boolean isBlockInsideShape(BlockPos pos)
 	{
+		if (SculptSettings.SCULPT_HOLLOW_SHAPE) return false;
 		for (int i = 0; i < 16; i += 15)
 		{
 			for (int j = 0; j < 16; j += 15)
