@@ -91,12 +91,7 @@ public class ItemsExtraBitManipulation
 			{
 				ItemSculptingTool itemTool = (ItemSculptingTool) item;
 				ConfigShapeRender boundingBox = itemTool.removeBits() ? Configs.itemShapes[0] : Configs.itemShapes[1];
-				ConfigShapeRender envelopedShape = null;
-				if (itemTool.isCurved())
-				{
-					envelopedShape = itemTool.removeBits() ? Configs.itemShapes[2] : Configs.itemShapes[3];
-				}
-				Configs.itemShapeMap.put(item, new ConfigShapeRenderPair(boundingBox, envelopedShape));
+				Configs.itemShapeMap.put(item, new ConfigShapeRenderPair(boundingBox, itemTool.removeBits() ? Configs.itemShapes[2] : Configs.itemShapes[3]));
 			}
 		}
 	}

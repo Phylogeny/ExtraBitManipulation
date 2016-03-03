@@ -9,6 +9,7 @@ import org.lwjgl.util.glu.Sphere;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.shape.Prism;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
@@ -488,7 +489,8 @@ public class ClientEventHandler
 								}
 								boolean isDrawn = drawnStartPoint != null;
 								boolean drawnBox = mode == 2 && isDrawn;
-								boolean fixedCone = !drawnBox && stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) == 2;//TODO
+								int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) : 0;
+								boolean fixedCone = !drawnBox && shapeType == 2 || shapeType > 4;//TODO
 								GlStateManager.enableBlend();
 								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 								GlStateManager.disableTexture2D();
@@ -609,19 +611,16 @@ public class ClientEventHandler
 								double a = 0;
 								double b = 0;
 								double c = 0;
-								if (configPair.hasEnvelopedShape())
+								if (!fixedCone)
 								{
-									if (!fixedCone)
-									{
-										shapeBox = box.expand(0, 0, 0);
-									}
-									renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn,
-											drawnBox, r, configPair, shapeBox, x3, y3, z3, a, b, c, 0, SculptSettings.OPEN_ENDS);
-									if (SculptSettings.SCULPT_HOLLOW_SHAPE && !(mode == 2 && !drawnBox))
-									{
-										renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-												x3, y3, z3, a, b, c, SculptSettings.WALL_THICKNESS, SculptSettings.OPEN_ENDS);
-									}
+									shapeBox = box.expand(0, 0, 0);
+								}
+								renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn,
+										drawnBox, r, configPair, shapeBox, x3, y3, z3, a, b, c, 0, SculptSettings.OPEN_ENDS);
+								if (SculptSettings.SCULPT_HOLLOW_SHAPE && !(mode == 2 && !drawnBox))
+								{
+									renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
+											x3, y3, z3, a, b, c, SculptSettings.WALL_THICKNESS, SculptSettings.OPEN_ENDS);
 								}
 								GlStateManager.depthMask(true);
 								GlStateManager.enableTexture2D();
@@ -640,11 +639,19 @@ public class ClientEventHandler
 		ConfigShapeRender configShape = configPair.envelopedShape;
 		if (configShape.renderInnerShape || configShape.renderOuterShape)
 		{
+			/* 0 = sphere
+			 * 1 = cylinder
+			 * 2 = cone
+			 * 3 = cube
+			 * 4 = triangular prism
+			 * 5 = triangular pyramid
+			 * 6 = square pyramid
+			 */
 			int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
 			EnumFacing dir = EnumFacing.getFront(SculptSettings.ROTATION);
 			int rot = dir.ordinal();
-			boolean notFullSym = shapeType != 0;
-			boolean notSym = shapeType == 2;
+			boolean notFullSym = shapeType != 0 && shapeType != 3;
+			boolean notSym = shapeType == 2 || shapeType > 4;
 			double ri = r + Utility.pixelD * 0.5;
 			r = Math.max(ri - contraction, 0);
 			boolean drawnNotSym = notSym && drawnBox;
@@ -741,9 +748,9 @@ public class ClientEventHandler
 					b += contraction * (isDrawn ? 0 : 1);
 				}
 			}
-			Quadric shape = notFullSym ? new Cylinder() : new Sphere();
-			Quadric lid = new Disk();
+			Quadric shape = shapeType > 2 ? new Prism(shapeType > 4, shapeType == 4 || shapeType == 5) : (notFullSym ? new Cylinder() : new Sphere());
 			shape.setDrawStyle(GLU.GLU_LINE);
+			Quadric lid = new Disk();
 			lid.setDrawStyle(GLU.GLU_LINE);
 			GlStateManager.pushMatrix();
 			GL11.glLineWidth(configShape.lineWidth);
@@ -757,10 +764,9 @@ public class ClientEventHandler
 				y2 += hp;
 				z2 += hp;
 			}
-			if (shapeType > 0)
+			if (notFullSym)
 			{
-				if (!notFullSym) y2 += isDrawn ? b : r;
-				if (notFullSym && isOpen && contraction > 0 && !notSym)
+				if (isOpen && contraction > 0 && !notSym)
 				{
 					y2 -= contraction * (notSym ? 0.5 : (drawnBox ? 0 : -1));
 				}
@@ -769,9 +775,9 @@ public class ClientEventHandler
 			GlStateManager.translate(x2, y2, z2);
 			
 			SculptSettings.WALL_THICKNESS = Utility.pixelF * 2;//TODO
-			SculptSettings.OPEN_ENDS = true;//TODO
+			SculptSettings.OPEN_ENDS = false;//TODO
 			SculptSettings.SCULPT_HOLLOW_SHAPE = true;//TODO
-			SculptSettings.ROTATION = EnumFacing.WEST.ordinal();//TODO
+			SculptSettings.ROTATION = EnumFacing.NORTH.ordinal();//TODO
 			
 			int rot2 = rot;
 			if (!(drawnNotSym && rot == 2))
@@ -887,7 +893,7 @@ public class ClientEventHandler
 	{
 		GlStateManager.pushMatrix();
 		drawEnvelopedShape(shape, r, isOuter, configShape, isCylinder);
-		if (shapeType > 0 && !isOpen)
+		if (shapeType > 0 && shapeType < 3 && !isOpen)
 		{
 			if (shapeType == 1)
 			{
@@ -906,7 +912,11 @@ public class ClientEventHandler
 		GlStateManager.color(configShape.red, configShape.green,
 				configShape.blue, isOuter ? configShape.outerShapeAlpha : configShape.innerShapeAlpha);
 		float r = (float) radius;
-		if (shape instanceof Sphere)
+		if (shape instanceof Prism)
+		{
+			((Prism) shape).draw(r);
+		}
+		else if (shape instanceof Sphere)
 		{
 			((Sphere) shape).draw(r, 32, 32);
 		}

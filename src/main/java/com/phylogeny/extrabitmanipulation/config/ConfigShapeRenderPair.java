@@ -11,9 +11,4 @@ public class ConfigShapeRenderPair
 		this.envelopedShape = envelopedShape;
 	}
 	
-	public boolean hasEnvelopedShape()
-	{
-		return envelopedShape != null;
-	}
-	
 }
