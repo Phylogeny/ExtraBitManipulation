@@ -47,6 +47,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import net.minecraft.util.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
@@ -616,10 +617,10 @@ public class ClientEventHandler
 									}
 									renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn,
 											drawnBox, r, configPair, shapeBox, x3, y3, z3, a, b, c, 0, SculptSettings.OPEN_ENDS);
-									if (SculptSettings.SCULPT_HOLLOW_SHAPE)
+									if (SculptSettings.SCULPT_HOLLOW_SHAPE && !(mode == 2 && !drawnBox))
 									{
 										renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-												x3, y3, z3, a, b, c, SculptSettings.WALL_THICKNESS * Utility.pixelD, SculptSettings.OPEN_ENDS);
+												x3, y3, z3, a, b, c, SculptSettings.WALL_THICKNESS, SculptSettings.OPEN_ENDS);
 									}
 								}
 								GlStateManager.depthMask(true);
@@ -640,13 +641,16 @@ public class ClientEventHandler
 		if (configShape.renderInnerShape || configShape.renderOuterShape)
 		{
 			int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
-			boolean isNotSphere = shapeType != 0;
-			boolean isCylinder = shapeType == 1;
-			boolean isCone = shapeType == 2;
-			r += Utility.pixelD * 0.5 - contraction;
-			boolean dawnCone = isCone && drawnBox;
+			EnumFacing dir = EnumFacing.getFront(SculptSettings.ROTATION);
+			int rot = dir.ordinal();
+			boolean notFullSym = shapeType != 0;
+			boolean notSym = shapeType == 2;
+			double ri = r + Utility.pixelD * 0.5;
+			r = Math.max(ri - contraction, 0);
+			boolean drawnNotSym = notSym && drawnBox;
 			double base = 0;
-			if (drawnBox || isCone)
+			double v;
+			if (drawnBox || notSym)
 			{
 				double f = 0.5;
 				double minX = box.minX * f;
@@ -658,7 +662,22 @@ public class ClientEventHandler
 				double x2 = maxX - minX;
 				double y2 = maxY - minY;
 				double z2 = maxZ - minZ;
-				if (isCone && contraction > 0)
+				if (drawnNotSym)
+				{
+					if (rot == 2 || rot == 3)
+					{
+						v = y2;
+						y2 = z2;
+						z2 = v;
+					}
+					else if (rot > 3)
+					{
+						v = y2;
+						y2 = x2;
+						x2 = v;
+					}
+				}
+				if (notSym && contraction > 0)
 				{
 					if (!isOpen) base = contraction;
 					y2 *= 2;
@@ -672,67 +691,191 @@ public class ClientEventHandler
 				}
 				else
 				{
-					a = Math.max(x2 - contraction, 0);
-					c = Math.max(z2 - contraction, 0);
-					b = Math.max(y2 - (isNotSphere && isOpen && isDrawn ? 0 : contraction), 0);
+					a = Math.max(x2 - (!isOpen || !notFullSym || rot < 4 ? contraction : 0), 0);
+					c = Math.max(z2 - (!isOpen || !notFullSym || rot != 2 && rot != 3 ? contraction : 0), 0);
+					b = Math.max(y2 - (!isOpen || !notFullSym || rot > 1 ? contraction : 0), 0);
 				}
 				r = Math.max(Math.max(a, b), c);
 				x = maxX + minX;
 				y = maxY + minY;
 				z = maxZ + minZ;
+				if (drawnBox)
+				{
+					if (notSym || !notFullSym)
+					{
+						if (rot < 2 || rot > 3 || !notFullSym)
+						{
+							v = b;
+							b = c;
+							c = v;
+						}
+					}
+					else
+					{
+						if (rot < 2)
+						{
+							v = b;
+							b = c;
+							c = v;
+						}
+						else if (rot > 3)
+						{
+							v = a;
+							a = c;
+							c = v;
+						}
+						else
+						{
+							v = b;
+							b = a;
+							a = v;
+						}
+					}
+				}
 			}
 			else
 			{
 				a = b = c = r;
-				if (isNotSphere && isOpen)
+				if (notFullSym && isOpen)
 				{
 					b += contraction * (isDrawn ? 0 : 1);
 				}
 			}
-			if (r < 0) r = 0;
-			Quadric shape = isNotSphere ? new Cylinder() : new Sphere();
+			Quadric shape = notFullSym ? new Cylinder() : new Sphere();
 			Quadric lid = new Disk();
 			shape.setDrawStyle(GLU.GLU_LINE);
 			lid.setDrawStyle(GLU.GLU_LINE);
-			double lidHoleDiameter = contraction == 0 && isOpen && !SculptSettings.SCULPT_HOLLOW_SHAPE
-					? r - SculptSettings.WALL_THICKNESS * Utility.pixelD : 0;
 			GlStateManager.pushMatrix();
 			GL11.glLineWidth(configShape.lineWidth);
 			double x2 = x - playerX;
 			double y2 = y - playerY;
 			double z2 = z - playerZ;
-			if (!isCone && !isDrawn)
+			if (!notSym && !isDrawn)
 			{
-				double hp = (Utility.pixelD * 0.5);
+				double hp = Utility.pixelD * 0.5;
 				x2 += hp;
 				y2 += hp;
 				z2 += hp;
 			}
 			if (shapeType > 0)
 			{
-				y2 += isDrawn ? b : r;
-				if (isNotSphere && isOpen && contraction > 0 && (!isCone || drawnBox))
+				if (!notFullSym) y2 += isDrawn ? b : r;
+				if (notFullSym && isOpen && contraction > 0 && !notSym)
 				{
-					y2 -= contraction * (isCone ? 0.5 : (drawnBox ? 0 : -1));
-				}
-				else if (isCone && contraction > 0)
-				{
-					y2 -= contraction * 0.5 - base * 0.5;
+					y2 -= contraction * (notSym ? 0.5 : (drawnBox ? 0 : -1));
 				}
 			}
+			
 			GlStateManager.translate(x2, y2, z2);
-			GlStateManager.scale(a / r, b / r, c / r);
-			GlStateManager.rotate(90, 1, 0, 0);
+			
+			SculptSettings.WALL_THICKNESS = Utility.pixelF * 2;//TODO
+			SculptSettings.OPEN_ENDS = true;//TODO
+			SculptSettings.SCULPT_HOLLOW_SHAPE = true;//TODO
+			SculptSettings.ROTATION = EnumFacing.WEST.ordinal();//TODO
+			
+			int rot2 = rot;
+			if (!(drawnNotSym && rot == 2))
+			{
+				if (notFullSym && rot2 != 1)
+				{
+					int angle = 90;
+					if (rot2 == 3)
+					{
+						rot2 = 0;
+						angle = 180;
+						if (!(drawnNotSym && rot == 3))
+						{
+							GlStateManager.rotate(90, 0, 0, 1);
+						}
+					}
+					else if (rot2 > 1)
+					{
+						rot2 %= 4;
+					}
+					else
+					{
+						rot2 = rot2 ^ 1 + 4;
+					}
+					Vec3i vec = EnumFacing.getFront(rot2).getOpposite().getDirectionVec();
+					GlStateManager.rotate(angle, vec.getX(), vec.getY(), vec.getZ());
+				}
+				else
+				{
+					GlStateManager.rotate(90, 1, 0, 0);
+				}
+			}
+			boolean openSym = notFullSym && !notSym && isOpen && !isDrawn;
+			if (notFullSym)
+			{
+				double offset1 = 0;
+				double offset2 = 0;
+				double r2 = r;
+				if (notSym)
+				{
+					r2 -= contraction * 0.5 - base * 0.5;
+				}
+				else if (openSym)
+				{
+					double m = -contraction;
+					if (rot == 0) m *= 2;
+					if (rot != 1) r -= m;
+					if (rot > 1)
+					{
+						if (rot < 3)
+						{
+							offset1 = m;
+						}
+						else
+						{
+							offset2 = m;
+						}
+					}
+				}
+				GlStateManager.translate(offset1, offset2, -r2);
+			}
+			if (openSym)
+			{
+				v = b;
+				b = c;
+				c = v;
+			}
+			if (drawnNotSym)
+			{
+				if (rot == 2 || rot == 3)
+				{
+					v = b;
+					b = c;
+					c = v;
+				}
+				else if (rot > 3)
+				{
+					v = b;
+					b = a;
+					a = v;
+				}
+			}
+			if (notFullSym && drawnBox)
+			{
+				if (b > c && b > a)
+				{
+					GlStateManager.translate(0, 0, b - c);
+				}
+				else if (a > c && a >= b)
+				{
+					GlStateManager.translate(0, 0, a - c);
+				}
+			}
+			GlStateManager.scale(a / ri, b / ri, c / ri);
 			if (configShape.renderOuterShape)
 			{
-				drawEnvelopedShapes(r, configShape, shapeType, shape,
-						lid, true, isCone, lidHoleDiameter, isOpen);
+				drawEnvelopedShapes(ri, configShape, shapeType, shape,
+						lid, true, notSym, isOpen);
 			}
 			if (configShape.renderInnerShape)
 			{
 				GlStateManager.depthFunc(GL11.GL_GREATER);
-				drawEnvelopedShapes(r, configShape, shapeType, shape,
-						lid, false, isCone, lidHoleDiameter, isOpen);
+				drawEnvelopedShapes(ri, configShape, shapeType, shape,
+						lid, false, notSym, isOpen);
 				GlStateManager.depthFunc(GL11.GL_LEQUAL);
 			}
 			GlStateManager.popMatrix();
@@ -740,26 +883,26 @@ public class ClientEventHandler
 	}
 
 	private void drawEnvelopedShapes(double r, ConfigShapeRender configShape, int shapeType, Quadric shape,
-			Quadric lid, boolean isOuter, boolean isCylinder, double lidHoleDiameter, boolean isOpen)
+			Quadric lid, boolean isOuter, boolean isCylinder, boolean isOpen)
 	{
-		drawEnvelopedShape(shape, r, isOuter, configShape, isCylinder, lidHoleDiameter);
-		if (shapeType > 0)
+		GlStateManager.pushMatrix();
+		drawEnvelopedShape(shape, r, isOuter, configShape, isCylinder);
+		if (shapeType > 0 && !isOpen)
 		{
-			if (!SculptSettings.SCULPT_HOLLOW_SHAPE || (!isOpen || lidHoleDiameter > 0))
+			if (shapeType == 1)
 			{
-				if (shapeType == 1)
-				{
-					drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, lidHoleDiameter);
-				}
-				GlStateManager.translate(0, 0, r * 2);
-				drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, lidHoleDiameter);
+				drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder);
 			}
+			GlStateManager.translate(0, 0, r * 2);
+			drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder);
 		}
+		GlStateManager.popMatrix();
 	}
 	
 	private void drawEnvelopedShape(Quadric shape, double radius, boolean isOuter,
-			ConfigShapeRender configShape, boolean isCone, double lidHoleDiameter)
+			ConfigShapeRender configShape, boolean isCone)
 	{
+		GlStateManager.pushMatrix();
 		GlStateManager.color(configShape.red, configShape.green,
 				configShape.blue, isOuter ? configShape.outerShapeAlpha : configShape.innerShapeAlpha);
 		float r = (float) radius;
@@ -773,8 +916,9 @@ public class ClientEventHandler
 		}
 		else if (shape instanceof Disk)
 		{
-			((Disk) shape).draw((float) lidHoleDiameter, r, 32, (int) (((r - lidHoleDiameter) / r) * 32));
+			((Disk) shape).draw(0, r, 32, 32);
 		}
+		GlStateManager.popMatrix();
 	}
 	
 	private AxisAlignedBB limitBox(AxisAlignedBB box, AxisAlignedBB mask)
