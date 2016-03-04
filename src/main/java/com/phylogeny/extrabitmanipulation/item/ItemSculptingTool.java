@@ -155,6 +155,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 				Shape shape;
 				AxisAlignedBB box;
 				int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
+				int rotation = SculptSettings.ROTATION;//TODO
+				boolean sculptHollowShape = SculptSettings.SCULPT_HOLLOW_SHAPE;//TODO
+				float wallThickness = SculptSettings.WALL_THICKNESS;//TODO
+				boolean openEnds = SculptSettings.OPEN_ENDS;//TODO
+				
 				if (drawnStartPoint != null)
 				{
 					shape = curved ? (shapeType == 0 ? new Ellipsoid() : (shapeType == 1 ? new CylinderElliptic() : new ConeElliptic())) : new Cuboid();
@@ -176,7 +181,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 					maxX *= f;
 					maxY *= f;
 					maxZ *= f;
-					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ);
+					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ,
+							rotation, sculptHollowShape, wallThickness, openEnds);
 				}
 				else
 				{
@@ -210,8 +216,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 							if (offsetZ > 0) z3 *= -1;
 						}
 					}
-					((SymmetricalShape) shape).init(x2 + f * x3, y2 + f * y3,
-							z2 + f * z3, addPadding(sculptSemiDiameter) - f);
+					((SymmetricalShape) shape).init(x2 + f * x3, y2 + f * y3, z2 + f * z3, addPadding(sculptSemiDiameter) - f,
+							rotation, sculptHollowShape, wallThickness, openEnds);
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;

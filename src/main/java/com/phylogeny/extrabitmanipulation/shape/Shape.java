@@ -3,7 +3,6 @@ package com.phylogeny.extrabitmanipulation.shape;
 import java.util.Random;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import net.minecraft.block.Block;
@@ -14,18 +13,42 @@ import net.minecraft.world.World;
 
 public class Shape
 {
-	protected float centerX, centerY, centerZ;
+	protected int rotation;
+	protected float centerX, centerY, centerZ, wallThickness;
+	protected boolean sculptHollowShape, openEnds, inverted;
 	
-	public void init(float centerX, float centerY, float centerZ)
+	public void init(float centerX, float centerY, float centerZ, int rotation,
+			boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
+		this.rotation = rotation;
+		this.sculptHollowShape = sculptHollowShape;
+		this.wallThickness = wallThickness;
+		this.openEnds = openEnds;
+		float v;
+		if (rotation > 1)
+		{
+			if (rotation > 3)
+			{
+				v = centerX;
+				centerX = centerY;
+				centerY = v;
+			}
+			else
+			{
+				v = centerZ;
+				centerZ = centerY;
+				centerY = v;
+			}
+		}
 		this.centerX = centerX; 
 		this.centerY = centerY;
 		this.centerZ = centerZ;
+		inverted = rotation % 2 == 0;
 	}
 	
 	public boolean isBlockInsideShape(BlockPos pos)
 	{
-		if (SculptSettings.SCULPT_HOLLOW_SHAPE) return false;
+		if (sculptHollowShape) return false;
 		for (int i = 0; i < 16; i += 15)
 		{
 			for (int j = 0; j < 16; j += 15)
@@ -105,37 +128,37 @@ public class Shape
 	
 	protected float reduceLength(float value)
 	{
-		return Utility.pixelF < value ? value - SculptSettings.WALL_THICKNESS : 0.0000000001F;
+		return Utility.pixelF < value ? value - wallThickness : 0.0000000001F;
 	}
 	
-	protected float getBitPosDiffX(BlockPos pos, int x, float center)
+	protected float getBitPosDiffX(BlockPos pos, int x, int y, int z, float center)
 	{
-		return getBitPosX(pos, x) - center;
+		return getBitPosX(pos, x, y, z) - center;
 	}
 	
-	protected float getBitPosDiffY(BlockPos pos, int y, float center)
+	protected float getBitPosDiffY(BlockPos pos, int x, int y, int z, float center)
 	{
-		return getBitPosY(pos, y) - center;
+		return getBitPosY(pos, x, y, z) - center;
 	}
 	
-	protected float getBitPosDiffZ(BlockPos pos, int z, float center)
+	protected float getBitPosDiffZ(BlockPos pos, int x, int y, int z, float center)
 	{
-		return getBitPosZ(pos, z) - center;
+		return getBitPosZ(pos, x, y, z) - center;
 	}
 	
-	protected float getBitPosX(BlockPos pos, int x)
+	protected float getBitPosX(BlockPos pos, int x, int y, int z)
 	{
-		return pos.getX() + x * Utility.pixelF;
+		return (rotation > 3 ? pos.getY() + y * Utility.pixelF : pos.getX() + x * Utility.pixelF);
 	}
 	
-	protected float getBitPosY(BlockPos pos, int y)
+	protected float getBitPosY(BlockPos pos, int x, int y, int z)
 	{
-		return pos.getY() + y * Utility.pixelF;
+		return (rotation < 2 ? pos.getY() + y * Utility.pixelF : (rotation > 3 ? pos.getX() + x * Utility.pixelF : pos.getZ() + z * Utility.pixelF));
 	}
 	
-	protected float getBitPosZ(BlockPos pos, int z)
+	protected float getBitPosZ(BlockPos pos, int x, int y, int z)
 	{
-		return pos.getZ() + z * Utility.pixelF;
+		return (rotation == 2 || rotation == 3 ? pos.getY() + y * Utility.pixelF : pos.getZ() + z * Utility.pixelF);
 	}
 	
 	protected boolean isPointOffLine(float val, float centerVal, float semiDiameter)

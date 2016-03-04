@@ -1,26 +1,25 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
-
 import net.minecraft.util.BlockPos;
 
 public class Cube extends SymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ, float semiDiameter)
+	public void init(float centerX, float centerY, float centerZ, float semiDiameter, int rotation,
+			boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		super.init(centerX, centerY, centerZ, semiDiameter);
+		super.init(centerX, centerY, centerZ, semiDiameter, rotation, sculptHollowShape, wallThickness, openEnds);
 	}
 	
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float x = getBitPosX(pos, i);
-		float y = getBitPosY(pos, j);
-		float z = getBitPosZ(pos, k);
+		float x = getBitPosX(pos, i, j, k);
+		float y = getBitPosY(pos, i, j, k);
+		float z = getBitPosZ(pos, i, j, k);
 		boolean inShape = isPointInsideisCube(x, y, z, semiDiameter);
-		return SculptSettings.SCULPT_HOLLOW_SHAPE ? inShape && !isPointInsideisCube(x, y, z, semiDiameterInset) : inShape;
+		return sculptHollowShape ? inShape && !isPointInsideisCube(x, y, z, semiDiameterInset) : inShape;
 	}
 	
 	private boolean isPointInsideisCube(float x, float y, float z, float semiDiameter)

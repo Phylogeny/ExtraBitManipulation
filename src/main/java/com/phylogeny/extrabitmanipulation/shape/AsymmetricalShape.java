@@ -6,15 +6,32 @@ public class AsymmetricalShape extends Shape
 {
 	protected float a, b, c, aInset, bInset, cInset;
 	
-	public void init(float centerX, float centerY, float centerZ, float a, float b, float c)
+	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
+			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		init(centerX, centerY, centerZ);
+		init(centerX, centerY, centerZ, rotation, sculptHollowShape, wallThickness, openEnds);
+		float v;
+		if (this.rotation > 1)
+		{
+			if (this.rotation > 3)
+			{
+				v = a;
+				a = b;
+				b = v;
+			}
+			else
+			{
+				v = c;
+				c = b;
+				b = v;
+			}
+		}
 		this.a = a; 
 		this.b = b;
 		this.c = c;
-		aInset = reduceLength(a);
-		bInset = reduceLength(b);
-		cInset = reduceLength(c);
+		aInset = reduceLength(this.a);
+		bInset = reduceLength(this.b);
+		cInset = reduceLength(this.c);
 	}
 
 	@Override
