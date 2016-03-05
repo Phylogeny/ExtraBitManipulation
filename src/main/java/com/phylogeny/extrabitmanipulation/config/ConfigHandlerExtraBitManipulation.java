@@ -49,44 +49,44 @@ public class ConfigHandlerExtraBitManipulation
 			getVersion(Reference.VERSION);
 			
 			//SCULPTING SETTINGS
-			Configs.BIT_TYPE_IN_CHAT = configFile.getBoolean("Chat Message For Bit Type Change", SCULPTING_SETTINGS, true, 
+			Configs.bitTypeInChat = configFile.getBoolean("Chat Message For Bit Type Change", SCULPTING_SETTINGS, true, 
 					"If set to true, changing the set bit type of a sculpting tool (for adding bits with spades or filtering bits with wires)" +
 					"will add the change to chat (does so without generating spam by deleting previous entry of the same type). " +
 					"If set to false, it will not be added. Either way, the bit type is displayed in the tooltip. (default = true)");
 			
-			Configs.DISPLAY_NAME_DIAMETER = configFile.getBoolean("Display Name Diameter", SCULPTING_SETTINGS, true, 
+			Configs.displayNameDiameter = configFile.getBoolean("Display Name Diameter", SCULPTING_SETTINGS, true, 
 					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
 					"If set to false, they will indicate the radius (default = true)");
 			
-			Configs.DISPLAY_NAME_USE_METER_UNITS = configFile.getBoolean("Display Name Meter Units", SCULPTING_SETTINGS, false, 
+			Configs.displayNameUseMeterUnits = configFile.getBoolean("Display Name Meter Units", SCULPTING_SETTINGS, false, 
 					"If set to true, sculpting tool display names will indicate the size of their bit removal/addition areas in meters. " +
 					"If set to false, they will be in bits (default = false)");
 			
-			Configs.SEMI_DIAMETER_PADDING = configFile.getFloat("Semi-Diameter Padding", SCULPTING_SETTINGS, 0.2F, 0, 1, 
+			Configs.semiDiameterPadding = configFile.getFloat("Semi-Diameter Padding", SCULPTING_SETTINGS, 0.2F, 0, 1, 
 					"Distance (in bits) to add to the semi-diameter of a sculpting tool's bit removal/addition area shape. If set to zero, no padding " +
 					"will be added; spheres, for example, will have single bits protruding from each cardinal direction at any size, since only those " +
 					"bits of those layers will be exactly on the sphere's perimeter. If set to 1, there will effectively be no padding for the same reason, " +
 					"but the radius will be one bit larger than specified. A value between 0 and 1 is suggested. (default = 0.2 bits)");
 			
-			Configs.PLACE_BITS_IN_INVENTORY = configFile.getBoolean("Place Bits In Inventory", SCULPTING_SETTINGS, true, 
+			Configs.placeBitsInInventory = configFile.getBoolean("Place Bits In Inventory", SCULPTING_SETTINGS, true, 
 					"If set to true, when bits are removed from blocks with a sculpting tool, as many of them will be given to the player as is possible. " +
 					"Any bits that cannot fit in the player's inventory will be spawned in the world. If set to false, no attempt will be made to give them " +
 					"to the player; they will always be spawned in the world. (default = true)");
 			
-			Configs.DROP_BITS_IN_BLOCKSPACE = configFile.getBoolean("Drop Bits In Block Space", SCULPTING_SETTINGS, true, 
+			Configs.dropBitsInBlockspace = configFile.getBoolean("Drop Bits In Block Space", SCULPTING_SETTINGS, true, 
 					"If set to true, when bits removed from blocks with a sculpting tool are spawned in the world, they will be spawned at a random " +
 					"point within the area that intersects the block space and the removal area bounding box (if 'Drop Bits Per Block' is true, they " +
 					"will be spawned in the block they are removed from; otherwise they will be spawned at the block they player right-clicked). " +
 					"If set to false, they will be spawned at the player, in the same way that items are spawned when throwing them on the ground " +
 					"by pressing Q. (default = true)");
 			
-			Configs.BIT_SPAWN_BOX_CONTRACTION = configFile.getFloat("Bit Spawn Box Contraction", SCULPTING_SETTINGS, 0.25F, 0, 0.5F, 
+			Configs.bitSpawnBoxContraction = configFile.getFloat("Bit Spawn Box Contraction", SCULPTING_SETTINGS, 0.25F, 0, 0.5F, 
 					"Amount in meters to contract the box that removed bits randomly spawn in (assuming they spawn in the block space as per 'Drop Bits In Block Space') " +
 					"If set to 0, there will be no contraction and they will be able to spawn anywhere in the box. If set to 0.5, the box will contract by half in all " +
 					"directions down to a point in the center of the original box and they will always spawn from that central point. The default of 0.25 (which is the " +
 					"default behavior when spawning items with Block.spawnAsEntity) contracts the box to half its original size. (default = 0.25 meters)");
 			
-			Configs.DROP_BITS_PER_BLOCK = configFile.getBoolean("Drop Bits Per Block", SCULPTING_SETTINGS, true, 
+			Configs.dropBitsPerBlock = configFile.getBoolean("Drop Bits Per Block", SCULPTING_SETTINGS, true, 
 					"When bits are removed from blocks with a sculpting tool, all the removed bits of each type are counted and a collection of item stacks are created " +
 					"of each item. For the sake of efficiency, the number of stacks generated is the minimum number necessary for that amount (Ex: 179 bits would become " +
 					"2 stacks of 64 and 1 stack of 51). If this config is set to true, the counts for each block will be added up and spawned after each block is modified. " +
@@ -97,7 +97,7 @@ public class ConfigHandlerExtraBitManipulation
 					"from is not possible. Rather, the bits will either spawn in the space of the block clicked or spawn at the player as per 'Drop Bits In Block Space'. " +
 					"(default = true)");
 			
-			Configs.DROP_BITS_AS_FULL_CHISELED_BLOCKS = configFile.getBoolean("Drop Bits As Full Chiseled Blocks", SCULPTING_SETTINGS, false, 
+			Configs.dropBitsAsFullChiseledBlocks = configFile.getBoolean("Drop Bits As Full Chiseled Blocks", SCULPTING_SETTINGS, false, 
 					"If set to true, full meter cubed blocks of bits that have all their bits removed will drop as full chiseled blocks. " +
 					"If set to false, they will drop normally as item stacks of bits (64 stacks of size 64). (default = false)");
 			
@@ -140,39 +140,39 @@ public class ConfigHandlerExtraBitManipulation
 			}
 			
 			//RENDER OVERLAYS
-			Configs.DISABLE_OVERLAYS = configFile.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
+			Configs.disableOverlays = configFile.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
 					"Prevents overlays from rendering. (default = false)");
 			
-			Configs.ROTATION_PERIOD = getDouble(configFile, "Rotation Period", RENDER_OVERLAYS, 180, 1, Double.MAX_VALUE,
+			Configs.rotationPeriod = getDouble(configFile, "Rotation Period", RENDER_OVERLAYS, 180, 1, Double.MAX_VALUE,
 					"Number of frames over which the cyclical arrow overlay used in block/texture rotation will complete one rotation. If this is " +
 					"set to the minimum value of 1, no rotation will occur. (default = 3 seconds at 60 fps)");
 			
-			Configs.MIRROR_PERIOD = getDouble(configFile, "Mirror Oscillation Period", RENDER_OVERLAYS, 50, 1, Double.MAX_VALUE,
+			Configs.mirrorPeriod = getDouble(configFile, "Mirror Oscillation Period", RENDER_OVERLAYS, 50, 1, Double.MAX_VALUE,
 					"Number of frames over which the bidirectional arrow overlay used in block/texture mirroring will complete one oscillation. If this is " +
 					"set to the minimum value of 1, no oscillation will occur. (default = 0.83 seconds at 60 fps)");
 			
-			Configs.MIRROR_AMPLITUDE = getDouble(configFile, "Mirror Oscillation Amplitude", RENDER_OVERLAYS, 0.1, 0, Double.MAX_VALUE,
+			Configs.mirrorAmplitude = getDouble(configFile, "Mirror Oscillation Amplitude", RENDER_OVERLAYS, 0.1, 0, Double.MAX_VALUE,
 					"Half the total travel distance of the bidirectional arrow overlay used in block/texture mirroring as measured from the center of " +
 					"the block face the player is looking at. If this is set to the minimum value of 0, no oscillation will occur. (default = 0.1 meters)");
 			
-			Configs.TRANSLATION_SCALE_PERIOD = getDouble(configFile, "Translation Scale Period", RENDER_OVERLAYS, 80, 1, Double.MAX_VALUE,
+			Configs.translationScalePeriod = getDouble(configFile, "Translation Scale Period", RENDER_OVERLAYS, 80, 1, Double.MAX_VALUE,
 					"Number of frames over which the circle overlay used in block translation will complete one cycle of scaling from a point to " +
 					"full-sized or vice versa. If this is set to the minimum value of 1, no scaling will occur. (default = 1.33 seconds at 60 fps)");
 			
-			Configs.TRANSLATION_DISTANCE = getDouble(configFile, "Arrow Movement Distance", RENDER_OVERLAYS, 0.75, 0, Double.MAX_VALUE,
+			Configs.translationDistance = getDouble(configFile, "Arrow Movement Distance", RENDER_OVERLAYS, 0.75, 0, Double.MAX_VALUE,
 					"Total travel distance of the arrowhead overlay used in block/texture translation/rotation as measured from the center of " +
 					"the block face the player is looking at. If this is set to the minimum value of 0, only one arrow head will be rendered and " +
 					"no movement will occur. (default = 0.75 meters)");
 			
-			Configs.TRANSLATION_OFFSET_DISTANCE = getDouble(configFile, "Arrow Spacing", RENDER_OVERLAYS, 0.25, 0, Double.MAX_VALUE,
+			Configs.translationOffsetDistance = getDouble(configFile, "Arrow Spacing", RENDER_OVERLAYS, 0.25, 0, Double.MAX_VALUE,
 					"Distance between the three moving arrowhead overlays used in block/texture translation/rotation. If this is set to the minimum " +
 					"value of 0, only one arrow head will be rendered. (default = 1/3 of the default distance of 0.75 meters, i.e. evenly spaced)");
 			
-			Configs.TRANSLATION_FADE_DISTANCE = getDouble(configFile, "Arrow Fade Distance", RENDER_OVERLAYS, 0.3, 0, Double.MAX_VALUE,
+			Configs.translationFadeDistance = getDouble(configFile, "Arrow Fade Distance", RENDER_OVERLAYS, 0.3, 0, Double.MAX_VALUE,
 					"Distance over which the arrowhead overlay used in block/texture translation/rotation will fade in (as well as out) as it moves. " +
 					"If this is set to the minimum value of 0, no fading will occur. (default = 0.3 meters)");
 			
-			Configs.TRANSLATION_MOVEMENT_PERIOD = getDouble(configFile, "Arrow Movement Period", RENDER_OVERLAYS, 120, 1, Double.MAX_VALUE,
+			Configs.translationMovementPeriod = getDouble(configFile, "Arrow Movement Period", RENDER_OVERLAYS, 120, 1, Double.MAX_VALUE,
 					"Number of frames over which the arrowhead overlay used in block/texture translation/rotation will travel from one end to the " +
 					"other of the distance specified by 'Arrow Movement Distance'. If this is set to the minimum value of 1, no movement will occur. " +
 					"(default = 2 seconds at 60 fps)");

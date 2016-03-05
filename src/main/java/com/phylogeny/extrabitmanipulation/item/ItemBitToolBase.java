@@ -54,14 +54,14 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
     {
 		ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
 		int size = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SCULPT_SEMI_DIAMETER) : config.defaultRemovalSemiDiameter;
-		if (Configs.DISPLAY_NAME_DIAMETER)
+		if (Configs.displayNameDiameter)
 		{
 			size = size * 2 + 1;
 		}
 		String diameterText = "";
-		if (Configs.DISPLAY_NAME_USE_METER_UNITS)
+		if (Configs.displayNameUseMeterUnits)
 		{
-			diameterText += Math.round(size * Utility.pixelD * 100) / 100.0 + " m";
+			diameterText += Math.round(size * Utility.PIXEL_D * 100) / 100.0 + " m";
 		}
 		else
 		{

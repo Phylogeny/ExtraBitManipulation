@@ -61,11 +61,11 @@ public class ClientEventHandler
 {
 	private int frameCounter;
 	private Vec3 drawnStartPoint = null;
-	private static final ResourceLocation arrowHead = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
-	private static final ResourceLocation arrowBidirectional = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
-	private static final ResourceLocation arrowCyclical = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
-	private static final ResourceLocation circle = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Circle.png");
-	private static final ResourceLocation inversion = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Inversion.png");
+	private static final ResourceLocation ARROW_HEAD = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
+	private static final ResourceLocation ARROW_BIDIRECTIONAL = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
+	private static final ResourceLocation ARROW_CYCLICAL = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
+	private static final ResourceLocation CIRCLE = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Circle.png");
+	private static final ResourceLocation INVERSION = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Inversion.png");
 	private static final int[] DIRECTION_FORWARD = new int[]{2, 0, 5, 4, 1, 3};
 	private static final int[] DIRECTION_BACKWARD = new int[]{1, 4, 0, 5, 3, 2};
 	private static final int[] AXIS_FORWARD = new int[]{2, 3, 4, 5, 0, 1};
@@ -142,14 +142,14 @@ public class ClientEventHandler
 										int x = pos.getX();
 										int y = pos.getY();
 										int z = pos.getZ();
-										float x2 = x + bitLoc.getBitX() * Utility.pixelF;
-										float y2 = y + bitLoc.getBitY() * Utility.pixelF;
-										float z2 = z + bitLoc.getBitZ() * Utility.pixelF;
+										float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
+										float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
+										float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
 										if (!toolItem.removeBits())
 										{
-											x2 += side.getFrontOffsetX() * Utility.pixelF;
-											y2 += side.getFrontOffsetY() * Utility.pixelF;
-											z2 += side.getFrontOffsetZ() * Utility.pixelF;
+											x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
+											y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
+											z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
 										}
 										drawnStartPoint = new Vec3(x2, y2, z2);
 									}
@@ -172,7 +172,7 @@ public class ClientEventHandler
 											{
 												IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
 												ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
-												if (Configs.BIT_TYPE_IN_CHAT)
+												if (Configs.bitTypeInChat)
 												{
 													printChatMessageWithDeletion("Now " + (toolItem.removeBits() ? "only removing " : "sculpting with ")
 															+ bitStack.getDisplayName().substring(15));
@@ -203,7 +203,7 @@ public class ClientEventHandler
 						else if (player.isSneaking() && event.buttonstate && toolItem.removeBits())
 						{
 							ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(true));
-							if (Configs.BIT_TYPE_IN_CHAT)
+							if (Configs.bitTypeInChat)
 							{
 								String text = "Now removing any/all bit type";
 								printChatMessageWithDeletion(text);
@@ -243,7 +243,7 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void renderBoxesSpheresAndOverlays(RenderWorldLastEvent event)
 	{
-		if (!Configs.DISABLE_OVERLAYS)
+		if (!Configs.disableOverlays)
 		{
 			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 			World world = player.worldObj;
@@ -319,7 +319,7 @@ public class ClientEventHandler
 						double offsetY2 = 0.5 * invOffsetY;
 						double offsetZ2 = 0.5 * invOffsetZ;
 						
-						double mirTravel = mode == 1 ? Configs.MIRROR_AMPLITUDE * Math.cos(Math.PI * 2 * frameCounter / Configs.MIRROR_PERIOD) : 0;
+						double mirTravel = mode == 1 ? Configs.mirrorAmplitude * Math.cos(Math.PI * 2 * frameCounter / Configs.mirrorPeriod) : 0;
 						double mirTravel1 = mirTravel;
 						double mirTravel2 = 0;
 						boolean mirrorInversion = invertDirection && mode == 1;
@@ -332,7 +332,7 @@ public class ClientEventHandler
 						translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
 								offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
 						
-						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? arrowCyclical : (mode == 1 ? arrowBidirectional : (mode == 2 ? circle : inversion)));
+						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? ARROW_CYCLICAL : (mode == 1 ? ARROW_BIDIRECTIONAL : (mode == 2 ? CIRCLE : INVERSION)));
 						float minU = 0;
 		        		float maxU = 1;
 		        		float minV = 0;
@@ -383,7 +383,7 @@ public class ClientEventHandler
 				    				{
 				    					if (!oppRotation)
 				    					{
-				    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
 				    						angle = 90;
 				    						if (side % 2 == 0) angle += 180;
 				    						if (invertDirection) angle += 180;
@@ -391,7 +391,7 @@ public class ClientEventHandler
 				    					}
 				    					else
 				    					{
-				    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowCyclical);
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_CYCLICAL);
 				    						mode2 = 0;
 				    					}
 				    				}
@@ -399,14 +399,14 @@ public class ClientEventHandler
 				    				{
 				    					if (!oppRotation)
 				    					{
-				    						Minecraft.getMinecraft().renderEngine.bindTexture(arrowHead);
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
 				    						if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
 				    								: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
 				    						if (invertDirection) angle += 180;
 				    					}
 				    					else
 				    					{
-				    						Minecraft.getMinecraft().renderEngine.bindTexture(circle);
+				    						Minecraft.getMinecraft().renderEngine.bindTexture(CIRCLE);
 				    					}
 				    				}
 			    				}
@@ -518,13 +518,13 @@ public class ClientEventHandler
 								GlStateManager.depthMask(false);
 								double r = (nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)
 										? nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER)
-												: ((ConfigProperty) Configs.itemPropertyMap.get(toolItem)).defaultRemovalSemiDiameter) * Utility.pixelD;
+												: ((ConfigProperty) Configs.itemPropertyMap.get(toolItem)).defaultRemovalSemiDiameter) * Utility.PIXEL_D;
 								ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
 								ConfigShapeRender configBox = configPair.boundingBox;
 								AxisAlignedBB box = null, shapeBox = null;
-								double x3 = x + x2 * Utility.pixelD;
-								double y3 = y + y2 * Utility.pixelD;
-								double z3 = z + z2 * Utility.pixelD;
+								double x3 = x + x2 * Utility.PIXEL_D;
+								double y3 = y + y2 * Utility.PIXEL_D;
+								double z3 = z + z2 * Utility.PIXEL_D;
 								if (configBox.renderInnerShape || configBox.renderOuterShape)
 								{
 									GlStateManager.pushMatrix();
@@ -537,27 +537,27 @@ public class ClientEventHandler
 										double z4 = drawnStartPoint.zCoord;
 										if (Math.max(x3, x4) == x3)
 										{
-											x3 += Utility.pixelD;
+											x3 += Utility.PIXEL_D;
 										}
 										else
 										{
-											x4 += Utility.pixelD;
+											x4 += Utility.PIXEL_D;
 										}
 										if (Math.max(y3, y4) == y3)
 										{
-											y3 += Utility.pixelD;
+											y3 += Utility.PIXEL_D;
 										}
 										else
 										{
-											y4 += Utility.pixelD;
+											y4 += Utility.PIXEL_D;
 										}
 										if (Math.max(z3, z4) == z3)
 										{
-											z3 += Utility.pixelD;
+											z3 += Utility.PIXEL_D;
 										}
 										else
 										{
-											z4 += Utility.pixelD;
+											z4 += Utility.PIXEL_D;
 										}
 										box = new AxisAlignedBB(x4, y4, z4, x3, y3, z3);
 									}
@@ -569,12 +569,12 @@ public class ClientEventHandler
 										{
 											r = 0;
 										}
-										else if (SculptSettings.TARGET_BIT_CORNERS)
+										else if (SculptSettings.targetBitCorners)
 										{
-											f = Utility.pixelD * 0.5;
-											x4 = hitX < (Math.round(hitX/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
-											y4 = hitY < (Math.round(hitY/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
-											z4 = hitZ < (Math.round(hitZ/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+											f = Utility.PIXEL_D * 0.5;
+											x4 = hitX < (Math.round(hitX/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
+											y4 = hitY < (Math.round(hitY/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
+											z4 = hitZ < (Math.round(hitZ/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
 											double offsetX = Math.abs(dir.getFrontOffsetX());
 											double offsetY = Math.abs(dir.getFrontOffsetY());
 											double offsetZ = Math.abs(dir.getFrontOffsetZ());
@@ -594,10 +594,10 @@ public class ClientEventHandler
 											}
 											r -= f;
 										}
-										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.pixelD, y + r + Utility.pixelD, z + r + Utility.pixelD)
-										.offset(x2 * Utility.pixelD + f * x4,
-												y2 * Utility.pixelD + f * y4,
-												z2 * Utility.pixelD + f * z4);
+										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.PIXEL_D, y + r + Utility.PIXEL_D, z + r + Utility.PIXEL_D)
+										.offset(x2 * Utility.PIXEL_D + f * x4,
+												y2 * Utility.PIXEL_D + f * y4,
+												z2 * Utility.PIXEL_D + f * z4);
 									}
 									if (fixedCone)
 									{
@@ -634,11 +634,11 @@ public class ClientEventHandler
 									shapeBox = box.expand(0, 0, 0);
 								}
 								renderEnvelopedShapes(player, stack, nbt, playerX, playerY, playerZ, isDrawn,
-										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, SculptSettings.OPEN_ENDS);
-								if (SculptSettings.SCULPT_HOLLOW_SHAPE && !(mode == 2 && !drawnBox))
+										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, SculptSettings.openEnds);
+								if (SculptSettings.sculptHollowShape && !(mode == 2 && !drawnBox))
 								{
 									renderEnvelopedShapes(player, stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-											x3, y3, z3, SculptSettings.WALL_THICKNESS, SculptSettings.OPEN_ENDS);
+											x3, y3, z3, SculptSettings.wallThickness, SculptSettings.openEnds);
 								}
 								GlStateManager.depthMask(true);
 								GlStateManager.enableTexture2D();
@@ -676,7 +676,7 @@ public class ClientEventHandler
 			int rot = dir.ordinal();
 			boolean notFullSym = shapeType != 0 && shapeType != 3;
 			boolean notSym = shapeType == 2 || shapeType > 4;
-			double ri = r + Utility.pixelD * 0.5;
+			double ri = r + Utility.PIXEL_D * 0.5;
 			r = Math.max(ri - contraction, 0);
 			boolean drawnNotSym = notSym && drawnBox;
 			double base = 0;
@@ -783,7 +783,7 @@ public class ClientEventHandler
 			double z2 = z - playerZ;
 			if (!notSym && !isDrawn)
 			{
-				double hp = Utility.pixelD * 0.5;
+				double hp = Utility.PIXEL_D * 0.5;
 				x2 += hp;
 				y2 += hp;
 				z2 += hp;
@@ -798,9 +798,9 @@ public class ClientEventHandler
 			
 			GlStateManager.translate(x2, y2, z2);
 			
-			SculptSettings.WALL_THICKNESS = Utility.pixelF * 2;//TODO
-			SculptSettings.OPEN_ENDS = false;//TODO
-			SculptSettings.SCULPT_HOLLOW_SHAPE = true;//TODO
+			SculptSettings.wallThickness = Utility.PIXEL_F * 2;//TODO
+			SculptSettings.openEnds = false;//TODO
+			SculptSettings.sculptHollowShape = true;//TODO
 			
 			int rot2 = rot;
 			if (!(drawnNotSym && rot == 2))
@@ -967,7 +967,7 @@ public class ClientEventHandler
 
 	private double getInitialAngle(int mode)
 	{
-		return mode == 0 ? (frameCounter * (360 / Configs.ROTATION_PERIOD)) % 360 : 0;
+		return mode == 0 ? (frameCounter * (360 / Configs.rotationPeriod)) % 360 : 0;
 	}
 	
 	private void translateAndRotateTexture(double playerX, double playerY, double playerZ, EnumFacing dir, boolean upDown,
@@ -999,17 +999,17 @@ public class ClientEventHandler
 	{
 		if (contractBox)
 		{
-			double amount = (frameCounter % Configs.TRANSLATION_SCALE_PERIOD) / Configs.TRANSLATION_SCALE_PERIOD;
+			double amount = (frameCounter % Configs.translationScalePeriod) / Configs.translationScalePeriod;
 			amount /= invertDirection ? -2 : 2;
-			if (invertDirection && Configs.TRANSLATION_SCALE_PERIOD > 1) amount += 0.5;
+			if (invertDirection && Configs.translationScalePeriod > 1) amount += 0.5;
 			box = box.contract(amount * invOffsetX, amount * invOffsetY, amount * invOffsetZ);
 		}
-		else if (Configs.TRANSLATION_DISTANCE > 0)
+		else if (Configs.translationDistance > 0)
 		{
-			double distance = Configs.TRANSLATION_DISTANCE;
-			double fadeDistance = Configs.TRANSLATION_FADE_DISTANCE;
-			double period = Configs.TRANSLATION_MOVEMENT_PERIOD;
-			double offsetDistance = Configs.TRANSLATION_OFFSET_DISTANCE;
+			double distance = Configs.translationDistance;
+			double fadeDistance = Configs.translationFadeDistance;
+			double period = Configs.translationMovementPeriod;
+			double offsetDistance = Configs.translationOffsetDistance;
 			int timeOffset = offsetDistance > 0 ? (int) (period / (distance / offsetDistance)) : 0;
 			if (timeOffset > period / 3.0) timeOffset = (int) (period / 3.0);
 			if (fadeDistance > distance / 2.0) fadeDistance = distance / 2.0;

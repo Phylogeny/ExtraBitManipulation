@@ -45,7 +45,7 @@ public class Prism extends Quadric
 		
 		GlStateManager.rotate(90, 1, 0, 0);
 		
-		if (!SculptSettings.OPEN_ENDS)
+		if (!SculptSettings.openEnds)
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, isCube ? radius : radius * 2, -radius);

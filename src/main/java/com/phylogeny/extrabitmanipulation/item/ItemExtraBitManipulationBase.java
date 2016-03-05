@@ -12,7 +12,7 @@ public class ItemExtraBitManipulationBase extends Item
 	{
 		this.name = name;
 		setUnlocalizedName(name);
-		setCreativeTab(CreativeTabExtraBitManipulation.creativeTab);
+		setCreativeTab(CreativeTabExtraBitManipulation.CREATIVE_TAB);
 	}
 	
 	public String getName()

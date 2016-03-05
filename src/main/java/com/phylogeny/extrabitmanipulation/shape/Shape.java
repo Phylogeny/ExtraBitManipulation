@@ -90,7 +90,7 @@ public class Shape
 			AxisAlignedBB box = getIntersectingBox(blockBounds, bounds);
 			if (box != null)
 			{
-				float s = Configs.BIT_SPAWN_BOX_CONTRACTION;
+				float s = Configs.bitSpawnBoxContraction;
 				if (s > 0)
 				{
 					box = box.contract((box.maxX - box.minX) * s, (box.maxY - box.minY) * s, (box.maxZ - box.minZ) * s);
@@ -128,7 +128,7 @@ public class Shape
 	
 	protected float reduceLength(float value)
 	{
-		return Utility.pixelF < value ? value - wallThickness : 0.0000000001F;
+		return Utility.PIXEL_F < value ? value - wallThickness : 0.0000000001F;
 	}
 	
 	protected float getBitPosDiffX(BlockPos pos, int x, int y, int z, float center)
@@ -148,17 +148,17 @@ public class Shape
 	
 	protected float getBitPosX(BlockPos pos, int x, int y, int z)
 	{
-		return (rotation > 3 ? pos.getY() + y * Utility.pixelF : pos.getX() + x * Utility.pixelF);
+		return (rotation > 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getX() + x * Utility.PIXEL_F);
 	}
 	
 	protected float getBitPosY(BlockPos pos, int x, int y, int z)
 	{
-		return (rotation < 2 ? pos.getY() + y * Utility.pixelF : (rotation > 3 ? pos.getX() + x * Utility.pixelF : pos.getZ() + z * Utility.pixelF));
+		return (rotation < 2 ? pos.getY() + y * Utility.PIXEL_F : (rotation > 3 ? pos.getX() + x * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F));
 	}
 	
 	protected float getBitPosZ(BlockPos pos, int x, int y, int z)
 	{
-		return (rotation == 2 || rotation == 3 ? pos.getY() + y * Utility.pixelF : pos.getZ() + z * Utility.pixelF);
+		return (rotation == 2 || rotation == 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F);
 	}
 	
 	protected boolean isPointOffLine(float val, float centerVal, float semiDiameter)

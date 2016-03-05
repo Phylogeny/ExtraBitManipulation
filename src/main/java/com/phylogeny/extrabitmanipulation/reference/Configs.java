@@ -12,15 +12,15 @@ import net.minecraft.item.Item;
 public class Configs
 {
 	//SCULPTING SETTINGS
-		public static boolean BIT_TYPE_IN_CHAT;
-		public static boolean DISPLAY_NAME_DIAMETER;
-		public static boolean DISPLAY_NAME_USE_METER_UNITS;
-		public static float SEMI_DIAMETER_PADDING;
-		public static boolean PLACE_BITS_IN_INVENTORY;
-		public static boolean DROP_BITS_IN_BLOCKSPACE;
-		public static float BIT_SPAWN_BOX_CONTRACTION;
-		public static boolean DROP_BITS_PER_BLOCK;
-		public static boolean DROP_BITS_AS_FULL_CHISELED_BLOCKS;
+		public static boolean bitTypeInChat;
+		public static boolean displayNameDiameter;
+		public static boolean displayNameUseMeterUnits;
+		public static float semiDiameterPadding;
+		public static boolean placeBitsInInventory;
+		public static boolean dropBitsInBlockspace;
+		public static float bitSpawnBoxContraction;
+		public static boolean dropBitsPerBlock;
+		public static boolean dropBitsAsFullChiseledBlocks;
 	
 	//ITEM PROPERTIES
 		public static Map<Item, Config> itemPropertyMap = new HashMap<Item, Config>();
@@ -29,15 +29,15 @@ public class Configs
 		public static Map<Item, Config> itemRecipeMap = new HashMap<Item, Config>();
 	
 	//RENDER WRENCH OVERLAYS
-		public static boolean DISABLE_OVERLAYS;
-		public static double ROTATION_PERIOD;
-		public static double MIRROR_PERIOD;
-		public static double MIRROR_AMPLITUDE;
-		public static double TRANSLATION_SCALE_PERIOD;
-		public static double TRANSLATION_DISTANCE;
-		public static double TRANSLATION_OFFSET_DISTANCE;
-		public static double TRANSLATION_FADE_DISTANCE;
-		public static double TRANSLATION_MOVEMENT_PERIOD;
+		public static boolean disableOverlays;
+		public static double rotationPeriod;
+		public static double mirrorPeriod;
+		public static double mirrorAmplitude;
+		public static double translationScalePeriod;
+		public static double translationDistance;
+		public static double translationOffsetDistance;
+		public static double translationFadeDistance;
+		public static double translationMovementPeriod;
 	
 	//RENDER SCULPTING TOOL SHAPES
 		public static Map<Item, ConfigShapeRenderPair> itemShapeMap = new HashMap<Item, ConfigShapeRenderPair>();

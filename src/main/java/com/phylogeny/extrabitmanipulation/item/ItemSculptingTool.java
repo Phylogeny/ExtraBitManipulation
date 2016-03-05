@@ -144,14 +144,14 @@ public class ItemSculptingTool extends ItemBitToolBase
 				int x = pos.getX();
 				int y = pos.getY();
 				int z = pos.getZ();
-				float x2 = x + bitLoc.getBitX() * Utility.pixelF;
-				float y2 = y + bitLoc.getBitY() * Utility.pixelF;
-				float z2 = z + bitLoc.getBitZ() * Utility.pixelF;
+				float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
+				float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
+				float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
 				if (!removeBits)
 				{
-					x2 += side.getFrontOffsetX() * Utility.pixelF;
-					y2 += side.getFrontOffsetY() * Utility.pixelF;
-					z2 += side.getFrontOffsetZ() * Utility.pixelF;
+					x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
+					y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
+					z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
 				}
 				Shape shape;
 				AxisAlignedBB box;
@@ -162,9 +162,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 				{
 					rotation = sculptProp.getRotation();
 				}
-				boolean sculptHollowShape = SculptSettings.SCULPT_HOLLOW_SHAPE;//TODO
-				float wallThickness = SculptSettings.WALL_THICKNESS;//TODO
-				boolean openEnds = SculptSettings.OPEN_ENDS;//TODO
+				boolean sculptHollowShape = SculptSettings.sculptHollowShape;//TODO
+				float wallThickness = SculptSettings.wallThickness;//TODO
+				boolean openEnds = SculptSettings.openEnds;//TODO
 				
 				if (drawnStartPoint != null)
 				{
@@ -198,12 +198,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
 					float f = 0;
 					float x3 = 0, y3 = 0, z3 = 0;
-					if (SculptSettings.TARGET_BIT_CORNERS)
+					if (SculptSettings.targetBitCorners)
 					{
-						f = Utility.pixelF * 0.5F;
-						x3 = hitX < (Math.round(hitX/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
-						y3 = hitY < (Math.round(hitY/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
-						z3 = hitZ < (Math.round(hitZ/Utility.pixelF) * Utility.pixelF) ? 1 : -1;
+						f = Utility.PIXEL_F * 0.5F;
+						x3 = hitX < (Math.round(hitX/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
+						y3 = hitY < (Math.round(hitY/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
+						z3 = hitZ < (Math.round(hitZ/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
 						int s = side.ordinal();
 						double offsetX = Math.abs(side.getFrontOffsetX());
 						double offsetY = Math.abs(side.getFrontOffsetY());
@@ -254,12 +254,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 							if (possibleUses > 0)
 							{
 								possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
-										possibleUses, Configs.DROP_BITS_PER_BLOCK, setBit);
+										possibleUses, Configs.dropBitsPerBlock, setBit);
 							}
 						}
 					}
 				}
-				if (!Configs.DROP_BITS_PER_BLOCK)
+				if (!Configs.dropBitsPerBlock)
 				{
 					giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 				}
@@ -299,17 +299,17 @@ public class ItemSculptingTool extends ItemBitToolBase
 
 	private float addPadding(float value)
 	{
-		return (value + Configs.SEMI_DIAMETER_PADDING) * Utility.pixelF;
+		return (value + Configs.semiDiameterPadding) * Utility.PIXEL_F;
 	}
 	
 	private float addPaddingToMin(float value1, float value2)
 	{
-		return Math.min(value1, value2) - Configs.SEMI_DIAMETER_PADDING * Utility.pixelF;
+		return Math.min(value1, value2) - Configs.semiDiameterPadding * Utility.PIXEL_F;
 	}
 	
 	private float addPaddingToMax(float value1, float value2)
 	{
-		return Math.max(value1, value2) + Configs.SEMI_DIAMETER_PADDING * Utility.pixelF;
+		return Math.max(value1, value2) + Configs.semiDiameterPadding * Utility.PIXEL_F;
 	}
 	
 	private int countInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack setBitStack)
@@ -470,7 +470,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 					InventoryPlayer inv = player.inventory;
 					int totalBits = bitTypes.get(state);
-					if (Configs.DROP_BITS_AS_FULL_CHISELED_BLOCKS && totalBits >= 4096)
+					if (Configs.dropBitsAsFullChiseledBlocks && totalBits >= 4096)
 					{
 						IBitAccess bitAccess = api.createBitItem(null);
 						setAllBits(bitAccess, bit);
@@ -499,19 +499,19 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 			}
 			bitTypes.clear();
-			if (Configs.PLACE_BITS_IN_INVENTORY) player.inventoryContainer.detectAndSendChanges();
+			if (Configs.placeBitsInInventory) player.inventoryContainer.detectAndSendChanges();
 		}
 	}
 
 	private void givePlayerStackOrDropOnGround(EntityPlayer player, World world, BlockPos pos, Shape shape, ItemStack stack)
 	{
-		if (Configs.PLACE_BITS_IN_INVENTORY)
+		if (Configs.placeBitsInInventory)
 		{
 			player.inventory.addItemStackToInventory(stack);
 		}
 		if (stack.stackSize > 0)
 		{
-			if (Configs.DROP_BITS_IN_BLOCKSPACE)
+			if (Configs.dropBitsInBlockspace)
 			{
 				spawnStacksInShape(world, pos, shape, stack);
 			}

@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class ItemBitWrench extends ItemBitToolBase
 {
-	private static final String[] modeText = new String[]{"rotate", "mirror", "translate", "invert"};
+	private static final String[] MODE_TEXT = new String[]{"rotate", "mirror", "translate", "invert"};
 	
 	public ItemBitWrench(String name)
 	{
@@ -198,7 +198,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
-		String text = modeText[mode];
+		String text = MODE_TEXT[mode];
 		if (GuiScreen.isShiftKeyDown())
 		{
 			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : (mode == 2 ? " front-to-back." : " their bits."))));
