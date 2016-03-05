@@ -4,17 +4,20 @@ import net.minecraft.util.BlockPos;
 
 public class Cone extends SymmetricalShape
 {
-	private float semiDiameterInset2;
+	private float insetMin, insetMax, insetMin2, insetMax2;
 	
 	@Override
 	public void init(float centerX, float centerY, float centerZ, float radius, int rotation,
 			boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
 		super.init(centerX, centerY, centerZ, radius, rotation, sculptHollowShape, wallThickness, openEnds);
-		semiDiameterInset2 = semiDiameterInset;
 		float r = semiDiameter;
 		float d = r * 2;
-		semiDiameterInset = r - (float) ((Math.sqrt(r * r + d * d) * wallThickness) / r);
+		float semiDiameterInset2 = r - (float) ((Math.sqrt(r * r + d * d) * wallThickness) / r);
+		insetMax = this.centerY + semiDiameterInset;
+		insetMin = this.centerY - semiDiameterInset;
+		insetMax2 = this.centerY + semiDiameterInset2;
+		insetMin2 = this.centerY - semiDiameterInset2;
 	}
 	
 	@Override
@@ -25,21 +28,21 @@ public class Cone extends SymmetricalShape
 		float dx = getBitPosDiffX(pos, i, j, k, centerX);
 		float dz = getBitPosDiffZ(pos, i, j, k, centerZ);
 		double dist = Math.sqrt(dx * dx + dz * dz);
-		boolean inShape = isPointInCircle(y, centerY, semiDiameter, semiDiameter, dist);
-		return sculptHollowShape ? inShape && !(isPointInCircle(y, centerY, semiDiameter, semiDiameterInset, dist)
-				&& (openEnds || !(isPointOffLine(y, centerY, semiDiameterInset2)))) : inShape;
+		boolean inShape = isPointInCircle(y, semiDiameter, dist);
+		return sculptHollowShape ? inShape && !(isPointInCircle(y, semiDiameterInset, dist)
+				&& !isPointOffLine(y)) : inShape;
 	}
 	
-	private boolean isPointOffLine(float val, float centerVal)
+	private boolean isPointOffLine(float val)
 	{
-		return inverted ? (!openEnds && val > centerVal + semiDiameterInset2) || val < centerVal - semiDiameterInset :
-			(!openEnds && val < centerVal - semiDiameterInset) || val > centerVal + semiDiameterInset2;
+		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 :
+			(!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
-	private boolean isPointInCircle(float val, float centerVal, float semiDiameter, float semiDiameter2, double dist)
+	private boolean isPointInCircle(float val, float semiDiameter2, double dist)
 	{
 		float d = semiDiameter * 2;
-		return dist <= ((centerVal + semiDiameter2 - val) * semiDiameter) / d;
+		return dist <= Math.abs(((centerY + (inverted ? -semiDiameter2 : semiDiameter2) - val) * semiDiameter) / d);
 	}
 	
 }
