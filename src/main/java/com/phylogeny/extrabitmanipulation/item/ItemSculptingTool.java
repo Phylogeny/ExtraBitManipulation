@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
@@ -155,7 +156,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 				Shape shape;
 				AxisAlignedBB box;
 				int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
-				int rotation = SculptSettings.ROTATION;//TODO
+				int rotation = 0;
+				SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
+				if (sculptProp != null)
+				{
+					rotation = sculptProp.getRotation();
+				}
 				boolean sculptHollowShape = SculptSettings.SCULPT_HOLLOW_SHAPE;//TODO
 				float wallThickness = SculptSettings.WALL_THICKNESS;//TODO
 				boolean openEnds = SculptSettings.OPEN_ENDS;//TODO

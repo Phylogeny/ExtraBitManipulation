@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation;
 
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerPropertiesHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
@@ -37,6 +38,7 @@ public class ExtraBitManipulation
 	public void init(FMLInitializationEvent event)
 	{
 		RecipesExtraBitManipulation.recipeInit();
+		MinecraftForge.EVENT_BUS.register(new SculptSettingsPlayerPropertiesHandler());
 		proxy.registerRenderInformation();
 	}
     

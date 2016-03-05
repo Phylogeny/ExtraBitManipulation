@@ -13,6 +13,7 @@ import com.phylogeny.extrabitmanipulation.client.shape.Prism;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
+import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
@@ -31,6 +32,7 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
@@ -64,6 +66,11 @@ public class ClientEventHandler
 	private static final ResourceLocation arrowCyclical = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
 	private static final ResourceLocation circle = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Circle.png");
 	private static final ResourceLocation inversion = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Inversion.png");
+	private static final int[] DIRECTION_FORWARD = new int[]{2, 0, 5, 4, 1, 3};
+	private static final int[] DIRECTION_BACKWARD = new int[]{1, 4, 0, 5, 3, 2};
+	private static final int[] AXIS_FORWARD = new int[]{2, 3, 4, 5, 0, 1};
+	private static final int[] AXIS_BACKWARD = new int[]{4, 5, 0, 1, 2, 3};
+
 	
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
@@ -71,13 +78,27 @@ public class ClientEventHandler
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		if (event.dwheel != 0)
 		{
-			if (player.isSneaking())
+			ItemStack stack = player.getCurrentEquippedItem();
+			if (stack != null && stack.getItem() instanceof ItemBitToolBase)
 			{
-				ItemStack stack = player.getCurrentEquippedItem();
-				if (stack != null && stack.getItem() instanceof ItemBitToolBase)
+				boolean forward = event.dwheel < 0;
+				if (player.isSneaking())
 				{
+					ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(forward));
 					event.setCanceled(true);
-					ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(event.dwheel < 0));
+				}
+				else if (GuiScreen.isCtrlKeyDown())
+				{
+					SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
+					if (sculptProp != null)
+					{
+						int rot = sculptProp.getRotation();
+						int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) + 2 : 0;//TODO
+						rot = shapeType == 2 || shapeType > 4 ? (forward ? DIRECTION_FORWARD[rot] : DIRECTION_BACKWARD[rot])
+								: (forward ? AXIS_FORWARD[rot] : AXIS_BACKWARD[rot]);
+						sculptProp.setRotation(rot, true);
+						event.setCanceled(true);
+					}
 				}
 			}
 			drawnStartPoint = null;
@@ -489,8 +510,8 @@ public class ClientEventHandler
 								}
 								boolean isDrawn = drawnStartPoint != null;
 								boolean drawnBox = mode == 2 && isDrawn;
-								int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) : 0;
-								boolean fixedCone = !drawnBox && shapeType == 2 || shapeType > 4;//TODO
+								int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) : 0;//TODO
+								boolean fixedCone = !drawnBox && shapeType == 2 || shapeType > 4;
 								GlStateManager.enableBlend();
 								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 								GlStateManager.disableTexture2D();
@@ -608,19 +629,16 @@ public class ClientEventHandler
 									}
 									GlStateManager.popMatrix();
 								}
-								double a = 0;
-								double b = 0;
-								double c = 0;
 								if (!fixedCone)
 								{
 									shapeBox = box.expand(0, 0, 0);
 								}
-								renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn,
-										drawnBox, r, configPair, shapeBox, x3, y3, z3, a, b, c, 0, SculptSettings.OPEN_ENDS);
+								renderEnvelopedShapes(player, stack, nbt, playerX, playerY, playerZ, isDrawn,
+										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, SculptSettings.OPEN_ENDS);
 								if (SculptSettings.SCULPT_HOLLOW_SHAPE && !(mode == 2 && !drawnBox))
 								{
-									renderEnvelopedShapes(stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-											x3, y3, z3, a, b, c, SculptSettings.WALL_THICKNESS, SculptSettings.OPEN_ENDS);
+									renderEnvelopedShapes(player, stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
+											x3, y3, z3, SculptSettings.WALL_THICKNESS, SculptSettings.OPEN_ENDS);
 								}
 								GlStateManager.depthMask(true);
 								GlStateManager.enableTexture2D();
@@ -633,12 +651,13 @@ public class ClientEventHandler
 		}
 	}
 
-	private void renderEnvelopedShapes(ItemStack stack, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
-			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double a, double b, double c, double contraction, boolean isOpen)
+	private void renderEnvelopedShapes(EntityPlayer player, ItemStack stack, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
+			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double contraction, boolean isOpen)
 	{
 		ConfigShapeRender configShape = configPair.envelopedShape;
 		if (configShape.renderInnerShape || configShape.renderOuterShape)
 		{
+			double a = 0, b = 0, c = 0;
 			/* 0 = sphere
 			 * 1 = cylinder
 			 * 2 = cone
@@ -648,7 +667,12 @@ public class ClientEventHandler
 			 * 6 = square pyramid
 			 */
 			int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
-			EnumFacing dir = EnumFacing.getFront(SculptSettings.ROTATION);
+			EnumFacing dir = EnumFacing.UP;
+			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
+			if (sculptProp != null)
+			{
+				dir = EnumFacing.getFront(sculptProp.getRotation());
+			}
 			int rot = dir.ordinal();
 			boolean notFullSym = shapeType != 0 && shapeType != 3;
 			boolean notSym = shapeType == 2 || shapeType > 4;
@@ -777,7 +801,6 @@ public class ClientEventHandler
 			SculptSettings.WALL_THICKNESS = Utility.pixelF * 2;//TODO
 			SculptSettings.OPEN_ENDS = false;//TODO
 			SculptSettings.SCULPT_HOLLOW_SHAPE = true;//TODO
-			SculptSettings.ROTATION = EnumFacing.NORTH.ordinal();//TODO
 			
 			int rot2 = rot;
 			if (!(drawnNotSym && rot == 2))
