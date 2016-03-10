@@ -1,9 +1,6 @@
 package com.phylogeny.extrabitmanipulation.item;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -23,15 +20,15 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 	
 	public void cycleModes(ItemStack stack, boolean forward)
 	{
-		cycleData(stack, NBTKeys.MODE, forward, modeTitles.length);
-	}
-	
-	public void cycleData(ItemStack stack, String key, boolean forward, int max)
-	{
 		initialize(stack);
 		NBTTagCompound nbt = stack.getTagCompound();
-		int mode = (nbt.getInteger(key) + (forward ? 1 : max - 1)) % max;
-		nbt.setInteger(key, mode);
+		int mode = nbt.getInteger(NBTKeys.MODE);
+		nbt.setInteger(NBTKeys.MODE, cycleData(mode, forward, modeTitles.length));
+	}
+	
+	public int cycleData(int intValue, boolean forward, int max)
+	{
+		return (intValue + (forward ? 1 : max - 1)) % max;
 	}
 	
 	public boolean initialize(ItemStack stack)
@@ -52,24 +49,9 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 	
 	public String getItemStackDisplayName(ItemStack stack)
     {
-		ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
-		int size = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SCULPT_SEMI_DIAMETER) : config.defaultRemovalSemiDiameter;
-		if (Configs.displayNameDiameter)
-		{
-			size = size * 2 + 1;
-		}
-		String diameterText = "";
-		if (Configs.displayNameUseMeterUnits)
-		{
-			diameterText += Math.round(size * Utility.PIXEL_D * 100) / 100.0 + " m";
-		}
-		else
-		{
-			diameterText += size + " b";
-		}
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
         return ("" + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
-        		+ " - " + modeTitles[mode] + " - " + diameterText;
+        		+ " - " + modeTitles[mode];
     }
 	
 }

@@ -6,6 +6,7 @@ import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -40,6 +41,8 @@ public class ExtraBitManipulation
 		RecipesExtraBitManipulation.recipeInit();
 		MinecraftForge.EVENT_BUS.register(new SculptSettingsPlayerPropertiesHandler());
 		proxy.registerRenderInformation();
+		Configs.sculptSetBitWire.init();
+		Configs.sculptSetBitSpade.init();
 	}
     
 }

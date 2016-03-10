@@ -1,29 +1,23 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
-import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketCycleData implements IMessage
+public class PacketCycleBitWrenchMode implements IMessage
 {
 	private boolean forward;
 	
-	public PacketCycleData() {}
+	public PacketCycleBitWrenchMode() {}
 	
-	public PacketCycleData(boolean forward)
+	public PacketCycleBitWrenchMode(boolean forward)
 	{
 		this.forward = forward;
 	}
@@ -40,10 +34,10 @@ public class PacketCycleData implements IMessage
 		forward = buffer.readBoolean();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketCycleData, IMessage>
+	public static class Handler implements IMessageHandler<PacketCycleBitWrenchMode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketCycleData message, final MessageContext ctx)
+		public IMessage onMessage(final PacketCycleBitWrenchMode message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -53,18 +47,9 @@ public class PacketCycleData implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (stack != null && stack.getItem() instanceof ItemBitToolBase)
+					if (stack != null && stack.getItem() instanceof ItemBitWrench)
 					{
-						ItemBitToolBase itemTool = (ItemBitToolBase) stack.getItem();
-						if (stack.getItem() instanceof ItemBitWrench)
-						{
-							itemTool.cycleModes(stack, message.forward);
-						}
-						else
-						{
-							ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(itemTool);
-							itemTool.cycleData(stack, NBTKeys.SCULPT_SEMI_DIAMETER, message.forward, config.maxRemovalSemiDiameter);
-						}
+						((ItemBitWrench) stack.getItem()).cycleModes(stack, message.forward);
 					}
 				}
 			});

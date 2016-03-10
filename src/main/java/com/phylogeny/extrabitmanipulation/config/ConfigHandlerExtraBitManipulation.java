@@ -1,23 +1,32 @@
 package com.phylogeny.extrabitmanipulation.config;
 
 import java.io.File;
+import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
+
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
+import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 public class ConfigHandlerExtraBitManipulation
 {
 	public static Configuration configFile;
 	public static final String VERSION = "Version";
 	public static final String SCULPTING_SETTINGS = "Sculpting Settings";
+	public static final String SCULPTING_DEFAULT_VALUES = "Default Values";
+	public static final String SCULPTING_PER_TOOL_OR_PER_PLAYER = "Per Tool or Per Player";
+	public static final String SCULPTING_DISPLAY_IN_CHAT = "Display In Chat";
 	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	
@@ -49,10 +58,11 @@ public class ConfigHandlerExtraBitManipulation
 			getVersion(Reference.VERSION);
 			
 			//SCULPTING SETTINGS
-			Configs.bitTypeInChat = configFile.getBoolean("Chat Message For Bit Type Change", SCULPTING_SETTINGS, true, 
-					"If set to true, changing the set bit type of a sculpting tool (for adding bits with spades or filtering bits with wires)" +
-					"will add the change to chat (does so without generating spam by deleting previous entry of the same type). " +
-					"If set to false, it will not be added. Either way, the bit type is displayed in the tooltip. (default = true)");
+			Configs.maxSemiDiameter = configFile. getInt("Max Semi-Diameter", SCULPTING_SETTINGS, 32, 1, Integer.MAX_VALUE,
+					"the maximum size (in bits) of sculpting shape semi-diameter (i.e. radius if it is a sphere). (default = 5 bits)");
+			
+			Configs.maxWallThickness = configFile. getInt("Max Wall Thickness", SCULPTING_SETTINGS, 32, 1, Integer.MAX_VALUE,
+					"the maximum size (in bits) of hollow sculpting shapes. (default = 2 bits)");
 			
 			Configs.displayNameDiameter = configFile.getBoolean("Display Name Diameter", SCULPTING_SETTINGS, true, 
 					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
@@ -101,6 +111,58 @@ public class ConfigHandlerExtraBitManipulation
 					"If set to true, full meter cubed blocks of bits that have all their bits removed will drop as full chiseled blocks. " +
 					"If set to false, they will drop normally as item stacks of bits (64 stacks of size 64). (default = false)");
 			
+			//SCULPTING DATA SETTINGS
+			Configs.sculptRotation = getSculptSettingInt("Rotation", false, true, 1, 0, 5,
+					"sculpting shape rotation",
+					"rotation value. 0 = down; 1 = up; 2 = north; 3 = south; 4 = west; 5 = east ", "up");
+			
+			Configs.sculptShapeTypeCurved = getSculptSettingIntFromStringArray("Curved Shape", false, true, 0, 0,
+					"curved tool sculpting shape",
+					"sculpting shape.",
+					Arrays.copyOfRange(Shape.SHAPE_NAMES, 0, 3));
+			
+			Configs.sculptShapeTypeFlat = getSculptSettingIntFromStringArray("Flat/Straight Shape", false, true, 0, 3,
+					"flat/straight tool sculpting shape",
+					"sculpting shape.",
+					Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7));
+			
+			Configs.sculptTargetBitGridVertexes = getSculptSettingBoolean("Target Bit Grid Vertexes", false, true, false,
+					"targeting mode",
+					"targeting mode (when sculpting in local/global mode either bits are targetted [the shape is centered on the center of the bit looked - the diameter is " +
+					"one (the center bit) plus/minus x number of bits (semi-diameter is x + 1/2 bit], or vertexes of the bit " +
+					"grid are targetted [the shape is centered on the corner (the one closest to the cursor) of the bit looked at (i.e. centered on a vertex of the " +
+					"grid) - the diameter is 2x number of bits (x is a true semi-diameter)]).");
+			
+			Configs.sculptHollowShape = getSculptSettingBoolean("Hollow Shapes", false, true, false,
+					"sculpting shape hollowness",
+					"hollow property value (shape is either hollow or solid).");
+			
+			Configs.sculptOpenEnds = getSculptSettingBoolean("Open Ends", false, true, false,
+					"hollow sculpting shape open-endedness",
+					"hollow sculpting shape open-ended property value (hollow shapes, such as cylinders, pyramids, etc., can have open or closed ends).");
+			
+			Configs.sculptSemiDiameter = getSculptSettingInt("Semi-Diameter", true, true, 5, 0, Integer.MAX_VALUE,
+					"sculpting shape semi-diameter",
+					"sculpting shape semi-diameter (in bits).", "5 bits");
+			
+			Configs.sculptWallThickness = getSculptSettingInt("Wall Thickness", false, true, 2, 1, Integer.MAX_VALUE,
+					"hollow sculpting shape wall thickness",
+					"hollow sculpting shape wall thickness (in bits).", "2 bits");
+			
+			Configs.sculptSetBitWire = getSculptSettingItemStack("Wire Filter Bit Type", true, true,
+					"filtered bit type",
+					"filtered bit type (sculpting can remove only one bit type rather than any - this config sets the block [as specified " +
+					"by 'modID:name'] of the bit type that sculpting wires remove (an empty string, an unsupported block, or any misspelling " +
+					"will specify any/all bit types)).", "Any");
+			Configs.sculptSetBitWire.init();
+			
+			Configs.sculptSetBitSpade = getSculptSettingItemStack("Spade Addition Bit Type", true, true,
+					"addition bit type",
+					"addition bit type (sets the block form [as specified by 'modID:name'] of the bit type that sculpting spades add to the " +
+					"world (an empty string, an unsupported block, or any misspelling will specify no bit type - the type will have to be set " +
+					"before the spade can be used)).", "None");
+			Configs.sculptSetBitSpade.init();
+			
 			//ITEM PROPERTIES
 			for (Item item : Configs.itemPropertyMap.keySet())
 			{
@@ -114,17 +176,17 @@ public class ConfigHandlerExtraBitManipulation
 				{
 					ItemsExtraBitManipulation.BitWrench.setMaxDamage(configProperty.takesDamage ? configProperty.maxDamage : 0);
 				}
-				else
-				{
-					configProperty.defaultRemovalSemiDiameter = configFile.getInt("Default Removal Semi-Diameter",
-							category, configProperty.getDefaultRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
-							"The semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
-									"(Ex: 0 = only the bit clicked - diameter = 1; 1 = bit clicked +- 1 - diameter = 3, etc). (default = 5)");
-					configProperty.maxRemovalSemiDiameter = configFile.getInt("Max Removal Semi-Diameter", category,
-							configProperty.getMaxRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
-							"The maximum semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
-									"(continual increasing/decreasing of radius will cause cycling from 0 to this number). (default = 2 meters)");
-				}
+//				else
+//				{
+//					configProperty.defaultRemovalSemiDiameter = configFile.getInt("Default Removal Semi-Diameter",
+//							category, configProperty.getDefaultRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
+//							"The semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
+//									"(Ex: 0 = only the bit clicked - diameter = 1; 1 = bit clicked +- 1 - diameter = 3, etc). (default = 5)");
+//					configProperty.maxRemovalSemiDiameter = configFile.getInt("Max Removal Semi-Diameter", category,
+//							configProperty.getMaxRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
+//							"The maximum semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
+//									"(continual increasing/decreasing of radius will cause cycling from 0 to this number). (default = 2 meters)");
+//				}
 			}
 			
 			//ITEM RECIPES
@@ -204,6 +266,93 @@ public class ConfigHandlerExtraBitManipulation
 				configFile.save();
 			}
 		}
+	}
+	
+	private static ConfigSculptSettingBoolean getSculptSettingBoolean(String name, boolean defaultPerTool, boolean defaultDisplayInChat, boolean defaultValue,
+			String toolTipSecondary, String toolTipDefaultValue)
+	{
+		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
+		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
+		boolean defaultBoolean = configFile.getBoolean("Default " + name, SCULPTING_DEFAULT_VALUES, defaultValue,
+				getToolTipSculptSetting(toolTipDefaultValue, Boolean.toString(defaultValue)));
+		return new ConfigSculptSettingBoolean(perTool, displayInChat, defaultBoolean);
+	}
+	
+	private static ConfigSculptSettingInt getSculptSettingInt(String name, boolean defaultPerTool, boolean defaultDisplayInChat, int defaultValue, int minValue, int maxValue,
+			String toolTipSecondary, String toolTipDefaultValue, String toolTipDefaultValueDefault)
+	{
+		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
+		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
+		int defaultInt = configFile.getInt("Default " + name, SCULPTING_DEFAULT_VALUES, defaultValue, minValue, maxValue,
+				getToolTipSculptSetting(toolTipDefaultValue, toolTipDefaultValueDefault));
+		return new ConfigSculptSettingInt(perTool, displayInChat, defaultInt);
+	}
+	
+	private static ConfigSculptSettingInt getSculptSettingIntFromStringArray(String name, boolean defaultPerTool, boolean defaultDisplayInChat, int defaultValue, int offset,
+			String toolTipSecondary, String toolTipDefaultValue, String ... validValues)
+	{
+		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
+		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
+		String defaultInt = validValues[defaultValue];
+		String entry = configFile.getString("Default " + name, SCULPTING_DEFAULT_VALUES, defaultInt,
+				getToolTipSculptSetting(toolTipDefaultValue, defaultInt), validValues);
+		for (int i = 0; i < validValues.length; i++)
+		{
+			if (entry.equals(validValues[i]))
+			{
+				defaultValue = i + offset;
+			}
+		}
+		return new ConfigSculptSettingInt(perTool, displayInChat, defaultValue);
+	}
+	
+	private static ConfigSculptSettingBitStack getSculptSettingItemStack(String name, boolean defaultPerTool, boolean defaultDisplayInChat,
+			String toolTipSecondary, String toolTipDefaultValue, String toolTipDefaultValueDefault)
+	{
+		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
+		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
+		Block defaultBlock = null;
+		String blockEntry = configFile.getString("Default " + name, SCULPTING_DEFAULT_VALUES, "",
+				getToolTipSculptSetting(toolTipDefaultValue, toolTipDefaultValueDefault));
+		if (!blockEntry.isEmpty())
+		{
+			int i = blockEntry.indexOf(":");
+			if (i > 0)
+			{
+				int len = blockEntry.length();
+				if (len > 2 && StringUtils.countMatches(blockEntry, ":") == 1)
+				{
+					defaultBlock = GameRegistry.findBlock(blockEntry.substring(0, i), blockEntry.substring(i + 1, len));
+				}
+			}
+		}
+		return new ConfigSculptSettingBitStack(perTool, displayInChat, defaultBlock);
+	}
+
+	private static String getToolTipSculptSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)
+	{
+		return "Players and sculpting tools will initialize with this " + toolTipDefaultValue + " (default = " + toolTipDefaultValueDefault + ")";
+	}
+
+	private static boolean getPerTool(String name, boolean defaultPerTool, String toolTipPerTool)
+	{
+		return configFile.getBoolean("Per Tool " + name, SCULPTING_PER_TOOL_OR_PER_PLAYER, defaultPerTool,
+				"If set to true, " + toolTipPerTool + " will be set/stored in each individual sculpting tool and apply only to that tool. " +
+				"If set to false, it will be stored in the player and will apply to all tools. Regardless of this setting, players and tools " +
+				"will still initialize with data, but this setting determines which is considered for use. " + getReferralString(toolTipPerTool) + " (default = " + defaultPerTool + ")");
+	}
+	
+	private static boolean getDisplayInChat(String name, boolean defaultDisplayInChat, String toolTipDisplayInChat)
+	{
+		return configFile.getBoolean("Display In Chat " + name, SCULPTING_DISPLAY_IN_CHAT, defaultDisplayInChat,
+				"If set to true, whenever " + toolTipDisplayInChat + " is changed, a message will be added to chat indicating the change. " +
+				"This will not fill chat with messages, since any pre-existing messages from this mod will be deleted before adding the next." +
+				getReferralString(toolTipDisplayInChat) + " (default = " + defaultDisplayInChat + ")");
+	}
+	
+	private static String getReferralString(String settingString)
+	{
+		return "See 'Default Value' config for a description of " + settingString + ".";
 	}
 
 	private static void removeCategory(String category)

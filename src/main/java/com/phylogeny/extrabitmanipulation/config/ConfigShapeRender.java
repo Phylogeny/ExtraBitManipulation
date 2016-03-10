@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-public class ConfigShapeRender extends Config
+public class ConfigShapeRender extends ConfigNamed
 {
 	public boolean renderOuterShape, renderInnerShape;
 	private boolean renderOuterShapeDefault, renderInnerShapeDefault;

@@ -10,20 +10,19 @@ import org.lwjgl.util.glu.Sphere;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.client.shape.Prism;
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
-import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
+import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
-import com.phylogeny.extrabitmanipulation.packet.PacketCycleData;
+import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
-import com.phylogeny.extrabitmanipulation.reference.SculptSettings;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
+import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitAccess;
@@ -70,7 +69,9 @@ public class ClientEventHandler
 	private static final int[] DIRECTION_BACKWARD = new int[]{1, 4, 0, 5, 3, 2};
 	private static final int[] AXIS_FORWARD = new int[]{2, 3, 4, 5, 0, 1};
 	private static final int[] AXIS_BACKWARD = new int[]{4, 5, 0, 1, 2, 3};
-
+	private static final int[] SHAPE_CURVED = new int[]{1, 2, 0, 0, 0, 0, 0};
+	private static final int[] SHAPE_FLAT = new int[]{4, 4, 4, 4, 5, 6, 3};
+	
 	
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
@@ -84,39 +85,82 @@ public class ClientEventHandler
 				boolean forward = event.dwheel < 0;
 				if (player.isSneaking())
 				{
-					ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleData(forward));
+					if (stack.getItem() instanceof ItemBitWrench)
+					{
+						ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleBitWrenchMode(forward));
+					}
+					else
+					{
+						cycleSemiDiameter(player, stack, forward);
+					}
 					event.setCanceled(true);
 				}
-				else if (GuiScreen.isCtrlKeyDown())
+				else if (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown())
 				{
-					SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-					if (sculptProp != null)
+					if (GuiScreen.isCtrlKeyDown())
 					{
-						int rot = sculptProp.getRotation();
-						int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) + 2 : 0;//TODO
-						rot = shapeType == 2 || shapeType > 4 ? (forward ? DIRECTION_FORWARD[rot] : DIRECTION_BACKWARD[rot])
-								: (forward ? AXIS_FORWARD[rot] : AXIS_BACKWARD[rot]);
-						sculptProp.setRotation(rot, true);
-						event.setCanceled(true);
+						cycleRotation(player, stack, forward);
 					}
+					else
+					{
+						cycleWallThickness(player, stack, forward);
+					}
+					event.setCanceled(true);
 				}
 			}
-			drawnStartPoint = null;
+			else
+			{
+				drawnStartPoint = null;
+			}
+		}
+		else if ((GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()) && event.buttonstate)
+		{
+			ItemStack stack = player.inventory.getCurrentItem();
+			if (stack != null)
+			{
+				Item item = stack.getItem();
+				if (item != null && item instanceof ItemSculptingTool)
+				{
+					if (GuiScreen.isCtrlKeyDown())
+					{
+						if (event.button == 1)
+						{
+							cycleShapeType(player, stack, item);
+						}
+						if (event.button == 0)
+						{
+							toggleBitGridTargeted(player, stack);
+						}
+					}
+					else
+					{
+						if (event.button == 1)
+						{
+							toggleHollowShape(player, stack);
+						}
+						if (event.button == 0)
+						{
+							toggleOpenEnds(player, stack);
+						}
+					}
+					event.setCanceled(true);
+				}
+			}
 		}
 		else if (event.button == 0)
 		{
 			if (!player.capabilities.allowEdit) return;
-			ItemStack itemStack = player.inventory.getCurrentItem();
-			if (itemStack != null)
+			ItemStack stack = player.inventory.getCurrentItem();
+			if (stack != null)
 			{
-				Item item = itemStack.getItem();
+				Item item = stack.getItem();
 				if (event.buttonstate && item instanceof ItemBitWrench)
 				{
 					event.setCanceled(true);
 				}
 				else if (item != null && item instanceof ItemSculptingTool)
 				{
-					boolean drawnMode = (itemStack.hasTagCompound() && itemStack.getTagCompound().getInteger(NBTKeys.MODE) == 2);
+					boolean drawnMode = (stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.MODE) == 2);
 					if (!drawnMode)
 					{
 						drawnStartPoint = null;
@@ -124,6 +168,7 @@ public class ClientEventHandler
 					if (event.buttonstate || (drawnMode && drawnStartPoint != null))
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) item;
+						boolean removeBits = toolItem.removeBits();
 						MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
 						if (target != null && target.typeOfHit != MovingObjectPosition.MovingObjectType.MISS)
 						{
@@ -133,6 +178,11 @@ public class ClientEventHandler
 								EnumFacing side = target.sideHit;
 								Vec3 hit = target.hitVec;
 								boolean swingTool = true;
+								if (drawnMode && event.buttonstate && drawnStartPoint != null)
+								{
+									event.setCanceled(true);
+									return;
+								}
 								if (!player.isSneaking() && drawnMode && event.buttonstate)
 								{
 									IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
@@ -145,7 +195,7 @@ public class ClientEventHandler
 										float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
 										float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
 										float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
-										if (!toolItem.removeBits())
+										if (!removeBits)
 										{
 											x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
 											y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
@@ -172,9 +222,10 @@ public class ClientEventHandler
 											{
 												IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
 												ItemStack bitStack = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ()).getItemStack(1);
-												if (Configs.bitTypeInChat)
+												SculptSettingsHelper.setBitStack(player, stack, removeBits, bitStack);
+												if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
 												{
-													printChatMessageWithDeletion("Now " + (toolItem.removeBits() ? "only removing " : "sculpting with ")
+													printChatMessageWithDeletion((removeBits ? "Removing only " : "Sculpting with ")
 															+ bitStack.getDisplayName().substring(15));
 												}
 											}
@@ -185,12 +236,11 @@ public class ClientEventHandler
 											}
 										}
 									}
-									else if (!player.isSneaking() || toolItem.removeBits() || drawnMode)
+									else if (!player.isSneaking() || removeBits || drawnMode)
 									{
-										swingTool = toolItem.sculptBlocks(itemStack, player, player.worldObj, pos, side, hit, drawnStartPoint);
-										if (drawnMode) swingTool = true;
+										swingTool = toolItem.sculptBlocks(stack, player, player.worldObj, pos, side, hit, drawnStartPoint);
+										ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint));
 									}
-									ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint, false));
 									if (drawnMode && !event.buttonstate)
 									{
 										drawnStartPoint = null;
@@ -200,13 +250,12 @@ public class ClientEventHandler
 								event.setCanceled(true);
 							}
 						}
-						else if (player.isSneaking() && event.buttonstate && toolItem.removeBits())
+						else if (player.isSneaking() && event.buttonstate && removeBits)
 						{
-							ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(true));
-							if (Configs.bitTypeInChat)
+							SculptSettingsHelper.setBitStack(player, stack, true, null);
+							if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
 							{
-								String text = "Now removing any/all bit type";
-								printChatMessageWithDeletion(text);
+								printChatMessageWithDeletion("Removing any/all bits");
 							}
 						}
 						else if (drawnMode)
@@ -218,7 +267,86 @@ public class ClientEventHandler
 			}
 		}
 	}
-
+	
+	private void cycleRotation(EntityPlayer player, ItemStack stack, boolean forward)
+	{
+		NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+		int rotation = SculptSettingsHelper.getRotation(player, nbt);
+		int shapeType = SculptSettingsHelper.getShapeType(player, nbt, ((ItemSculptingTool) stack.getItem()).isCurved());
+		rotation = shapeType == 2 || shapeType > 4 ? (forward ? DIRECTION_FORWARD[rotation] : DIRECTION_BACKWARD[rotation])
+				: (forward ? AXIS_FORWARD[rotation] : AXIS_BACKWARD[rotation]);
+		SculptSettingsHelper.setRotation(player, stack, rotation);
+		if (Configs.sculptRotation.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getRotationText(rotation));
+		}
+	}
+	
+	private void cycleShapeType(EntityPlayer player, ItemStack stack, Item item)
+	{
+		boolean isCurved = ((ItemSculptingTool) item).isCurved();
+		NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+		int shapeType = SculptSettingsHelper.getShapeType(player, nbt, isCurved);
+		shapeType = isCurved ? SHAPE_CURVED[shapeType] : SHAPE_FLAT[shapeType];
+		SculptSettingsHelper.setShapeType(player, stack, isCurved, shapeType);
+		if ((isCurved ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat).shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getShapeTypeText(shapeType));
+		}
+	}
+	
+	private void toggleBitGridTargeted(EntityPlayer player, ItemStack stack)
+	{
+		boolean targetBitGrid = !SculptSettingsHelper.isBitGridTargeted(player, stack.getTagCompound());
+		SculptSettingsHelper.setBitGridTargeted(player, stack, targetBitGrid);
+		if (Configs.sculptTargetBitGridVertexes.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getBitGridTargetedText(targetBitGrid));
+		}
+	}
+	
+	private void cycleSemiDiameter(EntityPlayer player, ItemStack stack, boolean forward)
+	{
+		int semiDiameter = ((ItemBitToolBase) stack.getItem()).cycleData(SculptSettingsHelper.getSemiDiameter(player, stack.getTagCompound()),
+				forward, Configs.maxSemiDiameter);
+		SculptSettingsHelper.setSemiDiameter(player, stack, semiDiameter);
+		if (Configs.sculptSemiDiameter.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getSemiDiameterText(player, stack.getTagCompound(), semiDiameter));
+		}
+	}
+	
+	private void toggleHollowShape(EntityPlayer player, ItemStack stack)
+	{
+		boolean isHollowShape = !SculptSettingsHelper.isHollowShape(player, stack.getTagCompound());
+		SculptSettingsHelper.setHollowShape(player, stack, isHollowShape);
+		if (Configs.sculptHollowShape.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getHollowShapeText(isHollowShape));
+		}
+	}
+	
+	private void toggleOpenEnds(EntityPlayer player, ItemStack stack)
+	{
+		boolean areEndsOpen = !SculptSettingsHelper.areEndsOpen(player, stack.getTagCompound());
+		SculptSettingsHelper.setEndsOpen(player, stack, areEndsOpen);
+		if (Configs.sculptOpenEnds.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getOpenEndsText(areEndsOpen));
+		}
+	}
+	
+	private void cycleWallThickness(EntityPlayer player, ItemStack stack, boolean forward)
+	{
+		int wallThickness = ((ItemBitToolBase) stack.getItem()).cycleData(SculptSettingsHelper.getWallThickness(player, stack.getTagCompound()),
+				forward, Configs.maxWallThickness);
+		SculptSettingsHelper.setWallThickness(player, stack, wallThickness);
+		if (Configs.sculptWallThickness.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getWallThicknessText(wallThickness));
+		}
+	}
+	
 	private void printChatMessageWithDeletion(String text)
 	{
 		GuiNewChat chatGUI = Minecraft.getMinecraft().ingameGUI.getChatGUI();
@@ -510,15 +638,13 @@ public class ClientEventHandler
 								}
 								boolean isDrawn = drawnStartPoint != null;
 								boolean drawnBox = mode == 2 && isDrawn;
-								int shapeType = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SHAPE_TYPE) : 0;//TODO
-								boolean fixedCone = !drawnBox && shapeType == 2 || shapeType > 4;
+								int shapeType = SculptSettingsHelper.getShapeType(player, nbt, toolItem.isCurved());
+								boolean fixedNotSym = !drawnBox && shapeType == 2 || shapeType > 4;
 								GlStateManager.enableBlend();
 								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 								GlStateManager.disableTexture2D();
 								GlStateManager.depthMask(false);
-								double r = (nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER)
-										? nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER)
-												: ((ConfigProperty) Configs.itemPropertyMap.get(toolItem)).defaultRemovalSemiDiameter) * Utility.PIXEL_D;
+								double r = SculptSettingsHelper.getSemiDiameter(player, nbt) * Utility.PIXEL_D;
 								ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
 								ConfigShapeRender configBox = configPair.boundingBox;
 								AxisAlignedBB box = null, shapeBox = null;
@@ -565,11 +691,12 @@ public class ClientEventHandler
 									{
 										double f = 0;
 										float x4 = 0, y4 = 0, z4 = 0;
+										boolean targetBitGrid = SculptSettingsHelper.isBitGridTargeted(player, nbt);
 										if (mode == 2)
 										{
 											r = 0;
 										}
-										else if (SculptSettings.targetBitCorners)
+										else if (targetBitGrid)
 										{
 											f = Utility.PIXEL_D * 0.5;
 											x4 = hitX < (Math.round(hitX/Utility.PIXEL_F) * Utility.PIXEL_F) ? 1 : -1;
@@ -598,8 +725,14 @@ public class ClientEventHandler
 										.offset(x2 * Utility.PIXEL_D + f * x4,
 												y2 * Utility.PIXEL_D + f * y4,
 												z2 * Utility.PIXEL_D + f * z4);
+										if (targetBitGrid && mode != 2)
+										{
+											x3 = (box.maxX + box.minX) * 0.5 - f;
+											y3 = (box.maxY + box.minY) * 0.5 - f;
+											z3 = (box.maxZ + box.minZ) * 0.5 - f;
+										}
 									}
-									if (fixedCone)
+									if (fixedNotSym)
 									{
 										shapeBox = box.expand(0, 0, 0);
 									}
@@ -629,16 +762,18 @@ public class ClientEventHandler
 									}
 									GlStateManager.popMatrix();
 								}
-								if (!fixedCone)
+								if (!fixedNotSym)
 								{
 									shapeBox = box.expand(0, 0, 0);
 								}
-								renderEnvelopedShapes(player, stack, nbt, playerX, playerY, playerZ, isDrawn,
-										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, SculptSettings.openEnds);
-								if (SculptSettings.sculptHollowShape && !(mode == 2 && !drawnBox))
+								boolean isHollow = SculptSettingsHelper.isHollowShape(player, nbt);
+								boolean isOpen = isHollow && SculptSettingsHelper.areEndsOpen(player, nbt);
+								renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn,
+										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);
+								if (isHollow && !(mode == 2 && !drawnBox))
 								{
-									renderEnvelopedShapes(player, stack, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-											x3, y3, z3, SculptSettings.wallThickness, SculptSettings.openEnds);
+									renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
+											x3, y3, z3, SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F, isOpen);
 								}
 								GlStateManager.depthMask(true);
 								GlStateManager.enableTexture2D();
@@ -651,7 +786,7 @@ public class ClientEventHandler
 		}
 	}
 
-	private void renderEnvelopedShapes(EntityPlayer player, ItemStack stack, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
+	private void renderEnvelopedShapes(EntityPlayer player, ItemStack stack, int shapeType, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
 			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double contraction, boolean isOpen)
 	{
 		ConfigShapeRender configShape = configPair.envelopedShape;
@@ -666,13 +801,7 @@ public class ClientEventHandler
 			 * 5 = triangular pyramid
 			 * 6 = square pyramid
 			 */
-			int shapeType = nbt.getInteger(NBTKeys.SHAPE_TYPE);//TODO
-			EnumFacing dir = EnumFacing.UP;
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
-			{
-				dir = EnumFacing.getFront(sculptProp.getRotation());
-			}
+			EnumFacing dir = EnumFacing.getFront(SculptSettingsHelper.getRotation(player, nbt));
 			int rot = dir.ordinal();
 			boolean notFullSym = shapeType != 0 && shapeType != 3;
 			boolean notSym = shapeType == 2 || shapeType > 4;
@@ -792,16 +921,22 @@ public class ClientEventHandler
 			{
 				if (isOpen && contraction > 0 && !notSym)
 				{
-					y2 -= contraction * (notSym ? 0.5 : (drawnBox ? 0 : -1));
+					double offset = contraction * (notSym ? 0.5 : (drawnBox ? 0 : -1));
+					if (rot != 3)
+					{
+						y2 += rot == 0 ? offset : -offset;
+					}
+					if (rot > 2)
+					{
+						x2 += rot == 5 ? -offset : offset;
+					}
+					if (rot == 2 || rot == 3)
+					{
+						z2 += rot == 2 ? offset : -offset;
+					}
 				}
 			}
-			
 			GlStateManager.translate(x2, y2, z2);
-			
-			SculptSettings.wallThickness = Utility.PIXEL_F * 2;//TODO
-			SculptSettings.openEnds = false;//TODO
-			SculptSettings.sculptHollowShape = true;//TODO
-			
 			int rot2 = rot;
 			if (!(drawnNotSym && rot == 2))
 			{
@@ -915,21 +1050,21 @@ public class ClientEventHandler
 			Quadric lid, boolean isOuter, boolean isCylinder, boolean isOpen)
 	{
 		GlStateManager.pushMatrix();
-		drawEnvelopedShape(shape, r, isOuter, configShape, isCylinder);
+		drawEnvelopedShape(shape, r, isOuter, configShape, isCylinder, isOpen);
 		if (shapeType > 0 && shapeType < 3 && !isOpen)
 		{
 			if (shapeType == 1)
 			{
-				drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder);
+				drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, isOpen);
 			}
 			GlStateManager.translate(0, 0, r * 2);
-			drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder);
+			drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, isOpen);
 		}
 		GlStateManager.popMatrix();
 	}
 	
 	private void drawEnvelopedShape(Quadric shape, double radius, boolean isOuter,
-			ConfigShapeRender configShape, boolean isCone)
+			ConfigShapeRender configShape, boolean isCone, boolean isOpen)
 	{
 		GlStateManager.pushMatrix();
 		GlStateManager.color(configShape.red, configShape.green,
@@ -937,7 +1072,7 @@ public class ClientEventHandler
 		float r = (float) radius;
 		if (shape instanceof Prism)
 		{
-			((Prism) shape).draw(r);
+			((Prism) shape).draw(r, isOpen);
 		}
 		else if (shape instanceof Sphere)
 		{

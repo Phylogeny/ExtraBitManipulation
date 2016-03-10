@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.phylogeny.extrabitmanipulation.config.Config;
+import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -33,10 +32,17 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_SETTINGS,
 				"Configures sculpting dimensions, the way bits are handled when removed from the world, and the way bit removal/addition " +
 				"areas are displayed. (applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)", configElements);
+		addDummyElementsOfChildElementSetsToDummyElement(configElements, false,
+				ConfigHandlerExtraBitManipulation.SCULPTING_DEFAULT_VALUES, "Configures sculpting data default values.",
+				ConfigHandlerExtraBitManipulation.SCULPTING_PER_TOOL_OR_PER_PLAYER, "Configures whether sculpting data " +
+						"is stored/assessed on/from individual tools or on/from the player.",
+				ConfigHandlerExtraBitManipulation.SCULPTING_DISPLAY_IN_CHAT, "Configures whether changes to sculpting data are displayed in chat.",
+				"Sculpting Data Settings", "Configures sculpting data storage/assesses, default values, and chat notifications upon change. " +
+				"(applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)");
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemPropertyMap, "Item Properties",
 				"Configures the damage characteristics and default data of the Bit Wrench and Sculpting Tools", false);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemRecipeMap,
-				"Recipies", "Configures the recipie for the Bit Wrench", true);
+				"Recipes", "Configures the recipe for the Bit Wrench", true);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemShapes,
 				ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
@@ -83,7 +89,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	}
 
 	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(List<IConfigElement> configElements,
-			Map<Item, Config> configs, String name, String toolTip, boolean isRecipe)
+			Map<Item, ConfigNamed> configs, String name, String toolTip, boolean isRecipe)
 	{
 		int len = configs.size();
 		if (!isRecipe) len *= 2;
@@ -92,13 +98,12 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		int i = 0;
 		for (Item item : configs.keySet())
 		{
-			Config config = configs.get(item);
+			ConfigNamed config = configs.get(item);
 			String itemTitle = config.getTitle();
 			processedNames[i++] = itemTitle + (isRecipe ? " Recipe" : " Properties");
 			if (!isRecipe)
 			{
-				processedNames[i++] = "Configures the damage characteristics " + (config instanceof ConfigProperty &&
-						((ConfigProperty) config).hasSemiDiameter() ? "and semi-diameter settings " : "") + "of the " + itemTitle;
+				processedNames[i++] = "Configures the damage characteristics of the " + itemTitle;
 			}
 		}
 		processedNames[len - 2] = name;

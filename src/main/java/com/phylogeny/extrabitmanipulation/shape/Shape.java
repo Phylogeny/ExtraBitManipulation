@@ -13,6 +13,8 @@ import net.minecraft.world.World;
 
 public class Shape
 {
+	public static final String[] SHAPE_NAMES = new String[]{"Sphere", "Cylinder",
+		"Cone", "Cube", "Triangular Prism", "Triangular Pyramid", "Square Pyramid"};
 	protected int rotation;
 	protected float centerX, centerY, centerZ, wallThickness;
 	protected boolean sculptHollowShape, openEnds, inverted;

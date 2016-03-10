@@ -1,10 +1,10 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-public class Config
+public class ConfigNamed
 {
 	private String title;
 	
-	public Config(String title)
+	public ConfigNamed(String title)
 	{
 		this.title = title;
 	}

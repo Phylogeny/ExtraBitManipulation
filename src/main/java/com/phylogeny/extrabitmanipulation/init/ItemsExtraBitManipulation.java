@@ -77,16 +77,7 @@ public class ItemsExtraBitManipulation
 				true, isShapedDefault, oreDictionaryDefault, recipeDefault));
 		if (item instanceof ItemBitToolBase)
 		{
-			ConfigProperty config;
-			if (item instanceof ItemBitWrench)
-			{
-				config = new ConfigProperty(itemTitle, true, 5000);
-			}
-			else
-			{
-				config = new ConfigProperty(itemTitle, true, 2000000, 5, 32);
-			}
-			Configs.itemPropertyMap.put(item, config);
+			Configs.itemPropertyMap.put(item, new ConfigProperty(itemTitle, true, item instanceof ItemBitWrench ? 5000 : 2000000));
 			if (item instanceof ItemSculptingTool)
 			{
 				ItemSculptingTool itemTool = (ItemSculptingTool) item;
