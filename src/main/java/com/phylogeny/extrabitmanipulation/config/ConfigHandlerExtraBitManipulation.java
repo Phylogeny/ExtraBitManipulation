@@ -52,7 +52,10 @@ public class ConfigHandlerExtraBitManipulation
 			String version = getVersion(VERSION);
 			if (!version.equals(Reference.VERSION))
 			{
-				removeCategory("bit wrench recipe");
+				removeCategory("curved sculpting wire properties");
+				removeCategory("curved sculpting spade properties");
+				removeCategory("straight sculpting wire properties");
+				removeCategory("flat sculpting spade properties");
 			}
 			removeCategory(VERSION);
 			getVersion(Reference.VERSION);
