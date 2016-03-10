@@ -4,6 +4,7 @@ import net.minecraft.util.BlockPos;
 
 public class Cone extends SymmetricalShape
 {
+	private float semiDiameterInset2;
 	private float insetMin, insetMax, insetMin2, insetMax2;
 	
 	@Override
@@ -13,7 +14,7 @@ public class Cone extends SymmetricalShape
 		super.init(centerX, centerY, centerZ, radius, rotation, sculptHollowShape, wallThickness, openEnds);
 		float r = semiDiameter;
 		float d = r * 2;
-		float semiDiameterInset2 = r - (float) ((Math.sqrt(r * r + d * d) * wallThickness) / r);
+		semiDiameterInset2 = r - (float) ((Math.sqrt(r * r + d * d) * wallThickness) / r);
 		insetMax = this.centerY + semiDiameterInset;
 		insetMin = this.centerY - semiDiameterInset;
 		insetMax2 = this.centerY + semiDiameterInset2;
@@ -29,7 +30,7 @@ public class Cone extends SymmetricalShape
 		float dz = getBitPosDiffZ(pos, i, j, k, centerZ);
 		double dist = Math.sqrt(dx * dx + dz * dz);
 		boolean inShape = isPointInCircle(y, semiDiameter, dist);
-		return sculptHollowShape ? inShape && !(isPointInCircle(y, semiDiameterInset, dist)
+		return sculptHollowShape ? inShape && !(isPointInCircle(y, semiDiameterInset2, dist)
 				&& !isPointOffLine(y)) : inShape;
 	}
 	
