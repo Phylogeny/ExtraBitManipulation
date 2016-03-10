@@ -43,8 +43,10 @@ import com.phylogeny.extrabitmanipulation.shape.Cuboid;
 import com.phylogeny.extrabitmanipulation.shape.Cylinder;
 import com.phylogeny.extrabitmanipulation.shape.CylinderElliptic;
 import com.phylogeny.extrabitmanipulation.shape.Ellipsoid;
+import com.phylogeny.extrabitmanipulation.shape.RectangularPyramid;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
+import com.phylogeny.extrabitmanipulation.shape.SquarePyramid;
 import com.phylogeny.extrabitmanipulation.shape.SymmetricalShape;
 
 public class ItemSculptingTool extends ItemBitToolBase
@@ -176,7 +178,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
 				if (drawnStartPoint != null)
 				{
-					shape = curved ? (shapeType == 0 ? new Ellipsoid() : (shapeType == 1 ? new CylinderElliptic() : new ConeElliptic())) : new Cuboid();
+					shape = curved ? (shapeType == 0 ? new Ellipsoid() : (shapeType == 1 ? new CylinderElliptic() : new ConeElliptic()))
+							: (shapeType == 6 ? new RectangularPyramid() : new Cuboid());
 					float x3 = (float) drawnStartPoint.xCoord;
 					float y3 = (float) drawnStartPoint.yCoord;
 					float z3 = (float) drawnStartPoint.zCoord;
@@ -200,7 +203,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				else
 				{
-					shape = curved ? (shapeType == 0 ? new Sphere() : (shapeType == 1 ? new Cylinder() : new Cone())) : new Cube();
+					shape = curved ? (shapeType == 0 ? new Sphere() : (shapeType == 1 ? new Cylinder() : new Cone()))
+							: (shapeType == 6 ? new SquarePyramid() : new Cube());
 					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);

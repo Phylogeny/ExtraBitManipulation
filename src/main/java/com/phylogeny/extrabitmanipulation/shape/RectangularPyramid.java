@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-public class ConeElliptic extends SlopedAsymmetricalShape
+public class RectangularPyramid extends SlopedAsymmetricalShape
 {
 	
 	@Override
@@ -10,7 +10,7 @@ public class ConeElliptic extends SlopedAsymmetricalShape
 		float h = centerY - val;
 		float s1 = ((h + (inverted ? -semiDiameter1 : semiDiameter1)) * a) / d;
 		float s2 = ((h + (inverted ? -semiDiameter2 : semiDiameter2)) * c) / d;
-		return isPointInEllipse(dv1, dv2, s1, s2);
+		return isPointInRectangle(dv1, dv2, s1, s2);
 	}
 	
 }

@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.BlockPos;
 
-public class Cone extends SlopedSymmetricalShape
+public class SquarePyramid extends SlopedSymmetricalShape
 {
 	
 	@Override
@@ -12,16 +12,16 @@ public class Cone extends SlopedSymmetricalShape
 		if (isPointOffLine(y, centerY, semiDiameter)) return false;
 		float dx = getBitPosDiffX(pos, i, j, k, centerX);
 		float dz = getBitPosDiffZ(pos, i, j, k, centerZ);
-		double dist = Math.sqrt(dx * dx + dz * dz);
-		boolean inShape = isPointIn2DShape(y, semiDiameter, dist);
-		return sculptHollowShape ? inShape && !(isPointIn2DShape(y, semiDiameterInset2, dist)
+		boolean inShape = isPointIn2DShape(y, semiDiameter, dx, dz);
+		return sculptHollowShape ? inShape && !(isPointIn2DShape(y, semiDiameterInset2, dx, dz)
 				&& !isPointOffLine(y)) : inShape;
 	}
 	
-	private boolean isPointIn2DShape(float val, float semiDiameter2, double dist)
+	private boolean isPointIn2DShape(float val, float semiDiameter2, float dv1, float dv2)
 	{
 		float d = semiDiameter * 2;
-		return dist <= Math.abs(((centerY + (inverted ? -semiDiameter2 : semiDiameter2) - val) * semiDiameter) / d);
+		float s = Math.abs(((centerY + (inverted ? -semiDiameter2 : semiDiameter2) - val) * semiDiameter) / d);
+		return isPointInRectangle(dv1, dv2, s, s);
 	}
 	
 }

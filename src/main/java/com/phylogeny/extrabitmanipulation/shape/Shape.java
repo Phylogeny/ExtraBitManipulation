@@ -168,4 +168,9 @@ public class Shape
 		return val < centerVal - semiDiameter || val > centerVal + semiDiameter;
 	}
 	
+	protected boolean isPointInRectangle(float dv1, float dv2, float s1, float s2)
+	{
+		return dv1 <= s1 && dv1 >= -s1  && dv2 <= s2 && dv2 >= -s2;
+	}
+	
 }
