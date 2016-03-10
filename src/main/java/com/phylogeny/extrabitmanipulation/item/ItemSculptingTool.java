@@ -23,12 +23,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBase;
 import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -562,9 +564,21 @@ public class ItemSculptingTool extends ItemBitToolBase
 		initialize(stack);
     }
 	
+	private String colorSculptSettingText(String text, ConfigSculptSettingBase setting)
+	{
+		return (setting.isPerTool() ? EnumChatFormatting.GREEN : EnumChatFormatting.BLUE) + text;
+	}
+	
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
+		if (GuiScreen.isShiftKeyDown())
+		{
+			tooltip.add("");
+			tooltip.add(EnumChatFormatting.BLUE + "Blue = data stored/accessed per player");
+			tooltip.add(EnumChatFormatting.GREEN + "Green = data stored/accessed per tool");
+			tooltip.add("");
+		}
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 		ItemStack setBitStack = SculptSettingsHelper.getBitStack(player, stack.getTagCompound(), removeBits);
 		String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
@@ -578,41 +592,78 @@ public class ItemSculptingTool extends ItemBitToolBase
 		{
 			bitType += unspecifiedBit;
 		}
+		if (GuiScreen.isShiftKeyDown())
+		{
+			bitType = colorSculptSettingText(bitType, removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade);
+		}
 		tooltip.add(bitType);
 		if (GuiScreen.isShiftKeyDown())
 		{
-			if (!removeBits)
-			{
-				tooltip.add("Left click while sneaking to set bit type.");
-			}
-			if (mode == 2)
-			{
-				tooltip.add("Left click point on block, drag to");
-				tooltip.add("    another point, then release");
-				tooltip.add("    to remove " + (curved ? "spherical" : "cubic") + " area of bits");
-				tooltip.add("    from all intersecting blocks.");
-			}
-			else
-			{
-				tooltip.add("Left click block to remove " + (curved ? "spherical " : "cubic "));
-				String text = "area of bits from ";
-				if (mode == 0)
-				{
-					tooltip.add("    " + text + "it.");
-				}
-				else
-				{
-					tooltip.add("    " + text + "all intersecting");
-					tooltip.add("    blocks.");
-				}
-			}
-			tooltip.add("Right click to cycle modes.");
-			tooltip.add("Mouse wheel while sneaking to change");
-			tooltip.add("    " + (removeBits ? "removal" : "addition") + " diameter.");
+			NBTTagCompound nbt = stack.getTagCompound();
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getRotationText(player, nbt), Configs.sculptRotation));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getShapeTypeText(player, nbt, this),
+					removeBits ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat));
+			boolean targetBits = SculptSettingsHelper.isBitGridTargeted(player, nbt);
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getBitGridTargetedText(targetBits), Configs.sculptTargetBitGridVertexes)
+					+ (targetBits ? " (corners)" : " (centers)"));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getSemiDiameterText(player, nbt), Configs.sculptSemiDiameter));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getHollowShapeText(player, nbt), Configs.sculptHollowShape));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getOpenEndsText(player, nbt), Configs.sculptOpenEnds));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getWallThicknessText(player, nbt), Configs.sculptWallThickness));
 		}
 		else
 		{
-			tooltip.add("Hold SHIFT for info.");
+			if (GuiScreen.isCtrlKeyDown())
+			{
+				tooltip.add("");
+				String removeAddText = removeBits ? "remove" : "add";
+				String toFromText = removeBits ? "from" : "to";
+				if (!removeBits)
+				{
+					tooltip.add("Shift left click bit to set bit type.");
+				}
+				if (mode == 2)
+				{
+					tooltip.add("Left click point on block, drag");
+					tooltip.add("    to another point, then");
+					tooltip.add("    release to " + removeAddText + " bits " + toFromText);
+					tooltip.add("    all intersecting blocks.");
+				}
+				else
+				{
+					String shapeControlText = "Left click block to " + removeAddText + " bits";
+					if (mode == 0) shapeControlText += ".";
+					tooltip.add(shapeControlText);
+					if (mode != 0)
+					{
+						String areaText = toFromText;
+						tooltip.add("    " + areaText + " all intersecting blocks.");
+					}
+				}
+				tooltip.add("Right click to cycle modes.");
+				tooltip.add("Shift mouse wheel to change");
+				tooltip.add("    " + (removeBits ? "removal" : "addition") + (Configs.displayNameDiameter ? " " : " semi-") + "diameter.");
+				tooltip.add("");
+				tooltip.add("Control right click to");
+				tooltip.add("    change shape.");
+				tooltip.add("Control left click to toggle");
+				tooltip.add("    target between");
+				tooltip.add("    bits & vertecies.");
+				tooltip.add("Control mouse wheel to");
+				tooltip.add("    change rotation.");
+				tooltip.add("");
+				tooltip.add("Alt right click to toggle");
+				tooltip.add("    shapes solid or hollow.");
+				tooltip.add("Alt left click to toggle hollow");
+				tooltip.add("    shapes open or closed.");
+				tooltip.add("Alt mouse wheel to change hollow");
+				tooltip.add("    shape wall thickness.");
+			}
+			else
+			{
+				tooltip.add("Hold SHIFT for settings.");
+				tooltip.add("Hold CONTROL for controls.");
+			}
 		}
 	}
 	
