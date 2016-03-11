@@ -160,7 +160,7 @@ public class ClientEventHandler
 				}
 				else if (item != null && item instanceof ItemSculptingTool)
 				{
-					boolean drawnMode = (stack.hasTagCompound() && stack.getTagCompound().getInteger(NBTKeys.MODE) == 2);
+					boolean drawnMode = SculptSettingsHelper.getMode(player, stack.getTagCompound()) == 2;
 					if (!drawnMode)
 					{
 						drawnStartPoint = null;
@@ -266,6 +266,29 @@ public class ClientEventHandler
 				}
 			}
 		}
+		if (!event.isCanceled() && event.button == 1 && event.buttonstate)
+		{
+			ItemStack stack = player.inventory.getCurrentItem();
+			if (stack != null)
+			{
+				Item item = stack.getItem();
+				if (item != null && item instanceof ItemSculptingTool)
+				{
+					cycleMode(player, stack, !player.isSneaking());
+				}
+			}
+		}
+	}
+	
+	private void cycleMode(EntityPlayer player, ItemStack stack, boolean forward)
+	{
+		int mode = ((ItemSculptingTool) stack.getItem()).cycleData(SculptSettingsHelper.getMode(player,
+				stack.getTagCompound()), forward, ItemSculptingTool.MODE_TITLES.length);
+		SculptSettingsHelper.setMode(player, stack, mode);
+		if (Configs.sculptMode.shouldDisplayInChat())
+		{
+			printChatMessageWithDeletion(SculptSettingsHelper.getModeText(mode));
+		}
 	}
 	
 	private void cycleRotation(EntityPlayer player, ItemStack stack, boolean forward)
@@ -360,8 +383,8 @@ public class ClientEventHandler
 		if (itemStack != null)
 		{
 			Item item = itemStack.getItem();
-			if (item != null && item instanceof ItemSculptingTool && itemStack.hasTagCompound()
-					&& itemStack.getTagCompound().getInteger(NBTKeys.MODE) == 1)
+			if (item != null && item instanceof ItemSculptingTool
+					&& SculptSettingsHelper.getMode(event.player, itemStack.getTagCompound()) == 1)
 			{
 				event.setCanceled(true);
 			}
@@ -400,7 +423,7 @@ public class ClientEventHandler
 					Vec3 hit = target.hitVec;
 					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
 					{
-						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
+						int mode = SculptSettingsHelper.getMode(player, stack.getTagCompound());
 						frameCounter++;
 		                int side = dir.ordinal();
 		                boolean upDown = side <= 1;
@@ -617,7 +640,7 @@ public class ClientEventHandler
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
 						boolean removeBits = toolItem.removeBits();
-						int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
+						int mode = SculptSettingsHelper.getMode(player, stack.getTagCompound());
 						if (!removeBits || mode > 0 || api.canBeChiseled(world, target.getBlockPos()))
 						{
 							float hitX = (float) hit.xCoord - pos.getX();

@@ -25,6 +25,7 @@ public class Configs
 		public static boolean dropBitsAsFullChiseledBlocks;
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
+		public static ConfigSculptSettingInt sculptMode;
 		public static ConfigSculptSettingInt sculptRotation;
 		public static ConfigSculptSettingInt sculptShapeTypeCurved;
 		public static ConfigSculptSettingInt sculptShapeTypeFlat;

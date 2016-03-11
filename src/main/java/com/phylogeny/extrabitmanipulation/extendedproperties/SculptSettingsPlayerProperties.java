@@ -18,13 +18,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 {
 	private static final String ID = "SculptSettingsPlayerProperties";
-	public int rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	public int mode, rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
 	public boolean targetBitGridVertexes, sculptHollowShape, openEnds;
 	public ItemStack setBitWire, setBitSpade;
 	
 	public void syncAllData(EntityPlayerMP player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(rotation,
+		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, rotation,
 				shapeTypeCurved, shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter,
 				sculptHollowShape, openEnds, wallThickness, setBitWire, setBitSpade), player);
 	}
@@ -33,6 +33,7 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	public void saveNBTData(NBTTagCompound compound)
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setInteger(NBTKeys.MODE, mode);
 		nbt.setInteger(NBTKeys.ROTATION, rotation);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_CURVED, shapeTypeCurved);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_FLAT, shapeTypeFlat);
@@ -50,6 +51,7 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	public void loadNBTData(NBTTagCompound compound)
 	{
 		NBTTagCompound nbt = (NBTTagCompound) compound.getTag(ID);
+		mode = nbt.getInteger(NBTKeys.MODE);
 		rotation = nbt.getInteger(NBTKeys.ROTATION);
 		shapeTypeCurved = nbt.getInteger(NBTKeys.SHAPE_TYPE_CURVED);
 		shapeTypeFlat = nbt.getInteger(NBTKeys.SHAPE_TYPE_FLAT);
@@ -65,6 +67,7 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	@Override
 	public void init(Entity entity, World world)
 	{
+		mode = Configs.sculptMode.getDefaultValue();
 		rotation = Configs.sculptRotation.getDefaultValue();
 		shapeTypeCurved = Configs.sculptShapeTypeCurved.getDefaultValue();
 		shapeTypeFlat = Configs.sculptShapeTypeFlat.getDefaultValue();

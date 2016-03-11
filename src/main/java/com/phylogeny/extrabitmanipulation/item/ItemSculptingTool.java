@@ -51,12 +51,12 @@ import com.phylogeny.extrabitmanipulation.shape.SymmetricalShape;
 
 public class ItemSculptingTool extends ItemBitToolBase
 {
+	public static final String[] MODE_TITLES = new String[]{"Local", "Global", "Drawn"};
 	private boolean curved, removeBits;
 	
 	public ItemSculptingTool(boolean curved, boolean removeBits, String name)
 	{
 		super(name);
-		modeTitles = new String[]{"Local", "Global", "Drawn"};
 		this.curved = curved;
 		this.removeBits = removeBits;
 	}
@@ -88,23 +88,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
-    {
-		if (!world.isRemote)
-		{
-			initialize(stack);
-			cycleModes(stack, !player.isSneaking());
-			player.inventoryContainer.detectAndSendChanges();
-		}
-        return stack;
-    }
-	
-	@Override
 	public boolean initialize(ItemStack stack)
 	{
 		super.initialize(stack);
 		NBTTagCompound nbt = stack.getTagCompound();
 		initInt(nbt, NBTKeys.REMAINING_USES, ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
+		initInt(nbt, NBTKeys.MODE, Configs.sculptMode.getDefaultValue());
 		initInt(nbt, NBTKeys.SCULPT_SEMI_DIAMETER, Configs.sculptSemiDiameter.getDefaultValue());
 		initInt(nbt, NBTKeys.ROTATION, Configs.sculptRotation.getDefaultValue());
 		initBoolean(nbt, NBTKeys.TARGET_BIT_GRID_VERTEXES, Configs.sculptTargetBitGridVertexes.getDefaultValue());
@@ -147,7 +136,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			pos = pos.offset(side);
 		}
 		NBTTagCompound nbt = stack.getTagCompound();
-		boolean globalMode = nbt.getInteger(NBTKeys.MODE) == 1;
+		boolean globalMode = SculptSettingsHelper.getMode(player, nbt) == 1;
 		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
 		{
 			float hitX = (float) hit.xCoord - pos.getX();
@@ -576,34 +565,43 @@ public class ItemSculptingTool extends ItemBitToolBase
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
-		if (GuiScreen.isShiftKeyDown())
+		boolean shiftDown = GuiScreen.isShiftKeyDown();
+		boolean ctrlDown = GuiScreen.isCtrlKeyDown();
+		if (shiftDown)
 		{
 			tooltip.add("");
 			tooltip.add(EnumChatFormatting.BLUE + "Blue = data stored/accessed per player");
 			tooltip.add(EnumChatFormatting.GREEN + "Green = data stored/accessed per tool");
 			tooltip.add("");
 		}
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
-		ItemStack setBitStack = SculptSettingsHelper.getBitStack(player, stack.getTagCompound(), removeBits);
-		String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
-		String unspecifiedBit = removeBits ? "Any" : "None";
-		if (setBitStack != null)
+		NBTTagCompound nbt = stack.getTagCompound();
+		int mode = SculptSettingsHelper.getMode(player, nbt);
+		if (shiftDown)
 		{
-			String stackName = setBitStack.getDisplayName();
-			bitType += (stackName.length() == 12 ? unspecifiedBit : stackName.substring(15));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getModeText(mode), Configs.sculptMode));
 		}
-		else
+		ItemStack setBitStack = SculptSettingsHelper.getBitStack(player, nbt, removeBits);
+		if (!ctrlDown || shiftDown)
 		{
-			bitType += unspecifiedBit;
+			String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
+			String unspecifiedBit = removeBits ? "any" : "none";
+			if (setBitStack != null)
+			{
+				String stackName = setBitStack.getDisplayName();
+				bitType += (stackName.length() == 12 ? unspecifiedBit : stackName.substring(15));
+			}
+			else
+			{
+				bitType += unspecifiedBit;
+			}
+			if (shiftDown)
+			{
+				bitType = colorSculptSettingText(bitType, removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade);
+			}
+			tooltip.add(bitType);
 		}
-		if (GuiScreen.isShiftKeyDown())
+		if (shiftDown)
 		{
-			bitType = colorSculptSettingText(bitType, removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade);
-		}
-		tooltip.add(bitType);
-		if (GuiScreen.isShiftKeyDown())
-		{
-			NBTTagCompound nbt = stack.getTagCompound();
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getRotationText(player, nbt), Configs.sculptRotation));
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getShapeTypeText(player, nbt, this),
 					removeBits ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat));
@@ -617,7 +615,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 		else
 		{
-			if (GuiScreen.isCtrlKeyDown())
+			if (ctrlDown)
 			{
 				tooltip.add("");
 				String removeAddText = removeBits ? "remove" : "add";

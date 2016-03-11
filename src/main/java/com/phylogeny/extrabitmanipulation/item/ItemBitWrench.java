@@ -15,18 +15,28 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class ItemBitWrench extends ItemBitToolBase
 {
+	private static final String[] MODE_TITLES = new String[]{"Rotation", "Mirroring", "Translation", "Inversion"};
 	private static final String[] MODE_TEXT = new String[]{"rotate", "mirror", "translate", "invert"};
 	
 	public ItemBitWrench(String name)
 	{
 		super(name);
-		modeTitles = new String[]{"Rotation", "Mirroring", "Translation", "Inversion"};
+	}
+	
+	public void cycleModes(ItemStack stack, boolean forward)
+	{
+		initialize(stack);
+		NBTTagCompound nbt = stack.getTagCompound();
+		int mode = nbt.getInteger(NBTKeys.MODE);
+		nbt.setInteger(NBTKeys.MODE, cycleData(mode, forward, MODE_TITLES.length));
 	}
 	
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
@@ -217,13 +227,10 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public String getItemStackDisplayName(ItemStack stack)
     {
-		String displayName = super.getItemStackDisplayName(stack);
-		int i = displayName.lastIndexOf(" - ");
-		if (i >= 0)
-		{
-			displayName = displayName.substring(0, i);
-		}
-		if (displayName.contains(modeTitles[3]))
+		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
+		String displayName = ("" + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
+		+ " - " + MODE_TITLES[mode];
+		if (mode == 3)
 		{
 			displayName += " (WIP / Creative Only)";
 		}

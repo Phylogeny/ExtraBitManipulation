@@ -15,16 +15,17 @@ import io.netty.buffer.ByteBuf;
 
 public class PacketSyncAllSculptingData implements IMessage
 {
-	private int rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	private int mode, rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
 	private boolean targetBitGridVertexes, sculptHollowShape, openEnds;
 	private ItemStack setBitWire, setBitSpade;
 	
 	public PacketSyncAllSculptingData() {}
 	
-	public PacketSyncAllSculptingData(int rotation, int shapeTypeCurved, int shapeTypeFlat,
+	public PacketSyncAllSculptingData(int mode, int rotation, int shapeTypeCurved, int shapeTypeFlat,
 			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShape,
 			boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
 	{
+		this.mode = mode;
 		this.rotation = rotation;
 		this.shapeTypeCurved = shapeTypeCurved;
 		this.shapeTypeFlat = shapeTypeFlat;
@@ -40,6 +41,7 @@ public class PacketSyncAllSculptingData implements IMessage
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
+		buffer.writeInt(mode);
 		buffer.writeInt(rotation);
 		buffer.writeInt(shapeTypeCurved);
 		buffer.writeInt(shapeTypeFlat);
@@ -57,6 +59,7 @@ public class PacketSyncAllSculptingData implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
+		mode = buffer.readInt();
 		rotation = buffer.readInt();
 		shapeTypeCurved = buffer.readInt();
 		shapeTypeFlat = buffer.readInt();
@@ -84,6 +87,7 @@ public class PacketSyncAllSculptingData implements IMessage
 					SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 					if (sculptProp != null)
 					{
+						sculptProp.mode = message.mode;
 						sculptProp.rotation = message.rotation;
 						sculptProp.shapeTypeCurved = message.shapeTypeCurved;
 						sculptProp.shapeTypeFlat = message.shapeTypeFlat;

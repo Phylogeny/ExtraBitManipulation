@@ -8,6 +8,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
@@ -32,6 +33,7 @@ public class PacketRegistration
 		registerPacket(PacketSetEndsOpen.Handler.class, PacketSetEndsOpen.class, Side.SERVER);
 		registerPacket(PacketSetWallThickness.Handler.class, PacketSetWallThickness.class, Side.SERVER);
 		registerPacket(PacketSetBitStack.Handler.class, PacketSetBitStack.class, Side.SERVER);
+		registerPacket(PacketSetMode.Handler.class, PacketSetMode.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

@@ -8,6 +8,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetRotation;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
@@ -80,6 +81,48 @@ public class SculptSettingsHelper
 		NBTTagCompound nbt = initNBT(stack);
 		ItemStackHelper.saveStackToNBT(nbt, stackToSet, key);
 		player.inventoryContainer.detectAndSendChanges();
+	}
+	
+	public static int getMode(EntityPlayer player, NBTTagCompound nbt)
+	{
+		int mode = Configs.sculptMode.getDefaultValue();
+		if (Configs.sculptMode.isPerTool())
+		{
+			mode = getInt(nbt, mode, NBTKeys.MODE);
+		}
+		else
+		{
+			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
+			if (sculptProp != null)
+			{
+				mode = sculptProp.mode;
+			}
+		}
+		return mode;
+	}
+	
+	public static void setMode(EntityPlayer player, ItemStack stack, int mode)
+	{
+		World world = player.worldObj;
+		if (Configs.sculptMode.isPerTool())
+		{
+			if (!world.isRemote)
+			{
+				setInt(player, stack, mode, NBTKeys.MODE);
+			}
+		}
+		else
+		{
+			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
+			if (sculptProp != null)
+			{
+				sculptProp.mode = mode;
+			}
+		}
+		if (world.isRemote)
+		{
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetMode(mode));
+		}
 	}
 	
 	public static int getRotation(EntityPlayer player, NBTTagCompound nbt)
@@ -438,6 +481,16 @@ public class SculptSettingsHelper
 		}
 	}
 	
+	public static String getModeText(EntityPlayer player, NBTTagCompound nbt)
+	{
+		return getModeText(getMode(player, nbt));
+	}
+	
+	public static String getModeText(int mode)
+	{
+		return "Mode: " + ItemSculptingTool.MODE_TITLES[mode].toLowerCase();
+	}
+	
 	public static String getRotationText(EntityPlayer player, NBTTagCompound nbt)
 	{
 		return getRotationText(getRotation(player, nbt));
@@ -445,7 +498,7 @@ public class SculptSettingsHelper
 	
 	public static String getRotationText(int rotation)
 	{
-		return "Rotation: " + EnumFacing.getFront(rotation).getName();
+		return "Rotation: " + EnumFacing.getFront(rotation).getName().toLowerCase();
 	}
 	
 	public static String getShapeTypeText(EntityPlayer player, NBTTagCompound nbt, ItemSculptingTool item)
@@ -455,7 +508,7 @@ public class SculptSettingsHelper
 	
 	public static String getShapeTypeText(int shapeType)
 	{
-		return "Shape: " + Shape.SHAPE_NAMES[shapeType];
+		return "Shape: " + Shape.SHAPE_NAMES[shapeType].toLowerCase();
 	}
 	
 	public static String getBitGridTargetedText(EntityPlayer player, NBTTagCompound nbt)

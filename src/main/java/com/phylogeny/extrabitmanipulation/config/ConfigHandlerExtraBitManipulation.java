@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
@@ -115,6 +116,12 @@ public class ConfigHandlerExtraBitManipulation
 					"If set to false, they will drop normally as item stacks of bits (64 stacks of size 64). (default = false)");
 			
 			//SCULPTING DATA SETTINGS
+			Configs.sculptMode = getSculptSettingIntFromStringArray("Mode", false, true, 0, 0,
+					"sculpting mode",
+					"sculpting mode (local mode affects only the block clicked - global/drawn modes affects any bits from any blocks that intersect " +
+					"the sculpting shape when a block is clicked (global) or when the mouse is released after a click and drag (drawn).",
+					ItemSculptingTool.MODE_TITLES);
+			
 			Configs.sculptRotation = getSculptSettingInt("Rotation", false, true, 1, 0, 5,
 					"sculpting shape rotation",
 					"rotation value. 0 = down; 1 = up; 2 = north; 3 = south; 4 = west; 5 = east ", "up");
