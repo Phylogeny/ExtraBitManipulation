@@ -159,14 +159,14 @@ public class ConfigHandlerExtraBitManipulation
 					"hollow sculpting shape wall thickness",
 					"hollow sculpting shape wall thickness (in bits).", "2 bits");
 			
-			Configs.sculptSetBitWire = getSculptSettingItemStack("Wire Filter Bit Type", true, true,
+			Configs.sculptSetBitWire = getSculptSettingItemStack("Wire Filter Bit Type", true, true, "minecraft:air",
 					"filtered bit type",
 					"filtered bit type (sculpting can remove only one bit type rather than any - this config sets the block [as specified " +
 					"by 'modID:name'] of the bit type that sculpting wires remove (an empty string, an unsupported block, or any misspelling " +
 					"will specify any/all bit types)).", "Any");
 			Configs.sculptSetBitWire.init();
 			
-			Configs.sculptSetBitSpade = getSculptSettingItemStack("Spade Addition Bit Type", true, true,
+			Configs.sculptSetBitSpade = getSculptSettingItemStack("Spade Addition Bit Type", true, true, "minecraft:air",
 					"addition bit type",
 					"addition bit type (sets the block form [as specified by 'modID:name'] of the bit type that sculpting spades add to the " +
 					"world (an empty string, an unsupported block, or any misspelling will specify no bit type - the type will have to be set " +
@@ -283,7 +283,7 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
-		boolean defaultBoolean = configFile.getBoolean("Default " + name, SCULPTING_DEFAULT_VALUES, defaultValue,
+		boolean defaultBoolean = configFile.getBoolean(name, SCULPTING_DEFAULT_VALUES, defaultValue,
 				getToolTipSculptSetting(toolTipDefaultValue, Boolean.toString(defaultValue)));
 		return new ConfigSculptSettingBoolean(perTool, displayInChat, defaultBoolean);
 	}
@@ -293,7 +293,7 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
-		int defaultInt = configFile.getInt("Default " + name, SCULPTING_DEFAULT_VALUES, defaultValue, minValue, maxValue,
+		int defaultInt = configFile.getInt(name, SCULPTING_DEFAULT_VALUES, defaultValue, minValue, maxValue,
 				getToolTipSculptSetting(toolTipDefaultValue, toolTipDefaultValueDefault));
 		return new ConfigSculptSettingInt(perTool, displayInChat, defaultInt);
 	}
@@ -304,7 +304,7 @@ public class ConfigHandlerExtraBitManipulation
 		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
 		String defaultInt = validValues[defaultValue];
-		String entry = configFile.getString("Default " + name, SCULPTING_DEFAULT_VALUES, defaultInt,
+		String entry = configFile.getString(name, SCULPTING_DEFAULT_VALUES, defaultInt,
 				getToolTipSculptSetting(toolTipDefaultValue, defaultInt), validValues);
 		for (int i = 0; i < validValues.length; i++)
 		{
@@ -316,13 +316,13 @@ public class ConfigHandlerExtraBitManipulation
 		return new ConfigSculptSettingInt(perTool, displayInChat, defaultValue);
 	}
 	
-	private static ConfigSculptSettingBitStack getSculptSettingItemStack(String name, boolean defaultPerTool, boolean defaultDisplayInChat,
+	private static ConfigSculptSettingBitStack getSculptSettingItemStack(String name, boolean defaultPerTool, boolean defaultDisplayInChat, String defaultValue,
 			String toolTipSecondary, String toolTipDefaultValue, String toolTipDefaultValueDefault)
 	{
 		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
 		Block defaultBlock = null;
-		String blockEntry = configFile.getString("Default " + name, SCULPTING_DEFAULT_VALUES, "",
+		String blockEntry = configFile.getString(name, SCULPTING_DEFAULT_VALUES, defaultValue,
 				getToolTipSculptSetting(toolTipDefaultValue, toolTipDefaultValueDefault));
 		if (!blockEntry.isEmpty())
 		{
@@ -346,7 +346,7 @@ public class ConfigHandlerExtraBitManipulation
 
 	private static boolean getPerTool(String name, boolean defaultPerTool, String toolTipPerTool)
 	{
-		return configFile.getBoolean("Per Tool " + name, SCULPTING_PER_TOOL_OR_PER_PLAYER, defaultPerTool,
+		return configFile.getBoolean(name, SCULPTING_PER_TOOL_OR_PER_PLAYER, defaultPerTool,
 				"If set to true, " + toolTipPerTool + " will be set/stored in each individual sculpting tool and apply only to that tool. " +
 				"If set to false, it will be stored in the player and will apply to all tools. Regardless of this setting, players and tools " +
 				"will still initialize with data, but this setting determines which is considered for use. " + getReferralString(toolTipPerTool) + " (default = " + defaultPerTool + ")");
@@ -354,7 +354,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static boolean getDisplayInChat(String name, boolean defaultDisplayInChat, String toolTipDisplayInChat)
 	{
-		return configFile.getBoolean("Display In Chat " + name, SCULPTING_DISPLAY_IN_CHAT, defaultDisplayInChat,
+		return configFile.getBoolean(name, SCULPTING_DISPLAY_IN_CHAT, defaultDisplayInChat,
 				"If set to true, whenever " + toolTipDisplayInChat + " is changed, a message will be added to chat indicating the change. " +
 				"This will not fill chat with messages, since any pre-existing messages from this mod will be deleted before adding the next." +
 				getReferralString(toolTipDisplayInChat) + " (default = " + defaultDisplayInChat + ")");
