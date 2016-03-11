@@ -793,10 +793,11 @@ public class ClientEventHandler
 								boolean isOpen = isHollow && SculptSettingsHelper.areEndsOpen(player, nbt);
 								renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn,
 										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);
-								if (isHollow && !(mode == 2 && !drawnBox))
+								float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
+								if (wallThickness > 0 && isHollow && !(mode == 2 && !drawnBox))
 								{
 									renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-											x3, y3, z3, SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F, isOpen);
+											x3, y3, z3, wallThickness, isOpen);
 								}
 								GlStateManager.depthMask(true);
 								GlStateManager.enableTexture2D();
@@ -808,7 +809,7 @@ public class ClientEventHandler
 			}
 		}
 	}
-
+	
 	private void renderEnvelopedShapes(EntityPlayer player, ItemStack stack, int shapeType, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
 			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double contraction, boolean isOpen)
 	{
@@ -919,7 +920,7 @@ public class ClientEventHandler
 			else
 			{
 				a = b = c = r;
-				if (notFullSym && isOpen)
+				if (b > 0 && notFullSym && isOpen)
 				{
 					b += contraction * (isDrawn ? 0 : 1);
 				}
