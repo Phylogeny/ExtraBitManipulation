@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-public class RectangularPyramid extends SlopedAsymmetricalShape
+public class PyramidRectangular extends SlopedAsymmetricalShape
 {
 	
 	@Override

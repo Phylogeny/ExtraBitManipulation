@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.BlockPos;
 
-public class SquarePyramid extends SlopedSymmetricalShape
+public class PyramidSquare extends SlopedSymmetricalShape
 {
 	
 	@Override
