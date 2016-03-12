@@ -51,7 +51,7 @@ public class Prism extends Quadric
 			GlStateManager.popMatrix();
 		}
 		
-		if (!isPryamid)
+		if (!isPryamid && !isOpen)
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, isCube ? -radius : 0, -radius);
