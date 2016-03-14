@@ -4,8 +4,7 @@ import net.minecraft.util.BlockPos;
 
 public class SlopedAsymmetricalShape extends AsymmetricalShape
 {
-	
-	private float aInset2, cInset2;
+	protected float height, aInset2, bInset2, cInset2;
 	private float insetMin, insetMax, insetMin2, insetMax2;
 	
 	@Override
@@ -13,8 +12,8 @@ public class SlopedAsymmetricalShape extends AsymmetricalShape
 			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
 		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
-		float h = this.b * 2;
-		float hsq = h * h;
+		height = this.b * 2;
+		float hsq = height * height;
 		aInset2 = this.b - (float) ((Math.sqrt(this.a * this.a + hsq) * wallThickness) / this.a);
 		cInset2 = this.b - (float) ((Math.sqrt(this.c * this.c + hsq) * wallThickness) / this.c);
 		float bInset2 = Math.max(aInset2, cInset2);

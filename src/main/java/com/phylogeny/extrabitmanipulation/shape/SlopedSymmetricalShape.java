@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 public class SlopedSymmetricalShape extends SymmetricalShape
 {
-	protected float semiDiameterInset2;
+	protected float height, semiDiameterInset2;
 	private float insetMin, insetMax, insetMin2, insetMax2;
 	
 	@Override
@@ -11,8 +11,8 @@ public class SlopedSymmetricalShape extends SymmetricalShape
 	{
 		super.init(centerX, centerY, centerZ, radius, rotation, sculptHollowShape, wallThickness, openEnds);
 		float r = semiDiameter;
-		float d = r * 2;
-		semiDiameterInset2 = r - (float) ((Math.sqrt(r * r + d * d) * wallThickness) / r);
+		height = r * 2;
+		semiDiameterInset2 = r - (float) ((Math.sqrt(r * r + height * height) * wallThickness) / r);
 		insetMax = this.centerY + semiDiameterInset;
 		insetMin = this.centerY - semiDiameterInset;
 		insetMax2 = this.centerY + semiDiameterInset2;
