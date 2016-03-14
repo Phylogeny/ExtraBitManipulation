@@ -95,7 +95,8 @@ public class ClientEventHandler
 					}
 					event.setCanceled(true);
 				}
-				else if (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown())
+				else if (stack.getItem() instanceof ItemSculptingTool
+						&& (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()))
 				{
 					if (GuiScreen.isCtrlKeyDown())
 					{
@@ -423,7 +424,7 @@ public class ClientEventHandler
 					Vec3 hit = target.hitVec;
 					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
 					{
-						int mode = SculptSettingsHelper.getMode(player, stack.getTagCompound());
+						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
 						frameCounter++;
 		                int side = dir.ordinal();
 		                boolean upDown = side <= 1;
