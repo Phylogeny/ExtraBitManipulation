@@ -6,13 +6,6 @@ public class Cube extends SymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ, float semiDiameter, int rotation,
-			boolean sculptHollowShape, float wallThickness, boolean openEnds)
-	{
-		super.init(centerX, centerY, centerZ, semiDiameter, rotation, sculptHollowShape, wallThickness, openEnds);
-	}
-	
-	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		float x = getBitPosX(pos, i, j, k);

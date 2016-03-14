@@ -6,13 +6,6 @@ public class Ellipsoid extends AsymmetricalShape
 {
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
-			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
-	{
-		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
-	}
-	
-	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		float dx = getBitPosDiffX(pos, i, j, k, centerX);
