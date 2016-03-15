@@ -307,8 +307,8 @@ public class SculptSettingsHelper
 	
 	public static boolean isHollowShape(EntityPlayer player, NBTTagCompound nbt)
 	{
-		boolean hollowShape = Configs.sculptTargetBitGridVertexes.getDefaultValue();
-		if (Configs.sculptTargetBitGridVertexes.isPerTool())
+		boolean hollowShape = Configs.sculptHollowShape.getDefaultValue();
+		if (Configs.sculptHollowShape.isPerTool())
 		{
 			hollowShape = getBoolean(nbt, hollowShape, NBTKeys.SCULPT_HOLLOW_SHAPE);
 		}
