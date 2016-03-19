@@ -43,6 +43,8 @@ import com.phylogeny.extrabitmanipulation.shape.Cuboid;
 import com.phylogeny.extrabitmanipulation.shape.Cylinder;
 import com.phylogeny.extrabitmanipulation.shape.CylinderElliptic;
 import com.phylogeny.extrabitmanipulation.shape.Ellipsoid;
+import com.phylogeny.extrabitmanipulation.shape.PrismIsoscelesTriangular;
+import com.phylogeny.extrabitmanipulation.shape.PyramidIsoscelesTriangular;
 import com.phylogeny.extrabitmanipulation.shape.PyramidRectangular;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
@@ -167,8 +169,16 @@ public class ItemSculptingTool extends ItemBitToolBase
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
 				if (drawnStartPoint != null)
 				{
-					shape = curved ? (shapeType == 0 ? new Ellipsoid() : (shapeType == 1 ? new CylinderElliptic() : new ConeElliptic()))
-							: (shapeType == 6 ? new PyramidRectangular() : new Cuboid());
+					switch(shapeType)
+					{
+						case 1: shape = new CylinderElliptic(); break;
+						case 2: shape = new ConeElliptic(); break;
+						case 3: shape = new Cuboid(); break;
+						case 4: shape = new PrismIsoscelesTriangular(); break;
+						case 5: shape = new PyramidIsoscelesTriangular(); break;
+						case 6: shape = new PyramidRectangular(); break;
+						default: shape = new Ellipsoid(); break;
+					}
 					float x3 = (float) drawnStartPoint.xCoord;
 					float y3 = (float) drawnStartPoint.yCoord;
 					float z3 = (float) drawnStartPoint.zCoord;
@@ -192,8 +202,16 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				else
 				{
-					shape = curved ? (shapeType == 0 ? new Sphere() : (shapeType == 1 ? new Cylinder() : new Cone()))
-							: (shapeType == 6 ? new PyramidSquare() : new Cube());
+					switch(shapeType)
+					{
+						case 1: shape = new Cylinder(); break;
+						case 2: shape = new Cone(); break;
+						case 3: shape = new Cube(); break;
+						case 4: shape = new PrismIsoscelesTriangular(); break;
+						case 5: shape = new PyramidIsoscelesTriangular(); break;
+						case 6: shape = new PyramidSquare(); break;
+						default: shape = new Sphere(); break;
+					}
 					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
@@ -223,8 +241,26 @@ public class ItemSculptingTool extends ItemBitToolBase
 							if (offsetZ > 0) z3 *= -1;
 						}
 					}
-					((SymmetricalShape) shape).init(x2 + f * x3, y2 + f * y3, z2 + f * z3, addPadding(sculptSemiDiameter) - f,
-							rotation, sculptHollowShape, wallThickness, openEnds);
+					if (shapeType == 4 || shapeType == 5)
+					{
+						float radius = addPadding(sculptSemiDiameter) - f;
+						float contract = radius - radius * (float) Math.cos(Math.toRadians(30));
+						int rotation2 = rotation == 2 || rotation == 3 ? (shapeType == 5 && rotation == 2 ? 0 : 1)
+								: (shapeType == 5 && rotation % 2 == 0 ? 2 : 3);
+						EnumFacing rotDir = EnumFacing.getFront(rotation2);
+						float contractX = contract * rotDir.getFrontOffsetX();
+						float contractY = contract * rotDir.getFrontOffsetY();
+						float contractZ = contract * rotDir.getFrontOffsetZ();
+						(shapeType == 4 ? ((PrismIsoscelesTriangular) shape)
+								: ((PyramidIsoscelesTriangular) shape)).init(x2 + f * x3 - contractX, y2 + f * y3 - contractY, z2 + f * z3 - contractZ,
+								radius - Math.abs(contractX), radius - Math.abs(contractY), radius - Math.abs(contractZ),
+								rotation, sculptHollowShape, wallThickness, openEnds);
+					}
+					else
+					{
+						((SymmetricalShape) shape).init(x2 + f * x3, y2 + f * y3, z2 + f * z3, addPadding(sculptSemiDiameter) - f,
+								rotation, sculptHollowShape, wallThickness, openEnds);
+					}
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
@@ -610,8 +646,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 					+ (targetBits ? " (corners)" : " (centers)"));
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getSemiDiameterText(player, nbt), Configs.sculptSemiDiameter));
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getHollowShapeText(player, nbt), Configs.sculptHollowShape));
-			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getOpenEndsText(player, nbt), Configs.sculptOpenEnds));
-			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getWallThicknessText(player, nbt), Configs.sculptWallThickness));
+			tooltip.add(colorSculptSettingText("  - " + SculptSettingsHelper.getOpenEndsText(player, nbt), Configs.sculptOpenEnds));
+			tooltip.add(colorSculptSettingText("  - " + SculptSettingsHelper.getWallThicknessText(player, nbt), Configs.sculptWallThickness));
 		}
 		else
 		{

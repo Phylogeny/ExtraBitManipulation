@@ -173,4 +173,19 @@ public class Shape
 		return dv1 <= s1 && dv1 >= -s1  && dv2 <= s2 && dv2 >= -s2;
 	}
 	
+	protected boolean isPointInTriangle(float v1, float v2, float center1, float center2, float s1, float s2, float s3)
+	{
+		float az = center2 + s2;
+		float bx = center1 + s1;
+		float bcz = center2 - s3;
+		float cx = center1 - s1;
+		float dx = v1 - center1;
+		float dz = v2 - az;
+		az = bcz - az;
+	    boolean dxz = (bx - center1) * dz - az * dx > 0;
+	    if(((cx - center1) * dz - az * dx > 0) == dxz) return false;
+	    if(((cx - bx) * (v2 - bcz) > 0) != dxz) return false;
+	    return true;
+	}
+	
 }
