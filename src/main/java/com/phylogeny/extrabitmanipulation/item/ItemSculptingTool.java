@@ -280,7 +280,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				int remainingUses = nbt.getInteger(NBTKeys.REMAINING_USES);
 				if (!creativeMode && initialpossibleUses > remainingUses) initialpossibleUses = remainingUses;
 				int possibleUses = initialpossibleUses;
-				
+				api.beginUndoGroup(player);
 				for (int i = (int) box.minX; i <= box.maxX; i++)
 				{
 					for (int j = (int) box.minY; j <= box.maxY; j++)
@@ -295,6 +295,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 						}
 					}
 				}
+				api.endUndoGroup(player);
 				if (!Configs.dropBitsPerBlock)
 				{
 					giveOrDropStacks(player, world, pos, shape, api, bitTypes);
@@ -425,6 +426,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				return remainingUses;
 			}
 			boolean byPassBitChecks = shape.isBlockInsideShape(pos);
+			int initialRemainingUses = remainingUses;
 			for (int i = 0; i < 16; i++)
 			{
 				for (int j = 0; j < 16; j++)
@@ -466,7 +468,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 			{
 				giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			}
-			bitAccess.commitChanges(true);
+			if (remainingUses < initialRemainingUses)
+			{
+				bitAccess.commitChanges(true);
+			}
 		}
 		return remainingUses;
     }
