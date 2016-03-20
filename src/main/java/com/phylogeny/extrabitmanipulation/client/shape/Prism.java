@@ -43,7 +43,7 @@ public class Prism extends Quadric
 		
 		GlStateManager.rotate(90, 1, 0, 0);
 		
-		if (!isOpen)
+		if (isCube || !isOpen)
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, isCube ? radius : radius * 2, -radius);
@@ -51,7 +51,7 @@ public class Prism extends Quadric
 			GlStateManager.popMatrix();
 		}
 		
-		if (!isPryamid && !isOpen)
+		if (isCube || (!isPryamid && !isOpen))
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, isCube ? -radius : 0, -radius);
