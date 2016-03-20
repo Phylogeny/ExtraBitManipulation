@@ -455,7 +455,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 							catch (SpaceOccupied e) {}
 							if (remainingUses == 0)
 							{
-								bitAccess.commitChanges();
+								bitAccess.commitChanges(true);
 								return remainingUses;
 							}
 						}
@@ -466,7 +466,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			{
 				giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			}
-			bitAccess.commitChanges();
+			bitAccess.commitChanges(true);
 		}
 		return remainingUses;
     }

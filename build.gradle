@@ -17,13 +17,13 @@ group= "com.phylogeny.ExtraBitManipulation"
 archivesBaseName = "ExtraBitManipulation"
 
 minecraft {
-    version = "1.8.9-11.15.1.1726"
+    version = "1.8.9-11.15.1.1755"
     runDir = "run"
     mappings = "stable_20"
 }
 
 dependencies {
-	compile files ("lib/chiselsandbits-mc1.8.9-v1.8.11-api.jar")
+	compile files ("lib/chiselsandbits-8.5-api.jar")
 }
 
 processResources
