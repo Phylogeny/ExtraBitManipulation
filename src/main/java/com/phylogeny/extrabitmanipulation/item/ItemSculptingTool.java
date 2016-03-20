@@ -8,6 +8,7 @@ import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
+import mod.chiselsandbits.api.IBitBag;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
@@ -308,7 +309,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					nbt.setInteger(NBTKeys.REMAINING_USES, newRemainingUses);
 					if (!removeBits)
 					{
-						removeInventoryBits(api, player, setBitStack, change);
+						removeOrAddInventoryBits(api, player, setBitStack, change, false);
 					}
 					if (newRemainingUses <= 0)
 					{
@@ -356,16 +357,35 @@ public class ItemSculptingTool extends ItemBitToolBase
 		for (int i = 0; i < inventoy.getSizeInventory(); i++)
 		{
 			ItemStack stack = inventoy.getStackInSlot(i);
-			if (stack != null && api.getItemType(stack) == ItemType.CHISLED_BIT
-					&& ItemStack.areItemStackTagsEqual(stack, setBitStack))
+			if (stack != null)
 			{
-				count += stack.stackSize;
+				count += getBitCountFromStack(api, setBitStack, stack);
+				if (api.getItemType(stack) == ItemType.BIT_BAG)
+				{
+					IBitBag bitBag = api.getBitbag(stack);
+					for (int j = 0; j < bitBag.getSlots(); j++)
+					{
+						ItemStack bagStack = bitBag.getStackInSlot(j);
+						count += getBitCountFromStack(api, setBitStack, bagStack);
+					}
+				}
 			}
 		}
 		return count;
 	}
+
+	private int getBitCountFromStack(IChiselAndBitsAPI api, ItemStack setBitStack, ItemStack stack)
+	{
+		return areBitStacksEqual(api, setBitStack, stack) ? stack.stackSize : 0;
+	}
+
+	private boolean areBitStacksEqual(IChiselAndBitsAPI api, ItemStack bitStack, ItemStack putativeBitStack)
+	{
+		return putativeBitStack != null && api.getItemType(putativeBitStack) == ItemType.CHISLED_BIT
+				&& ItemStack.areItemStackTagsEqual(putativeBitStack, bitStack);
+	}
 	
-	private void removeInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack setBitStack, int quota)
+	private void removeOrAddInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack setBitStack, int quota, boolean addBits)
 	{
 		if (quota > 0)
 		{
@@ -373,24 +393,68 @@ public class ItemSculptingTool extends ItemBitToolBase
 			for (int i = 0; i < inventoy.getSizeInventory(); i++)
 			{
 				ItemStack stack = inventoy.getStackInSlot(i);
-				if (stack != null && api.getItemType(stack) == ItemType.CHISLED_BIT
-						&& ItemStack.areItemStackTagsEqual(stack, setBitStack))
+				if (!addBits) quota = removeBitsFromStack(api, setBitStack, quota, inventoy, null, i, stack);
+				if (api.getItemType(stack) == ItemType.BIT_BAG)
 				{
-					int size = stack.stackSize;
-					if (size > quota)
+					IBitBag bitBag = api.getBitbag(stack);
+					for (int j = 0; j < bitBag.getSlots(); j++)
 					{
-						stack.stackSize = size - quota;
-						quota = 0;
+						ItemStack bagStack = bitBag.getStackInSlot(j);
+						quota = addBits ? addBitsToBag(quota, bitBag, j, setBitStack)
+								: removeBitsFromStack(api, setBitStack, quota, null, bitBag, j, bagStack);
+						if (quota <= 0) break;
 					}
-					else
-					{
-						inventoy.setInventorySlotContents(i, null);
-						quota -= size;
-					}
-					if (quota <= 0) break;
 				}
+				if (quota <= 0) break;
 			}
 		}
+	}
+	
+	private int addBitsToBag(int quota, IBitBag bitBag, int index, ItemStack stack)
+	{
+		if (stack != null)
+		{
+			int size = stack.stackSize;
+			ItemStack remainingStack = bitBag.insertItem(index, stack, false);
+			int reduction = size - (remainingStack != null ? remainingStack.stackSize : 0);
+			quota -= reduction;
+			stack.stackSize -= reduction;
+		}
+		return quota;
+	}
+
+	private int removeBitsFromStack(IChiselAndBitsAPI api, ItemStack setBitStack,
+			int quota, InventoryPlayer inventoy, IBitBag bitBag, int index, ItemStack stack)
+	{
+		if (areBitStacksEqual(api, setBitStack, stack))
+		{
+			int size = stack.stackSize;
+			if (size > quota)
+			{
+				if (bitBag != null)
+				{
+					bitBag.extractItem(index, quota, false);
+				}
+				else
+				{
+					stack.stackSize = size - quota;
+				}
+				quota = 0;
+			}
+			else
+			{
+				if (bitBag != null)
+				{
+					ItemStack item = bitBag.extractItem(index, size, false);
+				}
+				else if (inventoy != null)
+				{
+					inventoy.setInventorySlotContents(index, null);
+				}
+				quota -= size;
+			}
+		}
+		return quota;
 	}
 
 	public static boolean wasInsideClicked(EnumFacing dir, Vec3 hit, BlockPos pos)
@@ -520,11 +584,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 						while (blockCount > 0)
 						{
 							int stackSize = blockCount > 64 ? 64 : blockCount;
-							ItemStack stack2 = bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK);
+							ItemStack stack2 = bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false);
 							if (stack2 != null)
 							{
 								stack2.stackSize = stackSize;
-								givePlayerStackOrDropOnGround(player, world, pos, shape, stack2);
+								givePlayerStackOrDropOnGround(player, world, api, pos, shape, stack2);
 							}
 							blockCount -= stackSize;
 						}
@@ -534,7 +598,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					{
 						quota = totalBits > 64 ? 64 : totalBits;
 						ItemStack bitStack2 = bit.getItemStack(quota);
-						givePlayerStackOrDropOnGround(player, world, pos, shape, bitStack2);
+						givePlayerStackOrDropOnGround(player, world, api, pos, shape, bitStack2);
 						totalBits -= quota;
 					}
 				}
@@ -544,11 +608,15 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 	}
 
-	private void givePlayerStackOrDropOnGround(EntityPlayer player, World world, BlockPos pos, Shape shape, ItemStack stack)
+	private void givePlayerStackOrDropOnGround(EntityPlayer player, World world, IChiselAndBitsAPI api, BlockPos pos, Shape shape, ItemStack stack)
 	{
 		if (Configs.placeBitsInInventory)
 		{
-			player.inventory.addItemStackToInventory(stack);
+			removeOrAddInventoryBits(api, player, stack, stack.stackSize, true);
+			if (stack.stackSize > 0)
+			{
+				player.inventory.addItemStackToInventory(stack);
+			}
 		}
 		if (stack.stackSize > 0)
 		{
