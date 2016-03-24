@@ -186,17 +186,6 @@ public class ConfigHandlerExtraBitManipulation
 				{
 					ItemsExtraBitManipulation.BitWrench.setMaxDamage(configProperty.takesDamage ? configProperty.maxDamage : 0);
 				}
-//				else
-//				{
-//					configProperty.defaultRemovalSemiDiameter = configFile.getInt("Default Removal Semi-Diameter",
-//							category, configProperty.getDefaultRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
-//							"The semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
-//									"(Ex: 0 = only the bit clicked - diameter = 1; 1 = bit clicked +- 1 - diameter = 3, etc). (default = 5)");
-//					configProperty.maxRemovalSemiDiameter = configFile.getInt("Max Removal Semi-Diameter", category,
-//							configProperty.getMaxRemovalSemiDiameterDefault(), 0, Integer.MAX_VALUE,
-//							"The maximum semi-diameter (i.e. radius if it is a sphere) of the " + itemTitle + " removal shape " +
-//									"(continual increasing/decreasing of radius will cause cycling from 0 to this number). (default = 2 meters)");
-//				}
 			}
 			
 			//ITEM RECIPES
