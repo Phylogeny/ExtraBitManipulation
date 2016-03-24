@@ -343,7 +343,7 @@ public class ClientEventHandler
 	{
 		boolean isWire = ((ItemSculptingTool) item).removeBits();
 		boolean isHollowShape = !SculptSettingsHelper.isHollowShape(player, stack.getTagCompound(), isWire);
-		SculptSettingsHelper.setHollowShape(player, stack, isHollowShape, isWire);
+		SculptSettingsHelper.setHollowShape(player, stack, isWire, isHollowShape);
 		if ((isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).shouldDisplayInChat())
 		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getHollowShapeText(isHollowShape));
