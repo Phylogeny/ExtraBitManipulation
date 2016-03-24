@@ -282,7 +282,7 @@ public class ClientEventHandler
 	
 	private void cycleMode(EntityPlayer player, ItemStack stack, boolean forward)
 	{
-		int mode = ((ItemSculptingTool) stack.getItem()).cycleData(SculptSettingsHelper.getMode(player,
+		int mode = SculptSettingsHelper.cycleData(SculptSettingsHelper.getMode(player,
 				stack.getTagCompound()), forward, ItemSculptingTool.MODE_TITLES.length);
 		SculptSettingsHelper.setMode(player, stack, mode);
 		if (Configs.sculptMode.shouldDisplayInChat())
@@ -296,12 +296,23 @@ public class ClientEventHandler
 		NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
 		int rotation = SculptSettingsHelper.getRotation(player, nbt);
 		int shapeType = SculptSettingsHelper.getShapeType(player, nbt, ((ItemSculptingTool) stack.getItem()).isCurved());
-		rotation = shapeType == 2 || shapeType > 4 ? (forward ? DIRECTION_FORWARD[rotation] : DIRECTION_BACKWARD[rotation])
-				: (forward ? AXIS_FORWARD[rotation] : AXIS_BACKWARD[rotation]);
+		int roll = rotation / 6;
+		rotation %= 6;
+		if (!(shapeType == 4 && (forward ? roll != 2 : roll != 0)) && !(shapeType == 5 && (forward ? roll != 3 : roll != 0)))
+		{
+			rotation = shapeType == 2 || shapeType > 4 ? (forward ? DIRECTION_FORWARD[rotation] : DIRECTION_BACKWARD[rotation])
+					: (forward ? AXIS_FORWARD[rotation] : AXIS_BACKWARD[rotation]);
+			roll = forward ? 0 : (shapeType == 4 ? 2 : 3);
+		}
+		else
+		{
+			roll = shapeType == 4 ? (roll == 0 ? 2 : 0) : SculptSettingsHelper.cycleData(roll, forward, 4);
+		}
+		rotation += 6 * roll;
 		SculptSettingsHelper.setRotation(player, stack, rotation);
 		if (Configs.sculptRotation.shouldDisplayInChat())
 		{
-			printChatMessageWithDeletion(SculptSettingsHelper.getRotationText(rotation));
+			printChatMessageWithDeletion(SculptSettingsHelper.getRotationText(rotation, shapeType == 4 || shapeType == 5));
 		}
 	}
 	
@@ -330,7 +341,7 @@ public class ClientEventHandler
 	
 	private void cycleSemiDiameter(EntityPlayer player, ItemStack stack, boolean forward)
 	{
-		int semiDiameter = ((ItemBitToolBase) stack.getItem()).cycleData(SculptSettingsHelper.getSemiDiameter(player, stack.getTagCompound()),
+		int semiDiameter = SculptSettingsHelper.cycleData(SculptSettingsHelper.getSemiDiameter(player, stack.getTagCompound()),
 				forward, Configs.maxSemiDiameter);
 		SculptSettingsHelper.setSemiDiameter(player, stack, semiDiameter);
 		if (Configs.sculptSemiDiameter.shouldDisplayInChat())
@@ -362,7 +373,7 @@ public class ClientEventHandler
 	
 	private void cycleWallThickness(EntityPlayer player, ItemStack stack, boolean forward)
 	{
-		int wallThickness = ((ItemBitToolBase) stack.getItem()).cycleData(SculptSettingsHelper.getWallThickness(player, stack.getTagCompound()),
+		int wallThickness = SculptSettingsHelper.cycleData(SculptSettingsHelper.getWallThickness(player, stack.getTagCompound()),
 				forward, Configs.maxWallThickness);
 		SculptSettingsHelper.setWallThickness(player, stack, wallThickness);
 		if (Configs.sculptWallThickness.shouldDisplayInChat())
@@ -826,8 +837,10 @@ public class ClientEventHandler
 			 * 5 = triangular pyramid
 			 * 6 = square pyramid
 			 */
-			EnumFacing dir = EnumFacing.getFront(SculptSettingsHelper.getRotation(player, nbt));
-			int rot = dir.ordinal();
+			int rot = SculptSettingsHelper.getRotation(player, nbt);
+			int roll = rot / 6;
+			rot %= 6;
+			EnumFacing dir = EnumFacing.getFront(rot);
 			boolean notFullSym = shapeType != 0 && shapeType != 3;
 			boolean notSym = shapeType == 2 || shapeType > 4;
 			double ri = r + Utility.PIXEL_D * 0.5;

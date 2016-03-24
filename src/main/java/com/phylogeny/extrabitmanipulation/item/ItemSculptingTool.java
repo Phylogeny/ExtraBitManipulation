@@ -165,6 +165,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				AxisAlignedBB box;
 				int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
 				int rotation = SculptSettingsHelper.getRotation(player, nbt);
+				int roll = rotation / 6;
+				rotation %= 6;
 				boolean sculptHollowShape = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 				float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
@@ -711,8 +713,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 		if (shiftDown)
 		{
-			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getRotationText(player, nbt), Configs.sculptRotation));
-			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getShapeTypeText(player, nbt, this),
+			int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getRotationText(player, nbt, shapeType == 4 || shapeType == 5), Configs.sculptRotation));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getShapeTypeText(shapeType),
 					removeBits ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat));
 			boolean targetBits = SculptSettingsHelper.isBitGridTargeted(player, nbt);
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getBitGridTargetedText(targetBits), Configs.sculptTargetBitGridVertexes)

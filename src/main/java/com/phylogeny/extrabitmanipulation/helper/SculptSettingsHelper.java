@@ -500,14 +500,23 @@ public class SculptSettingsHelper
 		return "Mode: " + ItemSculptingTool.MODE_TITLES[mode].toLowerCase();
 	}
 	
-	public static String getRotationText(EntityPlayer player, NBTTagCompound nbt)
+	public static String getRotationText(EntityPlayer player, NBTTagCompound nbt, boolean showRoll)
 	{
-		return getRotationText(getRotation(player, nbt));
+		return getRotationText(getRotation(player, nbt), showRoll);
 	}
 	
-	public static String getRotationText(int rotation)
+	public static String getRotationText(int rotation, boolean showRoll)
 	{
-		return "Rotation: " + EnumFacing.getFront(rotation).getName().toLowerCase();
+		String text = "Rotation: " + EnumFacing.getFront(rotation % 6).getName().toLowerCase();
+		if (showRoll)
+		{
+			int roll = rotation / 6;
+			if (roll > 0)
+			{
+				text += " (roll " +  (roll * 90) + "\u00B0)";
+			}
+		}
+		return text;
 	}
 	
 	public static String getShapeTypeText(EntityPlayer player, NBTTagCompound nbt, ItemSculptingTool item)
@@ -603,5 +612,10 @@ public class SculptSettingsHelper
 		}
 		if (size > 0) diameterText += size + " bits";
 		return diameterText;
+	}
+	
+	public static int cycleData(int intValue, boolean forward, int max)
+	{
+		return (intValue + (forward ? 1 : max - 1)) % max;
 	}
 }

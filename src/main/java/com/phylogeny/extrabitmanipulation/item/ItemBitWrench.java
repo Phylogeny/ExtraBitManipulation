@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
@@ -36,7 +37,7 @@ public class ItemBitWrench extends ItemBitToolBase
 		initialize(stack);
 		NBTTagCompound nbt = stack.getTagCompound();
 		int mode = nbt.getInteger(NBTKeys.MODE);
-		nbt.setInteger(NBTKeys.MODE, cycleData(mode, forward, MODE_TITLES.length));
+		nbt.setInteger(NBTKeys.MODE, SculptSettingsHelper.cycleData(mode, forward, MODE_TITLES.length));
 	}
 	
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,

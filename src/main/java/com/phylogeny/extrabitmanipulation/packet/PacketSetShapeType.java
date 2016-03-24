@@ -17,10 +17,10 @@ public class PacketSetShapeType implements IMessage
 	
 	public PacketSetShapeType() {}
 	
-	public PacketSetShapeType(boolean isCurved, int rotation)
+	public PacketSetShapeType(boolean isCurved, int shapeType)
 	{
 		this.isCurved = isCurved;
-		this.shapeType = rotation;
+		this.shapeType = shapeType;
 	}
 	
 	@Override

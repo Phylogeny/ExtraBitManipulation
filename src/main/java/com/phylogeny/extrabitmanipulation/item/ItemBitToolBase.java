@@ -14,11 +14,6 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		maxStackSize = 1;
 	}
 	
-	public int cycleData(int intValue, boolean forward, int max)
-	{
-		return (intValue + (forward ? 1 : max - 1)) % max;
-	}
-	
 	public boolean initialize(ItemStack stack)
 	{
 		if (!stack.hasTagCompound())
