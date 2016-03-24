@@ -5,7 +5,6 @@ import net.minecraft.util.BlockPos;
 public class SlopedAsymmetricalShape extends AsymmetricalShape
 {
 	protected float height, aInset2, cInset2;
-//	protected float contractionRatio;
 	private float insetMin, insetMax, insetMin2, insetMax2;
 	
 	@Override
@@ -22,7 +21,6 @@ public class SlopedAsymmetricalShape extends AsymmetricalShape
 		insetMin = this.centerY - bInset;
 		insetMax2 = this.centerY + bInset2;
 		insetMin2 = this.centerY - bInset2;
-//		contractionRatio = (height - (this.b - bInset2) - wallThickness) / height;
 	}
 	
 	@Override
