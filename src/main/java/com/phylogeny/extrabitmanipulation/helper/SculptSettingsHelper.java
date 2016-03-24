@@ -547,7 +547,7 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			diameterText += size + " bits";
+			diameterText = addBitLengthString(size, diameterText);
 		}
 		return diameterText;
 	}
@@ -579,7 +579,20 @@ public class SculptSettingsHelper
 
 	public static String getWallThicknessText(int wallThickness)
 	{
-		return "Wall Thickness: " + wallThickness + " bits";
+		return addBitLengthString(wallThickness, "Wall Thickness: ");
 	}
 	
+	private static String addBitLengthString(double size, String diameterText)
+	{
+		if (size >= 16)
+		{
+			int size2 = ((int) size / 16);
+			diameterText += size2 + " meter";
+			if (size2 > 1) diameterText += "s";
+			size %= 16;
+			if (size > 0) diameterText += " & ";
+		}
+		if (size > 0) diameterText += size + " bits";
+		return diameterText;
+	}
 }
