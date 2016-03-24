@@ -101,7 +101,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		initInt(nbt, NBTKeys.ROTATION, Configs.sculptRotation.getDefaultValue());
 		initBoolean(nbt, NBTKeys.TARGET_BIT_GRID_VERTEXES, Configs.sculptTargetBitGridVertexes.getDefaultValue());
 		initInt(nbt, NBTKeys.SHAPE_TYPE, (curved ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat).getDefaultValue());
-		initBoolean(nbt, NBTKeys.SCULPT_HOLLOW_SHAPE, Configs.sculptHollowShape.getDefaultValue());
+		initBoolean(nbt, NBTKeys.SCULPT_HOLLOW_SHAPE, (removeBits ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).getDefaultValue());
 		initBoolean(nbt, NBTKeys.OPEN_ENDS, Configs.sculptOpenEnds.getDefaultValue());
 		initInt(nbt, NBTKeys.WALL_THICKNESS, Configs.sculptWallThickness.getDefaultValue());
 		
@@ -165,7 +165,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				AxisAlignedBB box;
 				int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
 				int rotation = SculptSettingsHelper.getRotation(player, nbt);
-				boolean sculptHollowShape = SculptSettingsHelper.isHollowShape(player, nbt);
+				boolean sculptHollowShape = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 				float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
 				if (drawnStartPoint != null)
@@ -718,7 +718,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getBitGridTargetedText(targetBits), Configs.sculptTargetBitGridVertexes)
 					+ (targetBits ? " (corners)" : " (centers)"));
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getSemiDiameterText(player, nbt), Configs.sculptSemiDiameter));
-			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getHollowShapeText(player, nbt), Configs.sculptHollowShape));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getHollowShapeText(player, nbt, this),
+					removeBits ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade));
 			tooltip.add(colorSculptSettingText("  - " + SculptSettingsHelper.getOpenEndsText(player, nbt), Configs.sculptOpenEnds));
 			tooltip.add(colorSculptSettingText("  - " + SculptSettingsHelper.getWallThicknessText(player, nbt), Configs.sculptWallThickness));
 		}

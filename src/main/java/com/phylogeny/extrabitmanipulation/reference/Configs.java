@@ -31,7 +31,8 @@ public class Configs
 		public static ConfigSculptSettingInt sculptShapeTypeFlat;
 		public static ConfigSculptSettingBoolean sculptTargetBitGridVertexes;
 		public static ConfigSculptSettingInt sculptSemiDiameter;
-		public static ConfigSculptSettingBoolean sculptHollowShape;
+		public static ConfigSculptSettingBoolean sculptHollowShapeWire;
+		public static ConfigSculptSettingBoolean sculptHollowShapeSpade;
 		public static ConfigSculptSettingBoolean sculptOpenEnds;
 		public static ConfigSculptSettingInt sculptWallThickness;
 		public static ConfigSculptSettingBitStack sculptSetBitWire;

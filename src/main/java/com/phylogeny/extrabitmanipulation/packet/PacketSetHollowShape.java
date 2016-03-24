@@ -12,25 +12,29 @@ import io.netty.buffer.ByteBuf;
 
 public class PacketSetHollowShape implements IMessage
 {
+	private boolean isWire;
 	private boolean hollowShape;
 	
 	public PacketSetHollowShape() {}
 	
-	public PacketSetHollowShape(boolean hollowShape)
+	public PacketSetHollowShape(boolean hollowShape, boolean isWire)
 	{
 		this.hollowShape = hollowShape;
+		this.isWire = isWire;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
 		buffer.writeBoolean(hollowShape);
+		buffer.writeBoolean(isWire);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
 		hollowShape = buffer.readBoolean();
+		isWire = buffer.readBoolean();
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetHollowShape, IMessage>
@@ -45,7 +49,7 @@ public class PacketSetHollowShape implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setHollowShape(player, player.getCurrentEquippedItem(), message.hollowShape);
+					SculptSettingsHelper.setHollowShape(player, player.getCurrentEquippedItem(), message.hollowShape, message.isWire);
 				}
 			});
 			return null;

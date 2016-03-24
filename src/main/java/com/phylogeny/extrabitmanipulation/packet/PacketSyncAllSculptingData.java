@@ -16,14 +16,15 @@ import io.netty.buffer.ByteBuf;
 public class PacketSyncAllSculptingData implements IMessage
 {
 	private int mode, rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	private boolean targetBitGridVertexes, sculptHollowShape, openEnds;
+	private boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	private ItemStack setBitWire, setBitSpade;
 	
 	public PacketSyncAllSculptingData() {}
 	
 	public PacketSyncAllSculptingData(int mode, int rotation, int shapeTypeCurved, int shapeTypeFlat,
-			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShape,
-			boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
+			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
+			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness,
+			ItemStack setBitWire, ItemStack setBitSpade)
 	{
 		this.mode = mode;
 		this.rotation = rotation;
@@ -31,7 +32,8 @@ public class PacketSyncAllSculptingData implements IMessage
 		this.shapeTypeFlat = shapeTypeFlat;
 		this.targetBitGridVertexes = targetBitGridVertexes;
 		this.sculptSemiDiameter = sculptSemiDiameter;
-		this.sculptHollowShape = sculptHollowShape;
+		this.sculptHollowShapeWire = sculptHollowShapeWire;
+		this.sculptHollowShapeSpade = sculptHollowShapeSpade;
 		this.openEnds = openEnds;
 		this.wallThickness = wallThickness;
 		this.setBitWire = setBitWire;
@@ -47,7 +49,8 @@ public class PacketSyncAllSculptingData implements IMessage
 		buffer.writeInt(shapeTypeFlat);
 		buffer.writeBoolean(targetBitGridVertexes);
 		buffer.writeInt(sculptSemiDiameter);
-		buffer.writeBoolean(sculptHollowShape);
+		buffer.writeBoolean(sculptHollowShapeWire);
+		buffer.writeBoolean(sculptHollowShapeSpade);
 		buffer.writeBoolean(openEnds);
 		buffer.writeInt(wallThickness);
 		ItemStackHelper.stackToBytes(buffer, setBitWire);
@@ -65,7 +68,8 @@ public class PacketSyncAllSculptingData implements IMessage
 		shapeTypeFlat = buffer.readInt();
 		targetBitGridVertexes = buffer.readBoolean();
 		sculptSemiDiameter = buffer.readInt();
-		sculptHollowShape = buffer.readBoolean();
+		sculptHollowShapeWire = buffer.readBoolean();
+		sculptHollowShapeSpade = buffer.readBoolean();
 		openEnds = buffer.readBoolean();
 		wallThickness = buffer.readInt();
 		setBitWire = ItemStackHelper.stackFromBytes(buffer);
@@ -93,7 +97,8 @@ public class PacketSyncAllSculptingData implements IMessage
 						sculptProp.shapeTypeFlat = message.shapeTypeFlat;
 						sculptProp.targetBitGridVertexes = message.targetBitGridVertexes;
 						sculptProp.sculptSemiDiameter = message.sculptSemiDiameter;
-						sculptProp.sculptHollowShape = message.sculptHollowShape;
+						sculptProp.sculptHollowShapeWire = message.sculptHollowShapeWire;
+						sculptProp.sculptHollowShapeSpade = message.sculptHollowShapeSpade;
 						sculptProp.openEnds = message.openEnds;
 						sculptProp.setBitWire = message.setBitWire;
 						sculptProp.setBitSpade = message.setBitSpade;

@@ -136,7 +136,7 @@ public class ClientEventHandler
 					{
 						if (event.button == 1)
 						{
-							toggleHollowShape(player, stack);
+							toggleHollowShape(player, stack, item);
 						}
 						if (event.button == 0)
 						{
@@ -339,11 +339,12 @@ public class ClientEventHandler
 		}
 	}
 	
-	private void toggleHollowShape(EntityPlayer player, ItemStack stack)
+	private void toggleHollowShape(EntityPlayer player, ItemStack stack, Item item)
 	{
-		boolean isHollowShape = !SculptSettingsHelper.isHollowShape(player, stack.getTagCompound());
-		SculptSettingsHelper.setHollowShape(player, stack, isHollowShape);
-		if (Configs.sculptHollowShape.shouldDisplayInChat())
+		boolean isWire = ((ItemSculptingTool) item).removeBits();
+		boolean isHollowShape = !SculptSettingsHelper.isHollowShape(player, stack.getTagCompound(), isWire);
+		SculptSettingsHelper.setHollowShape(player, stack, isHollowShape, isWire);
+		if ((isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).shouldDisplayInChat())
 		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getHollowShapeText(isHollowShape));
 		}
@@ -789,7 +790,7 @@ public class ClientEventHandler
 								{
 									shapeBox = box.expand(0, 0, 0);
 								}
-								boolean isHollow = SculptSettingsHelper.isHollowShape(player, nbt);
+								boolean isHollow = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 								boolean isOpen = isHollow && SculptSettingsHelper.areEndsOpen(player, nbt);
 								renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn,
 										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);

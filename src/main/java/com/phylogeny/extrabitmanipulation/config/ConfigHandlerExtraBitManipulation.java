@@ -143,9 +143,13 @@ public class ConfigHandlerExtraBitManipulation
 					"grid are targetted [the shape is centered on the corner (the one closest to the cursor) of the bit looked at (i.e. centered on a vertex of the " +
 					"grid) - the diameter is 2x number of bits (x is a true semi-diameter)]).");
 			
-			Configs.sculptHollowShape = getSculptSettingBoolean("Hollow Shapes", false, true, false,
-					"sculpting shape hollowness",
-					"hollow property value (shape is either hollow or solid).");
+			Configs.sculptHollowShapeWire = getSculptSettingBoolean("Wire Hollow Shapes", false, true, false,
+					"sculpting shape hollowness of sculpting wires",
+					"sculpting wire hollow property value (shape is either hollow or solid).");
+			
+			Configs.sculptHollowShapeSpade = getSculptSettingBoolean("Spade Hollow Shapes", false, true, false,
+					"sculpting shape hollowness of sculpting spades",
+					"sculpting spade hollow property value (shape is either hollow or solid).");
 			
 			Configs.sculptOpenEnds = getSculptSettingBoolean("Open Ends", false, true, false,
 					"hollow sculpting shape open-endedness",

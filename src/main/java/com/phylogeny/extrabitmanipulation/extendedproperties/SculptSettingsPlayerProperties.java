@@ -19,14 +19,14 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 {
 	private static final String ID = "SculptSettingsPlayerProperties";
 	public int mode, rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	public boolean targetBitGridVertexes, sculptHollowShape, openEnds;
+	public boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	public ItemStack setBitWire, setBitSpade;
 	
 	public void syncAllData(EntityPlayerMP player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, rotation,
-				shapeTypeCurved, shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter,
-				sculptHollowShape, openEnds, wallThickness, setBitWire, setBitSpade), player);
+		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, rotation, shapeTypeCurved,
+				shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter, sculptHollowShapeWire,
+				sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
 	}
 	
 	@Override
@@ -39,7 +39,8 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_FLAT, shapeTypeFlat);
 		nbt.setBoolean(NBTKeys.TARGET_BIT_GRID_VERTEXES, targetBitGridVertexes);
 		nbt.setInteger(NBTKeys.SCULPT_SEMI_DIAMETER, sculptSemiDiameter);
-		nbt.setBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE, sculptHollowShape);
+		nbt.setBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE_WIRE, sculptHollowShapeWire);
+		nbt.setBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE_SPADE, sculptHollowShapeSpade);
 		nbt.setBoolean(NBTKeys.OPEN_ENDS, openEnds);
 		nbt.setInteger(NBTKeys.WALL_THICKNESS, wallThickness);
 		ItemStackHelper.saveStackToNBT(nbt, setBitWire, NBTKeys.SET_BIT_WIRE);
@@ -57,7 +58,8 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 		shapeTypeFlat = nbt.getInteger(NBTKeys.SHAPE_TYPE_FLAT);
 		targetBitGridVertexes = nbt.getBoolean(NBTKeys.TARGET_BIT_GRID_VERTEXES);
 		sculptSemiDiameter = nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER);
-		sculptHollowShape = nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE);
+		sculptHollowShapeWire = nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE_WIRE);
+		sculptHollowShapeSpade = nbt.getBoolean(NBTKeys.SCULPT_HOLLOW_SHAPE_SPADE);
 		openEnds = nbt.getBoolean(NBTKeys.OPEN_ENDS);
 		wallThickness = nbt.getInteger(NBTKeys.WALL_THICKNESS);
 		setBitWire = ItemStackHelper.loadStackFromNBT(nbt, NBTKeys.SET_BIT_WIRE);
@@ -73,7 +75,8 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 		shapeTypeFlat = Configs.sculptShapeTypeFlat.getDefaultValue();
 		targetBitGridVertexes = Configs.sculptTargetBitGridVertexes.getDefaultValue();
 		sculptSemiDiameter = Configs.sculptSemiDiameter.getDefaultValue();
-		sculptHollowShape = Configs.sculptHollowShape.getDefaultValue();
+		sculptHollowShapeWire = Configs.sculptHollowShapeWire.getDefaultValue();
+		sculptHollowShapeSpade = Configs.sculptHollowShapeSpade.getDefaultValue();
 		openEnds = Configs.sculptOpenEnds.getDefaultValue();
 		wallThickness = Configs.sculptWallThickness.getDefaultValue();
 		setBitWire = Configs.sculptSetBitWire.getDefaultValue();

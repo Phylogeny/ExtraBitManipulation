@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingInt;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBitStack;
 import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
@@ -305,10 +306,11 @@ public class SculptSettingsHelper
 		}
 	}
 	
-	public static boolean isHollowShape(EntityPlayer player, NBTTagCompound nbt)
+	public static boolean isHollowShape(EntityPlayer player, NBTTagCompound nbt, boolean isWire)
 	{
-		boolean hollowShape = Configs.sculptHollowShape.getDefaultValue();
-		if (Configs.sculptHollowShape.isPerTool())
+		ConfigSculptSettingBoolean hollowShapeConfig = isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade;
+		boolean hollowShape = hollowShapeConfig.getDefaultValue();
+		if (hollowShapeConfig.isPerTool())
 		{
 			hollowShape = getBoolean(nbt, hollowShape, NBTKeys.SCULPT_HOLLOW_SHAPE);
 		}
@@ -317,16 +319,16 @@ public class SculptSettingsHelper
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
 			{
-				hollowShape = sculptProp.sculptHollowShape;
+				hollowShape = isWire ? sculptProp.sculptHollowShapeWire : sculptProp.sculptHollowShapeSpade;
 			}
 		}
 		return hollowShape;
 	}
 	
-	public static void setHollowShape(EntityPlayer player, ItemStack stack, boolean hollowShape)
+	public static void setHollowShape(EntityPlayer player, ItemStack stack, boolean isWire, boolean hollowShape)
 	{
 		World world = player.worldObj;
-		if (Configs.sculptHollowShape.isPerTool())
+		if ((isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).isPerTool())
 		{
 			if (!world.isRemote)
 			{
@@ -338,12 +340,19 @@ public class SculptSettingsHelper
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
 			{
-				sculptProp.sculptHollowShape = hollowShape;
+				if (isWire)
+				{
+					sculptProp.sculptHollowShapeWire = hollowShape;
+				}
+				else
+				{
+					sculptProp.sculptHollowShapeSpade = hollowShape;
+				}
 			}
 		}
 		if (world.isRemote)
 		{
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetHollowShape(hollowShape));
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetHollowShape(hollowShape, isWire));
 		}
 	}
 	
@@ -552,9 +561,9 @@ public class SculptSettingsHelper
 		return diameterText;
 	}
 	
-	public static String getHollowShapeText(EntityPlayer player, NBTTagCompound nbt)
+	public static String getHollowShapeText(EntityPlayer player, NBTTagCompound nbt, ItemSculptingTool item)
 	{
-		return getHollowShapeText(isHollowShape(player, nbt));
+		return getHollowShapeText(isHollowShape(player, nbt, item.removeBits()));
 	}
 	
 	public static String getHollowShapeText(boolean isHollowShape)

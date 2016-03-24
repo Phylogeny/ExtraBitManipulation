@@ -13,6 +13,8 @@ public class NBTKeys
 	public static final String SET_BIT_SPADE = "setBitSpade";
 	public static final String TARGET_BIT_GRID_VERTEXES = "targetBitGridVertexes";
 	public static final String SCULPT_HOLLOW_SHAPE = "sculptHollowShape";
+	public static final String SCULPT_HOLLOW_SHAPE_WIRE = "sculptHollowShapeWire";
+	public static final String SCULPT_HOLLOW_SHAPE_SPADE = "sculptHollowShapeSpade";
 	public static final String OPEN_ENDS = "openEnds";
 	public static final String WALL_THICKNESS = "wallThickness";
 	public static final String REMAINING_USES = "remainingUses";
