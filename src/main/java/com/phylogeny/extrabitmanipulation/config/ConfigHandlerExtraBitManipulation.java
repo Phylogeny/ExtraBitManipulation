@@ -124,7 +124,8 @@ public class ConfigHandlerExtraBitManipulation
 			
 			Configs.sculptRotation = getSculptSettingInt("Rotation", false, true, 1, 0, 5,
 					"sculpting shape rotation",
-					"rotation value. 0 = down; 1 = up; 2 = north; 3 = south; 4 = west; 5 = east ", "up");
+					"rotation value. 0 = down; 1 = up; 2 = north; 3 = south; 4 = west; 5 = east (adding 6 times 1, 2, or 3 specifies roll; 1 = 90\u00B0, " +
+					"2 = 180\u00B0, and 3 = 270\u00B0)", "direction up - roll 0\u00B0");
 			
 			Configs.sculptShapeTypeCurved = getSculptSettingIntFromStringArray("Curved Shape", false, true, 0, 0,
 					"curved tool sculpting shape",
