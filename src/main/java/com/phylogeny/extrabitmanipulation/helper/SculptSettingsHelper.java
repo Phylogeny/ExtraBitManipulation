@@ -610,7 +610,18 @@ public class SculptSettingsHelper
 			size %= 16;
 			if (size > 0) diameterText += " & ";
 		}
-		if (size > 0) diameterText += size + " bits";
+		if (size > 0)
+		{
+			if (size == (int) size)
+			{
+				diameterText += (int) size;
+			}
+			else
+			{
+				diameterText += size;
+			}
+			diameterText += " bits";
+		}
 		return diameterText;
 	}
 	
