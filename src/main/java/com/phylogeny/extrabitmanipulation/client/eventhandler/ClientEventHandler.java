@@ -298,15 +298,15 @@ public class ClientEventHandler
 		int shapeType = SculptSettingsHelper.getShapeType(player, nbt, ((ItemSculptingTool) stack.getItem()).isCurved());
 		int roll = rotation / 6;
 		rotation %= 6;
-		if (!(shapeType == 4 && (forward ? roll != 2 : roll != 0)) && !(shapeType == 5 && (forward ? roll != 3 : roll != 0)))
+		if (!(shapeType == 4 && (forward ? roll != 1 : roll != 0)) && !(shapeType == 5 && (forward ? roll != 3 : roll != 0)))
 		{
-			rotation = shapeType == 2 || shapeType > 4 ? (forward ? DIRECTION_FORWARD[rotation] : DIRECTION_BACKWARD[rotation])
+			rotation = shapeType == 2 || shapeType > 3 ? (forward ? DIRECTION_FORWARD[rotation] : DIRECTION_BACKWARD[rotation])
 					: (forward ? AXIS_FORWARD[rotation] : AXIS_BACKWARD[rotation]);
-			roll = forward ? 0 : (shapeType == 4 ? 2 : 3);
+			roll = forward ? 0 : (shapeType == 4 ? 1 : 3);
 		}
 		else
 		{
-			roll = shapeType == 4 ? (roll == 0 ? 2 : 0) : SculptSettingsHelper.cycleData(roll, forward, 4);
+			roll = shapeType == 4 ? (roll == 0 ? 1 : 0) : SculptSettingsHelper.cycleData(roll, forward, 4);
 		}
 		rotation += 6 * roll;
 		SculptSettingsHelper.setRotation(player, stack, rotation);
