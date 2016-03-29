@@ -5,6 +5,7 @@ import net.minecraft.util.AxisAlignedBB;
 public class AsymmetricalShape extends Shape
 {
 	protected float a, b, c, aInset, bInset, cInset;
+	protected boolean isEquilateral;
 	
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
 			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
@@ -32,6 +33,11 @@ public class AsymmetricalShape extends Shape
 		aInset = reduceLength(this.a);
 		bInset = reduceLength(this.b);
 		cInset = reduceLength(this.c);
+	}
+	
+	public void setEquilateral(boolean isEquilateral)
+	{
+		this.isEquilateral = isEquilateral;
 	}
 
 	@Override

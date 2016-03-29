@@ -165,8 +165,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				AxisAlignedBB box;
 				int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
 				int rotation = SculptSettingsHelper.getRotation(player, nbt);
-				int roll = rotation / 6;
-				rotation %= 6;
+				if (shapeType != 4 && shapeType != 5) rotation %= 6;
 				boolean sculptHollowShape = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 				float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
@@ -246,17 +245,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 					if (shapeType == 4 || shapeType == 5)
 					{
+						AsymmetricalShape asymmetricalShape = (AsymmetricalShape) shape;
+						asymmetricalShape.setEquilateral(true);
 						float radius = addPadding(sculptSemiDiameter) - f;
-						float contract = radius - radius * (float) Math.cos(Math.toRadians(30));
-						int rotation2 = rotation == 2 || rotation == 3 ? (shapeType == 5 && rotation == 2 ? 0 : 1)
-								: (shapeType == 5 && rotation % 2 == 0 ? 2 : 3);
-						EnumFacing rotDir = EnumFacing.getFront(rotation2);
-						float contractX = contract * rotDir.getFrontOffsetX();
-						float contractY = contract * rotDir.getFrontOffsetY();
-						float contractZ = contract * rotDir.getFrontOffsetZ();
-						(shapeType == 4 ? ((PrismIsoscelesTriangular) shape)
-								: ((PyramidIsoscelesTriangular) shape)).init(x2 + f * x3 - contractX, y2 + f * y3 - contractY, z2 + f * z3 - contractZ,
-								radius - Math.abs(contractX), radius - Math.abs(contractY), radius - Math.abs(contractZ),
+						asymmetricalShape.init(x2 + f * x3, y2 + f * y3, z2 + f * z3, radius, radius, radius,
 								rotation, sculptHollowShape, wallThickness, openEnds);
 					}
 					else

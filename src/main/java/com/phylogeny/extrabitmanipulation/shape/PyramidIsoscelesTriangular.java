@@ -3,54 +3,104 @@ package com.phylogeny.extrabitmanipulation.shape;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
-public class PyramidIsoscelesTriangular extends SlopedAsymmetricalShape
+public class PyramidIsoscelesTriangular extends AsymmetricalShape
 {
-	private float offsetCenterZ, centerZInset, centerYInset;
+	private float offsetCenter, center1Inset, center2Inset, insetMin, insetMax, insetMin2, insetMax2, height, cInset2;
+	private boolean isTwisted, isFlipped;
 	
 	@Override
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
 			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
+		int roll = rotation / 6;
+		rotation %= 6;
 		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
-		if (this.a < this.c)
+		if (isEquilateral)
 		{
-			offsetCenterZ = this.c / 3.0F;
+			float contract = this.c - this.c * (float) Math.cos(0.523599);
+			this.centerZ -= inverted ? -contract : contract;
+			this.c -= contract;
+			cInset = reduceLength(this.c);
+			float s = this.c - this.c / 3.0F;
+			float h = this.c * 2;
+			contract = this.b - (float) Math.sqrt(h * h - s * s) * 0.5F;
+			this.centerY -= inverted ? -contract : contract;
+			this.b -= contract;
+			bInset = reduceLength(this.b);
+		}
+		b = this.b;
+		float bInset = this.bInset;
+		centerY = this.centerY;
+		isTwisted = roll % 2 == (rotation > 3 ? 0 : 1);
+		isFlipped = roll % 2 == 0 ? (rotation % 2 == (roll == 0 ? 0 : 1))
+				: (roll == 1 ? (rotation != 2 && rotation != 3) : (rotation == 2 || rotation == 3));
+		if (isTwisted)
+		{
+			a = this.c;
+			c = this.a;
+			centerZ = this.centerX;
 		}
 		else
 		{
-			float h = this.c * 2;
-			float hsq = h * h;
-			float w = this.a * 2;
-			float wsq = w * w;
-			offsetCenterZ = this.c - (w * ((float) Math.sqrt(wsq + 4 * hsq) - w)) / (4 * h);
+			a = this.a;
+			c = this.c;
+			centerZ = this.centerZ;
 		}
-		
-		float s1 = this.c - offsetCenterZ;
-		float h1 = this.b * 2;
+		height = b * 2;
+		float hsq = height * height;
+		cInset2 = b - (float) ((Math.sqrt(c * c + hsq) * wallThickness) / c);
+		insetMax = centerY + bInset;
+		insetMin = centerY - bInset;
+		if (a <= c)
+		{
+			offsetCenter = c / 3.0F;
+		}
+		else
+		{
+			float h = c * 2;
+			hsq = h * h;
+			float w = a * 2;
+			float wsq = w * w;
+			offsetCenter = c - (w * ((float) Math.sqrt(wsq + 4 * hsq) - w)) / (4 * h);
+		}
+		Vec3 offset = getInnerTriangularPyramidOffset(centerY, centerZ, offsetCenter, a, b, c, wallThickness);
+		float offsetZ = (float) (inverted ? -offset.zCoord : offset.zCoord);
+		center1Inset = centerZ - (isFlipped ? -offsetZ : offsetZ);
+		center2Inset = centerY - (float) (inverted ? -offset.yCoord : offset.yCoord);
+		if (isFlipped) offsetCenter *= -1;
+		insetMax2 = center2Inset + b;
+		insetMin2 = center2Inset - b;
+	}
+
+	private Vec3 getInnerTriangularPyramidOffset(float centerY, float centerZ, float offsetCenter, float a, float b, float c, float wallThickness)
+	{
+		float s1 = c - offsetCenter;
+		float h1 = b * 2;
 		float a1 = (float) Math.atan(s1 / h1);
 		float p1 = ((float) Math.sqrt(s1 * s1 + h1 * h1) * wallThickness) / s1;
 		
-		float s2 = this.a;
-		float a2 = 1.5708F - (float) Math.atan((this.c + offsetCenterZ) / h1);
+		float s2 = a;
+		float a2 = 1.5708F - (float) Math.atan((c + offsetCenter) / h1);
 		float h2 = (float) (Math.sqrt(s2 * s2 + h1 * h1) * Math.cos(a1 - a2));
 		float p2 = ((float) Math.sqrt(s2 * s2 + h2 * h2) * wallThickness) / s2;
 		
 		float dy = (float) (Math.cos(a2) * p2);
 		float dz = (float) (Math.sin(a2) * p2);
 		
-		float apexZ = this.centerZ - offsetCenterZ;
-		float apexY = this.centerY + this.b;
+		float apexZ = centerZ - offsetCenter;
+		float apexY = centerY + b;
 		
-		float z1 = this.centerZ - this.c;
-		float y1 = this.centerY - this.b - p1;
+		float z1 = centerZ - c;
+		float y1 = centerY - b - p1;
 		float z2 = apexZ;
 		float y2 = apexY - p1;
 		
 		float z3 = apexZ - dz;
 		float y3 = apexY - dy;
-		float z4 = this.centerZ + this.c - dz;
-		float y4 = this.centerY - this.b - dy;
+		float z4 = centerZ + c - dz;
+		float y4 = centerY - b - dy;
 		
 		float m1 = (y2 - y1) / (z2 - z1);
 		float b1 = y1 - m1 * z1;
@@ -60,11 +110,7 @@ public class PyramidIsoscelesTriangular extends SlopedAsymmetricalShape
 		float interZ = (b2 - b1) / (m1 - m2);
 		float interY = m1 * interZ + b1;
 		
-		float offsetZ = apexZ - interZ;
-		float offsetY = apexY - interY;
-		
-		centerZInset = this.centerZ - (inverted ? -offsetZ : offsetZ);
-		centerYInset = this.centerY - (inverted ? -offsetY : offsetY);
+		return new Vec3(0, apexY - interY, apexZ - interZ);
 	}
 	
 	@Override
@@ -74,9 +120,18 @@ public class PyramidIsoscelesTriangular extends SlopedAsymmetricalShape
 		if (isPointOffLine(y, centerY, b)) return false;
 		float x = getBitPosX(pos, i, j, k);
 		float z = getBitPosZ(pos, i, j, k);
-		boolean inShape = isPointInPyramid(y, x, z, centerZ, centerY);
-		return sculptHollowShape ? inShape && !(isPointInPyramid(y, x, z, centerZInset, centerYInset)
-				&& !isPointOffLine(y)) : inShape;
+		if (isTwisted)
+		{
+			boolean inShape = isPointInPyramid(y, z, x, centerX, centerY);
+			return sculptHollowShape ? inShape && !(isPointInPyramid(y, z, x, center1Inset, center2Inset)
+					&& !isPointOffLine(y)) : inShape;
+		}
+		else
+		{
+			boolean inShape = isPointInPyramid(y, x, z, centerZ, centerY);
+			return sculptHollowShape ? inShape && !(isPointInPyramid(y, x, z, center1Inset, center2Inset)
+					&& !isPointOffLine(y)) : inShape;
+		}
 	}
 	
 	protected boolean isPointInPyramid(float val, float v1, float v2, float center1, float center2)
@@ -85,9 +140,24 @@ public class PyramidIsoscelesTriangular extends SlopedAsymmetricalShape
 		float h = dy + (inverted ? -b : b);
 		float s1 = (h * a) / height;
 		float s2 = (h * c) / height;
-		float s3 = ((dy + (inverted ? -cInset2 : cInset2)) * c) / height;
-		float center = center1 + (inverted ? (offsetCenterZ * (1 + (s3 / c))) : (-offsetCenterZ * (1 - (s3 / c))));
-		return isPointInTriangle(v1, v2, centerX, center, s1, s2, s2);
+		if (isTwisted)
+		{
+			float s3 = ((dy + (inverted ? -cInset2 : cInset2)) * a) / height;
+			float center = center1 + (inverted ? (offsetCenter * (1 + (s3 / a))) : (-offsetCenter * (1 - (s3 / a))));
+			return isPointInTriangle(v1, v2, centerZ, center, s2, isFlipped ? -s1 : s1);
+		}
+		else
+		{
+			float s3 = ((dy + (inverted ? -cInset2 : cInset2)) * c) / height;
+			float center = center1 + (inverted ? (offsetCenter * (1 + (s3 / c))) : (-offsetCenter * (1 - (s3 / c))));
+			return isPointInTriangle(v1, v2, centerX, center, s1, isFlipped ? -s2 : s2);
+		}
+	}
+	
+	protected boolean isPointOffLine(float val)
+	{
+		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 :
+			(!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
 }
