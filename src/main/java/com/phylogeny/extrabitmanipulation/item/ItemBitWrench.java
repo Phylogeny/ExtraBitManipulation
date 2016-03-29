@@ -189,7 +189,7 @@ public class ItemBitWrench extends ItemBitToolBase
 						}
 					}
 				}
-				bitAccess.commitChanges();
+				bitAccess.commitChanges(true);
 				ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
 				if (config.takesDamage)
 				{
