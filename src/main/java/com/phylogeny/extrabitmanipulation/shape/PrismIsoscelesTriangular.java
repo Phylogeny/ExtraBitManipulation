@@ -26,8 +26,8 @@ public class PrismIsoscelesTriangular extends AsymmetricalShape
 		}
 		float hsq = this.b * 2;
 		hsq *= hsq;
-		float offset = isTwisted ? (((float) Math.sqrt(hsq + this.c * this.c) * wallThickness) / this.c) :
-			(((float) Math.sqrt(hsq + this.a * this.a) * wallThickness) / this.a);
+		float offset = isTwisted ? (((float) Math.sqrt(hsq + this.a * this.a) * wallThickness) / this.a) :
+			(((float) Math.sqrt(hsq + this.c * this.c) * wallThickness) / this.c);
 		offsetCenter = this.centerY - (inverted ? -offset : offset);
 		if (inverted)
 		{
