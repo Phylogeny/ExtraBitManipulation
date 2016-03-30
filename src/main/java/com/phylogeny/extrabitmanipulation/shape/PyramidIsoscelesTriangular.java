@@ -17,14 +17,30 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		int roll = rotation / 6;
 		rotation %= 6;
 		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
+		isTwisted = roll % 2 == (rotation > 3 ? 0 : 1);
+		isFlipped = roll % 2 == 0 ? (rotation % 2 == (roll == 0 ? 0 : 1))
+				: (roll == 1 ? (rotation != 2 && rotation != 3) : (rotation == 2 || rotation == 3));
 		if (isEquilateral)
 		{
-			float contract = this.c - this.c * (float) Math.cos(0.523599);
-			this.centerZ -= inverted ? -contract : contract;
-			this.c -= contract;
-			cInset = reduceLength(this.c);
-			float s = this.c - this.c / 3.0F;
-			float h = this.c * 2;
+			float contract, s, h;
+			if (isTwisted)
+			{
+				contract = this.a - this.a * (float) Math.cos(0.523599);
+				this.centerX -= inverted != isFlipped ? -contract : contract;
+				this.a -= contract;
+				aInset = reduceLength(this.a);
+				s = this.a - this.a / 3.0F;
+				h = this.a * 2;
+			}
+			else
+			{
+				contract = this.c - this.c * (float) Math.cos(0.523599);
+				this.centerZ -= inverted != isFlipped ? -contract : contract;
+				this.c -= contract;
+				cInset = reduceLength(this.c);
+				s = this.c - this.c / 3.0F;
+				h = this.c * 2;
+			}
 			contract = this.b - (float) Math.sqrt(h * h - s * s) * 0.5F;
 			this.centerY -= inverted ? -contract : contract;
 			this.b -= contract;
@@ -33,9 +49,6 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		b = this.b;
 		float bInset = this.bInset;
 		centerY = this.centerY;
-		isTwisted = roll % 2 == (rotation > 3 ? 0 : 1);
-		isFlipped = roll % 2 == 0 ? (rotation % 2 == (roll == 0 ? 0 : 1))
-				: (roll == 1 ? (rotation != 2 && rotation != 3) : (rotation == 2 || rotation == 3));
 		if (isTwisted)
 		{
 			a = this.c;
