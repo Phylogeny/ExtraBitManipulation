@@ -15,19 +15,19 @@ import io.netty.buffer.ByteBuf;
 
 public class PacketSyncAllSculptingData implements IMessage
 {
-	private int mode, rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	private int mode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
 	private boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	private ItemStack setBitWire, setBitSpade;
 	
 	public PacketSyncAllSculptingData() {}
 	
-	public PacketSyncAllSculptingData(int mode, int rotation, int shapeTypeCurved, int shapeTypeFlat,
+	public PacketSyncAllSculptingData(int mode, int direction, int shapeTypeCurved, int shapeTypeFlat,
 			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
 			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness,
 			ItemStack setBitWire, ItemStack setBitSpade)
 	{
 		this.mode = mode;
-		this.rotation = rotation;
+		this.direction = direction;
 		this.shapeTypeCurved = shapeTypeCurved;
 		this.shapeTypeFlat = shapeTypeFlat;
 		this.targetBitGridVertexes = targetBitGridVertexes;
@@ -44,7 +44,7 @@ public class PacketSyncAllSculptingData implements IMessage
 	public void toBytes(ByteBuf buffer)
 	{
 		buffer.writeInt(mode);
-		buffer.writeInt(rotation);
+		buffer.writeInt(direction);
 		buffer.writeInt(shapeTypeCurved);
 		buffer.writeInt(shapeTypeFlat);
 		buffer.writeBoolean(targetBitGridVertexes);
@@ -63,7 +63,7 @@ public class PacketSyncAllSculptingData implements IMessage
 	public void fromBytes(ByteBuf buffer)
 	{
 		mode = buffer.readInt();
-		rotation = buffer.readInt();
+		direction = buffer.readInt();
 		shapeTypeCurved = buffer.readInt();
 		shapeTypeFlat = buffer.readInt();
 		targetBitGridVertexes = buffer.readBoolean();
@@ -92,7 +92,7 @@ public class PacketSyncAllSculptingData implements IMessage
 					if (sculptProp != null)
 					{
 						sculptProp.mode = message.mode;
-						sculptProp.rotation = message.rotation;
+						sculptProp.direction = message.direction;
 						sculptProp.shapeTypeCurved = message.shapeTypeCurved;
 						sculptProp.shapeTypeFlat = message.shapeTypeFlat;
 						sculptProp.targetBitGridVertexes = message.targetBitGridVertexes;

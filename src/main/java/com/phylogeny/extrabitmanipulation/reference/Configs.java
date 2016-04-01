@@ -26,7 +26,7 @@ public class Configs
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
 		public static ConfigSculptSettingInt sculptMode;
-		public static ConfigSculptSettingInt sculptRotation;
+		public static ConfigSculptSettingInt sculptDirection;
 		public static ConfigSculptSettingInt sculptShapeTypeCurved;
 		public static ConfigSculptSettingInt sculptShapeTypeFlat;
 		public static ConfigSculptSettingBoolean sculptTargetBitGridVertexes;

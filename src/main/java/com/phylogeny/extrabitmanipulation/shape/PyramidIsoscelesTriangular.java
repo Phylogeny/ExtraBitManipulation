@@ -12,14 +12,14 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 	
 	@Override
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
-			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
+			int direction, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		int roll = rotation / 6;
-		rotation %= 6;
-		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
-		isTwisted = roll % 2 == (rotation > 3 ? 0 : 1);
-		isFlipped = roll % 2 == 0 ? (rotation % 2 == (roll == 0 ? 0 : 1))
-				: (roll == 1 ? (rotation != 2 && rotation != 3) : (rotation == 2 || rotation == 3));
+		int rotation = direction / 6;
+		direction %= 6;
+		super.init(centerX, centerY, centerZ, a, b, c, direction, sculptHollowShape, wallThickness, openEnds);
+		isTwisted = rotation % 2 == (direction > 3 ? 0 : 1);
+		isFlipped = rotation % 2 == 0 ? (direction % 2 == (rotation == 0 ? 0 : 1))
+				: (rotation == 1 ? (direction != 2 && direction != 3) : (direction == 2 || direction == 3));
 		if (isEquilateral)
 		{
 			float contract, s, h;

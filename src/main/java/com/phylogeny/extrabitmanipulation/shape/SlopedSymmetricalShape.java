@@ -6,10 +6,10 @@ public class SlopedSymmetricalShape extends SymmetricalShape
 	private float insetMin, insetMax, insetMin2, insetMax2;
 	
 	@Override
-	public void init(float centerX, float centerY, float centerZ, float radius, int rotation,
+	public void init(float centerX, float centerY, float centerZ, float radius, int direction,
 			boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		super.init(centerX, centerY, centerZ, radius, rotation, sculptHollowShape, wallThickness, openEnds);
+		super.init(centerX, centerY, centerZ, radius, direction, sculptHollowShape, wallThickness, openEnds);
 		float r = semiDiameter;
 		height = r * 2;
 		semiDiameterInset2 = r - (float) ((Math.sqrt(r * r + height * height) * wallThickness) / r);

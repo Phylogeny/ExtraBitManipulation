@@ -98,7 +98,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		initInt(nbt, NBTKeys.REMAINING_USES, ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
 		initInt(nbt, NBTKeys.MODE, Configs.sculptMode.getDefaultValue());
 		initInt(nbt, NBTKeys.SCULPT_SEMI_DIAMETER, Configs.sculptSemiDiameter.getDefaultValue());
-		initInt(nbt, NBTKeys.ROTATION, Configs.sculptRotation.getDefaultValue());
+		initInt(nbt, NBTKeys.DIRECTION, Configs.sculptDirection.getDefaultValue());
 		initBoolean(nbt, NBTKeys.TARGET_BIT_GRID_VERTEXES, Configs.sculptTargetBitGridVertexes.getDefaultValue());
 		initInt(nbt, NBTKeys.SHAPE_TYPE, (curved ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat).getDefaultValue());
 		initBoolean(nbt, NBTKeys.SCULPT_HOLLOW_SHAPE, (removeBits ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).getDefaultValue());
@@ -164,8 +164,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				Shape shape;
 				AxisAlignedBB box;
 				int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
-				int rotation = SculptSettingsHelper.getRotation(player, nbt);
-				if (shapeType != 4 && shapeType != 5) rotation %= 6;
+				int direction = SculptSettingsHelper.getDirection(player, nbt);
+				if (shapeType != 4 && shapeType != 5) direction %= 6;
 				boolean sculptHollowShape = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 				float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
@@ -200,7 +200,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					maxY *= f;
 					maxZ *= f;
 					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ,
-							rotation, sculptHollowShape, wallThickness, openEnds);
+							direction, sculptHollowShape, wallThickness, openEnds);
 				}
 				else
 				{
@@ -249,12 +249,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 						asymmetricalShape.setEquilateral(true);
 						float radius = addPadding(sculptSemiDiameter) - f;
 						asymmetricalShape.init(x2 + f * x3, y2 + f * y3, z2 + f * z3, radius, radius, radius,
-								rotation, sculptHollowShape, wallThickness, openEnds);
+								direction, sculptHollowShape, wallThickness, openEnds);
 					}
 					else
 					{
 						((SymmetricalShape) shape).init(x2 + f * x3, y2 + f * y3, z2 + f * z3, addPadding(sculptSemiDiameter) - f,
-								rotation, sculptHollowShape, wallThickness, openEnds);
+								direction, sculptHollowShape, wallThickness, openEnds);
 					}
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
@@ -706,7 +706,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		if (shiftDown)
 		{
 			int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
-			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getRotationText(player, nbt, shapeType == 4 || shapeType == 5), Configs.sculptRotation));
+			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getDirectionText(player, nbt, shapeType == 4 || shapeType == 5), Configs.sculptDirection));
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getShapeTypeText(shapeType),
 					removeBits ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat));
 			boolean targetBits = SculptSettingsHelper.isBitGridTargeted(player, nbt);
@@ -757,7 +757,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				tooltip.add("    target between");
 				tooltip.add("    bits & vertecies.");
 				tooltip.add("Control mouse wheel to");
-				tooltip.add("    change rotation.");
+				tooltip.add("    change direction.");
 				tooltip.add("");
 				tooltip.add("Alt right click to toggle");
 				tooltip.add("    shapes solid or hollow.");

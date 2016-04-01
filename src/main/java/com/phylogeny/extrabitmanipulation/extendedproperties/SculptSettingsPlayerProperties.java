@@ -18,13 +18,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 {
 	private static final String ID = "SculptSettingsPlayerProperties";
-	public int mode, rotation, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	public int mode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
 	public boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	public ItemStack setBitWire, setBitSpade;
 	
 	public void syncAllData(EntityPlayerMP player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, rotation, shapeTypeCurved,
+		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, direction, shapeTypeCurved,
 				shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter, sculptHollowShapeWire,
 				sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
 	}
@@ -34,7 +34,7 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setInteger(NBTKeys.MODE, mode);
-		nbt.setInteger(NBTKeys.ROTATION, rotation);
+		nbt.setInteger(NBTKeys.DIRECTION, direction);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_CURVED, shapeTypeCurved);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_FLAT, shapeTypeFlat);
 		nbt.setBoolean(NBTKeys.TARGET_BIT_GRID_VERTEXES, targetBitGridVertexes);
@@ -53,7 +53,7 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	{
 		NBTTagCompound nbt = (NBTTagCompound) compound.getTag(ID);
 		mode = nbt.getInteger(NBTKeys.MODE);
-		rotation = nbt.getInteger(NBTKeys.ROTATION);
+		direction = nbt.getInteger(NBTKeys.DIRECTION);
 		shapeTypeCurved = nbt.getInteger(NBTKeys.SHAPE_TYPE_CURVED);
 		shapeTypeFlat = nbt.getInteger(NBTKeys.SHAPE_TYPE_FLAT);
 		targetBitGridVertexes = nbt.getBoolean(NBTKeys.TARGET_BIT_GRID_VERTEXES);
@@ -70,7 +70,7 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	public void init(Entity entity, World world)
 	{
 		mode = Configs.sculptMode.getDefaultValue();
-		rotation = Configs.sculptRotation.getDefaultValue();
+		direction = Configs.sculptDirection.getDefaultValue();
 		shapeTypeCurved = Configs.sculptShapeTypeCurved.getDefaultValue();
 		shapeTypeFlat = Configs.sculptShapeTypeFlat.getDefaultValue();
 		targetBitGridVertexes = Configs.sculptTargetBitGridVertexes.getDefaultValue();

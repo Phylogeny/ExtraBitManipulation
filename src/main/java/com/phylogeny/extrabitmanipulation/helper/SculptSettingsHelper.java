@@ -10,7 +10,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetMode;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetRotation;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
@@ -126,32 +126,32 @@ public class SculptSettingsHelper
 		}
 	}
 	
-	public static int getRotation(EntityPlayer player, NBTTagCompound nbt)
+	public static int getDirection(EntityPlayer player, NBTTagCompound nbt)
 	{
-		int rotation = Configs.sculptRotation.getDefaultValue();
-		if (Configs.sculptRotation.isPerTool())
+		int direction = Configs.sculptDirection.getDefaultValue();
+		if (Configs.sculptDirection.isPerTool())
 		{
-			rotation = getInt(nbt, rotation, NBTKeys.ROTATION);
+			direction = getInt(nbt, direction, NBTKeys.DIRECTION);
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
 			{
-				rotation = sculptProp.rotation;
+				direction = sculptProp.direction;
 			}
 		}
-		return rotation;
+		return direction;
 	}
 	
-	public static void setRotation(EntityPlayer player, ItemStack stack, int rotation)
+	public static void setDirection(EntityPlayer player, ItemStack stack, int direction)
 	{
 		World world = player.worldObj;
-		if (Configs.sculptRotation.isPerTool())
+		if (Configs.sculptDirection.isPerTool())
 		{
 			if (!world.isRemote)
 			{
-				setInt(player, stack, rotation, NBTKeys.ROTATION);
+				setInt(player, stack, direction, NBTKeys.DIRECTION);
 			}
 		}
 		else
@@ -159,12 +159,12 @@ public class SculptSettingsHelper
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
 			{
-				sculptProp.rotation = rotation;
+				sculptProp.direction = direction;
 			}
 		}
 		if (world.isRemote)
 		{
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetRotation(rotation));
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetDirection(direction));
 		}
 	}
 	
@@ -500,20 +500,20 @@ public class SculptSettingsHelper
 		return "Mode: " + ItemSculptingTool.MODE_TITLES[mode].toLowerCase();
 	}
 	
-	public static String getRotationText(EntityPlayer player, NBTTagCompound nbt, boolean showRoll)
+	public static String getDirectionText(EntityPlayer player, NBTTagCompound nbt, boolean showRotation)
 	{
-		return getRotationText(getRotation(player, nbt), showRoll);
+		return getDirectionText(getDirection(player, nbt), showRotation);
 	}
 	
-	public static String getRotationText(int rotation, boolean showRoll)
+	public static String getDirectionText(int direction, boolean showRotation)
 	{
-		String text = "Rotation: " + EnumFacing.getFront(rotation % 6).getName().toLowerCase();
-		if (showRoll)
+		String text = "Direction: " + EnumFacing.getFront(direction % 6).getName().toLowerCase();
+		if (showRotation)
 		{
-			int roll = rotation / 6;
-			if (roll > 0)
+			int rotation = direction / 6;
+			if (rotation > 0)
 			{
-				text += " (roll " +  (roll * 90) + "\u00B0)";
+				text += " (rotation " +  (rotation * 90) + "\u00B0)";
 			}
 		}
 		return text;

@@ -11,12 +11,12 @@ public class PrismIsoscelesTriangular extends AsymmetricalShape
 	
 	@Override
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
-			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
+			int direction, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		int roll = rotation / 6;
-		rotation %= 6;
-		isTwisted = roll % 2 == (rotation == 2 || rotation == 3 ? 0 : 1);
-		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
+		int rotation = direction / 6;
+		direction %= 6;
+		isTwisted = rotation % 2 == (direction == 2 || direction == 3 ? 0 : 1);
+		super.init(centerX, centerY, centerZ, a, b, c, direction, sculptHollowShape, wallThickness, openEnds);
 		if (isEquilateral)
 		{
 			float contract = this.b - this.b * (float) Math.cos(0.523599);

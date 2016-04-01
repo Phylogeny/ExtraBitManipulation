@@ -8,13 +8,13 @@ public class AsymmetricalShape extends Shape
 	protected boolean isEquilateral;
 	
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
-			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
+			int direction, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		init(centerX, centerY, centerZ, rotation, sculptHollowShape, wallThickness, openEnds);
+		init(centerX, centerY, centerZ, direction, sculptHollowShape, wallThickness, openEnds);
 		float v;
-		if (this.rotation > 1)
+		if (this.direction > 1)
 		{
-			if (this.rotation > 3)
+			if (this.direction > 3)
 			{
 				v = a;
 				a = b;

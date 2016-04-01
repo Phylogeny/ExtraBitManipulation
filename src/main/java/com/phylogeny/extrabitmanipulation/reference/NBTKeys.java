@@ -6,7 +6,7 @@ public class NBTKeys
 	public static final String SHAPE_TYPE = "shapeType";
 	public static final String SHAPE_TYPE_CURVED = "shapeTypeCurved";
 	public static final String SHAPE_TYPE_FLAT = "shapeTypeFlat";
-	public static final String ROTATION = "rotation";
+	public static final String DIRECTION = "direction";
 	public static final String SCULPT_SEMI_DIAMETER = "sculptSemiDiameter";
 	public static final String SET_BIT = "setBit";
 	public static final String SET_BIT_WIRE = "setBitWire";

@@ -9,9 +9,9 @@ public class SlopedAsymmetricalShape extends AsymmetricalShape
 	
 	@Override
 	public void init(float centerX, float centerY, float centerZ, float a, float b, float c,
-			int rotation, boolean sculptHollowShape, float wallThickness, boolean openEnds)
+			int direction, boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		super.init(centerX, centerY, centerZ, a, b, c, rotation, sculptHollowShape, wallThickness, openEnds);
+		super.init(centerX, centerY, centerZ, a, b, c, direction, sculptHollowShape, wallThickness, openEnds);
 		height = this.b * 2;
 		float hsq = height * height;
 		aInset2 = this.b - (float) ((Math.sqrt(this.a * this.a + hsq) * wallThickness) / this.a);

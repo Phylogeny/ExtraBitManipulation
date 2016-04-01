@@ -15,21 +15,21 @@ public class Shape
 {
 	public static final String[] SHAPE_NAMES = new String[]{"Sphere", "Cylinder",
 		"Cone", "Cube", "Triangular Prism", "Triangular Pyramid", "Square Pyramid"};
-	protected int rotation;
+	protected int direction;
 	protected float centerX, centerY, centerZ, wallThickness;
 	protected boolean sculptHollowShape, openEnds, inverted;
 	
-	public void init(float centerX, float centerY, float centerZ, int rotation,
+	public void init(float centerX, float centerY, float centerZ, int direction,
 			boolean sculptHollowShape, float wallThickness, boolean openEnds)
 	{
-		this.rotation = rotation;
+		this.direction = direction;
 		this.sculptHollowShape = sculptHollowShape;
 		this.wallThickness = wallThickness;
 		this.openEnds = openEnds;
 		float v;
-		if (rotation > 1)
+		if (direction > 1)
 		{
-			if (rotation > 3)
+			if (direction > 3)
 			{
 				v = centerX;
 				centerX = centerY;
@@ -45,7 +45,7 @@ public class Shape
 		this.centerX = centerX; 
 		this.centerY = centerY;
 		this.centerZ = centerZ;
-		inverted = rotation % 2 == 0;
+		inverted = direction % 2 == 0;
 	}
 	
 	public boolean isBlockInsideShape(BlockPos pos)
@@ -150,17 +150,17 @@ public class Shape
 	
 	protected float getBitPosX(BlockPos pos, int x, int y, int z)
 	{
-		return (rotation > 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getX() + x * Utility.PIXEL_F);
+		return (direction > 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getX() + x * Utility.PIXEL_F);
 	}
 	
 	protected float getBitPosY(BlockPos pos, int x, int y, int z)
 	{
-		return (rotation < 2 ? pos.getY() + y * Utility.PIXEL_F : (rotation > 3 ? pos.getX() + x * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F));
+		return (direction < 2 ? pos.getY() + y * Utility.PIXEL_F : (direction > 3 ? pos.getX() + x * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F));
 	}
 	
 	protected float getBitPosZ(BlockPos pos, int x, int y, int z)
 	{
-		return (rotation == 2 || rotation == 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F);
+		return (direction == 2 || direction == 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F);
 	}
 	
 	protected boolean isPointOffLine(float val, float centerVal, float semiDiameter)

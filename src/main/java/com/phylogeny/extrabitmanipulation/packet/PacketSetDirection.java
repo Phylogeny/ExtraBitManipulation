@@ -10,33 +10,33 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSetRotation implements IMessage
+public class PacketSetDirection implements IMessage
 {
-	private int rotation;
+	private int direction;
 	
-	public PacketSetRotation() {}
+	public PacketSetDirection() {}
 	
-	public PacketSetRotation(int rotation)
+	public PacketSetDirection(int direction)
 	{
-		this.rotation = rotation;
+		this.direction = direction;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeInt(rotation);
+		buffer.writeInt(direction);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		rotation = buffer.readInt();
+		direction = buffer.readInt();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSetRotation, IMessage>
+	public static class Handler implements IMessageHandler<PacketSetDirection, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetRotation message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSetDirection message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -45,7 +45,7 @@ public class PacketSetRotation implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setRotation(player, player.getCurrentEquippedItem(), message.rotation);
+					SculptSettingsHelper.setDirection(player, player.getCurrentEquippedItem(), message.direction);
 				}
 			});
 			return null;

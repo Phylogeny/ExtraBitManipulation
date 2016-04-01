@@ -99,7 +99,7 @@ public class ClientEventHandler
 				{
 					if (GuiScreen.isCtrlKeyDown())
 					{
-						cycleRotation(player, stack, forward);
+						cycleDirection(player, stack, forward);
 					}
 					else
 					{
@@ -291,28 +291,28 @@ public class ClientEventHandler
 		}
 	}
 	
-	private void cycleRotation(EntityPlayer player, ItemStack stack, boolean forward)
+	private void cycleDirection(EntityPlayer player, ItemStack stack, boolean forward)
 	{
 		NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
-		int rotation = SculptSettingsHelper.getRotation(player, nbt);
+		int direction = SculptSettingsHelper.getDirection(player, nbt);
 		int shapeType = SculptSettingsHelper.getShapeType(player, nbt, ((ItemSculptingTool) stack.getItem()).isCurved());
-		int roll = rotation / 6;
-		rotation %= 6;
-		if (!(shapeType == 4 && (forward ? roll != 1 : roll != 0)) && !(shapeType == 5 && (forward ? roll != 3 : roll != 0)))
+		int rotation = direction / 6;
+		direction %= 6;
+		if (!(shapeType == 4 && (forward ? rotation != 1 : rotation != 0)) && !(shapeType == 5 && (forward ? rotation != 3 : rotation != 0)))
 		{
-			rotation = shapeType == 2 || shapeType > 3 ? (forward ? DIRECTION_FORWARD[rotation] : DIRECTION_BACKWARD[rotation])
-					: (forward ? AXIS_FORWARD[rotation] : AXIS_BACKWARD[rotation]);
-			roll = forward ? 0 : (shapeType == 4 ? 1 : 3);
+			direction = shapeType == 2 || shapeType > 3 ? (forward ? DIRECTION_FORWARD[direction] : DIRECTION_BACKWARD[direction])
+					: (forward ? AXIS_FORWARD[direction] : AXIS_BACKWARD[direction]);
+			rotation = forward ? 0 : (shapeType == 4 ? 1 : 3);
 		}
 		else
 		{
-			roll = shapeType == 4 ? (roll == 0 ? 1 : 0) : SculptSettingsHelper.cycleData(roll, forward, 4);
+			rotation = shapeType == 4 ? (rotation == 0 ? 1 : 0) : SculptSettingsHelper.cycleData(rotation, forward, 4);
 		}
-		rotation += 6 * roll;
-		SculptSettingsHelper.setRotation(player, stack, rotation);
-		if (Configs.sculptRotation.shouldDisplayInChat())
+		direction += 6 * rotation;
+		SculptSettingsHelper.setDirection(player, stack, direction);
+		if (Configs.sculptDirection.shouldDisplayInChat())
 		{
-			printChatMessageWithDeletion(SculptSettingsHelper.getRotationText(rotation, shapeType == 4 || shapeType == 5));
+			printChatMessageWithDeletion(SculptSettingsHelper.getDirectionText(direction, shapeType == 4 || shapeType == 5));
 		}
 	}
 	
@@ -837,10 +837,9 @@ public class ClientEventHandler
 			 * 5 = triangular pyramid
 			 * 6 = square pyramid
 			 */
-			int rot = SculptSettingsHelper.getRotation(player, nbt);
-			int roll = rot / 6;
-			rot %= 6;
-			EnumFacing dir = EnumFacing.getFront(rot);
+			int dir = SculptSettingsHelper.getDirection(player, nbt);
+			int rotation = dir / 6;
+			dir %= 6;
 			boolean notFullSym = shapeType != 0 && shapeType != 3;
 			boolean notSym = shapeType == 2 || shapeType > 4;
 			double ri = r + Utility.PIXEL_D * 0.5;
@@ -862,13 +861,13 @@ public class ClientEventHandler
 				double z2 = maxZ - minZ;
 				if (drawnNotSym)
 				{
-					if (rot == 2 || rot == 3)
+					if (dir == 2 || dir == 3)
 					{
 						v = y2;
 						y2 = z2;
 						z2 = v;
 					}
-					else if (rot > 3)
+					else if (dir > 3)
 					{
 						v = y2;
 						y2 = x2;
@@ -889,9 +888,9 @@ public class ClientEventHandler
 				}
 				else
 				{
-					a = Math.max(x2 - (!isOpen || !notFullSym || rot < 4 ? contraction : 0), 0);
-					c = Math.max(z2 - (!isOpen || !notFullSym || rot != 2 && rot != 3 ? contraction : 0), 0);
-					b = Math.max(y2 - (!isOpen || !notFullSym || rot > 1 ? contraction : 0), 0);
+					a = Math.max(x2 - (!isOpen || !notFullSym || dir < 4 ? contraction : 0), 0);
+					c = Math.max(z2 - (!isOpen || !notFullSym || dir != 2 && dir != 3 ? contraction : 0), 0);
+					b = Math.max(y2 - (!isOpen || !notFullSym || dir > 1 ? contraction : 0), 0);
 				}
 				r = Math.max(Math.max(a, b), c);
 				x = maxX + minX;
@@ -901,7 +900,7 @@ public class ClientEventHandler
 				{
 					if (notSym || !notFullSym)
 					{
-						if (rot < 2 || rot > 3 || !notFullSym)
+						if (dir < 2 || dir > 3 || !notFullSym)
 						{
 							v = b;
 							b = c;
@@ -910,13 +909,13 @@ public class ClientEventHandler
 					}
 					else
 					{
-						if (rot < 2)
+						if (dir < 2)
 						{
 							v = b;
 							b = c;
 							c = v;
 						}
-						else if (rot > 3)
+						else if (dir > 3)
 						{
 							v = a;
 							a = c;
@@ -960,23 +959,23 @@ public class ClientEventHandler
 				if (isOpen && contraction > 0 && !notSym)
 				{
 					double offset = contraction * (notSym ? 0.5 : (drawnBox ? 0 : -1));
-					if (rot != 3)
+					if (dir != 3)
 					{
-						y2 += rot == 0 ? offset : -offset;
+						y2 += dir == 0 ? offset : -offset;
 					}
-					if (rot > 2)
+					if (dir > 2)
 					{
-						x2 += rot == 5 ? -offset : offset;
+						x2 += dir == 5 ? -offset : offset;
 					}
-					if (rot == 2 || rot == 3)
+					if (dir == 2 || dir == 3)
 					{
-						z2 += rot == 2 ? offset : -offset;
+						z2 += dir == 2 ? offset : -offset;
 					}
 				}
 			}
 			GlStateManager.translate(x2, y2, z2);
-			int rot2 = rot;
-			if (!(drawnNotSym && rot == 2))
+			int rot2 = dir;
+			if (!(drawnNotSym && dir == 2))
 			{
 				if (notFullSym && rot2 != 1)
 				{
@@ -985,7 +984,7 @@ public class ClientEventHandler
 					{
 						rot2 = 0;
 						angle = 180;
-						if (!(drawnNotSym && rot == 3))
+						if (!(drawnNotSym && dir == 3))
 						{
 							GlStateManager.rotate(90, 0, 0, 1);
 						}
@@ -1019,11 +1018,11 @@ public class ClientEventHandler
 				else if (openSym)
 				{
 					double m = -contraction;
-					if (rot == 0) m *= 2;
-					if (rot != 1) r -= m;
-					if (rot > 1)
+					if (dir == 0) m *= 2;
+					if (dir != 1) r -= m;
+					if (dir > 1)
 					{
-						if (rot < 3)
+						if (dir < 3)
 						{
 							offset1 = m;
 						}
@@ -1043,13 +1042,13 @@ public class ClientEventHandler
 			}
 			if (drawnNotSym)
 			{
-				if (rot == 2 || rot == 3)
+				if (dir == 2 || dir == 3)
 				{
 					v = b;
 					b = c;
 					c = v;
 				}
-				else if (rot > 3)
+				else if (dir > 3)
 				{
 					v = b;
 					b = a;
