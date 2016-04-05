@@ -70,7 +70,8 @@ public class ClientEventHandler
 	private static final int[] AXIS_FORWARD = new int[]{2, 3, 4, 5, 0, 1};
 	private static final int[] AXIS_BACKWARD = new int[]{4, 5, 0, 1, 2, 3};
 	private static final int[] SHAPE_CURVED = new int[]{1, 2, 0, 0, 0, 0, 0};
-	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 4, 5, 6, 3};
+//	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 4, 5, 6, 3};
+	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 6, 3, 3, 3};
 	
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
