@@ -139,9 +139,9 @@ public class ConfigHandlerExtraBitManipulation
 			
 			Configs.sculptTargetBitGridVertexes = getSculptSettingBoolean("Target Bit Grid Vertexes", false, true, false,
 					"targeting mode",
-					"targeting mode (when sculpting in local/global mode either bits are targetted [the shape is centered on the center of the bit looked - the diameter is " +
-					"one (the center bit) plus/minus x number of bits (semi-diameter is x + 1/2 bit], or vertecies of the bit " +
-					"grid are targetted [the shape is centered on the corner (the one closest to the cursor) of the bit looked at (i.e. centered on a vertex of the " +
+					"targeting mode (when sculpting in local/global mode either bits are targeted [the shape is centered on the center of the bit looked - the diameter is " +
+					"one (the center bit) plus/minus x number of bits (semi-diameter is x + 1/2 bit)], or vertices of the bit " +
+					"grid are targeted [the shape is centered on the corner (the one closest to the cursor) of the bit looked at (i.e. centered on a vertex of the " +
 					"grid) - the diameter is 2x number of bits (x is a true semi-diameter)]).");
 			
 			Configs.sculptHollowShapeWire = getSculptSettingBoolean("Wire Hollow Shapes", false, true, false,
