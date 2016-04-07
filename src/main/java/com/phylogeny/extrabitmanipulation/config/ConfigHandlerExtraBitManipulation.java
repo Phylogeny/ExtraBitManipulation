@@ -127,12 +127,12 @@ public class ConfigHandlerExtraBitManipulation
 					"direction. 0 = down; 1 = up; 2 = north; 3 = south; 4 = west; 5 = east (adding 6 times 1, 2, or 3 specifies rotation; 1 = 90\u00B0, " +
 					"2 = 180\u00B0, and 3 = 270\u00B0)", "direction up - rotation 0\u00B0");
 			
-			Configs.sculptShapeTypeCurved = getSculptSettingIntFromStringArray("Curved Shape", false, true, 0, 0,
+			Configs.sculptShapeTypeCurved = getSculptSettingIntFromStringArray("Shape (curved)", false, true, 0, 0,
 					"curved tool sculpting shape",
 					"sculpting shape.",
 					Arrays.copyOfRange(Shape.SHAPE_NAMES, 0, 3));
 			
-			Configs.sculptShapeTypeFlat = getSculptSettingIntFromStringArray("Flat/Straight Shape", false, true, 0, 3,
+			Configs.sculptShapeTypeFlat = getSculptSettingIntFromStringArray("Shape (flat/straight)", false, true, 0, 3,
 					"flat/straight tool sculpting shape",
 					"sculpting shape.",
 					Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7));
@@ -144,11 +144,11 @@ public class ConfigHandlerExtraBitManipulation
 					"grid are targeted [the shape is centered on the corner (the one closest to the cursor) of the bit looked at (i.e. centered on a vertex of the " +
 					"grid) - the diameter is 2x number of bits (x is a true semi-diameter)]).");
 			
-			Configs.sculptHollowShapeWire = getSculptSettingBoolean("Wire Hollow Shapes", false, true, false,
+			Configs.sculptHollowShapeWire = getSculptSettingBoolean("Hollow Shapes (wire)", false, true, false,
 					"sculpting shape hollowness of sculpting wires",
 					"sculpting wire hollow property value (shape is either hollow or solid).");
 			
-			Configs.sculptHollowShapeSpade = getSculptSettingBoolean("Spade Hollow Shapes", false, true, false,
+			Configs.sculptHollowShapeSpade = getSculptSettingBoolean("Hollow Shapes (spade)", false, true, false,
 					"sculpting shape hollowness of sculpting spades",
 					"sculpting spade hollow property value (shape is either hollow or solid).");
 			
@@ -164,14 +164,14 @@ public class ConfigHandlerExtraBitManipulation
 					"hollow sculpting shape wall thickness",
 					"hollow sculpting shape wall thickness (in bits).", "2 bits");
 			
-			Configs.sculptSetBitWire = getSculptSettingItemStack("Wire Filter Bit Type", true, true, "minecraft:air",
+			Configs.sculptSetBitWire = getSculptSettingItemStack("Bit Type - Filter (wire)", true, true, "minecraft:air",
 					"filtered bit type",
 					"filtered bit type (sculpting can remove only one bit type rather than any - this config sets the block [as specified " +
 					"by 'modID:name'] of the bit type that sculpting wires remove (an empty string, an unsupported block, or any misspelling " +
 					"will specify any/all bit types)).", "Any");
 			Configs.sculptSetBitWire.init();
 			
-			Configs.sculptSetBitSpade = getSculptSettingItemStack("Spade Addition Bit Type", true, true, "minecraft:air",
+			Configs.sculptSetBitSpade = getSculptSettingItemStack("Bit Type - Addition (spade)", true, true, "minecraft:air",
 					"addition bit type",
 					"addition bit type (sets the block form [as specified by 'modID:name'] of the bit type that sculpting spades add to the " +
 					"world (an empty string, an unsupported block, or any misspelling will specify no bit type - the type will have to be set " +
