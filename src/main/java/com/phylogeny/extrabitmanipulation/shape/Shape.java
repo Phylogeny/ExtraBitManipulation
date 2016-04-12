@@ -1,7 +1,5 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-import java.util.Random;
-
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
