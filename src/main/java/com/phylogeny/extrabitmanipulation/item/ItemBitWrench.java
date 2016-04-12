@@ -40,6 +40,7 @@ public class ItemBitWrench extends ItemBitToolBase
 		nbt.setInteger(NBTKeys.MODE, SculptSettingsHelper.cycleData(mode, forward, MODE_TITLES.length));
 	}
 	
+	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
 			EnumFacing side, float hitX, float hitY, float hitZ)
     {
