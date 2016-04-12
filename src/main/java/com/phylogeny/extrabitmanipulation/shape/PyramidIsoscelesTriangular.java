@@ -1,7 +1,5 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-import com.phylogeny.extrabitmanipulation.reference.Utility;
-
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 

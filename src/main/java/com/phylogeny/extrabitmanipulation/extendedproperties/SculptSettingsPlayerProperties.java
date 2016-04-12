@@ -1,7 +1,6 @@
 package com.phylogeny.extrabitmanipulation.extendedproperties;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBitStack;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllSculptingData;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -13,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 {
