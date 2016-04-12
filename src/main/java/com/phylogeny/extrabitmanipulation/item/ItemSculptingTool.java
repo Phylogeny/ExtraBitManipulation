@@ -654,6 +654,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 	}
 	
+	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player)
     {
 		super.onCreated(stack, world, player);
