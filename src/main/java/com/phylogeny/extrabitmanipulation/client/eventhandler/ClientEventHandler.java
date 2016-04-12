@@ -22,7 +22,6 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
-import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitAccess;
