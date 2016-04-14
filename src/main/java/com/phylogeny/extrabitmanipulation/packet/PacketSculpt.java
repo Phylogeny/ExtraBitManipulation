@@ -5,10 +5,10 @@ import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -18,11 +18,11 @@ public class PacketSculpt implements IMessage
 {
 	private BlockPos pos;
 	private EnumFacing side;
-	private Vec3 hit, drawnStartPoint;
+	private Vec3d hit, drawnStartPoint;
 	
 	public PacketSculpt() {}
 	
-	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3 hit, Vec3 drawnStartPoint)
+	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3d hit, Vec3d drawnStartPoint)
 	{
 		this.pos = pos;
 		this.side = side;
@@ -55,10 +55,10 @@ public class PacketSculpt implements IMessage
 	{
 		pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
 		side = EnumFacing.getFront(buffer.readInt());
-		hit = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+		hit = new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
 		if (buffer.readBoolean())
 		{
-			drawnStartPoint = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+			drawnStartPoint = new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
 		}
 	}
 	
@@ -74,7 +74,7 @@ public class PacketSculpt implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack stack = player.getCurrentEquippedItem();
+					ItemStack stack = player.getHeldItemMainhand();
 					if (stack != null && stack.getItem() instanceof ItemSculptingTool &&
 							(!player.isSneaking() || message.drawnStartPoint != null))
 					{

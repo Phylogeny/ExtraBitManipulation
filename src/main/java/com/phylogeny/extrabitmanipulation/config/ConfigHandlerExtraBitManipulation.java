@@ -11,7 +11,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
@@ -39,7 +38,7 @@ public class ConfigHandlerExtraBitManipulation
 	@SubscribeEvent
 	public void onConfigChanged(OnConfigChangedEvent event)
 	{
-		if (event.modID.equalsIgnoreCase(Reference.MOD_ID))
+		if (event.getModID().equalsIgnoreCase(Reference.MOD_ID))
 		{
 			updateConfigs();
 		}
@@ -455,7 +454,7 @@ public class ConfigHandlerExtraBitManipulation
     {
         Property prop = configFile.get(category, name, Double.toString(defaultValue), name);
         prop.setLanguageKey(name);
-        prop.comment = comment + " [range: " + minValue + " ~ " + maxValue + ", default: " + defaultValue + "]";
+        prop.setComment(comment + " [range: " + minValue + " ~ " + maxValue + ", default: " + defaultValue + "]");
         prop.setMinValue(minValue);
         prop.setMaxValue(maxValue);
         try

@@ -1,10 +1,11 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.capability.ISculptSettingsHandler;
+import com.phylogeny.extrabitmanipulation.capability.SculptSettingsHandler;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingInt;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBitStack;
-import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
@@ -93,10 +94,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				mode = sculptProp.mode;
+				mode = cap.getMode();
 			}
 		}
 		return mode;
@@ -114,10 +115,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				sculptProp.mode = mode;
+				cap.setMode(mode);
 			}
 		}
 		if (world.isRemote)
@@ -135,10 +136,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				direction = sculptProp.direction;
+				direction = cap.getDirection();
 			}
 		}
 		return direction;
@@ -156,10 +157,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				sculptProp.direction = direction;
+				cap.setDirection(direction);
 			}
 		}
 		if (world.isRemote)
@@ -178,10 +179,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				shapeType = isCurved ? sculptProp.shapeTypeCurved : sculptProp.shapeTypeFlat;
+				shapeType = isCurved ? cap.getShapeTypeCurved() : cap.getShapeTypeFlat();
 			}
 		}
 		return isCurved && shapeType > 2 ? Configs.sculptShapeTypeCurved.getDefaultValue()
@@ -200,16 +201,16 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
 				if (isCurved)
 				{
-					sculptProp.shapeTypeCurved = shapeType;
+					cap.setShapeTypeCurved(shapeType);
 				}
 				else
 				{
-					sculptProp.shapeTypeFlat = shapeType;
+					cap.setShapeTypeFlat(shapeType);
 				}
 			}
 		}
@@ -228,10 +229,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				targetBitGridVertexes = sculptProp.targetBitGridVertexes;
+				targetBitGridVertexes = cap.isBitGridTargeted();
 			}
 		}
 		return targetBitGridVertexes;
@@ -249,10 +250,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				sculptProp.targetBitGridVertexes = targetBitGridVertexes;
+				cap.setBitGridTargeted(targetBitGridVertexes);
 			}
 		}
 		if (world.isRemote)
@@ -273,10 +274,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				semiDiameter = sculptProp.sculptSemiDiameter;
+				semiDiameter = cap.getSculptSemiDiameter();
 			}
 		}
 		return semiDiameter;
@@ -294,10 +295,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				sculptProp.sculptSemiDiameter = semiDiameter;
+				cap.setSculptSemiDiameter(semiDiameter);
 			}
 		}
 		if (world.isRemote)
@@ -316,10 +317,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				hollowShape = isWire ? sculptProp.sculptHollowShapeWire : sculptProp.sculptHollowShapeSpade;
+				hollowShape = isWire ? cap.isShapeHollowWire() : cap.isShapeHollowSpade();
 			}
 		}
 		return hollowShape;
@@ -337,16 +338,16 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
 				if (isWire)
 				{
-					sculptProp.sculptHollowShapeWire = hollowShape;
+					cap.setShapeHollowWire(hollowShape);
 				}
 				else
 				{
-					sculptProp.sculptHollowShapeSpade = hollowShape;
+					cap.setShapeHollowSpade(hollowShape);
 				}
 			}
 		}
@@ -365,10 +366,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				openEnds = sculptProp.openEnds;
+				openEnds = cap.areEndsOpen();
 			}
 		}
 		return openEnds;
@@ -386,10 +387,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				sculptProp.openEnds = openEnds;
+				cap.setEndsOpen(openEnds);
 			}
 		}
 		if (world.isRemote)
@@ -407,10 +408,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				wallThickness = sculptProp.wallThickness;
+				wallThickness = cap.getWallThickness();
 			}
 		}
 		return wallThickness;
@@ -428,10 +429,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				sculptProp.wallThickness = wallThickness;
+				cap.setWallThickness(wallThickness);
 			}
 		}
 		if (world.isRemote)
@@ -450,10 +451,10 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
-				bitStack = isWire ? sculptProp.setBitWire : sculptProp.setBitSpade;
+				bitStack = isWire ? cap.getBitStackWire() : cap.getBitStackSpade();
 			}
 		}
 		return bitStack;
@@ -471,16 +472,16 @@ public class SculptSettingsHelper
 		}
 		else
 		{
-			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-			if (sculptProp != null)
+			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+			if (cap != null)
 			{
 				if (isWire)
 				{
-					sculptProp.setBitWire = bitStack;
+					cap.setBitStackWire(bitStack);
 				}
 				else
 				{
-					sculptProp.setBitSpade = bitStack;
+					cap.setBitStackSpade(bitStack);
 				}
 			}
 		}

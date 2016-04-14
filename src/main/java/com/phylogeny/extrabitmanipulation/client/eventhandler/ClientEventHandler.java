@@ -27,28 +27,27 @@ import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
@@ -58,7 +57,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ClientEventHandler
 {
 	private int frameCounter;
-	private Vec3 drawnStartPoint = null;
+	private Vec3d drawnStartPoint = null;
 	private static final ResourceLocation ARROW_HEAD = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
 	private static final ResourceLocation ARROW_BIDIRECTIONAL = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
 	private static final ResourceLocation ARROW_CYCLICAL = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
@@ -76,12 +75,12 @@ public class ClientEventHandler
 	public void interceptMouseInput(MouseEvent event)
 	{
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		if (event.dwheel != 0)
+		if (event.getDwheel() != 0)
 		{
-			ItemStack stack = player.getCurrentEquippedItem();
+			ItemStack stack = player.getHeldItemMainhand();
 			if (stack != null && stack.getItem() instanceof ItemBitToolBase)
 			{
-				boolean forward = event.dwheel < 0;
+				boolean forward = event.getDwheel() < 0;
 				if (player.isSneaking())
 				{
 					if (stack.getItem() instanceof ItemBitWrench)
@@ -113,7 +112,7 @@ public class ClientEventHandler
 				drawnStartPoint = null;
 			}
 		}
-		else if ((GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()) && event.buttonstate)
+		else if ((GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()) && event.isButtonstate())
 		{
 			ItemStack stack = player.inventory.getCurrentItem();
 			if (stack != null)
@@ -123,22 +122,22 @@ public class ClientEventHandler
 				{
 					if (GuiScreen.isCtrlKeyDown())
 					{
-						if (event.button == 1)
+						if (event.getButton() == 1)
 						{
 							cycleShapeType(player, stack, item);
 						}
-						if (event.button == 0)
+						if (event.getButton() == 0)
 						{
 							toggleBitGridTargeted(player, stack);
 						}
 					}
 					else
 					{
-						if (event.button == 1)
+						if (event.getButton() == 1)
 						{
 							toggleHollowShape(player, stack, item);
 						}
-						if (event.button == 0)
+						if (event.getButton() == 0)
 						{
 							toggleOpenEnds(player, stack);
 						}
@@ -147,14 +146,14 @@ public class ClientEventHandler
 				}
 			}
 		}
-		else if (event.button == 0)
+		else if (event.getButton() == 0)
 		{
 			if (!player.capabilities.allowEdit) return;
 			ItemStack stack = player.inventory.getCurrentItem();
 			if (stack != null)
 			{
 				Item item = stack.getItem();
-				if (event.buttonstate && item instanceof ItemBitWrench)
+				if (event.isButtonstate() && item instanceof ItemBitWrench)
 				{
 					event.setCanceled(true);
 				}
@@ -165,25 +164,25 @@ public class ClientEventHandler
 					{
 						drawnStartPoint = null;
 					}
-					if (event.buttonstate || (drawnMode && drawnStartPoint != null))
+					if (event.isButtonstate() || (drawnMode && drawnStartPoint != null))
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) item;
 						boolean removeBits = toolItem.removeBits();
-						MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
-						if (target != null && target.typeOfHit != MovingObjectPosition.MovingObjectType.MISS)
+						RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
+						if (target != null && target.typeOfHit != RayTraceResult.Type.MISS)
 						{
-							if (target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+							if (target.typeOfHit == RayTraceResult.Type.BLOCK)
 							{
 								BlockPos pos = target.getBlockPos();
 								EnumFacing side = target.sideHit;
-								Vec3 hit = target.hitVec;
+								Vec3d hit = target.hitVec;
 								boolean swingTool = true;
-								if (drawnMode && event.buttonstate && drawnStartPoint != null)
+								if (drawnMode && event.isButtonstate() && drawnStartPoint != null)
 								{
 									event.setCanceled(true);
 									return;
 								}
-								if (!player.isSneaking() && drawnMode && event.buttonstate)
+								if (!player.isSneaking() && drawnMode && event.isButtonstate())
 								{
 									IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
 											(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
@@ -201,7 +200,7 @@ public class ClientEventHandler
 											y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
 											z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
 										}
-										drawnStartPoint = new Vec3(x2, y2, z2);
+										drawnStartPoint = new Vec3d(x2, y2, z2);
 									}
 									else
 									{
@@ -241,16 +240,16 @@ public class ClientEventHandler
 										swingTool = toolItem.sculptBlocks(stack, player, player.worldObj, pos, side, hit, drawnStartPoint);
 										ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint));
 									}
-									if (drawnMode && !event.buttonstate)
+									if (drawnMode && !event.isButtonstate())
 									{
 										drawnStartPoint = null;
 									}
 								}
-								if (swingTool) player.swingItem();
+								if (swingTool) player.swingArm(EnumHand.MAIN_HAND);
 								event.setCanceled(true);
 							}
 						}
-						else if (player.isSneaking() && event.buttonstate && removeBits)
+						else if (player.isSneaking() && event.isButtonstate() && removeBits)
 						{
 							SculptSettingsHelper.setBitStack(player, stack, true, null);
 							if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
@@ -266,7 +265,7 @@ public class ClientEventHandler
 				}
 			}
 		}
-		if (!event.isCanceled() && event.button == 1 && event.buttonstate)
+		if (!event.isCanceled() && event.getButton() == 1 && event.isButtonstate())
 		{
 			ItemStack stack = player.inventory.getCurrentItem();
 			if (stack != null)
@@ -385,18 +384,18 @@ public class ClientEventHandler
 	private void printChatMessageWithDeletion(String text)
 	{
 		GuiNewChat chatGUI = Minecraft.getMinecraft().ingameGUI.getChatGUI();
-		chatGUI.printChatMessageWithOptionalDeletion(new ChatComponentText(text), 627250);
+		chatGUI.printChatMessageWithOptionalDeletion(new TextComponentString(text), 627250);
 	}
 	
 	@SubscribeEvent
 	public void cancelBoundingBoxDraw(DrawBlockHighlightEvent event)
 	{
-		ItemStack itemStack = event.player.inventory.getCurrentItem();
+		ItemStack itemStack = event.getPlayer().inventory.getCurrentItem();
 		if (itemStack != null)
 		{
 			Item item = itemStack.getItem();
 			if (item != null && item instanceof ItemSculptingTool
-					&& SculptSettingsHelper.getMode(event.player, itemStack.getTagCompound()) == 1)
+					&& SculptSettingsHelper.getMode(event.getPlayer(), itemStack.getTagCompound()) == 1)
 			{
 				event.setCanceled(true);
 			}
@@ -410,21 +409,21 @@ public class ClientEventHandler
 		{
 			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 			World world = player.worldObj;
-			ItemStack stack = player.getCurrentEquippedItem();
+			ItemStack stack = player.getHeldItemMainhand();
 			if (stack != null)
 			{
-				MovingObjectPosition target = Minecraft.getMinecraft().objectMouseOver;
-				if (target != null && target.typeOfHit.equals(MovingObjectType.BLOCK)
+				RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
+				if (target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK)
 						&& stack.getItem() instanceof ItemBitToolBase)
 				{
 					IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-					float ticks = event.partialTicks;
+					float ticks = event.getPartialTicks();
 	        		double playerX = player.lastTickPosX + (player.posX - player.lastTickPosX) * ticks;
 	        		double playerY = player.lastTickPosY + (player.posY - player.lastTickPosY) * ticks;
 	        		double playerZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * ticks;
 	        		EnumFacing dir = target.sideHit;
 	                Tessellator t = Tessellator.getInstance();
-	                WorldRenderer wr = t.getWorldRenderer();
+	                VertexBuffer wr = t.getBuffer();
 	                BlockPos pos = target.getBlockPos();
 	                int x = pos.getX();
 	                int y = pos.getY();
@@ -432,7 +431,7 @@ public class ClientEventHandler
 	                double diffX = playerX - x;
 					double diffY = playerY - y;
 					double diffZ = playerZ - z;
-					Vec3 hit = target.hitVec;
+					Vec3d hit = target.hitVec;
 					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
 					{
 						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
@@ -519,7 +518,7 @@ public class ClientEventHandler
 						renderTexturedSide(t, wr, side, northSouth, box, minU, maxU, minV, maxV, 1);
 						GlStateManager.popMatrix();
 		        		
-		        		AxisAlignedBB box3 = world.getBlockState(pos).getBlock().getSelectedBoundingBox(world, pos);
+		        		AxisAlignedBB box3 = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
 						for (int s = 0; s < 6; s++)
 		        		{
 							if (s != side)
@@ -774,10 +773,12 @@ public class ClientEventHandler
 									if (mode == 0)
 									{
 										BlockPos pos2 = !removeBits && !inside ? pos.offset(dir) : pos;
-										Block block = world.getBlockState(pos2).getBlock();
-										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2.getX(), pos2.getY(), pos2.getZ(),
-												pos2.getX() + 1, pos2.getY() + 1, pos2.getZ() + 1) :
-											block.getSelectedBoundingBox(world, pos2);
+										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2) :
+											world.getBlockState(pos2).getSelectedBoundingBox(world, pos2);
+										if ((int) box2.minX != pos2.getX() || (int) box2.minY != pos2.getY() || (int) box2.minZ != pos2.getZ())
+										{
+											box2 = box2.offset(pos2);
+										}
 										box = limitBox(box, box2);
 									}
 									double f = 0.0020000000949949026;
@@ -1166,7 +1167,7 @@ public class ClientEventHandler
 		GL11.glTranslated(-playerX + 0.002 * dir.getFrontOffsetX(), -playerY + 0.002 * dir.getFrontOffsetY(), -playerZ + 0.002 * dir.getFrontOffsetZ());
 	}
 	
-	private AxisAlignedBB contractBoxOrRenderArrows(boolean contractBox, Tessellator t, WorldRenderer wr, int side, boolean northSouth, EnumFacing dir, AxisAlignedBB box,
+	private AxisAlignedBB contractBoxOrRenderArrows(boolean contractBox, Tessellator t, VertexBuffer vb, int side, boolean northSouth, EnumFacing dir, AxisAlignedBB box,
 			double invOffsetX, double invOffsetY, double invOffsetZ, boolean invertDirection, float minU, float maxU, float minV, float maxV)
 	{
 		if (contractBox)
@@ -1174,7 +1175,7 @@ public class ClientEventHandler
 			double amount = (frameCounter % Configs.translationScalePeriod) / Configs.translationScalePeriod;
 			amount /= invertDirection ? -2 : 2;
 			if (invertDirection && Configs.translationScalePeriod > 1) amount += 0.5;
-			box = box.contract(amount * invOffsetX, amount * invOffsetY, amount * invOffsetZ);
+			box = box.expand(-amount * invOffsetX, -amount * invOffsetY, -amount * invOffsetZ);
 		}
 		else if (Configs.translationDistance > 0)
 		{
@@ -1204,48 +1205,48 @@ public class ClientEventHandler
 				}
 				AxisAlignedBB box2 = new AxisAlignedBB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ)
 					.offset(amount * dir.getFrontOffsetX(), amount * dir.getFrontOffsetY(), amount * dir.getFrontOffsetZ());
-				renderTexturedSide(t, wr, side, northSouth, box2, minU, maxU, minV, maxV, alpha);
+				renderTexturedSide(t, vb, side, northSouth, box2, minU, maxU, minV, maxV, alpha);
 			}
 		}
 		else
 		{
-			renderTexturedSide(t, wr, side, northSouth, box, minU, maxU, minV, maxV, 1);
+			renderTexturedSide(t, vb, side, northSouth, box, minU, maxU, minV, maxV, 1);
 		}
 		return box;
 	}
 	
-	private void renderTexturedSide(Tessellator t, WorldRenderer wr, int side, boolean northSouth,
+	private void renderTexturedSide(Tessellator t, VertexBuffer vb, int side, boolean northSouth,
 			AxisAlignedBB box, float minU, float maxU, float minV, float maxV, double alpha)
 	{
 		GL11.glColor4d(1, 1, 1, alpha);
 		if (side == 1 || side == 3 || side == 4)
 		{
-			wr.begin(7, DefaultVertexFormats.POSITION_TEX);
-			wr.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
-			wr.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
-			wr.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
-			wr.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
+			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
+			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
+			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
+			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
 			t.draw();
-			wr.begin(7, DefaultVertexFormats.POSITION_TEX);
-			wr.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
-			wr.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
-			wr.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
-			wr.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
+			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
+			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
+			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
+			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
 			t.draw();
 		}
 		else
 		{
-			wr.begin(7, DefaultVertexFormats.POSITION_TEX);
-			wr.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
-			wr.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
-			wr.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
-			wr.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
+			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
+			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
+			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
+			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
 			t.draw();
-			wr.begin(7, DefaultVertexFormats.POSITION_TEX);
-			wr.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
-			wr.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
-			wr.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
-			wr.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
+			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
+			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
+			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
+			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
 			t.draw();
 		}
 	}

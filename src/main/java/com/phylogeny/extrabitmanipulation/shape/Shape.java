@@ -3,10 +3,9 @@ package com.phylogeny.extrabitmanipulation.shape;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Shape
@@ -70,7 +69,7 @@ public class Shape
 		return false;
 	}
 	
-	public Vec3 getRandomInternalPoint(World world, BlockPos pos)
+	public Vec3d getRandomInternalPoint(World world, BlockPos pos)
 	{
 		AxisAlignedBB bounds = getBoundingBox();
 		if (bounds != null)
@@ -78,11 +77,9 @@ public class Shape
 			int x = pos.getX();
 			int y = pos.getY();
 			int z = pos.getZ();
-			Block block = world.getBlockState(pos).getBlock();
-			AxisAlignedBB blockBounds = new AxisAlignedBB((double)pos.getX() + block.getBlockBoundsMinX(),
-					(double)pos.getY() + block.getBlockBoundsMinY(), (double)pos.getZ() + block.getBlockBoundsMinZ(),
-					(double)pos.getX() + block.getBlockBoundsMaxX(), (double)pos.getY() + block.getBlockBoundsMaxY(),
-					(double)pos.getZ() + block.getBlockBoundsMaxZ());
+			AxisAlignedBB bb = world.getBlockState(pos).getBoundingBox(world, pos);
+			AxisAlignedBB blockBounds = bb == null ? new AxisAlignedBB(pos) : 
+				new AxisAlignedBB(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ).offset(pos);
 			if (blockBounds.getAverageEdgeLength() == 0)
 			{
 				blockBounds = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
@@ -93,12 +90,12 @@ public class Shape
 				float s = Configs.bitSpawnBoxContraction;
 				if (s > 0)
 				{
-					box = box.contract((box.maxX - box.minX) * s, (box.maxY - box.minY) * s, (box.maxZ - box.minZ) * s);
+					box = box.expand(-(box.maxX - box.minX) * s, -(box.maxY - box.minY) * s, -(box.maxZ - box.minZ) * s);
 				}
 				double d0 = (double)((world.rand.nextFloat() * (box.maxX - box.minX)) + box.minX);
 				double d1 = (double)((world.rand.nextFloat() * (box.maxY - box.minY)) + box.minY);
 				double d2 = (double)((world.rand.nextFloat() * (box.maxZ - box.minZ)) + box.minZ);
-				return new Vec3(d0, d1, d2);
+				return new Vec3d(d0, d1, d2);
 			}
 		}
 		return null;

@@ -13,7 +13,7 @@ import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.ItemType;
-import net.minecraft.block.Block.SoundType;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.item.EntityItem;
@@ -22,11 +22,13 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
@@ -129,7 +131,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumFacing side, Vec3 hit, Vec3 drawnStartPoint)
+			EnumFacing side, Vec3d hit, Vec3d drawnStartPoint)
     {
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
@@ -275,53 +277,60 @@ public class ItemSculptingTool extends ItemBitToolBase
 				int remainingUses = nbt.getInteger(NBTKeys.REMAINING_USES);
 				if (!creativeMode && initialpossibleUses > remainingUses) initialpossibleUses = remainingUses;
 				int possibleUses = initialpossibleUses;
-				api.beginUndoGroup(player);
-				for (int i = (int) box.minX; i <= box.maxX; i++)
+				boolean changed = false;
+				try
 				{
-					for (int j = (int) box.minY; j <= box.maxY; j++)
+					api.beginUndoGroup(player);
+					for (int i = (int) box.minX; i <= box.maxX; i++)
 					{
-						for (int k = (int) box.minZ; k <= box.maxZ; k++)
+						for (int j = (int) box.minY; j <= box.maxY; j++)
 						{
-							if (possibleUses > 0)
+							for (int k = (int) box.minZ; k <= box.maxZ; k++)
 							{
-								possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
-										possibleUses, Configs.dropBitsPerBlock, setBit);
+								if (possibleUses > 0)
+								{
+									possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
+											possibleUses, Configs.dropBitsPerBlock, setBit);
+								}
 							}
 						}
 					}
 				}
-				api.endUndoGroup(player);
-				if (!Configs.dropBitsPerBlock)
+				finally
 				{
-					giveOrDropStacks(player, world, pos, shape, api, bitTypes);
-				}
-				int change = initialpossibleUses - possibleUses;
-				ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
-				int newRemainingUses = remainingUses - (config.takesDamage ? change : 0);
-				if (!world.isRemote && !creativeMode)
-				{
-					nbt.setInteger(NBTKeys.REMAINING_USES, newRemainingUses);
-					if (!removeBits)
+					api.endUndoGroup(player);
+					if (!Configs.dropBitsPerBlock)
 					{
-						removeOrAddInventoryBits(api, player, setBitStack, change, false);
+						giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 					}
-					if (newRemainingUses <= 0)
+					int change = initialpossibleUses - possibleUses;
+					ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
+					int newRemainingUses = remainingUses - (config.takesDamage ? change : 0);
+					if (!world.isRemote && !creativeMode)
+					{
+						nbt.setInteger(NBTKeys.REMAINING_USES, newRemainingUses);
+						if (!removeBits)
+						{
+							removeOrAddInventoryBits(api, player, setBitStack, change, false);
+						}
+						if (newRemainingUses <= 0)
+						{
+							player.renderBrokenItemStack(stack);
+							player.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
+						}
+						player.inventoryContainer.detectAndSendChanges();
+					}
+					if (!creativeMode && newRemainingUses <= 0)
 					{
 						player.renderBrokenItemStack(stack);
-						player.destroyCurrentEquippedItem();
 					}
-					player.inventoryContainer.detectAndSendChanges();
-				}
-				if (!creativeMode && newRemainingUses <= 0)
-				{
-					player.renderBrokenItemStack(stack);
-				}
-				boolean changed = possibleUses < initialpossibleUses;
-				if (changed)
-				{
-					SoundType sound = Blocks.stone.stepSound;
-					world.playSoundEffect((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F),
-							removeBits ? sound.getBreakSound() : sound.getPlaceSound(), (sound.getVolume()) / 8.0F, sound.getFrequency() * 0.8F);
+					changed = possibleUses < initialpossibleUses;
+					if (changed)
+					{
+						SoundType sound = Blocks.stone.getStepSound();
+						world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS,
+								(sound.getVolume()) / 8.0F, sound.getPitch() * 0.8F);
+					}
 				}
 				return changed;
 			}
@@ -451,7 +460,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return quota;
 	}
 
-	public static boolean wasInsideClicked(EnumFacing dir, Vec3 hit, BlockPos pos)
+	public static boolean wasInsideClicked(EnumFacing dir, Vec3d hit, BlockPos pos)
 	{
 		if (hit != null)
 		{
@@ -629,7 +638,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	{
 		if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops") && !world.restoringBlockSnapshots)
         {
-			Vec3 spawnPoint = shape.getRandomInternalPoint(world, pos);
+			Vec3d spawnPoint = shape.getRandomInternalPoint(world, pos);
 			EntityItem entityitem = new EntityItem(world, spawnPoint.xCoord, spawnPoint.yCoord - 0.25, spawnPoint.zCoord, stack);
             entityitem.setDefaultPickupDelay();
             world.spawnEntityInWorld(entityitem);
@@ -654,7 +663,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 	}
 	
-	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player)
     {
 		super.onCreated(stack, world, player);
@@ -663,7 +671,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	private String colorSculptSettingText(String text, ConfigSculptSettingBase setting)
 	{
-		return (setting.isPerTool() ? EnumChatFormatting.GREEN : EnumChatFormatting.BLUE) + text;
+		return (setting.isPerTool() ? TextFormatting.GREEN : TextFormatting.BLUE) + text;
 	}
 	
 	@Override
@@ -674,8 +682,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 		if (shiftDown)
 		{
 			tooltip.add("");
-			tooltip.add(EnumChatFormatting.BLUE + "Blue = data stored/accessed per player");
-			tooltip.add(EnumChatFormatting.GREEN + "Green = data stored/accessed per tool");
+			tooltip.add(TextFormatting.BLUE + "Blue = data stored/accessed per player");
+			tooltip.add(TextFormatting.GREEN + "Green = data stored/accessed per tool");
 			tooltip.add("");
 		}
 		NBTTagCompound nbt = stack.getTagCompound();

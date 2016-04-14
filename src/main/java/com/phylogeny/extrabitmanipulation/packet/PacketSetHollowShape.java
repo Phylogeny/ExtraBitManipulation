@@ -49,7 +49,7 @@ public class PacketSetHollowShape implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setHollowShape(player, player.getCurrentEquippedItem(), message.isWire, message.hollowShape);
+					SculptSettingsHelper.setHollowShape(player, player.getHeldItemMainhand(), message.isWire, message.hollowShape);
 				}
 			});
 			return null;

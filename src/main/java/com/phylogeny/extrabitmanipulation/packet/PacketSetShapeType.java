@@ -49,7 +49,7 @@ public class PacketSetShapeType implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setShapeType(player, player.getCurrentEquippedItem(), message.isCurved, message.shapeType);
+					SculptSettingsHelper.setShapeType(player, player.getHeldItemMainhand(), message.isCurved, message.shapeType);
 				}
 			});
 			return null;

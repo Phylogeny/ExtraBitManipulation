@@ -45,7 +45,7 @@ public class PacketSetMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setMode(player, player.getCurrentEquippedItem(), message.mode);
+					SculptSettingsHelper.setMode(player, player.getHeldItemMainhand(), message.mode);
 				}
 			});
 			return null;

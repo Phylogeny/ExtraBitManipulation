@@ -45,7 +45,7 @@ public class PacketSetDirection implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setDirection(player, player.getCurrentEquippedItem(), message.direction);
+					SculptSettingsHelper.setDirection(player, player.getHeldItemMainhand(), message.direction);
 				}
 			});
 			return null;

@@ -45,7 +45,7 @@ public class PacketSetEndsOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setEndsOpen(player, player.getCurrentEquippedItem(), message.openEnds);
+					SculptSettingsHelper.setEndsOpen(player, player.getHeldItemMainhand(), message.openEnds);
 				}
 			});
 			return null;

@@ -1,7 +1,7 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class PyramidIsoscelesTriangular extends AsymmetricalShape
 {
@@ -76,7 +76,7 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 			float wsq = w * w;
 			offsetCenter = c - (w * ((float) Math.sqrt(wsq + 4 * hsq) - w)) / (4 * h);
 		}
-		Vec3 offset = getInnerTriangularPyramidOffset(centerY, centerZ, offsetCenter, a, b, c, wallThickness);
+		Vec3d offset = getInnerTriangularPyramidOffset(centerY, centerZ, offsetCenter, a, b, c, wallThickness);
 		float offsetZ = (float) (inverted ? -offset.zCoord : offset.zCoord);
 		center1Inset = centerZ - (isFlipped ? -offsetZ : offsetZ);
 		center2Inset = centerY - (float) (inverted ? -offset.yCoord : offset.yCoord);
@@ -85,7 +85,7 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		insetMin2 = center2Inset - b;
 	}
 
-	private Vec3 getInnerTriangularPyramidOffset(float centerY, float centerZ, float offsetCenter, float a, float b, float c, float wallThickness)
+	private Vec3d getInnerTriangularPyramidOffset(float centerY, float centerZ, float offsetCenter, float a, float b, float c, float wallThickness)
 	{
 		float s1 = c - offsetCenter;
 		float h1 = b * 2;
@@ -121,7 +121,7 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		float interZ = (b2 - b1) / (m1 - m2);
 		float interY = m1 * interZ + b1;
 		
-		return new Vec3(0, apexY - interY, apexZ - interZ);
+		return new Vec3d(0, apexY - interY, apexZ - interZ);
 	}
 	
 	@Override

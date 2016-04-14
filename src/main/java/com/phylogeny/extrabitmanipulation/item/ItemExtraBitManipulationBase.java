@@ -11,7 +11,8 @@ public class ItemExtraBitManipulationBase extends Item
 	public ItemExtraBitManipulationBase(String name)
 	{
 		this.name = name;
-		setUnlocalizedName(name);
+		setRegistryName(name);
+		setUnlocalizedName(getRegistryName().toString());
 		setCreativeTab(CreativeTabExtraBitManipulation.CREATIVE_TAB);
 	}
 	

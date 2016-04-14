@@ -1,9 +1,9 @@
 package com.phylogeny.extrabitmanipulation.proxy;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
@@ -32,9 +32,8 @@ public class ProxyClient extends ProxyCommon
 	
 	private void register(Item item)
 	{
-		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(item, 0, new ModelResourceLocation(Reference.MOD_ID + ":"
-				+ (((ItemExtraBitManipulationBase) item).getName()), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(
+				new ResourceLocation(Reference.MOD_ID, (((ItemExtraBitManipulationBase) item).getName())), "inventory"));
 	}
 	
 }

@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class SymmetricalShape extends Shape
 {

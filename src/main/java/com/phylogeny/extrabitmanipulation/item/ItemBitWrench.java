@@ -17,9 +17,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 public class ItemBitWrench extends ItemBitToolBase
@@ -41,8 +43,8 @@ public class ItemBitWrench extends ItemBitToolBase
 	}
 	
 	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumFacing side, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+			EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
@@ -57,7 +59,7 @@ public class ItemBitWrench extends ItemBitToolBase
 			catch (CannotBeChiseled e)
 			{
 				e.printStackTrace();
-				return false;
+				return EnumActionResult.FAIL;
 			}
 			IBitBrush[][][] bitArray = new IBitBrush[16][16][16];
 			int increment = 1; //currently fixed
@@ -184,7 +186,7 @@ public class ItemBitWrench extends ItemBitToolBase
 							{
 								if (bit != null && !bit.isAir() && bitAccess.getBitAt(x, y, z).isAir())
 								{
-									return false;
+									return EnumActionResult.FAIL;
 								}
 							}
 						}
@@ -200,10 +202,10 @@ public class ItemBitWrench extends ItemBitToolBase
 						player.renderBrokenItemStack(stack);
 					}
 				}
-				return true;
+				return EnumActionResult.SUCCESS;
 			}
 		}
-        return false;
+        return EnumActionResult.FAIL;
     }
 	
 	@Override
@@ -230,7 +232,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	public String getItemStackDisplayName(ItemStack stack)
     {
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
-		String displayName = ("" + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
+		String displayName = ("" + I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
 		+ " - " + MODE_TITLES[mode];
 		if (mode == 3)
 		{

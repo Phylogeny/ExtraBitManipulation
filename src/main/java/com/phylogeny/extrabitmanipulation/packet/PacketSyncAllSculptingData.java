@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
+import com.phylogeny.extrabitmanipulation.capability.ISculptSettingsHandler;
+import com.phylogeny.extrabitmanipulation.capability.SculptSettingsHandler;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 import net.minecraft.client.Minecraft;
@@ -87,20 +88,20 @@ public class PacketSyncAllSculptingData implements IMessage
 				public void run()
 				{
 					EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-					SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
-					if (sculptProp != null)
+					ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+					if (cap != null)
 					{
-						sculptProp.mode = message.mode;
-						sculptProp.direction = message.direction;
-						sculptProp.shapeTypeCurved = message.shapeTypeCurved;
-						sculptProp.shapeTypeFlat = message.shapeTypeFlat;
-						sculptProp.targetBitGridVertexes = message.targetBitGridVertexes;
-						sculptProp.sculptSemiDiameter = message.sculptSemiDiameter;
-						sculptProp.sculptHollowShapeWire = message.sculptHollowShapeWire;
-						sculptProp.sculptHollowShapeSpade = message.sculptHollowShapeSpade;
-						sculptProp.openEnds = message.openEnds;
-						sculptProp.setBitWire = message.setBitWire;
-						sculptProp.setBitSpade = message.setBitSpade;
+						cap.setMode(message.mode);
+						cap.setDirection(message.direction);
+						cap.setShapeTypeCurved(message.shapeTypeCurved);
+						cap.setShapeTypeFlat(message.shapeTypeFlat);
+						cap.setBitGridTargeted(message.targetBitGridVertexes);
+						cap.setSculptSemiDiameter(message.sculptSemiDiameter);
+						cap.setShapeHollowWire(message.sculptHollowShapeWire);
+						cap.setShapeHollowSpade(message.sculptHollowShapeSpade);
+						cap.setEndsOpen(message.openEnds);
+						cap.setBitStackWire(message.setBitWire);
+						cap.setBitStackSpade(message.setBitSpade);
 					}
 				}
 			});
