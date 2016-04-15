@@ -52,7 +52,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
 			EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
+	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
@@ -133,9 +133,9 @@ public class ItemBitWrench extends ItemBitToolBase
 							{
 								invertBit = bit;
 								IBlockState state = bit.getState();
-					    		if (!inversionBitTypes.containsKey(state))
+								if (!inversionBitTypes.containsKey(state))
 								{
-					    			inversionBitTypes.put(state, 1);
+									inversionBitTypes.put(state, 1);
 								}
 								else
 								{
@@ -285,8 +285,8 @@ public class ItemBitWrench extends ItemBitToolBase
 				return EnumActionResult.SUCCESS;
 			}
 		}
-        return EnumActionResult.FAIL;
-    }
+		return EnumActionResult.FAIL;
+	}
 	
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
@@ -310,7 +310,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	
 	@Override
 	public String getItemStackDisplayName(ItemStack stack)
-    {
+	{
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 		String displayName = ("" + I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
 		+ " - " + MODE_TITLES[mode];
@@ -319,6 +319,6 @@ public class ItemBitWrench extends ItemBitToolBase
 			displayName += " (WIP / Creative Only)";
 		}
 		return displayName;
-    }
+	}
 	
 }

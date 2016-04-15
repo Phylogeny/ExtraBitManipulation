@@ -456,22 +456,22 @@ public class ConfigHandlerExtraBitManipulation
 	}
 	
 	private static double getDouble(Configuration configFile, String name, String category, double defaultValue, double minValue, double maxValue, String comment)
-    {
-        Property prop = configFile.get(category, name, Double.toString(defaultValue), name);
-        prop.setLanguageKey(name);
-        prop.setComment(comment + " [range: " + minValue + " ~ " + maxValue + ", default: " + defaultValue + "]");
-        prop.setMinValue(minValue);
-        prop.setMaxValue(maxValue);
-        try
-        {
-            return Double.parseDouble(prop.getString()) < minValue ? minValue : (Double.parseDouble(prop.getString()) > maxValue ? maxValue : Double.parseDouble(prop.getString()));
-        }
-        catch (Exception e)
-        {
-        	System.out.println("The " + Reference.MOD_NAME + " configuration '" + name
-        			+ "' could not be parsed to a double. Default value of " + defaultValue + " was restored and used instead.");
-        }
-        return defaultValue;
-    }
+	{
+		Property prop = configFile.get(category, name, Double.toString(defaultValue), name);
+		prop.setLanguageKey(name);
+		prop.setComment(comment + " [range: " + minValue + " ~ " + maxValue + ", default: " + defaultValue + "]");
+		prop.setMinValue(minValue);
+		prop.setMaxValue(maxValue);
+		try
+		{
+			return Double.parseDouble(prop.getString()) < minValue ? minValue : (Double.parseDouble(prop.getString()) > maxValue ? maxValue : Double.parseDouble(prop.getString()));
+		}
+		catch (Exception e)
+		{
+		System.out.println("The " + Reference.MOD_NAME + " configuration '" + name
+				+ "' could not be parsed to a double. Default value of " + defaultValue + " was restored and used instead.");
+		}
+		return defaultValue;
+	}
 	
 }

@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 public class ExtraBitManipulation
 {
 	@SidedProxy(clientSide = Reference.CLIENT_CLASSPATH, serverSide = Reference.COMMON_CLASSPATH)
-    public static ProxyCommon proxy;
+	public static ProxyCommon proxy;
 	
 	public static SimpleNetworkWrapper packetNetwork = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
 	
@@ -49,5 +49,5 @@ public class ExtraBitManipulation
 		Configs.sculptSetBitWire.init();
 		Configs.sculptSetBitSpade.init();
 	}
-    
+	
 }

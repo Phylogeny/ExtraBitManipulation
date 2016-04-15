@@ -74,11 +74,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	@Override
 	public boolean showDurabilityBar(ItemStack stack)
-    {
+	{
 		ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
 		return stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.REMAINING_USES)
 				&& stack.getTagCompound().getInteger(NBTKeys.REMAINING_USES) < config.maxDamage;
-    }
+	}
 	
 	@Override
 	public double getDurabilityForDisplay(ItemStack stack)
@@ -128,7 +128,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
 			EnumFacing side, Vec3d hit, Vec3d drawnStartPoint)
-    {
+	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		boolean inside = wasInsideClicked(side, hit, pos);
@@ -332,7 +332,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			}
 		}
 		return false;
-    }
+	}
 
 	private float addPadding(float value)
 	{
@@ -368,7 +368,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	private int sculptBlock(IChiselAndBitsAPI api, ItemStack stack, EntityPlayer player, World world, BlockPos pos, Shape shape,
 			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush setBit)
-    {
+	{
 		if (isValidBlock(api, world, pos))
 		{
 			IBitAccess bitAccess;
@@ -394,9 +394,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 								&& (byPassBitChecks || shape.isPointInsideShape(pos, i, j, k)))
 						{
 							if (bitTypes != null)
-					    	{
+							{
 								IBlockState state = bit.getState();
-					    		if (!bitTypes.containsKey(state))
+								if (!bitTypes.containsKey(state))
 								{
 									bitTypes.put(state, 1);
 								}
@@ -404,7 +404,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 								{
 									bitTypes.put(state, bitTypes.get(state) + 1);
 								}
-					    	}
+							}
 							try
 							{
 								bitAccess.setBitAt(i, j, k, removeBits ? null : setBit);
@@ -430,7 +430,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			}
 		}
 		return remainingUses;
-    }
+	}
 	
 	private boolean isValidBlock(IChiselAndBitsAPI api, World world, BlockPos pos)
 	{
@@ -439,10 +439,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player)
-    {
+	{
 		super.onCreated(stack, world, player);
 		initialize(stack);
-    }
+	}
 	
 	private String colorSculptSettingText(String text, ConfigSculptSettingBase setting)
 	{

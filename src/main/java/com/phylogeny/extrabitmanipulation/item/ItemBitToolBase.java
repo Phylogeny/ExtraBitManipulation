@@ -26,8 +26,8 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 	
 	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player)
-    {
+	{
 		stack.setTagCompound(new NBTTagCompound());
-    }
+	}
 	
 }
