@@ -29,8 +29,8 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	private static List<IConfigElement> getConfigElements()
 	{
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
-		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_SETTINGS,
-				"Configures sculpting dimensions, the way bits are handled when removed from the world, and the way bit removal/addition " +
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.TOOL_SETTINGS,
+				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, and the way bit removal/addition " +
 				"areas are displayed. (applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)", configElements);
 		addDummyElementsOfChildElementSetsToDummyElement(configElements, false,
 				ConfigHandlerExtraBitManipulation.SCULPTING_DEFAULT_VALUES, "Configures sculpting data default values.",

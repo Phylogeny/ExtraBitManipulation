@@ -806,12 +806,12 @@ public class ClientEventHandler
 								}
 								boolean isHollow = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 								boolean isOpen = isHollow && SculptSettingsHelper.areEndsOpen(player, nbt);
-								renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn,
+								renderEnvelopedShapes(player, shapeType, nbt, playerX, playerY, playerZ, isDrawn,
 										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);
 								float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 								if (wallThickness > 0 && isHollow && !(mode == 2 && !drawnBox))
 								{
-									renderEnvelopedShapes(player, stack, shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
+									renderEnvelopedShapes(player, shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
 											x3, y3, z3, wallThickness, isOpen);
 								}
 								GlStateManager.depthMask(true);
@@ -825,7 +825,7 @@ public class ClientEventHandler
 		}
 	}
 	
-	private void renderEnvelopedShapes(EntityPlayer player, ItemStack stack, int shapeType, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
+	private void renderEnvelopedShapes(EntityPlayer player, int shapeType, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
 			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double contraction, boolean isOpen)
 	{
 		ConfigShapeRender configShape = configPair.envelopedShape;
@@ -841,7 +841,7 @@ public class ClientEventHandler
 			 * 6 = square pyramid
 			 */
 			int dir = SculptSettingsHelper.getDirection(player, nbt);
-			int rotation = dir / 6;
+//			int rotation = dir / 6;
 			dir %= 6;
 			boolean notFullSym = shapeType != 0 && shapeType != 3;
 			boolean notSym = shapeType == 2 || shapeType > 4;

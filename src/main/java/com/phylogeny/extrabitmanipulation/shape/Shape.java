@@ -92,9 +92,9 @@ public class Shape
 				{
 					box = box.expand(-(box.maxX - box.minX) * s, -(box.maxY - box.minY) * s, -(box.maxZ - box.minZ) * s);
 				}
-				double d0 = (double)((world.rand.nextFloat() * (box.maxX - box.minX)) + box.minX);
-				double d1 = (double)((world.rand.nextFloat() * (box.maxY - box.minY)) + box.minY);
-				double d2 = (double)((world.rand.nextFloat() * (box.maxZ - box.minZ)) + box.minZ);
+				double d0 = world.rand.nextFloat() * (box.maxX - box.minX) + box.minX;
+				double d1 = world.rand.nextFloat() * (box.maxY - box.minY) + box.minY;
+				double d2 = world.rand.nextFloat() * (box.maxZ - box.minZ) + box.minZ;
 				return new Vec3d(d0, d1, d2);
 			}
 		}
