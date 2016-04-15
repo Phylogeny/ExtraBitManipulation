@@ -19,7 +19,7 @@ import net.minecraftforge.fml.client.config.IConfigElement;
 
 public class GuiConfigExtraBitManipulation extends GuiConfig
 {
-
+	
 	public GuiConfigExtraBitManipulation(GuiScreen parentScreen)
 	{
 		super(parentScreen, getConfigElements(), Reference.MOD_ID, false, false,
@@ -87,7 +87,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		return (shapeIndex == 0 ? "Straight" : (shapeIndex == 1 ? "Flat" : "Curved")) + " Sculpting " + (removeBits ? "Wire's " : "Spade's ") +
 				(shapeIndex > 1 ? "spherical/ellipsoidal" : "cubic/cuboidal") + " bit " + (removeBits ? "removal" : "addition") + " area";
 	}
-
+	
 	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(List<IConfigElement> configElements,
 			Map<Item, ConfigNamed> configs, String name, String toolTip, boolean isRecipe)
 	{

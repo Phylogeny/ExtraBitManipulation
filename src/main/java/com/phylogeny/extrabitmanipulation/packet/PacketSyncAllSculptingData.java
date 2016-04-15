@@ -56,8 +56,6 @@ public class PacketSyncAllSculptingData implements IMessage
 		ItemStackHelper.stackToBytes(buffer, setBitWire);
 		ItemStackHelper.stackToBytes(buffer, setBitSpade);
 	}
-
-	
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)

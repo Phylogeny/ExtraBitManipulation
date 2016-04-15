@@ -64,7 +64,7 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	{
 		 return SCULPT_SETTINGS_CAP != null && capability == SCULPT_SETTINGS_CAP;
 	}
-
+	
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
 	{
@@ -94,7 +94,7 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 		ItemStackHelper.saveStackToNBT(nbt, setBitSpade, NBTKeys.SET_BIT_SPADE);
 		return nbt;
 	}
-
+	
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
@@ -125,139 +125,139 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	{
 		return mode;
 	}
-
+	
 	@Override
 	public void setMode(int mode)
 	{
 		this.mode = mode;
 	}
-
+	
 	@Override
 	public int getDirection()
 	{
 		return direction;
 	}
-
+	
 	@Override
 	public void setDirection(int direction)
 	{
 		this.direction = direction;
 	}
-
+	
 	@Override
 	public int getShapeTypeCurved()
 	{
 		return shapeTypeCurved;
 	}
-
+	
 	@Override
 	public void setShapeTypeCurved(int shapeTypeCurved)
 	{
 		this.shapeTypeCurved = shapeTypeCurved;
 	}
-
+	
 	@Override
 	public int getShapeTypeFlat()
 	{
 		return shapeTypeFlat;
 	}
-
+	
 	@Override
 	public void setShapeTypeFlat(int shapeTypeFlat)
 	{
 		this.shapeTypeFlat = shapeTypeFlat;
 	}
-
+	
 	@Override
 	public int getSculptSemiDiameter()
 	{
 		return sculptSemiDiameter;
 	}
-
+	
 	@Override
 	public void setSculptSemiDiameter(int sculptSemiDiameter)
 	{
 		this.sculptSemiDiameter = sculptSemiDiameter;
 	}
-
+	
 	@Override
 	public int getWallThickness()
 	{
 		return wallThickness;
 	}
-
+	
 	@Override
 	public void setWallThickness(int wallThickness)
 	{
 		this.wallThickness = wallThickness;
 	}
-
+	
 	@Override
 	public boolean isBitGridTargeted()
 	{
 		return targetBitGridVertexes;
 	}
-
+	
 	@Override
 	public void setBitGridTargeted(boolean targetBitGridVertexes)
 	{
 		this.targetBitGridVertexes = targetBitGridVertexes;
 	}
-
+	
 	@Override
 	public boolean isShapeHollowWire()
 	{
 		return sculptHollowShapeWire;
 	}
-
+	
 	@Override
 	public void setShapeHollowWire(boolean sculptHollowShapeWire)
 	{
 		this.sculptHollowShapeWire = sculptHollowShapeWire;
 	}
-
+	
 	@Override
 	public boolean isShapeHollowSpade()
 	{
 		return sculptHollowShapeSpade;
 	}
-
+	
 	@Override
 	public void setShapeHollowSpade(boolean sculptHollowShapeSpade)
 	{
 		this.sculptHollowShapeSpade = sculptHollowShapeSpade;
 	}
-
+	
 	@Override
 	public boolean areEndsOpen()
 	{
 		return openEnds;
 	}
-
+	
 	@Override
 	public void setEndsOpen(boolean openEnds)
 	{
 		this.openEnds = openEnds;
 	}
-
+	
 	@Override
 	public ItemStack getBitStackWire()
 	{
 		return setBitWire;
 	}
-
+	
 	@Override
 	public void setBitStackWire(ItemStack setBitWire)
 	{
 		this.setBitWire = setBitWire;
 	}
-
+	
 	@Override
 	public ItemStack getBitStackSpade()
 	{
 		return setBitSpade;
 	}
-
+	
 	@Override
 	public void setBitStackSpade(ItemStack setBitSpade)
 	{

@@ -1085,7 +1085,7 @@ public class ClientEventHandler
 			GlStateManager.popMatrix();
 		}
 	}
-
+	
 	private void drawEnvelopedShapes(double r, ConfigShapeRender configShape, int shapeType, Quadric shape,
 			Quadric lid, boolean isOuter, boolean isCylinder, boolean isOpen)
 	{
@@ -1139,7 +1139,7 @@ public class ClientEventHandler
 		double d5 = Math.min(box.maxZ, mask.maxZ);
 		return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
 	}
-
+	
 	private double getInitialAngle(int mode)
 	{
 		return mode == 0 ? (frameCounter * (360 / Configs.rotationPeriod)) % 360 : 0;

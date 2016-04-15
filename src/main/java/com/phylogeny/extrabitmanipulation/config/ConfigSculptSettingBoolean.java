@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-
 public class ConfigSculptSettingBoolean extends ConfigSculptSettingBase
 {
 	private boolean defaultValue;

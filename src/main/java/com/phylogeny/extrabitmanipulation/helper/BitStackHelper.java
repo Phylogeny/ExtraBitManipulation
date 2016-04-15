@@ -48,12 +48,12 @@ public class BitStackHelper
 		}
 		return count;
 	}
-
+	
 	private static int getBitCountFromStack(IChiselAndBitsAPI api, ItemStack setBitStack, ItemStack stack)
 	{
 		return areBitStacksEqual(api, setBitStack, stack) ? stack.stackSize : 0;
 	}
-
+	
 	private static boolean areBitStacksEqual(IChiselAndBitsAPI api, ItemStack bitStack, ItemStack putativeBitStack)
 	{
 		return putativeBitStack != null && api.getItemType(putativeBitStack) == ItemType.CHISLED_BIT
@@ -97,7 +97,7 @@ public class BitStackHelper
 		}
 		return quota;
 	}
-
+	
 	private static int removeBitsFromStack(IChiselAndBitsAPI api, ItemStack setBitStack,
 			int quota, InventoryPlayer inventoy, IBitBag bitBag, int index, ItemStack stack)
 	{
@@ -193,7 +193,7 @@ public class BitStackHelper
 			if (Configs.placeBitsInInventory) player.inventoryContainer.detectAndSendChanges();
 		}
 	}
-
+	
 	private static void givePlayerStackOrDropOnGround(EntityPlayer player, World world, IChiselAndBitsAPI api, BlockPos pos, Shape shape, ItemStack stack)
 	{
 		if (Configs.placeBitsInInventory)

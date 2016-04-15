@@ -41,10 +41,10 @@ public class Configs
 		
 	//ITEM PROPERTIES
 		public static Map<Item, ConfigNamed> itemPropertyMap = new HashMap<Item, ConfigNamed>();
-	
+		
 	//ITEM RECIPES
 		public static Map<Item, ConfigNamed> itemRecipeMap = new HashMap<Item, ConfigNamed>();
-	
+		
 	//RENDER WRENCH OVERLAYS
 		public static boolean disableOverlays;
 		public static double rotationPeriod;
@@ -55,7 +55,7 @@ public class Configs
 		public static double translationOffsetDistance;
 		public static double translationFadeDistance;
 		public static double translationMovementPeriod;
-	
+		
 	//RENDER SCULPTING TOOL SHAPES
 		public static Map<Item, ConfigShapeRenderPair> itemShapeMap = new HashMap<Item, ConfigShapeRenderPair>();
 		public static ConfigShapeRender[] itemShapes = new ConfigShapeRender[]{

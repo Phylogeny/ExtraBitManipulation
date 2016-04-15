@@ -6,7 +6,7 @@ public class ConfigRecipe extends ConfigNamed
 	public String[] recipe;
 	private boolean isEnabledDefault, isShapedDefault, useOreDictionaryDefault;
 	private String[] recipeDefault;
-
+	
 	public ConfigRecipe(String itemTitle, boolean isEnabledDefault, boolean isShapedDefault,
 			boolean useOreDictionaryDefault, String... recipeDefault)
 	{
@@ -21,17 +21,17 @@ public class ConfigRecipe extends ConfigNamed
 	{
 		return isEnabledDefault;
 	}
-
+	
 	public boolean getIsShapedDefault()
 	{
 		return isShapedDefault;
 	}
-
+	
 	public boolean getUseOreDictionaryDefault()
 	{
 		return useOreDictionaryDefault;
 	}
-
+	
 	public String[] getRecipeDefault()
 	{
 		return recipeDefault;

@@ -43,7 +43,7 @@ public class ConfigHandlerExtraBitManipulation
 			updateConfigs();
 		}
 	}
-
+	
 	private static void updateConfigs()
 	{
 		try
@@ -335,12 +335,12 @@ public class ConfigHandlerExtraBitManipulation
 		}
 		return new ConfigSculptSettingBitStack(perTool, displayInChat, defaultBlock);
 	}
-
+	
 	private static String getToolTipSculptSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)
 	{
 		return "Players and sculpting tools will initialize with this " + toolTipDefaultValue + " (default = " + toolTipDefaultValueDefault + ")";
 	}
-
+	
 	private static boolean getPerTool(String name, boolean defaultPerTool, String toolTipPerTool)
 	{
 		return configFile.getBoolean(name, SCULPTING_PER_TOOL_OR_PER_PLAYER, defaultPerTool,
@@ -361,12 +361,12 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		return "See 'Default Value' config for a description of " + settingString + ".";
 	}
-
+	
 	private static void removeCategory(String category)
 	{
 		configFile.removeCategory(configFile.getCategory(category.toLowerCase()));
 	}
-
+	
 	private static String getVersion(String defaultValue)
 	{
 		return configFile.getString(VERSION, VERSION, defaultValue.toLowerCase(), "Used for cofig updating when updating mod version. Do not change.");
@@ -408,14 +408,14 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		return category.substring(category.lastIndexOf(" ") + 1, category.length());
 	}
-
+	
 	private static int getToolMaxDamage(String name, String category, int defaultValue, int min, int max, boolean perBit)
 	{
 		return configFile.getInt("Max Damage", category, defaultValue, min, max,
 				"The " + name + " will " + (perBit ? "be able to add/remove this many bits " : "have this many uses ")
 				+ "if it is configured to take damage. (default = " + defaultValue + ")");
 	}
-
+	
 	private static boolean getToolTakesDamage(String name, String category, boolean defaultValue, boolean perBit)
 	{
 		return configFile.getBoolean("Takes Damage", category, defaultValue,
@@ -428,7 +428,7 @@ public class ConfigHandlerExtraBitManipulation
 		return configFile.getBoolean("Is Enabled", category, defaultValue,
 				"If set to true, the " + name + " will be craftable, otherwise it will not be. (default = " + defaultValue + ")");
 	}
-
+	
 	private static boolean getRecipeShaped(String name, String category, boolean defaultValue)
 	{
 		return configFile.getBoolean("Is Shaped", category, defaultValue,
@@ -442,7 +442,7 @@ public class ConfigHandlerExtraBitManipulation
 				"If set to true, the string names given for the " + name + " recipe will be used to look up entries in the Ore Dictionary. " +
 				"If set to false, they will be used to look up Items by name or ID. (default = " + defaultValue + ")");
 	}
-
+	
 	private static String[] getRecipeList(String name, String category, String[] defaultValue)
 	{
 		return configFile.getStringList("Recipe", category, defaultValue,
