@@ -3,7 +3,7 @@
   "modid": "ExtraBitManipulation",
   "name": "Extra Bit Manipulation",
   "description": "This mod is an addon to the Chisels & Bits mod. It adds a wrench that rotates/mirrors/translates/inverts chiseled blocks, and sculpting wires/spades that remove/add cuboidal/ellipsoidal/cylindrical/conic/pyramidal areas of bits from chiseled/chiselable blocks.",
-  "version": "1.8.9-2.0.1",
+  "version": "1.8.9-2.1.0",
   "mcversion": "1.8.9",
   "url": "http://minecraft.curseforge.com/projects/extra-bit-manipulation",
   "updateUrl": "",
