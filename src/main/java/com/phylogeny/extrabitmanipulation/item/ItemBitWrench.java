@@ -314,10 +314,6 @@ public class ItemBitWrench extends ItemBitToolBase
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 		String displayName = ("" + I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
 		+ " - " + MODE_TITLES[mode];
-		if (mode == 3)
-		{
-			displayName += " (WIP / Creative Only)";
-		}
 		return displayName;
 	}
 	
