@@ -161,7 +161,7 @@ public class RecipesExtraBitManipulation
 		if (useOreDictionary) return OreDictionary.doesOreNameExist(name);
 		return Item.getByNameOrId(name) != null;
 	}
-
+	
 	private static ItemStack getStack(Item item)
 	{
 		return new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE);

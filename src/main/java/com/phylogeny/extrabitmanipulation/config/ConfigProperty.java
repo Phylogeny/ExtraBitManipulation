@@ -13,12 +13,12 @@ public class ConfigProperty extends ConfigNamed
 		this.takesDamageDefault = takesDamageDefault;
 		this.maxDamageDefault = maxDamageDefault;
 	}
-
+	
 	public boolean getTakesDamageDefault()
 	{
 		return takesDamageDefault;
 	}
-
+	
 	public int getMaxDamageDefault()
 	{
 		return maxDamageDefault;

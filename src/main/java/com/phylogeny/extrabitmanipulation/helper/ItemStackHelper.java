@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class ItemStackHelper
 {
+	
 	public static void saveStackToNBT(NBTTagCompound nbt, ItemStack stack, String key)
 	{
 		NBTTagCompound nbt2 = new NBTTagCompound();

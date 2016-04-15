@@ -324,7 +324,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 		return false;
 	}
-
+	
 	private float addPadding(float value)
 	{
 		return (value + Configs.semiDiameterPadding) * Utility.PIXEL_F;
@@ -339,7 +339,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	{
 		return Math.max(value1, value2) + Configs.semiDiameterPadding * Utility.PIXEL_F;
 	}
-
+	
 	public static boolean wasInsideClicked(EnumFacing dir, Vec3 hit, BlockPos pos)
 	{
 		if (hit != null)

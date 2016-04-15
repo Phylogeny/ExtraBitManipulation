@@ -49,7 +49,7 @@ public class ItemsExtraBitManipulation
 				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
 		GameRegistry.registerItem(DiamondNugget, ((ItemExtraBitManipulationBase) DiamondNugget).getName());
 	}
-
+	
 	private static void registerItemAndDefaultRecipe(Item item, String itemTitle, boolean isShapedDefault,
 			boolean oreDictionaryDefault, String... recipeDefault)
 	{

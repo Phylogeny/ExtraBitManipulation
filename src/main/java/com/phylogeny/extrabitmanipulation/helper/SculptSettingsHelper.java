@@ -538,7 +538,7 @@ public class SculptSettingsHelper
 	{
 		return "Targeting: " + (targetBitGrid ? "bit grid vertiecies" : "bits");
 	}
-
+	
 	public static String getSemiDiameterText(EntityPlayer player, NBTTagCompound nbt)
 	{
 		return getSemiDiameterText(player, nbt, getSemiDiameter(player, nbt));
@@ -594,7 +594,7 @@ public class SculptSettingsHelper
 	{
 		return getWallThicknessText(getWallThickness(player, nbt));
 	}
-
+	
 	public static String getWallThicknessText(int wallThickness)
 	{
 		return addBitLengthString(wallThickness, "Wall Thickness: ");
@@ -629,4 +629,5 @@ public class SculptSettingsHelper
 	{
 		return (intValue + (forward ? 1 : max - 1)) % max;
 	}
+	
 }

@@ -28,17 +28,17 @@ public class ConfigShapeRender extends ConfigNamed
 	{
 		return renderOuterShapeDefault;
 	}
-
+	
 	public boolean getRenderInnerShapeDefault()
 	{
 		return renderInnerShapeDefault;
 	}
-
+	
 	public int getOuterShapeAlphaDefault()
 	{
 		return outerShapeAlphaDefault;
 	}
-
+	
 	public int getInnerShapeAlphaDefault()
 	{
 		return innerShapeAlphaDefault;

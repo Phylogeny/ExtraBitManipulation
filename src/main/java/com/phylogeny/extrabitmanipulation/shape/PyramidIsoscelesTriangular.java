@@ -84,7 +84,7 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		insetMax2 = center2Inset + b;
 		insetMin2 = center2Inset - b;
 	}
-
+	
 	private Vec3 getInnerTriangularPyramidOffset(float centerY, float centerZ, float offsetCenter, float a, float b, float c, float wallThickness)
 	{
 		float s1 = c - offsetCenter;

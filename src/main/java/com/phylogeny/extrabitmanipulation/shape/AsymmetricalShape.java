@@ -39,7 +39,7 @@ public class AsymmetricalShape extends Shape
 	{
 		this.isEquilateral = isEquilateral;
 	}
-
+	
 	@Override
 	protected AxisAlignedBB getBoundingBox()
 	{
