@@ -180,10 +180,10 @@ public class Shape
 		float dx = v1 - center1;
 		float dz = v2 - az;
 		az = bcz - az;
-	    boolean dxz = (bx - center1) * dz - az * dx > 0;
-	    if(((cx - center1) * dz - az * dx > 0) == dxz) return false;
-	    if(((cx - bx) * (v2 - bcz) > 0) != dxz) return false;
-	    return true;
+		boolean dxz = (bx - center1) * dz - az * dx > 0;
+		if(((cx - center1) * dz - az * dx > 0) == dxz) return false;
+		if(((cx - bx) * (v2 - bcz) > 0) != dxz) return false;
+		return true;
 	}
 	
 }

@@ -220,12 +220,12 @@ public class BitStackHelper
 	private static void spawnStacksInShape(World world, BlockPos pos, Shape shape, ItemStack stack)
 	{
 		if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops") && !world.restoringBlockSnapshots)
-        {
+		{
 			Vec3 spawnPoint = shape.getRandomInternalPoint(world, pos);
 			EntityItem entityitem = new EntityItem(world, spawnPoint.xCoord, spawnPoint.yCoord - 0.25, spawnPoint.zCoord, stack);
-            entityitem.setDefaultPickupDelay();
-            world.spawnEntityInWorld(entityitem);
-        }
+			entityitem.setDefaultPickupDelay();
+			world.spawnEntityInWorld(entityitem);
+		}
 	}
 	
 	private static void setAllBits(IBitAccess bitAccess, IBitBrush bit)
