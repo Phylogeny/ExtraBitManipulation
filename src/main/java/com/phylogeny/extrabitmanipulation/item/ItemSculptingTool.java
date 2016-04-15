@@ -437,6 +437,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return api.canBeChiseled(world, pos) && (!removeBits || !world.isAirBlock(pos));
 	}
 	
+	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player)
     {
 		super.onCreated(stack, world, player);
