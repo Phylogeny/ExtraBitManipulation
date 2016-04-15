@@ -65,7 +65,7 @@ public class Prism extends Quadric
 		float height = radius * 2;
 		int i;
 		float x, y, z;
-		float inc = (float) (height / 15);
+		float inc = height / 15;
 		float ratio = (radius / height) * 4F;
 		float halfRadius = -radius * 0.5F;
 		GL11.glBegin(GL11.GL_LINES);

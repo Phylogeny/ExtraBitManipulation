@@ -79,10 +79,10 @@ public class Shape
 			int y = pos.getY();
 			int z = pos.getZ();
 			Block block = world.getBlockState(pos).getBlock();
-			AxisAlignedBB blockBounds = new AxisAlignedBB((double)pos.getX() + block.getBlockBoundsMinX(),
-					(double)pos.getY() + block.getBlockBoundsMinY(), (double)pos.getZ() + block.getBlockBoundsMinZ(),
-					(double)pos.getX() + block.getBlockBoundsMaxX(), (double)pos.getY() + block.getBlockBoundsMaxY(),
-					(double)pos.getZ() + block.getBlockBoundsMaxZ());
+			AxisAlignedBB blockBounds = new AxisAlignedBB(pos.getX() + block.getBlockBoundsMinX(),
+					pos.getY() + block.getBlockBoundsMinY(), pos.getZ() + block.getBlockBoundsMinZ(),
+					pos.getX() + block.getBlockBoundsMaxX(), pos.getY() + block.getBlockBoundsMaxY(),
+					pos.getZ() + block.getBlockBoundsMaxZ());
 			if (blockBounds.getAverageEdgeLength() == 0)
 			{
 				blockBounds = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
@@ -95,9 +95,9 @@ public class Shape
 				{
 					box = box.contract((box.maxX - box.minX) * s, (box.maxY - box.minY) * s, (box.maxZ - box.minZ) * s);
 				}
-				double d0 = (double)((world.rand.nextFloat() * (box.maxX - box.minX)) + box.minX);
-				double d1 = (double)((world.rand.nextFloat() * (box.maxY - box.minY)) + box.minY);
-				double d2 = (double)((world.rand.nextFloat() * (box.maxZ - box.minZ)) + box.minZ);
+				double d0 = world.rand.nextFloat() * (box.maxX - box.minX) + box.minX;
+				double d1 = world.rand.nextFloat() * (box.maxY - box.minY) + box.minY;
+				double d2 = world.rand.nextFloat() * (box.maxZ - box.minZ) + box.minZ;
 				return new Vec3(d0, d1, d2);
 			}
 		}

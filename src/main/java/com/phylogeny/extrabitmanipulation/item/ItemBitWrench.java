@@ -1,18 +1,25 @@
 package com.phylogeny.extrabitmanipulation.item;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.helper.BitStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.shape.Cube;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
+import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -47,7 +54,7 @@ public class ItemBitWrench extends ItemBitToolBase
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
-		if ((player.capabilities.isCreativeMode || mode != 3) && api.isBlockChiseled(world, pos))
+		if (api.isBlockChiseled(world, pos))
 		{
 			IBitAccess bitAccess;
 			try
@@ -66,8 +73,17 @@ public class ItemBitWrench extends ItemBitToolBase
 					? EnumFacing.UP : player.getHorizontalFacing()).getAxis())) : side.getOpposite()) : side).ordinal();
 			boolean canTranslate = true;
 			boolean canInvert = false;
-			IBitBrush invertbit = null;
+			int bitCountEmpty = 0;
+			int bitCountTake = 0;
+			IBitBrush invertBit = null;
+			ItemStack invertBitStack = null;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
+			boolean creativeMode = player.capabilities.isCreativeMode;
+			HashMap<IBlockState, Integer> inversionBitTypes = null;
+			if (mode == 3)
+			{
+				inversionBitTypes = new HashMap<IBlockState, Integer>();
+			}
 			for (int i = 0; i < 16; i++)
 			{
 				for (int j = 0; j < 16; j++)
@@ -76,9 +92,10 @@ public class ItemBitWrench extends ItemBitToolBase
 					{
 						IBitBrush bit = bitAccess.getBitAt(i, j, k);
 						bitArray[i][j][k] = bit;
+						boolean isAir = bit.isAir();
 						if (mode == 2)
 						{
-							if (!bit.isAir() && ((s == 4 && i == 16 - increment)
+							if (!isAir && ((s == 4 && i == 16 - increment)
 									|| (s == 0 && j == 16 - increment)
 									|| (s == 2 && k == 16 - increment)
 									|| (s == 5 && i == increment - 1)
@@ -87,7 +104,7 @@ public class ItemBitWrench extends ItemBitToolBase
 							{
 								canTranslate = false;
 							}
-							if (!bit.isAir())
+							if (!isAir)
 							{
 								if ((s == 4 && i < removalLayer) || (s == 5 && i > removalLayer))	
 								{
@@ -105,15 +122,63 @@ public class ItemBitWrench extends ItemBitToolBase
 						}
 						else if (mode == 3)
 						{
-							if (bit.isAir())
+							if (isAir)
 							{
 								canInvert = true;
+								bitCountEmpty++;
 							}
 							else
 							{
-								invertbit = bit;
+								invertBit = bit;
+								IBlockState state = bit.getState();
+					    		if (!inversionBitTypes.containsKey(state))
+								{
+					    			inversionBitTypes.put(state, 1);
+								}
+								else
+								{
+									inversionBitTypes.put(state, inversionBitTypes.get(state) + 1);
+								}
 							}
 						}
+					}
+				}
+			}
+			if (Configs.oneBitTypeInversionRequirement && inversionBitTypes != null && inversionBitTypes.size() > 1)
+			{
+				canInvert = false;
+			}
+			if (canInvert)
+			{
+				Integer max = Collections.max(inversionBitTypes.values());
+				for(Entry<IBlockState, Integer> entry : inversionBitTypes.entrySet())
+				{
+					if (entry.getValue() == max)
+					{
+						try
+						{
+							IBitBrush commonBit = api.createBrushFromState(entry.getKey());
+							invertBit = commonBit;
+						}
+						catch (InvalidBitItem e)
+						{
+							canInvert = false;
+						}
+						break;
+					}
+				}
+			}
+			if (!creativeMode && canInvert)
+			{
+				IBlockState invertBitState = invertBit.getState();
+				bitCountTake = bitCountEmpty - inversionBitTypes.get(invertBitState);
+				inversionBitTypes.put(invertBitState, Math.max(0, inversionBitTypes.get(invertBitState) - bitCountEmpty));
+				if (bitCountTake > 0)
+				{
+					invertBitStack = invertBit.getItemStack(1);
+					if (invertBitStack.getItem() == null || BitStackHelper.countInventoryBits(api, player, invertBitStack) < bitCountTake)
+					{
+						canInvert = false;
 					}
 				}
 			}
@@ -174,7 +239,7 @@ public class ItemBitWrench extends ItemBitToolBase
 											bit = null;
 										}
 										break;
-								case 3: bit = bit.isAir() ? invertbit : null;
+								case 3: bit = bit.isAir() ? invertBit : null;
 							}
 							try
 							{
@@ -199,6 +264,21 @@ public class ItemBitWrench extends ItemBitToolBase
 					{
 						player.renderBrokenItemStack(stack);
 					}
+				}
+				if (!creativeMode && !world.isRemote && canInvert)
+				{
+					if (bitCountTake > 0)
+					{
+						BitStackHelper.removeOrAddInventoryBits(api, player, invertBitStack, bitCountTake, false);
+					}
+					if (inversionBitTypes != null)
+					{
+						Cube cube = new Cube();
+						float f = 0.5F;
+						cube.init(pos.getX() + f, pos.getY() + f, pos.getZ() + f, f, 0, false, 0, false);
+						BitStackHelper.giveOrDropStacks(player, world, pos, cube, api, inversionBitTypes);
+					}
+					player.inventoryContainer.detectAndSendChanges();
 				}
 				return true;
 			}
@@ -232,10 +312,6 @@ public class ItemBitWrench extends ItemBitToolBase
 		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
 		String displayName = ("" + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
 		+ " - " + MODE_TITLES[mode];
-		if (mode == 3)
-		{
-			displayName += " (WIP / Creative Only)";
-		}
 		return displayName;
     }
 	

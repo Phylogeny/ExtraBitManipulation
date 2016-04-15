@@ -151,21 +151,15 @@ public class RecipesExtraBitManipulation
 		}
 		else
 		{
-			ItemStack itemStack = getStack((Item) Item.getByNameOrId(name));
+			ItemStack itemStack = getStack(Item.getByNameOrId(name));
 			if (isShaped || !ingredients.contains(itemStack)) ingredients.add(itemStack);
 		}
 	}
 	
 	private static boolean isValidName(boolean useOreDictionary, String name)
 	{
-		if (useOreDictionary)
-		{
-			return OreDictionary.doesOreNameExist(name);
-		}
-		else
-		{
-			return Item.getByNameOrId(name) != null;
-		}
+		if (useOreDictionary) return OreDictionary.doesOreNameExist(name);
+		return Item.getByNameOrId(name) != null;
 	}
 
 	private static ItemStack getStack(Item item)
