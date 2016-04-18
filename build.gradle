@@ -23,7 +23,7 @@ minecraft {
 }
 
 dependencies {
-    compile files ("lib/chiselsandbits-9.13-api.jar")
+    compile files ("lib/chiselsandbits-9.14-api.jar")
 }
 
 processResources
