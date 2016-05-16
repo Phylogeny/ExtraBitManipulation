@@ -423,7 +423,7 @@ public class ClientEventHandler
 					double playerZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * ticks;
 					EnumFacing dir = target.sideHit;
 					Tessellator t = Tessellator.getInstance();
-					VertexBuffer wr = t.getBuffer();
+					VertexBuffer vb = t.getBuffer();
 					BlockPos pos = target.getBlockPos();
 					int x = pos.getX();
 					int y = pos.getY();
@@ -511,11 +511,11 @@ public class ClientEventHandler
 						else if (mode == 2)
 						{
 							EnumFacing dir2 = side <= 1 ? EnumFacing.WEST : (side <= 3 ? EnumFacing.WEST : EnumFacing.DOWN);
-							box = contractBoxOrRenderArrows(true, t, wr, side, northSouth, dir2, box, invOffsetX,
+							box = contractBoxOrRenderArrows(true, t, vb, side, northSouth, dir2, box, invOffsetX,
 									invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
 						}
 						
-						renderTexturedSide(t, wr, side, northSouth, box, minU, maxU, minV, maxV, 1);
+						renderTexturedSide(t, vb, side, northSouth, box, minU, maxU, minV, maxV, 1);
 						GlStateManager.popMatrix();
 						
 						AxisAlignedBB box3 = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
@@ -634,10 +634,10 @@ public class ClientEventHandler
 								{
 									EnumFacing dir2 = side <= 1 ? (s == 2 || s == 3 ? EnumFacing.WEST : EnumFacing.DOWN)
 											: (side >= 4 ? EnumFacing.WEST : (s <= 1 ? EnumFacing.WEST : EnumFacing.DOWN));
-									box = contractBoxOrRenderArrows(oppRotation, t, wr, side, northSouth, dir2, box, invOffsetX,
+									box = contractBoxOrRenderArrows(oppRotation, t, vb, side, northSouth, dir2, box, invOffsetX,
 											invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
 								}
-								if (mode2 != 2 || oppRotation) renderTexturedSide(t, wr, s, northSouth, box, minU, maxU, minV, maxV, 1);
+								if (mode2 != 2 || oppRotation) renderTexturedSide(t, vb, s, northSouth, box, minU, maxU, minV, maxV, 1);
 								GlStateManager.popMatrix();
 							}
 						}
