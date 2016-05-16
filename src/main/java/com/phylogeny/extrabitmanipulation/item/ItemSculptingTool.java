@@ -285,7 +285,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 							{
 								if (possibleUses > 0)
 								{
-									possibleUses = sculptBlock(api, stack, player, world, new BlockPos(i, j, k), shape, bitTypes,
+									possibleUses = sculptBlock(api, player, world, new BlockPos(i, j, k), shape, bitTypes,
 											possibleUses, Configs.dropBitsPerBlock, setBit);
 								}
 							}
@@ -366,7 +366,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return false;
 	}
 	
-	private int sculptBlock(IChiselAndBitsAPI api, ItemStack stack, EntityPlayer player, World world, BlockPos pos, Shape shape,
+	private int sculptBlock(IChiselAndBitsAPI api, EntityPlayer player, World world, BlockPos pos, Shape shape,
 			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush setBit)
 	{
 		if (isValidBlock(api, world, pos))
