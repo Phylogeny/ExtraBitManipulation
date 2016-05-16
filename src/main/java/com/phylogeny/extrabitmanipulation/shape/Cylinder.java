@@ -20,8 +20,8 @@ public class Cylinder extends SymmetricalShape
 	{
 		float y = getBitPosY(pos, i, j, k);
 		if (isPointOffLine(y, centerY, semiDiameter)) return false;
-		float dx = getBitPosDiffX(pos, i, j, k, centerX);
-		float dz = getBitPosDiffZ(pos, i, j, k, centerZ);
+		float dx = getBitPosDiffX(pos, i, j, centerX);
+		float dz = getBitPosDiffZ(pos, j, k, centerZ);
 		float dist = dx * dx + dz * dz;
 		boolean inShape = isPointInCircle(diameterSq, dist);
 		return sculptHollowShape ? inShape && !(isPointInCircle(diameterInsetSq, dist)

@@ -8,9 +8,9 @@ public class Ellipsoid extends AsymmetricalShape
 	@Override
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
-		float dx = getBitPosDiffX(pos, i, j, k, centerX);
+		float dx = getBitPosDiffX(pos, i, j, centerX);
 		float dy = getBitPosDiffY(pos, i, j, k, centerY);
-		float dz = getBitPosDiffZ(pos, i, j, k, centerZ);
+		float dz = getBitPosDiffZ(pos, j, k, centerZ);
 		boolean inShape = isPointInsideisEllipsoid(dx, dy, dz, a, b, c);
 		return sculptHollowShape ? inShape && !isPointInsideisEllipsoid(dx, dy, dz, aInset, bInset, cInset) : inShape;
 	}
