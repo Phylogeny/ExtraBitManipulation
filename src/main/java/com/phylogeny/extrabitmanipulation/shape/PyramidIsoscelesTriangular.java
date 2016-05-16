@@ -137,12 +137,9 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 			return sculptHollowShape ? inShape && !(isPointInPyramid(y, z, x, center1Inset, center2Inset)
 					&& !isPointOffLine(y)) : inShape;
 		}
-		else
-		{
-			boolean inShape = isPointInPyramid(y, x, z, centerZ, centerY);
-			return sculptHollowShape ? inShape && !(isPointInPyramid(y, x, z, center1Inset, center2Inset)
-					&& !isPointOffLine(y)) : inShape;
-		}
+		boolean inShape = isPointInPyramid(y, x, z, centerZ, centerY);
+		return sculptHollowShape ? inShape && !(isPointInPyramid(y, x, z, center1Inset, center2Inset)
+				&& !isPointOffLine(y)) : inShape;
 	}
 	
 	protected boolean isPointInPyramid(float val, float v1, float v2, float center1, float center2)
@@ -157,12 +154,9 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 			float center = center1 + (inverted ? (offsetCenter * (1 + (s3 / a))) : (-offsetCenter * (1 - (s3 / a))));
 			return isPointInTriangle(v1, v2, centerZ, center, s2, isFlipped ? -s1 : s1);
 		}
-		else
-		{
-			float s3 = ((dy + (inverted ? -cInset2 : cInset2)) * c) / height;
-			float center = center1 + (inverted ? (offsetCenter * (1 + (s3 / c))) : (-offsetCenter * (1 - (s3 / c))));
-			return isPointInTriangle(v1, v2, centerX, center, s1, isFlipped ? -s2 : s2);
-		}
+		float s3 = ((dy + (inverted ? -cInset2 : cInset2)) * c) / height;
+		float center = center1 + (inverted ? (offsetCenter * (1 + (s3 / c))) : (-offsetCenter * (1 - (s3 / c))));
+		return isPointInTriangle(v1, v2, centerX, center, s1, isFlipped ? -s2 : s2);
 	}
 	
 	protected boolean isPointOffLine(float val)
