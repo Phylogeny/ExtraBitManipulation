@@ -4,12 +4,14 @@ import java.io.File;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
@@ -263,7 +265,7 @@ public class ConfigHandlerExtraBitManipulation
 		}
 		catch (Exception e)
 		{
-			System.out.println(Reference.MOD_NAME + " configurations failed to update.");
+			FMLLog.log(Reference.MOD_NAME, Level.ERROR, " configurations failed to update.");
 			e.printStackTrace();
 		}
 		finally
@@ -468,8 +470,8 @@ public class ConfigHandlerExtraBitManipulation
 		}
 		catch (Exception e)
 		{
-		System.out.println("The " + Reference.MOD_NAME + " configuration '" + name
-				+ "' could not be parsed to a double. Default value of " + defaultValue + " was restored and used instead.");
+			FMLLog.log(Reference.MOD_NAME, Level.ERROR, "Configuration '"
+					+ name + "' could not be parsed to a double. Default value of " + defaultValue + " was restored and used instead.");
 		}
 		return defaultValue;
 	}
