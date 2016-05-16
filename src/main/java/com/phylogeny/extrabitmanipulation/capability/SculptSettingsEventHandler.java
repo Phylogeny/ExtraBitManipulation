@@ -16,9 +16,12 @@ public class SculptSettingsEventHandler
 {
 	
 	@SubscribeEvent
-	public void onEntityConstruct(AttachCapabilitiesEvent event)
+	public void onEntityConstruct(AttachCapabilitiesEvent.Entity event)
 	{
-		event.addCapability(new ResourceLocation(Reference.MOD_ID, "SculptSettingsHandler"), new SculptSettingsHandler());
+		if (event.getEntity() instanceof EntityPlayer)
+		{
+			event.addCapability(new ResourceLocation(Reference.MOD_ID, "SculptSettingsHandler"), new SculptSettingsHandler());
+		}
 	}
 	
 	@SubscribeEvent
