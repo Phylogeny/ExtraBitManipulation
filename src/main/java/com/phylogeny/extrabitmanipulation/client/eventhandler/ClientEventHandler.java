@@ -35,6 +35,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -53,6 +54,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientEventHandler
@@ -71,6 +73,22 @@ public class ClientEventHandler
 	private static final int[] SHAPE_CURVED = new int[]{1, 2, 0, 0, 0, 0, 0};
 //	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 4, 5, 6, 3};
 	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 6, 3, 3, 3};
+	
+	@SubscribeEvent
+	public void registerTextures(TextureStitchEvent.Pre event)
+	{
+		registerTexture(ARROW_HEAD);
+		registerTexture(ARROW_BIDIRECTIONAL);
+		registerTexture(ARROW_CYCLICAL);
+		registerTexture(CIRCLE);
+		registerTexture(INVERSION);
+	}
+	
+	private void registerTexture(ResourceLocation resourceLocation)
+	{
+		SimpleTexture texture = new SimpleTexture(resourceLocation);
+	    Minecraft.getMinecraft().renderEngine.loadTexture(resourceLocation, texture);
+	}
 	
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
