@@ -129,8 +129,8 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 	{
 		float y = getBitPosY(pos, i, j, k);
 		if (isPointOffLine(y, centerY, b)) return false;
-		float x = getBitPosX(pos, i, j, k);
-		float z = getBitPosZ(pos, i, j, k);
+		float x = getBitPosX(pos, i, j);
+		float z = getBitPosZ(pos, j, k);
 		if (isTwisted)
 		{
 			boolean inShape = isPointInPyramid(y, z, x, centerX, centerY);

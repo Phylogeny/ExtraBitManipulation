@@ -10,8 +10,8 @@ public class PyramidSquare extends SlopedSymmetricalShape
 	{
 		float y = getBitPosY(pos, i, j, k);
 		if (isPointOffLine(y, centerY, semiDiameter)) return false;
-		float dx = getBitPosDiffX(pos, i, j, k, centerX);
-		float dz = getBitPosDiffZ(pos, i, j, k, centerZ);
+		float dx = getBitPosDiffX(pos, i, j, centerX);
+		float dz = getBitPosDiffZ(pos, j, k, centerZ);
 		boolean inShape = isPointInPyramid(y, semiDiameter, dx, dz);
 		return sculptHollowShape ? inShape && !(isPointInPyramid(y, semiDiameterInset2, dx, dz)
 				&& !isPointOffLine(y)) : inShape;

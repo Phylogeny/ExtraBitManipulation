@@ -131,9 +131,9 @@ public class Shape
 		return Utility.PIXEL_F < value ? value - wallThickness : 0.0000000001F;
 	}
 	
-	protected float getBitPosDiffX(BlockPos pos, int x, int y, int z, float center)
+	protected float getBitPosDiffX(BlockPos pos, int x, int y, float center)
 	{
-		return getBitPosX(pos, x, y, z) - center;
+		return getBitPosX(pos, x, y) - center;
 	}
 	
 	protected float getBitPosDiffY(BlockPos pos, int x, int y, int z, float center)
@@ -141,12 +141,12 @@ public class Shape
 		return getBitPosY(pos, x, y, z) - center;
 	}
 	
-	protected float getBitPosDiffZ(BlockPos pos, int x, int y, int z, float center)
+	protected float getBitPosDiffZ(BlockPos pos, int y, int z, float center)
 	{
-		return getBitPosZ(pos, x, y, z) - center;
+		return getBitPosZ(pos, y, z) - center;
 	}
 	
-	protected float getBitPosX(BlockPos pos, int x, int y, int z)
+	protected float getBitPosX(BlockPos pos, int x, int y)
 	{
 		return (direction > 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getX() + x * Utility.PIXEL_F);
 	}
@@ -156,7 +156,7 @@ public class Shape
 		return (direction < 2 ? pos.getY() + y * Utility.PIXEL_F : (direction > 3 ? pos.getX() + x * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F));
 	}
 	
-	protected float getBitPosZ(BlockPos pos, int x, int y, int z)
+	protected float getBitPosZ(BlockPos pos, int y, int z)
 	{
 		return (direction == 2 || direction == 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F);
 	}

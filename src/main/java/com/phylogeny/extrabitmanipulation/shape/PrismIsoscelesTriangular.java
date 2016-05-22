@@ -38,18 +38,18 @@ public class PrismIsoscelesTriangular extends AsymmetricalShape
 	{
 		if (isTwisted)
 		{
-			float z = getBitPosZ(pos, i, j, k);
+			float z = getBitPosZ(pos, j, k);
 			if (isPointOffLine(z, centerZ, c)) return false;
-			float x = getBitPosX(pos, i, j, k);
+			float x = getBitPosX(pos, i, j);
 			float y = getBitPosY(pos, i, j, k);
 			boolean inShape = isPointInTriangle(x, y, centerX, centerY, a, b);
 			return sculptHollowShape ? inShape && !((inverted ? y <= centerY + bInset : y >= centerY - bInset)
 					&& isPointInTriangle(x, y, centerX, offsetCenter, a, b)
 					&& (openEnds || !isPointOffLine(z, centerZ, cInset))) : inShape;
 		}
-		float x = getBitPosX(pos, i, j, k);
+		float x = getBitPosX(pos, i, j);
 		if (isPointOffLine(x, centerX, a)) return false;
-		float z = getBitPosZ(pos, i, j, k);
+		float z = getBitPosZ(pos, j, k);
 		float y = getBitPosY(pos, i, j, k);
 		boolean inShape = isPointInTriangle(z, y, centerZ, centerY, c, b);
 		return sculptHollowShape ? inShape && !((inverted ? y <= centerY + bInset : y >= centerY - bInset)
