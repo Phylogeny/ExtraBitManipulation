@@ -323,7 +323,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					changed = possibleUses < initialpossibleUses;
 					if (changed)
 					{
-						SoundType sound = Blocks.stone.getStepSound();
+						SoundType sound = Blocks.STONE.getSoundType();
 						world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS,
 								(sound.getVolume()) / 8.0F, sound.getPitch() * 0.8F);
 					}
