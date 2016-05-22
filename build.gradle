@@ -12,7 +12,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.9-2.1.1"
+version = "1.9-2.1.2"
 group= "com.phylogeny.ExtraBitManipulation"
 archivesBaseName = "ExtraBitManipulation"
 
