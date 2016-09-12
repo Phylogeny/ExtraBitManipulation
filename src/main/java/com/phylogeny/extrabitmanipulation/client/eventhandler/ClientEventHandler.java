@@ -804,16 +804,14 @@ public class ClientEventHandler
 									double f = 0.0020000000949949026;
 									if (configBox.renderOuterShape)
 									{
-										GlStateManager.color(configBox.red, configBox.green,
-												configBox.blue, configBox.outerShapeAlpha);
-										RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+										RenderGlobal.func_189697_a(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ),
+												configBox.red, configBox.green, configBox.blue, configBox.outerShapeAlpha);
 									}
 									if (configBox.renderInnerShape)
 									{
-										GlStateManager.color(configBox.red, configBox.green,
-												configBox.blue, configBox.innerShapeAlpha);
 										GlStateManager.depthFunc(GL11.GL_GREATER);
-										RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
+										RenderGlobal.func_189697_a(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ),
+												configBox.red, configBox.green, configBox.blue, configBox.innerShapeAlpha);
 										GlStateManager.depthFunc(GL11.GL_LEQUAL);
 									}
 									GlStateManager.popMatrix();
