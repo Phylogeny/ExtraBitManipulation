@@ -12,9 +12,8 @@ public class ItemStackHelper
 	{
 		NBTTagCompound nbt2 = new NBTTagCompound();
 		if (stack != null)
-		{
 			stack.writeToNBT(nbt2);
-		}
+		
 		nbt.setTag(key, nbt2);
 	}
 	
@@ -22,9 +21,8 @@ public class ItemStackHelper
 	{
 		ItemStack stack = null;
 		if (nbt.hasKey(key))
-		{
 			stack = ItemStack.loadItemStackFromNBT((NBTTagCompound) nbt.getTag(key));
-		}
+		
 		return stack;
 	}
 	
@@ -32,7 +30,8 @@ public class ItemStackHelper
 	{
 		boolean notNull = bitStack != null;
 		buffer.writeBoolean(notNull);
-		if (notNull) ByteBufUtils.writeItemStack(buffer, bitStack);
+		if (notNull)
+			ByteBufUtils.writeItemStack(buffer, bitStack);
 	}
 	
 	public static ItemStack stackFromBytes(ByteBuf buffer)

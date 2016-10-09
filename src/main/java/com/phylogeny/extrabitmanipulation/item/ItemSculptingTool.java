@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBase;
+import com.phylogeny.extrabitmanipulation.helper.BitHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -116,12 +117,14 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	private void initInt(NBTTagCompound nbt, String nbtKey, int initInt)
 	{
-		if (!nbt.hasKey(nbtKey)) nbt.setInteger(nbtKey, initInt);
+		if (!nbt.hasKey(nbtKey))
+			nbt.setInteger(nbtKey, initInt);
 	}
 	
 	private void initBoolean(NBTTagCompound nbt, String nbtKey, boolean initBoolean)
 	{
-		if (!nbt.hasKey(nbtKey)) nbt.setBoolean(nbtKey, initBoolean);
+		if (!nbt.hasKey(nbtKey))
+			nbt.setBoolean(nbtKey, initBoolean);
 	}
 	
 	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
@@ -131,9 +134,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		boolean inside = wasInsideClicked(side, hit, pos);
 		if (!removeBits && !inside)
-		{
 			pos = pos.offset(side);
-		}
+		
 		NBTTagCompound nbt = stack.getTagCompound();
 		boolean globalMode = SculptSettingsHelper.getMode(player, nbt) == 1;
 		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
@@ -161,7 +163,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 				AxisAlignedBB box;
 				int shapeType = SculptSettingsHelper.getShapeType(player, nbt, curved);
 				int direction = SculptSettingsHelper.getDirection(player, nbt);
-				if (shapeType != 4 && shapeType != 5) direction %= 6;
+				if (shapeType != 4 && shapeType != 5)
+					direction %= 6;
+				
 				boolean sculptHollowShape = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 				float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 				boolean openEnds = SculptSettingsHelper.areEndsOpen(player, nbt);
@@ -255,7 +259,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
 				HashMap<IBlockState, Integer> bitTypes = null;
-				if (removeBits && !world.isRemote && !creativeMode) bitTypes = new HashMap<IBlockState, Integer>();
+				if (removeBits && !world.isRemote && !creativeMode)
+					bitTypes = new HashMap<IBlockState, Integer>();
+				
 				int initialpossibleUses = Integer.MAX_VALUE;
 				ItemStack setBitStack = SculptSettingsHelper.getBitStack(player, nbt, removeBits);
 				IBitBrush setBit = null;
@@ -263,13 +269,13 @@ public class ItemSculptingTool extends ItemBitToolBase
 				{
 					setBit = api.createBrush(setBitStack);
 					if (!removeBits && !creativeMode)
-					{
-						initialpossibleUses = BitStackHelper.countInventoryBits(api, player, setBitStack);
-					}
+						initialpossibleUses = BitHelper.countInventoryBits(api, player, setBitStack);
 				}
 				catch (InvalidBitItem e) {}
 				int remainingUses = nbt.getInteger(NBTKeys.REMAINING_USES);
-				if (!creativeMode && initialpossibleUses > remainingUses) initialpossibleUses = remainingUses;
+				if (!creativeMode && initialpossibleUses > remainingUses)
+					initialpossibleUses = remainingUses;
+				
 				int possibleUses = initialpossibleUses;
 				api.beginUndoGroup(player);
 				for (int i = (int) box.minX; i <= box.maxX; i++)
@@ -279,18 +285,15 @@ public class ItemSculptingTool extends ItemBitToolBase
 						for (int k = (int) box.minZ; k <= box.maxZ; k++)
 						{
 							if (possibleUses > 0)
-							{
 								possibleUses = sculptBlock(api, player, world, new BlockPos(i, j, k), shape, bitTypes,
 										possibleUses, Configs.dropBitsPerBlock, setBit);
-							}
 						}
 					}
 				}
 				api.endUndoGroup(player);
 				if (!Configs.dropBitsPerBlock)
-				{
 					BitStackHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
-				}
+				
 				int change = initialpossibleUses - possibleUses;
 				ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
 				int newRemainingUses = remainingUses - (config.takesDamage ? change : 0);
@@ -298,9 +301,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				{
 					nbt.setInteger(NBTKeys.REMAINING_USES, newRemainingUses);
 					if (!removeBits)
-					{
 						BitStackHelper.removeOrAddInventoryBits(api, player, setBitStack, change, false);
-					}
+					
 					if (newRemainingUses <= 0)
 					{
 						player.renderBrokenItemStack(stack);
@@ -309,9 +311,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 					player.inventoryContainer.detectAndSendChanges();
 				}
 				if (!creativeMode && newRemainingUses <= 0)
-				{
 					player.renderBrokenItemStack(stack);
-				}
+				
 				boolean changed = possibleUses < initialpossibleUses;
 				if (changed)
 				{
@@ -412,13 +413,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 			}
 			if (dropsPerBlock)
-			{
-				BitStackHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
-			}
+				BitHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
+			
 			if (remainingUses < initialRemainingUses)
-			{
 				bitAccess.commitChanges(true);
-			}
 		}
 		return remainingUses;
 	}
@@ -455,9 +453,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 		NBTTagCompound nbt = stack.getTagCompound();
 		int mode = SculptSettingsHelper.getMode(player, nbt);
 		if (shiftDown)
-		{
 			tooltip.add(colorSculptSettingText(SculptSettingsHelper.getModeText(mode), Configs.sculptMode));
-		}
+		
 		ItemStack setBitStack = SculptSettingsHelper.getBitStack(player, nbt, removeBits);
 		if (!ctrlDown || shiftDown)
 		{
@@ -473,9 +470,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				bitType += unspecifiedBit;
 			}
 			if (shiftDown)
-			{
 				bitType = colorSculptSettingText(bitType, removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade);
-			}
+			
 			tooltip.add(bitType);
 		}
 		if (shiftDown)
@@ -501,9 +497,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				String removeAddText = removeBits ? "remove" : "add";
 				String toFromText = removeBits ? "from" : "to";
 				if (!removeBits)
-				{
 					tooltip.add("Shift left click bit to set bit type.");
-				}
+				
 				if (mode == 2)
 				{
 					tooltip.add("Left click point on block, drag");
@@ -514,7 +509,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 				else
 				{
 					String shapeControlText = "Left click block to " + removeAddText + " bits";
-					if (mode == 0) shapeControlText += ".";
+					if (mode == 0)
+						shapeControlText += ".";
+					
 					tooltip.add(shapeControlText);
 					if (mode != 0)
 					{

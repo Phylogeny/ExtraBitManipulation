@@ -7,8 +7,7 @@ public class ConfigRecipe extends ConfigNamed
 	private boolean isEnabledDefault, isShapedDefault, useOreDictionaryDefault;
 	private String[] recipeDefault;
 	
-	public ConfigRecipe(String itemTitle, boolean isEnabledDefault, boolean isShapedDefault,
-			boolean useOreDictionaryDefault, String... recipeDefault)
+	public ConfigRecipe(String itemTitle, boolean isEnabledDefault, boolean isShapedDefault, boolean useOreDictionaryDefault, String... recipeDefault)
 	{
 		super(itemTitle);
 		this.isEnabledDefault = isEnabledDefault;

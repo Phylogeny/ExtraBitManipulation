@@ -14,8 +14,10 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 public class ProxyClient extends ProxyCommon
 {
 	
-	public void registerRenderInformation()
+	@Override
+	public void init()
 	{
+		super.init();
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 		register(ItemsExtraBitManipulation.DiamondNugget);
 		register(ItemsExtraBitManipulation.BitWrench);
@@ -23,6 +25,7 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.SculptingSquare);
 		register(ItemsExtraBitManipulation.SculptingSpadeCurved);
 		register(ItemsExtraBitManipulation.SculptingSpadeSquared);
+		register(ItemsExtraBitManipulation.ModelMaker);
 		register(ItemsExtraBitManipulation.BitWrenchHead);
 		register(ItemsExtraBitManipulation.SculptingLoopHead);
 		register(ItemsExtraBitManipulation.SculptingSquareHead);

@@ -17,8 +17,7 @@ public class Cuboid extends AsymmetricalShape
 	
 	private boolean isPointInsideisCuboid(float x, float y, float z, float a, float b, float c)
 	{
-		return x <= centerX + a && x >= centerX - a && y <= centerY + b
-				&& y >= centerY - b && z <= centerZ + c && z >= centerZ - c;
+		return x <= centerX + a && x >= centerX - a && y <= centerY + b && y >= centerY - b && z <= centerZ + c && z >= centerZ - c;
 	}
 	
 }

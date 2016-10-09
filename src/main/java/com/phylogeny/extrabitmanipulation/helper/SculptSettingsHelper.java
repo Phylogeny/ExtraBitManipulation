@@ -3,8 +3,8 @@ package com.phylogeny.extrabitmanipulation.helper;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingInt;
-import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBitStack;
 import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
@@ -31,7 +31,9 @@ public class SculptSettingsHelper
 	
 	public static NBTTagCompound initNBT(ItemStack stack)
 	{
-		if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+		if (!stack.hasTagCompound())
+			stack.setTagCompound(new NBTTagCompound());
+		
 		NBTTagCompound nbt = stack.getTagCompound();
 		return nbt;
 	}
@@ -39,9 +41,8 @@ public class SculptSettingsHelper
 	private static int getInt(NBTTagCompound nbt, int intValue, String key)
 	{
 		if (nbt != null && nbt.hasKey(key))
-		{
 			intValue = nbt.getInteger(key);
-		}
+		
 		return intValue;
 	}
 	
@@ -55,9 +56,8 @@ public class SculptSettingsHelper
 	private static boolean getBoolean(NBTTagCompound nbt, boolean booleanValue, String key)
 	{
 		if (nbt != null && nbt.hasKey(key))
-		{
 			booleanValue = nbt.getBoolean(key);
-		}
+		
 		return booleanValue;
 	}
 	
@@ -71,9 +71,8 @@ public class SculptSettingsHelper
 	private static ItemStack getStack(NBTTagCompound nbt, ItemStack stackToGet, String key)
 	{
 		if (nbt != null && nbt.hasKey(key))
-		{
 			stackToGet = ItemStackHelper.loadStackFromNBT(nbt, key);
-		}
+		
 		return stackToGet;
 	}
 	
@@ -95,9 +94,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				mode = sculptProp.mode;
-			}
 		}
 		return mode;
 	}
@@ -108,22 +105,16 @@ public class SculptSettingsHelper
 		if (Configs.sculptMode.isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setInt(player, stack, mode, NBTKeys.MODE);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				sculptProp.mode = mode;
-			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetMode(mode));
-		}
 	}
 	
 	public static int getDirection(EntityPlayer player, NBTTagCompound nbt)
@@ -137,9 +128,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				direction = sculptProp.direction;
-			}
 		}
 		return direction;
 	}
@@ -150,22 +139,16 @@ public class SculptSettingsHelper
 		if (Configs.sculptDirection.isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setInt(player, stack, direction, NBTKeys.DIRECTION);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				sculptProp.direction = direction;
-			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetDirection(direction));
-		}
 	}
 	
 	public static int getShapeType(EntityPlayer player, NBTTagCompound nbt, boolean isCurved)
@@ -180,9 +163,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				shapeType = isCurved ? sculptProp.shapeTypeCurved : sculptProp.shapeTypeFlat;
-			}
 		}
 		return isCurved && shapeType > 2 ? Configs.sculptShapeTypeCurved.getDefaultValue()
 				: (!isCurved && shapeType < 3 ? Configs.sculptShapeTypeFlat.getDefaultValue() : shapeType);
@@ -194,9 +175,7 @@ public class SculptSettingsHelper
 		if ((isCurved ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat).isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setInt(player, stack, shapeType, NBTKeys.SHAPE_TYPE);
-			}
 		}
 		else
 		{
@@ -214,9 +193,7 @@ public class SculptSettingsHelper
 			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetShapeType(isCurved, shapeType));
-		}
 	}
 	
 	public static boolean isBitGridTargeted(EntityPlayer player, NBTTagCompound nbt)
@@ -230,9 +207,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				targetBitGridVertexes = sculptProp.targetBitGridVertexes;
-			}
 		}
 		return targetBitGridVertexes;
 	}
@@ -243,22 +218,16 @@ public class SculptSettingsHelper
 		if (Configs.sculptTargetBitGridVertexes.isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setBoolean(player, stack, targetBitGridVertexes, NBTKeys.TARGET_BIT_GRID_VERTEXES);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				sculptProp.targetBitGridVertexes = targetBitGridVertexes;
-			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetTargetBitGridVertexes(targetBitGridVertexes));
-		}
 	}
 	
 	public static int getSemiDiameter(EntityPlayer player, NBTTagCompound nbt)
@@ -267,17 +236,13 @@ public class SculptSettingsHelper
 		if (Configs.sculptSemiDiameter.isPerTool())
 		{
 			if (nbt != null && nbt.hasKey(NBTKeys.SCULPT_SEMI_DIAMETER))
-			{
 				semiDiameter = nbt.getInteger(NBTKeys.SCULPT_SEMI_DIAMETER);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				semiDiameter = sculptProp.sculptSemiDiameter;
-			}
 		}
 		return semiDiameter;
 	}
@@ -288,22 +253,16 @@ public class SculptSettingsHelper
 		if (Configs.sculptSemiDiameter.isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setInt(player, stack, semiDiameter, NBTKeys.SCULPT_SEMI_DIAMETER);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				sculptProp.sculptSemiDiameter = semiDiameter;
-			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetSemiDiameter(semiDiameter));
-		}
 	}
 	
 	public static boolean isHollowShape(EntityPlayer player, NBTTagCompound nbt, boolean isWire)
@@ -318,9 +277,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				hollowShape = isWire ? sculptProp.sculptHollowShapeWire : sculptProp.sculptHollowShapeSpade;
-			}
 		}
 		return hollowShape;
 	}
@@ -331,9 +288,7 @@ public class SculptSettingsHelper
 		if ((isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setBoolean(player, stack, hollowShape, NBTKeys.SCULPT_HOLLOW_SHAPE);
-			}
 		}
 		else
 		{
@@ -351,9 +306,7 @@ public class SculptSettingsHelper
 			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetHollowShape(hollowShape, isWire));
-		}
 	}
 	
 	public static boolean areEndsOpen(EntityPlayer player, NBTTagCompound nbt)
@@ -367,9 +320,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				openEnds = sculptProp.openEnds;
-			}
 		}
 		return openEnds;
 	}
@@ -380,22 +331,16 @@ public class SculptSettingsHelper
 		if (Configs.sculptOpenEnds.isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setBoolean(player, stack, openEnds, NBTKeys.OPEN_ENDS);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				sculptProp.openEnds = openEnds;
-			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetEndsOpen(openEnds));
-		}
 	}
 	
 	public static int getWallThickness(EntityPlayer player, NBTTagCompound nbt)
@@ -409,9 +354,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				wallThickness = sculptProp.wallThickness;
-			}
 		}
 		return wallThickness;
 	}
@@ -422,27 +365,21 @@ public class SculptSettingsHelper
 		if (Configs.sculptWallThickness.isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setInt(player, stack, wallThickness, NBTKeys.WALL_THICKNESS);
-			}
 		}
 		else
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				sculptProp.wallThickness = wallThickness;
-			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetWallThickness(wallThickness));
-		}
 	}
 	
 	public static ItemStack getBitStack(EntityPlayer player, NBTTagCompound nbt, boolean isWire)
 	{
-		ConfigSculptSettingBitStack bitStackConfig = isWire ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade;
+		ConfigBitStack bitStackConfig = isWire ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade;
 		ItemStack bitStack = bitStackConfig.getDefaultValue();
 		if (bitStackConfig.isPerTool())
 		{
@@ -452,9 +389,7 @@ public class SculptSettingsHelper
 		{
 			SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
 			if (sculptProp != null)
-			{
 				bitStack = isWire ? sculptProp.setBitWire : sculptProp.setBitSpade;
-			}
 		}
 		return bitStack;
 	}
@@ -465,9 +400,7 @@ public class SculptSettingsHelper
 		if ((isWire ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).isPerTool())
 		{
 			if (!world.isRemote)
-			{
 				setStack(player, stack, bitStack, NBTKeys.SET_BIT);
-			}
 		}
 		else
 		{
@@ -485,9 +418,7 @@ public class SculptSettingsHelper
 			}
 		}
 		if (world.isRemote)
-		{
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetBitStack(isWire, bitStack));
-		}
 	}
 	
 	public static String getModeText(EntityPlayer player, NBTTagCompound nbt)
@@ -512,9 +443,7 @@ public class SculptSettingsHelper
 		{
 			int rotation = direction / 6;
 			if (rotation > 0)
-			{
 				text += " (rotation " +  (rotation * 90) + "\u00B0)";
-			}
 		}
 		return text;
 	}
@@ -552,12 +481,15 @@ public class SculptSettingsHelper
 		if (Configs.displayNameDiameter)
 		{
 			size = size * 2;
-			if (!targetBitGrid) size += 1;
+			if (!targetBitGrid)
+				size += 1;
+			
 			diameterText = diameterText.substring(5);
 		}
 		else
 		{
-			if (!targetBitGrid) size += 0.5;
+			if (!targetBitGrid)
+				size += 0.5;
 		}
 		if (Configs.displayNameUseMeterUnits)
 		{
@@ -606,9 +538,12 @@ public class SculptSettingsHelper
 		{
 			int size2 = ((int) size / 16);
 			diameterText += size2 + " meter";
-			if (size2 > 1) diameterText += "s";
+			if (size2 > 1)
+				diameterText += "s";
+			
 			size %= 16;
-			if (size > 0) diameterText += " & ";
+			if (size > 0)
+				diameterText += " & ";
 		}
 		if (size > 0)
 		{

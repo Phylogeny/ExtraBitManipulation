@@ -48,9 +48,7 @@ public class PacketCycleBitWrenchMode implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (stack != null && stack.getItem() instanceof ItemBitWrench)
-					{
 						((ItemBitWrench) stack.getItem()).cycleModes(stack, message.forward);
-					}
 				}
 			});
 			return null;

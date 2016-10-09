@@ -19,7 +19,9 @@ public class Cylinder extends SymmetricalShape
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		float y = getBitPosY(pos, i, j, k);
-		if (isPointOffLine(y, centerY, semiDiameter)) return false;
+		if (isPointOffLine(y, centerY, semiDiameter))
+			return false;
+		
 		float dx = getBitPosDiffX(pos, i, j, centerX);
 		float dz = getBitPosDiffZ(pos, j, k, centerZ);
 		float dist = dx * dx + dz * dz;

@@ -29,9 +29,27 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	private static List<IConfigElement> getConfigElements()
 	{
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
-		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.TOOL_SETTINGS,
-				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, and the way bit removal/addition " +
-				"areas are displayed. (applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)", configElements);
+		
+		List<IConfigElement> configElementsModelMaker = new ArrayList<IConfigElement>();
+		List<IConfigElement> configElementsTooSettings = new ArrayList<IConfigElement>();
+		String textReplacementBits = "Configures the procedures for finding replacement bits ";
+		String textUnchiselable = "when a blockstate is unchiselable";
+		String textInsufficient = "when the player has insufficient bits for a chiselable blockstate";
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.UNCHISELABLE_BLOCK_STATES,
+				textReplacementBits + textUnchiselable, configElementsModelMaker);
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.INSUFFICIENT_BITS,
+				textReplacementBits + textInsufficient, configElementsModelMaker);
+		addElementsToDummyElement("Model Maker Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
+				configElementsTooSettings, configElementsModelMaker);
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_WRENCH_SETTINGS,
+				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, " +
+				"and the way bit removal/addition areas are displayed. (applies to all sculpting tools -- see 'Item Properties' " +
+				"menu for item-specific settings)", configElementsTooSettings);
+		addElementsToDummyElement("Tool Settings", "Configures sculpting dimensions, wrench inversion mode, the way bits are " +
+				"handled when removed from the world, and the way bit removal/addition areas are displayed. (applies to all sculpting " +
+				"tools -- see 'Item Properties' menu for item-specific settings), as well as the way the Model Maker finds replacement bits",
+				configElements, configElementsTooSettings);
+		
 		addDummyElementsOfChildElementSetsToDummyElement(configElements, false,
 				ConfigHandlerExtraBitManipulation.SCULPTING_DEFAULT_VALUES, "Configures sculpting data default values.",
 				ConfigHandlerExtraBitManipulation.SCULPTING_PER_TOOL_OR_PER_PLAYER, "Configures whether sculpting data " +
@@ -92,7 +110,9 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 			Map<Item, ConfigNamed> configs, String name, String toolTip, boolean isRecipe)
 	{
 		int len = configs.size();
-		if (!isRecipe) len *= 2;
+		if (!isRecipe)
+			len *= 2;
+		
 		len += 2;
 		String[] processedNames = new String[len];
 		int i = 0;
@@ -102,9 +122,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 			String itemTitle = config.getTitle();
 			processedNames[i++] = itemTitle + (isRecipe ? " Recipe" : " Properties");
 			if (!isRecipe)
-			{
 				processedNames[i++] = "Configures the damage characteristics of the " + itemTitle;
-			}
 		}
 		processedNames[len - 2] = name;
 		processedNames[len - 1] = toolTip;

@@ -57,9 +57,7 @@ public class PacketSculpt implements IMessage
 		side = EnumFacing.getFront(buffer.readInt());
 		hit = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
 		if (buffer.readBoolean())
-		{
 			drawnStartPoint = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-		}
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSculpt, IMessage>
@@ -75,12 +73,9 @@ public class PacketSculpt implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (stack != null && stack.getItem() instanceof ItemSculptingTool &&
-							(!player.isSneaking() || message.drawnStartPoint != null))
-					{
+					if (stack != null && stack.getItem() instanceof ItemSculptingTool && (!player.isSneaking() || message.drawnStartPoint != null))
 						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj,
 								message.pos, message.side, message.hit, message.drawnStartPoint);
-					}
 				}
 			});
 			return null;

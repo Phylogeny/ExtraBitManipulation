@@ -18,5 +18,17 @@ public class NBTKeys
 	public static final String OPEN_ENDS = "openEnds";
 	public static final String WALL_THICKNESS = "wallThickness";
 	public static final String REMAINING_USES = "remainingUses";
+	public static final String BIT_STACK = "bitStack";
+	public static final String STATE_DOMAIN = "stateDomain";
+	public static final String STATE_PATH = "statePath";
+	public static final String STATE_META = "stateMeta";
+	public static final String SAVED_STATES = "savedStates";
+	public static final String STATE_TO_BIT_MAP_CURRENT = "stateToBitMapCurrent";
+	public static final String STATE_TO_BIT_MAP_PERMANENT = "stateToBitMapPermanent";
+	public static final String BLOCK_TO_BIT_MAP_PERMANENT = "blockToBitMapPermanent";
+	public static final String TAB_SETTING = "tabSetting";
+	public static final String BUTTON_STATE_BLOCK_SETTING = "buttonStateBlockSetting";
+	public static final String BLOCK_MODID = "blockModId";
+	public static final String BLOCK_NAME = "blockName";
 	
 }

@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
+import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingInt;
-import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBitStack;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 
@@ -14,6 +15,10 @@ import net.minecraft.item.Item;
 
 public class Configs
 {
+	//MODEL MAKER SETTINGS
+		public static ConfigReplacementBits replacementBitsUnchiselable;
+		public static ConfigReplacementBits replacementBitsInsufficient;
+		
 	//SCULPTING SETTINGS
 		public static boolean displayNameDiameter;
 		public static boolean displayNameUseMeterUnits;
@@ -36,8 +41,8 @@ public class Configs
 		public static ConfigSculptSettingBoolean sculptHollowShapeSpade;
 		public static ConfigSculptSettingBoolean sculptOpenEnds;
 		public static ConfigSculptSettingInt sculptWallThickness;
-		public static ConfigSculptSettingBitStack sculptSetBitWire;
-		public static ConfigSculptSettingBitStack sculptSetBitSpade;
+		public static ConfigBitStack sculptSetBitWire;
+		public static ConfigBitStack sculptSetBitSpade;
 		
 	//ITEM PROPERTIES
 		public static Map<Item, ConfigNamed> itemPropertyMap = new HashMap<Item, ConfigNamed>();
