@@ -16,12 +16,11 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 	
 	public boolean initialize(ItemStack stack)
 	{
-		if (!stack.hasTagCompound())
-		{
-			stack.setTagCompound(new NBTTagCompound());
-			return true;
-		}
-		return false;
+		if (stack.hasTagCompound())
+			return false;
+			
+		stack.setTagCompound(new NBTTagCompound());
+		return true;
 	}
 	
 	@Override

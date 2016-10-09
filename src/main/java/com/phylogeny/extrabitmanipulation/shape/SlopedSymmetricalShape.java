@@ -21,8 +21,7 @@ public class SlopedSymmetricalShape extends SymmetricalShape
 	
 	protected boolean isPointOffLine(float val)
 	{
-		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 :
-			(!openEnds && val < insetMin) || val > insetMax2;
+		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 : (!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
 }

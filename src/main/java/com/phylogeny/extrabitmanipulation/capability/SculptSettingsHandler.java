@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.capability;
 
+import javax.annotation.Nullable;
+
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllSculptingData;
@@ -24,10 +26,8 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	public boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	public ItemStack setBitWire, setBitSpade;
 	
-	public SculptSettingsHandler(int mode, int direction, int shapeTypeCurved, int shapeTypeFlat,
-			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
-			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness,
-			ItemStack setBitWire, ItemStack setBitSpade)
+	public SculptSettingsHandler(int mode, int direction, int shapeTypeCurved, int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter,
+			boolean sculptHollowShapeWire, boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
 	{
 		this.mode = mode;
 		this.direction = direction;
@@ -60,13 +60,13 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	}
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
 	{
 		 return SCULPT_SETTINGS_CAP != null && capability == SCULPT_SETTINGS_CAP;
 	}
 	
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
 	{
 		return capability == SCULPT_SETTINGS_CAP ? SCULPT_SETTINGS_CAP.<T>cast(this) : null;
 	}

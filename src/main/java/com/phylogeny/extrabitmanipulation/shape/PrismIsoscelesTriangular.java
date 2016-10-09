@@ -28,9 +28,7 @@ public class PrismIsoscelesTriangular extends AsymmetricalShape
 			(((float) Math.sqrt(hsq + this.c * this.c) * wallThickness) / this.c);
 		offsetCenter = this.centerY - (inverted ? -offset : offset);
 		if (inverted)
-		{
 			this.b *= -1;
-		}
 	}
 	
 	@Override
@@ -39,22 +37,24 @@ public class PrismIsoscelesTriangular extends AsymmetricalShape
 		if (isTwisted)
 		{
 			float z = getBitPosZ(pos, j, k);
-			if (isPointOffLine(z, centerZ, c)) return false;
+			if (isPointOffLine(z, centerZ, c))
+				return false;
+			
 			float x = getBitPosX(pos, i, j);
 			float y = getBitPosY(pos, i, j, k);
 			boolean inShape = isPointInTriangle(x, y, centerX, centerY, a, b);
 			return sculptHollowShape ? inShape && !((inverted ? y <= centerY + bInset : y >= centerY - bInset)
-					&& isPointInTriangle(x, y, centerX, offsetCenter, a, b)
-					&& (openEnds || !isPointOffLine(z, centerZ, cInset))) : inShape;
+					&& isPointInTriangle(x, y, centerX, offsetCenter, a, b) && (openEnds || !isPointOffLine(z, centerZ, cInset))) : inShape;
 		}
 		float x = getBitPosX(pos, i, j);
-		if (isPointOffLine(x, centerX, a)) return false;
+		if (isPointOffLine(x, centerX, a))
+			return false;
+		
 		float z = getBitPosZ(pos, j, k);
 		float y = getBitPosY(pos, i, j, k);
 		boolean inShape = isPointInTriangle(z, y, centerZ, centerY, c, b);
 		return sculptHollowShape ? inShape && !((inverted ? y <= centerY + bInset : y >= centerY - bInset)
-				&& isPointInTriangle(z, y, centerZ, offsetCenter, c, b)
-				&& (openEnds || !isPointOffLine(x, centerX, aInset))) : inShape;
+				&& isPointInTriangle(z, y, centerZ, offsetCenter, c, b) && (openEnds || !isPointOffLine(x, centerX, aInset))) : inShape;
 	}
 	
 }

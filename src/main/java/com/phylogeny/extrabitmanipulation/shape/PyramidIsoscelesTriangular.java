@@ -80,7 +80,9 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		float offsetZ = (float) (inverted ? -offset.zCoord : offset.zCoord);
 		center1Inset = centerZ - (isFlipped ? -offsetZ : offsetZ);
 		center2Inset = centerY - (float) (inverted ? -offset.yCoord : offset.yCoord);
-		if (isFlipped) offsetCenter *= -1;
+		if (isFlipped)
+			offsetCenter *= -1;
+		
 		insetMax2 = center2Inset + b;
 		insetMin2 = center2Inset - b;
 	}
@@ -134,12 +136,10 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 		if (isTwisted)
 		{
 			boolean inShape = isPointInPyramid(y, z, x, centerX, centerY);
-			return sculptHollowShape ? inShape && !(isPointInPyramid(y, z, x, center1Inset, center2Inset)
-					&& !isPointOffLine(y)) : inShape;
+			return sculptHollowShape ? inShape && !(isPointInPyramid(y, z, x, center1Inset, center2Inset) && !isPointOffLine(y)) : inShape;
 		}
 		boolean inShape = isPointInPyramid(y, x, z, centerZ, centerY);
-		return sculptHollowShape ? inShape && !(isPointInPyramid(y, x, z, center1Inset, center2Inset)
-				&& !isPointOffLine(y)) : inShape;
+		return sculptHollowShape ? inShape && !(isPointInPyramid(y, x, z, center1Inset, center2Inset) && !isPointOffLine(y)) : inShape;
 	}
 	
 	protected boolean isPointInPyramid(float val, float v1, float v2, float center1, float center2)
@@ -161,8 +161,7 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 	
 	protected boolean isPointOffLine(float val)
 	{
-		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 :
-			(!openEnds && val < insetMin) || val > insetMax2;
+		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 : (!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
 }

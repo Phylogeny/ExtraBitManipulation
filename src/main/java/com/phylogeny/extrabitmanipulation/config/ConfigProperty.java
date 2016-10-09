@@ -3,8 +3,8 @@ package com.phylogeny.extrabitmanipulation.config;
 public class ConfigProperty extends ConfigNamed
 {
 	public boolean takesDamage;
-	private boolean takesDamageDefault;
 	public int maxDamage;
+	private boolean takesDamageDefault;
 	private int maxDamageDefault;
 	
 	public ConfigProperty(String itemName, boolean takesDamageDefault, int maxDamageDefault)

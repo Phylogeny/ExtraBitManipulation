@@ -9,9 +9,8 @@ public class ConfigShapeRender extends ConfigNamed
 	public float lineWidth;
 	private float lineWidthDefault;
 	
-	public ConfigShapeRender(String title, boolean renderOuterShapeDefault, boolean renderInnerShapeDefault,
-			int outerShapeAlphaDefault, int innerShapeAlphaDefault, int redDefault,
-			int greenDefault, int blueDefault, float lineWidthDefault)
+	public ConfigShapeRender(String title, boolean renderOuterShapeDefault, boolean renderInnerShapeDefault, int outerShapeAlphaDefault,
+			int innerShapeAlphaDefault, int redDefault, int greenDefault, int blueDefault, float lineWidthDefault)
 	{
 		super(title);
 		this.renderOuterShapeDefault = renderOuterShapeDefault;

@@ -43,8 +43,7 @@ public class AsymmetricalShape extends Shape
 	@Override
 	protected AxisAlignedBB getBoundingBox()
 	{
-		return new AxisAlignedBB(centerX - a, centerY - b, centerZ - c,
-				centerX + a, centerY + b, centerZ + c);
+		return new AxisAlignedBB(centerX - a, centerY - b, centerZ - c, centerX + a, centerY + b, centerZ + c);
 	}
 	
 	protected boolean isPointInEllipse(float dv1, float dv2, float s1, float s2)
