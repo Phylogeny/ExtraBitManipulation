@@ -35,10 +35,7 @@ public class RecipesExtraBitManipulation
 		{
 			ConfigRecipe configRecipe = (ConfigRecipe) Configs.itemRecipeMap.get(item);
 			if (configRecipe.isEnabled)
-			{
-				registerRecipe(item, configRecipe.isShaped,
-						configRecipe.useOreDictionary, configRecipe.recipe, configRecipe.getRecipeDefault());
-			}
+				registerRecipe(item, configRecipe.isShaped, configRecipe.useOreDictionary, configRecipe.recipe, configRecipe.getRecipeDefault());
 		}
 	}
 	
@@ -48,10 +45,9 @@ public class RecipesExtraBitManipulation
 		Object[] recipeArray = isShaped ? createShapedRecipeArray(userInput, useOreDictionary, isShaped)
 				: createShapelessRecipeArray(userInput, useOreDictionary, isShaped);
 		if (recipeArray == null && defaultInput.length > 0)
-		{
 			recipeArray = isShaped ? createShapedRecipeArray(defaultInput, useOreDictionary, isShaped)
 					: createShapelessRecipeArray(defaultInput, useOreDictionary, isShaped);
-		}
+		
 		if (recipeArray != null)
 		{
 			if (isShaped)
@@ -127,9 +123,7 @@ public class RecipesExtraBitManipulation
 			{
 				String name = inputArr[i];
 				if (isValidName(useOreDictionary, name))
-				{
 					addIngredient(ingredients, name, useOreDictionary, isShaped);
-				}
 			}
 			if (!ingredients.isEmpty())
 			{
@@ -147,18 +141,22 @@ public class RecipesExtraBitManipulation
 	{
 		if (useOreDictionary)
 		{
-			if (isShaped || !ingredients.contains(name)) ingredients.add(name);
+			if (isShaped || !ingredients.contains(name))
+				ingredients.add(name);
 		}
 		else
 		{
 			ItemStack itemStack = getStack(Item.getByNameOrId(name));
-			if (isShaped || !ingredients.contains(itemStack)) ingredients.add(itemStack);
+			if (isShaped || !ingredients.contains(itemStack))
+				ingredients.add(itemStack);
 		}
 	}
 	
 	private static boolean isValidName(boolean useOreDictionary, String name)
 	{
-		if (useOreDictionary) return OreDictionary.doesOreNameExist(name);
+		if (useOreDictionary)
+			return OreDictionary.doesOreNameExist(name);
+		
 		return Item.getByNameOrId(name) != null;
 	}
 	

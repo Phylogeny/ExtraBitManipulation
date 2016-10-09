@@ -12,6 +12,7 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.client.shape.Prism;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
+import com.phylogeny.extrabitmanipulation.helper.BitHelper;
 import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
@@ -86,7 +87,7 @@ public class ClientEventHandler
 	private void registerTexture(ResourceLocation resourceLocation)
 	{
 		SimpleTexture texture = new SimpleTexture(resourceLocation);
-	    Minecraft.getMinecraft().renderEngine.loadTexture(resourceLocation, texture);
+		Minecraft.getMinecraft().renderEngine.loadTexture(resourceLocation, texture);
 	}
 	
 	@SubscribeEvent
@@ -111,8 +112,7 @@ public class ClientEventHandler
 					}
 					event.setCanceled(true);
 				}
-				else if (stack.getItem() instanceof ItemSculptingTool
-						&& (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()))
+				else if (stack.getItem() instanceof ItemSculptingTool && (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()))
 				{
 					if (GuiScreen.isCtrlKeyDown())
 					{
@@ -141,24 +141,18 @@ public class ClientEventHandler
 					if (GuiScreen.isCtrlKeyDown())
 					{
 						if (event.getButton() == 1)
-						{
 							cycleShapeType(player, stack, item);
-						}
+						
 						if (event.getButton() == 0)
-						{
 							toggleBitGridTargeted(player, stack);
-						}
 					}
 					else
 					{
 						if (event.getButton() == 1)
-						{
 							toggleHollowShape(player, stack, item);
-						}
+						
 						if (event.getButton() == 0)
-						{
 							toggleOpenEnds(player, stack);
-						}
 					}
 					event.setCanceled(true);
 				}
@@ -166,7 +160,9 @@ public class ClientEventHandler
 		}
 		else if (event.getButton() == 0)
 		{
-			if (!player.capabilities.allowEdit) return;
+			if (!player.capabilities.allowEdit)
+				return;
+			
 			ItemStack stack = player.inventory.getCurrentItem();
 			if (stack != null)
 			{
@@ -179,9 +175,8 @@ public class ClientEventHandler
 				{
 					boolean drawnMode = SculptSettingsHelper.getMode(player, stack.getTagCompound()) == 2;
 					if (!drawnMode)
-					{
 						drawnStartPoint = null;
-					}
+					
 					if (event.isButtonstate() || (drawnMode && drawnStartPoint != null))
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) item;
@@ -243,7 +238,7 @@ public class ClientEventHandler
 												if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
 												{
 													printChatMessageWithDeletion((removeBits ? "Removing only " : "Sculpting with ")
-															+ bitStack.getDisplayName().substring(15));
+															+ BitHelper.getBitName(bitStack));
 												}
 											}
 											catch (CannotBeChiseled e)
@@ -259,11 +254,11 @@ public class ClientEventHandler
 										ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint));
 									}
 									if (drawnMode && !event.isButtonstate())
-									{
 										drawnStartPoint = null;
-									}
 								}
-								if (swingTool) player.swingArm(EnumHand.MAIN_HAND);
+								if (swingTool)
+									player.swingArm(EnumHand.MAIN_HAND);
+								
 								event.setCanceled(true);
 							}
 						}
@@ -271,9 +266,7 @@ public class ClientEventHandler
 						{
 							SculptSettingsHelper.setBitStack(player, stack, true, null);
 							if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
-							{
 								printChatMessageWithDeletion("Removing any/all bits");
-							}
 						}
 						else if (drawnMode)
 						{
@@ -290,22 +283,17 @@ public class ClientEventHandler
 			{
 				Item item = stack.getItem();
 				if (item != null && item instanceof ItemSculptingTool)
-				{
 					cycleMode(player, stack, !player.isSneaking());
-				}
 			}
 		}
 	}
 	
 	private void cycleMode(EntityPlayer player, ItemStack stack, boolean forward)
 	{
-		int mode = SculptSettingsHelper.cycleData(SculptSettingsHelper.getMode(player,
-				stack.getTagCompound()), forward, ItemSculptingTool.MODE_TITLES.length);
+		int mode = SculptSettingsHelper.cycleData(SculptSettingsHelper.getMode(player, stack.getTagCompound()), forward, ItemSculptingTool.MODE_TITLES.length);
 		SculptSettingsHelper.setMode(player, stack, mode);
 		if (Configs.sculptMode.shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getModeText(mode));
-		}
 	}
 	
 	private void cycleDirection(EntityPlayer player, ItemStack stack, boolean forward)
@@ -328,9 +316,7 @@ public class ClientEventHandler
 		direction += 6 * rotation;
 		SculptSettingsHelper.setDirection(player, stack, direction);
 		if (Configs.sculptDirection.shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getDirectionText(direction, shapeType == 4 || shapeType == 5));
-		}
 	}
 	
 	private void cycleShapeType(EntityPlayer player, ItemStack stack, Item item)
@@ -341,9 +327,7 @@ public class ClientEventHandler
 		shapeType = isCurved ? SHAPE_CURVED[shapeType] : SHAPE_FLAT[shapeType];
 		SculptSettingsHelper.setShapeType(player, stack, isCurved, shapeType);
 		if ((isCurved ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat).shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getShapeTypeText(shapeType));
-		}
 	}
 	
 	private void toggleBitGridTargeted(EntityPlayer player, ItemStack stack)
@@ -351,9 +335,7 @@ public class ClientEventHandler
 		boolean targetBitGrid = !SculptSettingsHelper.isBitGridTargeted(player, stack.getTagCompound());
 		SculptSettingsHelper.setBitGridTargeted(player, stack, targetBitGrid);
 		if (Configs.sculptTargetBitGridVertexes.shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getBitGridTargetedText(targetBitGrid));
-		}
 	}
 	
 	private void cycleSemiDiameter(EntityPlayer player, ItemStack stack, boolean forward)
@@ -362,9 +344,7 @@ public class ClientEventHandler
 				forward, Configs.maxSemiDiameter);
 		SculptSettingsHelper.setSemiDiameter(player, stack, semiDiameter);
 		if (Configs.sculptSemiDiameter.shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getSemiDiameterText(player, stack.getTagCompound(), semiDiameter));
-		}
 	}
 	
 	private void toggleHollowShape(EntityPlayer player, ItemStack stack, Item item)
@@ -373,9 +353,7 @@ public class ClientEventHandler
 		boolean isHollowShape = !SculptSettingsHelper.isHollowShape(player, stack.getTagCompound(), isWire);
 		SculptSettingsHelper.setHollowShape(player, stack, isWire, isHollowShape);
 		if ((isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getHollowShapeText(isHollowShape));
-		}
 	}
 	
 	private void toggleOpenEnds(EntityPlayer player, ItemStack stack)
@@ -383,9 +361,7 @@ public class ClientEventHandler
 		boolean areEndsOpen = !SculptSettingsHelper.areEndsOpen(player, stack.getTagCompound());
 		SculptSettingsHelper.setEndsOpen(player, stack, areEndsOpen);
 		if (Configs.sculptOpenEnds.shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getOpenEndsText(areEndsOpen));
-		}
 	}
 	
 	private void cycleWallThickness(EntityPlayer player, ItemStack stack, boolean forward)
@@ -394,9 +370,7 @@ public class ClientEventHandler
 				forward, Configs.maxWallThickness);
 		SculptSettingsHelper.setWallThickness(player, stack, wallThickness);
 		if (Configs.sculptWallThickness.shouldDisplayInChat())
-		{
 			printChatMessageWithDeletion(SculptSettingsHelper.getWallThicknessText(wallThickness));
-		}
 	}
 	
 	private void printChatMessageWithDeletion(String text)
@@ -412,11 +386,8 @@ public class ClientEventHandler
 		if (itemStack != null)
 		{
 			Item item = itemStack.getItem();
-			if (item != null && item instanceof ItemSculptingTool
-					&& SculptSettingsHelper.getMode(event.getPlayer(), itemStack.getTagCompound()) == 1)
-			{
+			if (item != null && item instanceof ItemSculptingTool && SculptSettingsHelper.getMode(event.getPlayer(), itemStack.getTagCompound()) == 1)
 				event.setCanceled(true);
-			}
 		}
 	}
 	
@@ -431,8 +402,7 @@ public class ClientEventHandler
 			if (stack != null)
 			{
 				RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
-				if (target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK)
-						&& stack.getItem() instanceof ItemBitToolBase)
+				if (target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK) && stack.getItem() instanceof ItemBitToolBase)
 				{
 					IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 					float ticks = event.getPartialTicks();
@@ -479,21 +449,29 @@ public class ClientEventHandler
 						double angle = getInitialAngle(mode);
 						if (mode == 3)
 						{
-							if (side % 2 == 1) angle += 180;
-							if (side >= 4) angle -= 90;
+							if (side % 2 == 1)
+								angle += 180;
+							
+							if (side >= 4)
+								angle -= 90;
 						}
 						else
 						{
 							if (mode == 0)
 							{
-								if (side % 2 == (invertDirection ? 0 : 1)) angle *= -1;
+								if (side % 2 == (invertDirection ? 0 : 1))
+									angle *= -1;
 							}
 							else
 							{
-								if (side < 2 || side > 3) angle *= -1;
+								if (side < 2 || side > 3)
+									angle *= -1;
 							}
-							if (eastWest) angle += 90;
-							if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4) angle += 180;
+							if (eastWest)
+								angle += 90;
+							
+							if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4)
+								angle += 180;
 						}
 						double offsetX2 = 0.5 * invOffsetX;
 						double offsetY2 = 0.5 * invOffsetY;
@@ -512,7 +490,8 @@ public class ClientEventHandler
 						translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
 								offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
 						
-						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? ARROW_CYCLICAL : (mode == 1 ? ARROW_BIDIRECTIONAL : (mode == 2 ? CIRCLE : INVERSION)));
+						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? ARROW_CYCLICAL
+								: (mode == 1 ? ARROW_BIDIRECTIONAL : (mode == 2 ? CIRCLE : INVERSION)));
 						float minU = 0;
 						float maxU = 1;
 						float minV = 0;
@@ -565,8 +544,12 @@ public class ClientEventHandler
 										{
 											Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
 											angle = 90;
-											if (side % 2 == 0) angle += 180;
-											if (invertDirection) angle += 180;
+											if (side % 2 == 0)
+												angle += 180;
+											
+											if (invertDirection)
+												angle += 180;
+											
 											mode2 = 2;
 										}
 										else
@@ -580,9 +563,12 @@ public class ClientEventHandler
 										if (!oppRotation)
 										{
 											Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
-											if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5 : (side == 3 ? s == 0 || s == 4
-													: (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3))))) angle += 180;
-											if (invertDirection) angle += 180;
+											if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5
+													: (side == 3 ? s == 0 || s == 4 : (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3)))))
+												angle += 180;
+											
+											if (invertDirection)
+												angle += 180;
 										}
 										else
 										{
@@ -602,22 +588,32 @@ public class ClientEventHandler
 								}
 								if (mode == 3)
 								{
-									if (s % 2 == 1) angle += 180;
-									if (s >= 4) angle -= 90;
+									if (s % 2 == 1)
+										angle += 180;
+									
+									if (s >= 4)
+										angle -= 90;
 								}
 								else
 								{
 									if (mode2 == 0)
 									{
-										if (s % 2 == (invertDirection ? 0 : 1)) angle *= -1;
-										if (oppRotation) angle *= -1;
+										if (s % 2 == (invertDirection ? 0 : 1))
+											angle *= -1;
+										
+										if (oppRotation)
+											angle *= -1;
 									}
 									else
 									{
-										if (s < 2 || s > 3) angle *= -1;
+										if (s < 2 || s > 3)
+											angle *= -1;
 									}
-									if (eastWest) angle -= 90;
-									if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5) angle += 180;
+									if (eastWest)
+										angle -= 90;
+									
+									if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5)
+										angle += 180;
 								}
 								offsetX = Math.abs(dir.getFrontOffsetX());
 								offsetY = Math.abs(dir.getFrontOffsetY());
@@ -655,7 +651,9 @@ public class ClientEventHandler
 									box = contractBoxOrRenderArrows(oppRotation, t, vb, side, northSouth, dir2, box, invOffsetX,
 											invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
 								}
-								if (mode2 != 2 || oppRotation) renderTexturedSide(t, vb, s, northSouth, box, minU, maxU, minV, maxV, 1);
+								if (mode2 != 2 || oppRotation)
+									renderTexturedSide(t, vb, s, northSouth, box, minU, maxU, minV, maxV, 1);
+								
 								GlStateManager.popMatrix();
 							}
 						}
@@ -760,16 +758,26 @@ public class ClientEventHandler
 											int s = dir.ordinal();
 											if (s % 2 == 0)
 											{
-												if (offsetX > 0) x4 *= -1;
-												if (offsetY > 0) y4 *= -1;
-												if (offsetZ > 0) z4 *= -1;
+												if (offsetX > 0)
+													x4 *= -1;
+												
+												if (offsetY > 0)
+													y4 *= -1;
+												
+												if (offsetZ > 0)
+													z4 *= -1;
 											}
 											boolean su = s== 1 || s == 3;
 											if (removeBits ? (!inside || !su) : (inside && su))
 											{
-												if (offsetX > 0) x4 *= -1;
-												if (offsetY > 0) y4 *= -1;
-												if (offsetZ > 0) z4 *= -1;
+												if (offsetX > 0)
+													x4 *= -1;
+												
+												if (offsetY > 0)
+													y4 *= -1;
+												
+												if (offsetZ > 0)
+													z4 *= -1;
 											}
 											r -= f;
 										}
@@ -785,53 +793,46 @@ public class ClientEventHandler
 										}
 									}
 									if (fixedNotSym)
-									{
 										shapeBox = box.expand(0, 0, 0);
-									}
+									
 									if (mode == 0)
 									{
 										BlockPos pos2 = !removeBits && !inside ? pos.offset(dir) : pos;
 										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2) :
 											world.getBlockState(pos2).getSelectedBoundingBox(world, pos2);
-										if ((int) Math.round(box2.minX) != pos2.getX()
-												|| (int) Math.round(box2.minY) != pos2.getY()
+										if ((int) Math.round(box2.minX) != pos2.getX() || (int) Math.round(box2.minY) != pos2.getY()
 												|| (int) Math.round(box2.minZ) != pos2.getZ())
-										{
 											box2 = box2.offset(pos2);
-										}
+										
 										box = limitBox(box, box2);
 									}
 									double f = 0.0020000000949949026;
 									if (configBox.renderOuterShape)
 									{
-										GlStateManager.color(configBox.red, configBox.green,
-												configBox.blue, configBox.outerShapeAlpha);
+										GlStateManager.color(configBox.red, configBox.green, configBox.blue, configBox.outerShapeAlpha);
 										RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
 									}
 									if (configBox.renderInnerShape)
 									{
-										GlStateManager.color(configBox.red, configBox.green,
-												configBox.blue, configBox.innerShapeAlpha);
+										GlStateManager.color(configBox.red, configBox.green, configBox.blue, configBox.innerShapeAlpha);
 										GlStateManager.depthFunc(GL11.GL_GREATER);
 										RenderGlobal.drawSelectionBoundingBox(box.expand(f, f, f).offset(-playerX, -playerY, -playerZ));
 										GlStateManager.depthFunc(GL11.GL_LEQUAL);
 									}
 									GlStateManager.popMatrix();
 								}
-								if (!fixedNotSym)
-								{
+								if (!fixedNotSym && box != null)
 									shapeBox = box.expand(0, 0, 0);
-								}
+								
 								boolean isHollow = SculptSettingsHelper.isHollowShape(player, nbt, removeBits);
 								boolean isOpen = isHollow && SculptSettingsHelper.areEndsOpen(player, nbt);
 								renderEnvelopedShapes(player, shapeType, nbt, playerX, playerY, playerZ, isDrawn,
 										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);
 								float wallThickness = SculptSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
 								if (wallThickness > 0 && isHollow && !(mode == 2 && !drawnBox))
-								{
 									renderEnvelopedShapes(player, shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
 											x3, y3, z3, wallThickness, isOpen);
-								}
+								
 								GlStateManager.depthMask(true);
 								GlStateManager.enableTexture2D();
 								GlStateManager.disableBlend();
@@ -843,8 +844,9 @@ public class ClientEventHandler
 		}
 	}
 	
-	private void renderEnvelopedShapes(EntityPlayer player, int shapeType, NBTTagCompound nbt, double playerX, double playerY, double playerZ, boolean isDrawn, boolean drawnBox,
-			double r, ConfigShapeRenderPair configPair, AxisAlignedBB box, double x, double y, double z, double contraction, boolean isOpen)
+	private void renderEnvelopedShapes(EntityPlayer player, int shapeType, NBTTagCompound nbt, double playerX,
+			double playerY, double playerZ, boolean isDrawn, boolean drawnBox, double r, ConfigShapeRenderPair configPair,
+			AxisAlignedBB box, double x, double y, double z, double contraction, boolean isOpen)
 	{
 		ConfigShapeRender configShape = configPair.envelopedShape;
 		if (configShape.renderInnerShape || configShape.renderOuterShape)
@@ -897,7 +899,9 @@ public class ClientEventHandler
 				}
 				if (notSym && contraction > 0)
 				{
-					if (!isOpen) base = contraction;
+					if (!isOpen)
+						base = contraction;
+					
 					y2 *= 2;
 					double y2sq = y2 * y2;
 					double aInset = (Math.sqrt(x2 * x2 + y2sq) * contraction) / x2 + base;
@@ -955,9 +959,7 @@ public class ClientEventHandler
 			{
 				a = b = c = r;
 				if (b > 0 && notFullSym && isOpen)
-				{
 					b += contraction * (isDrawn ? 0 : 1);
-				}
 			}
 			Quadric shape = shapeType > 2 ? new Prism(shapeType > 4, shapeType == 4 || shapeType == 5) : (notFullSym ? new Cylinder() : new Sphere());
 			shape.setDrawStyle(GLU.GLU_LINE);
@@ -981,17 +983,13 @@ public class ClientEventHandler
 				{
 					double offset = contraction * (notSym ? 0.5 : (drawnBox ? 0 : -1));
 					if (dir != 3)
-					{
 						y2 += dir == 0 ? offset : -offset;
-					}
+					
 					if (dir > 2)
-					{
 						x2 += dir == 5 ? -offset : offset;
-					}
+					
 					if (dir == 2 || dir == 3)
-					{
 						z2 += dir == 2 ? offset : -offset;
-					}
 				}
 			}
 			GlStateManager.translate(x2, y2, z2);
@@ -1006,9 +1004,7 @@ public class ClientEventHandler
 						rot2 = 0;
 						angle = 180;
 						if (!(drawnNotSym && dir == 3))
-						{
 							GlStateManager.rotate(90, 0, 0, 1);
-						}
 					}
 					else if (rot2 > 1)
 					{
@@ -1039,8 +1035,12 @@ public class ClientEventHandler
 				else if (openSym)
 				{
 					double m = -contraction;
-					if (dir == 0) m *= 2;
-					if (dir != 1) r -= m;
+					if (dir == 0)
+						m *= 2;
+					
+					if (dir != 1)
+						r -= m;
+					
 					if (dir > 1)
 					{
 						if (dir < 3)
@@ -1089,15 +1089,12 @@ public class ClientEventHandler
 			}
 			GlStateManager.scale(a / ri, b / ri, c / ri);
 			if (configShape.renderOuterShape)
-			{
-				drawEnvelopedShapes(ri, configShape, shapeType, shape,
-						lid, true, notSym, isOpen);
-			}
+				drawEnvelopedShapes(ri, configShape, shapeType, shape, lid, true, notSym, isOpen);
+			
 			if (configShape.renderInnerShape)
 			{
 				GlStateManager.depthFunc(GL11.GL_GREATER);
-				drawEnvelopedShapes(ri, configShape, shapeType, shape,
-						lid, false, notSym, isOpen);
+				drawEnvelopedShapes(ri, configShape, shapeType, shape, lid, false, notSym, isOpen);
 				GlStateManager.depthFunc(GL11.GL_LEQUAL);
 			}
 			GlStateManager.popMatrix();
@@ -1112,9 +1109,8 @@ public class ClientEventHandler
 		if (shapeType > 0 && shapeType < 3 && !isOpen)
 		{
 			if (shapeType == 1)
-			{
 				drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, isOpen);
-			}
+			
 			GlStateManager.translate(0, 0, r * 2);
 			drawEnvelopedShape(lid, r, isOuter, configShape, isCylinder, isOpen);
 		}
@@ -1187,14 +1183,16 @@ public class ClientEventHandler
 		GL11.glTranslated(-playerX + 0.002 * dir.getFrontOffsetX(), -playerY + 0.002 * dir.getFrontOffsetY(), -playerZ + 0.002 * dir.getFrontOffsetZ());
 	}
 	
-	private AxisAlignedBB contractBoxOrRenderArrows(boolean contractBox, Tessellator t, VertexBuffer vb, int side, boolean northSouth, EnumFacing dir, AxisAlignedBB box,
-			double invOffsetX, double invOffsetY, double invOffsetZ, boolean invertDirection, float minU, float maxU, float minV, float maxV)
+	private AxisAlignedBB contractBoxOrRenderArrows(boolean contractBox, Tessellator t, VertexBuffer vb, int side, boolean northSouth, EnumFacing dir,
+			AxisAlignedBB box, double invOffsetX, double invOffsetY, double invOffsetZ, boolean invertDirection, float minU, float maxU, float minV, float maxV)
 	{
 		if (contractBox)
 		{
 			double amount = (frameCounter % Configs.translationScalePeriod) / Configs.translationScalePeriod;
 			amount /= invertDirection ? -2 : 2;
-			if (invertDirection && Configs.translationScalePeriod > 1) amount += 0.5;
+			if (invertDirection && Configs.translationScalePeriod > 1)
+				amount += 0.5;
+			
 			box = box.expand(-amount * invOffsetX, -amount * invOffsetY, -amount * invOffsetZ);
 		}
 		else if (Configs.translationDistance > 0)
@@ -1204,8 +1202,12 @@ public class ClientEventHandler
 			double period = Configs.translationMovementPeriod;
 			double offsetDistance = Configs.translationOffsetDistance;
 			int timeOffset = offsetDistance > 0 ? (int) (period / (distance / offsetDistance)) : 0;
-			if (timeOffset > period / 3.0) timeOffset = (int) (period / 3.0);
-			if (fadeDistance > distance / 2.0) fadeDistance = distance / 2.0;
+			if (timeOffset > period / 3.0)
+				timeOffset = (int) (period / 3.0);
+			
+			if (fadeDistance > distance / 2.0)
+				fadeDistance = distance / 2.0;
+			
 			int n = offsetDistance == 0 || period == 1 ? 1 : 3;
 			for (int i = 0; i < n; i++)
 			{

@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
@@ -14,8 +15,10 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 public class ProxyClient extends ProxyCommon
 {
 	
-	public void registerRenderInformation()
+	@Override
+	public void preinit(FMLPreInitializationEvent event)
 	{
+		super.preinit(event);
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 		register(ItemsExtraBitManipulation.DiamondNugget);
 		register(ItemsExtraBitManipulation.BitWrench);
@@ -23,6 +26,7 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.SculptingSquare);
 		register(ItemsExtraBitManipulation.SculptingSpadeCurved);
 		register(ItemsExtraBitManipulation.SculptingSpadeSquared);
+		register(ItemsExtraBitManipulation.ModelMaker);
 		register(ItemsExtraBitManipulation.BitWrenchHead);
 		register(ItemsExtraBitManipulation.SculptingLoopHead);
 		register(ItemsExtraBitManipulation.SculptingSquareHead);

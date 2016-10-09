@@ -24,7 +24,9 @@ public class ConfigHandlerExtraBitManipulation
 {
 	public static Configuration configFile;
 	public static final String VERSION = "Version";
-	public static final String TOOL_SETTINGS = "Tool Settings";
+	public static final String SCULPTING_WRENCH_SETTINGS = "Sculpting & Wrech Settings";
+	public static final String UNCHISELABLE_BLOCK_STATES = "Unchiselable Block States";
+	public static final String INSUFFICIENT_BITS = "Insufficient Bits";
 	public static final String SCULPTING_DEFAULT_VALUES = "Default Values";
 	public static final String SCULPTING_PER_TOOL_OR_PER_PLAYER = "Per Tool or Per Player";
 	public static final String SCULPTING_DISPLAY_IN_CHAT = "Display In Chat";
@@ -62,45 +64,45 @@ public class ConfigHandlerExtraBitManipulation
 			getVersion(Reference.VERSION);
 			
 			//SCULPTING SETTINGS
-			Configs.maxSemiDiameter = configFile. getInt("Max Semi-Diameter", TOOL_SETTINGS, 32, 1, Integer.MAX_VALUE,
+			Configs.maxSemiDiameter = configFile. getInt("Max Semi-Diameter", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
 					"the maximum size (in bits) of sculpting shape semi-diameter (i.e. radius if it is a sphere). (default = 5 bits)");
 			
-			Configs.maxWallThickness = configFile. getInt("Max Wall Thickness", TOOL_SETTINGS, 32, 1, Integer.MAX_VALUE,
+			Configs.maxWallThickness = configFile. getInt("Max Wall Thickness", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
 					"the maximum size (in bits) of hollow sculpting shapes. (default = 2 bits)");
 			
-			Configs.displayNameDiameter = configFile.getBoolean("Display Name Diameter", TOOL_SETTINGS, true, 
+			Configs.displayNameDiameter = configFile.getBoolean("Display Name Diameter", SCULPTING_WRENCH_SETTINGS, true, 
 					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
 					"If set to false, they will indicate the radius (default = true)");
 			
-			Configs.displayNameUseMeterUnits = configFile.getBoolean("Display Name Meter Units", TOOL_SETTINGS, false, 
+			Configs.displayNameUseMeterUnits = configFile.getBoolean("Display Name Meter Units", SCULPTING_WRENCH_SETTINGS, false, 
 					"If set to true, sculpting tool display names will indicate the size of their bit removal/addition areas in meters. " +
 					"If set to false, they will be in bits (default = false)");
 			
-			Configs.semiDiameterPadding = configFile.getFloat("Semi-Diameter Padding", TOOL_SETTINGS, 0.2F, 0, 1, 
+			Configs.semiDiameterPadding = configFile.getFloat("Semi-Diameter Padding", SCULPTING_WRENCH_SETTINGS, 0.2F, 0, 1, 
 					"Distance (in bits) to add to the semi-diameter of a sculpting tool's bit removal/addition area shape. If set to zero, no padding " +
 					"will be added; spheres, for example, will have single bits protruding from each cardinal direction at any size, since only those " +
 					"bits of those layers will be exactly on the sphere's perimeter. If set to 1, there will effectively be no padding for the same reason, " +
 					"but the radius will be one bit larger than specified. A value between 0 and 1 is suggested. (default = 0.2 bits)");
 			
-			Configs.placeBitsInInventory = configFile.getBoolean("Place Bits In Inventory", TOOL_SETTINGS, true, 
+			Configs.placeBitsInInventory = configFile.getBoolean("Place Bits In Inventory", SCULPTING_WRENCH_SETTINGS, true, 
 					"If set to true, when bits are removed from blocks with a sculpting tool, as many of them will be given to the player as is possible. " +
 					"Any bits that cannot fit in the player's inventory will be spawned in the world. If set to false, no attempt will be made to give them " +
 					"to the player; they will always be spawned in the world. (default = true)");
 			
-			Configs.dropBitsInBlockspace = configFile.getBoolean("Drop Bits In Block Space", TOOL_SETTINGS, true, 
+			Configs.dropBitsInBlockspace = configFile.getBoolean("Drop Bits In Block Space", SCULPTING_WRENCH_SETTINGS, true, 
 					"If set to true, when bits removed from blocks with a sculpting tool are spawned in the world, they will be spawned at a random " +
 					"point within the area that intersects the block space and the removal area bounding box (if 'Drop Bits Per Block' is true, they " +
 					"will be spawned in the block they are removed from; otherwise they will be spawned at the block they player right-clicked). " +
 					"If set to false, they will be spawned at the player, in the same way that items are spawned when throwing them on the ground " +
 					"by pressing Q. (default = true)");
 			
-			Configs.bitSpawnBoxContraction = configFile.getFloat("Bit Spawn Box Contraction", TOOL_SETTINGS, 0.25F, 0, 0.5F, 
+			Configs.bitSpawnBoxContraction = configFile.getFloat("Bit Spawn Box Contraction", SCULPTING_WRENCH_SETTINGS, 0.25F, 0, 0.5F, 
 					"Amount in meters to contract the box that removed bits randomly spawn in (assuming they spawn in the block space as per 'Drop Bits In Block Space') " +
 					"If set to 0, there will be no contraction and they will be able to spawn anywhere in the box. If set to 0.5, the box will contract by half in all " +
 					"directions down to a point in the center of the original box and they will always spawn from that central point. The default of 0.25 (which is the " +
 					"default behavior when spawning items with Block.spawnAsEntity) contracts the box to half its original size. (default = 0.25 meters)");
 			
-			Configs.dropBitsPerBlock = configFile.getBoolean("Drop Bits Per Block", TOOL_SETTINGS, true, 
+			Configs.dropBitsPerBlock = configFile.getBoolean("Drop Bits Per Block", SCULPTING_WRENCH_SETTINGS, true, 
 					"When bits are removed from blocks with a sculpting tool, all the removed bits of each type are counted and a collection of item stacks are created " +
 					"of each item. For the sake of efficiency, the number of stacks generated is the minimum number necessary for that amount (Ex: 179 bits would become " +
 					"2 stacks of 64 and 1 stack of 51). If this config is set to true, the counts for each block will be added up and spawned after each block is modified. " +
@@ -111,14 +113,18 @@ public class ConfigHandlerExtraBitManipulation
 					"from is not possible. Rather, the bits will either spawn in the space of the block clicked or spawn at the player as per 'Drop Bits In Block Space'. " +
 					"(default = true)");
 			
-			Configs.dropBitsAsFullChiseledBlocks = configFile.getBoolean("Drop Bits As Full Chiseled Blocks", TOOL_SETTINGS, false, 
+			Configs.dropBitsAsFullChiseledBlocks = configFile.getBoolean("Drop Bits As Full Chiseled Blocks", SCULPTING_WRENCH_SETTINGS, false, 
 					"If set to true, full meter cubed blocks of bits that have all their bits removed will drop as full chiseled blocks. " +
 					"If set to false, they will drop normally as item stacks of bits (64 stacks of size 64). (default = false)");
 			
-			Configs.oneBitTypeInversionRequirement = configFile.getBoolean("One Bit Type Inversion Requirement", TOOL_SETTINGS, false, 
+			Configs.oneBitTypeInversionRequirement = configFile.getBoolean("One Bit Type Inversion Requirement", SCULPTING_WRENCH_SETTINGS, false, 
 					"If set to true, the Bit Wrench will only be able to invert blocks that are comprised of one bit type. " +
 					"If set to false, any block can be inverted and the bit type that empty bits will be filled with is whichever bit is " +
 					"the most prevalent in the block space. (default = false)");
+			
+			//MODEL MAKER SETTINGS
+			Configs.replacementBitsUnchiselable = getConfigReplacementBits(UNCHISELABLE_BLOCK_STATES, "minecraft:redstone_block", true, true, false);
+			Configs.replacementBitsInsufficient = getConfigReplacementBits(INSUFFICIENT_BITS, "minecraft:redstone_block", true, true, false);
 			
 			//SCULPTING DATA SETTINGS
 			Configs.sculptMode = getSculptSettingIntFromStringArray("Mode", false, true, 0, 0,
@@ -169,14 +175,14 @@ public class ConfigHandlerExtraBitManipulation
 					"hollow sculpting shape wall thickness",
 					"hollow sculpting shape wall thickness (in bits).", "2 bits");
 			
-			Configs.sculptSetBitWire = getSculptSettingItemStack("Bit Type - Filter (wire)", true, true, "minecraft:air",
+			Configs.sculptSetBitWire = getSculptSettingBitStack("Bit Type - Filter (wire)", true, true, "minecraft:air",
 					"filtered bit type",
 					"filtered bit type (sculpting can remove only one bit type rather than any - this config sets the block [as specified " +
 					"by 'modID:name'] of the bit type that sculpting wires remove (an empty string, an unsupported block, or any misspelling " +
 					"will specify any/all bit types)).", "Any");
 			Configs.sculptSetBitWire.init();
 			
-			Configs.sculptSetBitSpade = getSculptSettingItemStack("Bit Type - Addition (spade)", true, true, "minecraft:air",
+			Configs.sculptSetBitSpade = getSculptSettingBitStack("Bit Type - Addition (spade)", true, true, "minecraft:air",
 					"addition bit type",
 					"addition bit type (sets the block form [as specified by 'modID:name'] of the bit type that sculpting spades add to the " +
 					"world (an empty string, an unsupported block, or any misspelling will specify no bit type - the type will have to be set " +
@@ -193,9 +199,7 @@ public class ConfigHandlerExtraBitManipulation
 				configProperty.takesDamage = getToolTakesDamage(itemTitle, category, configProperty.getTakesDamageDefault(), !isWrench);
 				configProperty.maxDamage = getToolMaxDamage(itemTitle, category, configProperty.getMaxDamageDefault(), 1, Integer.MAX_VALUE, !isWrench);
 				if (isWrench)
-				{
 					ItemsExtraBitManipulation.BitWrench.setMaxDamage(configProperty.takesDamage ? configProperty.maxDamage : 0);
-				}
 			}
 			
 			//ITEM RECIPES
@@ -271,10 +275,32 @@ public class ConfigHandlerExtraBitManipulation
 		finally
 		{
 			if (configFile.hasChanged())
-			{
 				configFile.save();
-			}
 		}
+	}
+
+	private static ConfigReplacementBits getConfigReplacementBits(String category, String defaultBlockName, boolean useDefaultReplacementBitDefault,
+			boolean useAnyBitsAsReplacementsDefault, boolean useAirAsReplacementDefault)
+	{
+		String condition = "If " + (category == UNCHISELABLE_BLOCK_STATES ? "an unchiselable blockstate is encountered"
+				: "the player has insufficient bits in their inventory for a chiselable blockstate") + ", an attempt will be made to find a replacement bit. ";
+		ConfigReplacementBits replacementBitsConfig = new ConfigReplacementBits(useDefaultReplacementBitDefault,
+				useAnyBitsAsReplacementsDefault, useAirAsReplacementDefault);
+		replacementBitsConfig.defaultReplacementBit = new ConfigBitStack(getDefaultBlock(configFile.getString("Default Replacement Bit",
+				category, defaultBlockName, condition + "If the 'Use Default Replacement Bit' config is also set to 'true', then an " +
+						"attempt will first be made to use the bit version of this block as a replacement.")), getDefaultBlock(defaultBlockName));
+		replacementBitsConfig.defaultReplacementBit.init();
+		String textIfTrue = ", if this is set to 'true', ";
+		String textIfFalse = ". If this is set to 'false', this step will be skipped";
+		replacementBitsConfig.useDefaultReplacementBit = configFile.getBoolean("1st Check: Use Default Replacement Bit", category,
+				useDefaultReplacementBitDefault, condition + "First" + textIfTrue + "an attempt will be made to use the bit specified " +
+						"by the 'Default Replacement Bit' config" + textIfFalse);
+		replacementBitsConfig.useAnyBitsAsReplacements = configFile.getBoolean("2nd Check: Use Any Bit As Replacement", category,
+				useAnyBitsAsReplacementsDefault, condition + "Second" + textIfTrue + "any/all bits in the player's inventory will " +
+						"be used, from the most numerous to the least numerous" + textIfFalse);
+		replacementBitsConfig.useAirAsReplacement = configFile.getBoolean("3rd Check: Use Air As Replacement", category, useAirAsReplacementDefault,
+				condition + "Third" + textIfTrue + "air bits will be used, i.e. the bits will simply be left empty" + textIfFalse);
+		return replacementBitsConfig;
 	}
 	
 	private static ConfigSculptSettingBoolean getSculptSettingBoolean(String name, boolean defaultPerTool, boolean defaultDisplayInChat, boolean defaultValue,
@@ -308,34 +334,35 @@ public class ConfigHandlerExtraBitManipulation
 		for (int i = 0; i < validValues.length; i++)
 		{
 			if (entry.equals(validValues[i]))
-			{
 				defaultValue = i + offset;
-			}
 		}
 		return new ConfigSculptSettingInt(perTool, displayInChat, defaultValue);
 	}
 	
-	private static ConfigSculptSettingBitStack getSculptSettingItemStack(String name, boolean defaultPerTool, boolean defaultDisplayInChat, String defaultValue,
+	private static ConfigBitStack getSculptSettingBitStack(String name, boolean defaultPerTool, boolean defaultDisplayInChat, String defaultValue,
 			String toolTipSecondary, String toolTipDefaultValue, String toolTipDefaultValueDefault)
 	{
 		boolean perTool = getPerTool(name, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, defaultDisplayInChat, toolTipSecondary);
+		Block defaultBlock = getDefaultBlock(configFile.getString(name, SCULPTING_DEFAULT_VALUES, defaultValue,
+				getToolTipSculptSetting(toolTipDefaultValue, toolTipDefaultValueDefault)));
+		return new ConfigBitStack(perTool, displayInChat, defaultBlock, getDefaultBlock(defaultValue));
+	}
+
+	private static Block getDefaultBlock(String blockName)
+	{
 		Block defaultBlock = null;
-		String blockEntry = configFile.getString(name, SCULPTING_DEFAULT_VALUES, defaultValue,
-				getToolTipSculptSetting(toolTipDefaultValue, toolTipDefaultValueDefault));
-		if (!blockEntry.isEmpty())
+		if (!blockName.isEmpty())
 		{
-			int i = blockEntry.indexOf(":");
+			int i = blockName.indexOf(":");
 			if (i > 0)
 			{
-				int len = blockEntry.length();
-				if (len > 2 && StringUtils.countMatches(blockEntry, ":") == 1)
-				{
-					defaultBlock = Block.getBlockFromName(blockEntry);
-				}
+				int len = blockName.length();
+				if (len > 2 && StringUtils.countMatches(blockName, ":") == 1)
+					defaultBlock = Block.getBlockFromName(blockName);
 			}
 		}
-		return new ConfigSculptSettingBitStack(perTool, displayInChat, defaultBlock);
+		return defaultBlock;
 	}
 	
 	private static String getToolTipSculptSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
-import com.phylogeny.extrabitmanipulation.helper.BitStackHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitHelper;
 import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -25,7 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -83,9 +83,8 @@ public class ItemBitWrench extends ItemBitToolBase
 			boolean creativeMode = player.capabilities.isCreativeMode;
 			HashMap<IBlockState, Integer> inversionBitTypes = null;
 			if (mode == 3)
-			{
 				inversionBitTypes = new HashMap<IBlockState, Integer>();
-			}
+			
 			for (int i = 0; i < 16; i++)
 			{
 				for (int j = 0; j < 16; j++)
@@ -97,15 +96,10 @@ public class ItemBitWrench extends ItemBitToolBase
 						boolean isAir = bit.isAir();
 						if (mode == 2)
 						{
-							if (!isAir && ((s == 4 && i == 16 - increment)
-									|| (s == 0 && j == 16 - increment)
-									|| (s == 2 && k == 16 - increment)
-									|| (s == 5 && i == increment - 1)
-									|| (s == 1 && j == increment - 1)
-									|| (s == 3 && k == increment - 1)))
-							{
+							if (!isAir && ((s == 4 && i == 16 - increment) || (s == 0 && j == 16 - increment) || (s == 2 && k == 16 - increment)
+									|| (s == 5 && i == increment - 1) || (s == 1 && j == increment - 1) || (s == 3 && k == increment - 1)))
 								canTranslate = false;
-							}
+							
 							if (!isAir)
 							{
 								if ((s == 4 && i < removalLayer) || (s == 5 && i > removalLayer))	
@@ -147,9 +141,8 @@ public class ItemBitWrench extends ItemBitToolBase
 				}
 			}
 			if (Configs.oneBitTypeInversionRequirement && inversionBitTypes != null && inversionBitTypes.size() > 1)
-			{
 				canInvert = false;
-			}
+			
 			if (canInvert)
 			{
 				Integer max = Collections.max(inversionBitTypes.values());
@@ -178,10 +171,8 @@ public class ItemBitWrench extends ItemBitToolBase
 				if (bitCountTake > 0)
 				{
 					invertBitStack = invertBit.getItemStack(1);
-					if (invertBitStack.getItem() == null || BitStackHelper.countInventoryBits(api, player, invertBitStack) < bitCountTake)
-					{
+					if (invertBitStack.getItem() == null || BitHelper.countInventoryBits(api, player, invertBitStack) < bitCountTake)
 						canInvert = false;
-					}
 				}
 			}
 			int increment2 = invertDirection ? -increment : increment;
@@ -226,20 +217,14 @@ public class ItemBitWrench extends ItemBitToolBase
 								case 2: int i2 = i + side.getFrontOffsetX() * increment2;
 										int j2 = j + side.getFrontOffsetY() * increment2;
 										int k2 = k + side.getFrontOffsetZ() * increment2;
-										if (!(i2 < 0 || j2 < 0 || k2 < 0
-												|| i2 >= 16 || j2 >= 16 || k2 >= 16))
-										{
+										if (!(i2 < 0 || j2 < 0 || k2 < 0 || i2 >= 16 || j2 >= 16 || k2 >= 16))
 											bit = bitArray[i2][j2][k2];
-										}
-										if ((s == 4 && i < removalLayer + increment)
-												|| (s == 5 && i > removalLayer - increment)
-												|| (s == 0 && j < removalLayer + increment)
-												|| (s == 1 && j > removalLayer - increment)
-												|| (s == 2 && k < removalLayer + increment)
-												|| (s == 3 && k > removalLayer - increment))
-										{
+										
+										if ((s == 4 && i < removalLayer + increment) || (s == 5 && i > removalLayer - increment)
+												|| (s == 0 && j < removalLayer + increment) || (s == 1 && j > removalLayer - increment)
+												|| (s == 2 && k < removalLayer + increment) || (s == 3 && k > removalLayer - increment))
 											bit = null;
-										}
+										
 										break;
 								case 3: bit = bit.isAir() ? invertBit : null;
 							}
@@ -250,9 +235,7 @@ public class ItemBitWrench extends ItemBitToolBase
 							catch (SpaceOccupied e)
 							{
 								if (bit != null && !bit.isAir() && bitAccess.getBitAt(x, y, z).isAir())
-								{
 									return EnumActionResult.FAIL;
-								}
 							}
 						}
 					}
@@ -263,22 +246,19 @@ public class ItemBitWrench extends ItemBitToolBase
 				{
 					stack.damageItem(1, player);
 					if (stack.getItemDamage() > config.maxDamage)
-					{
 						player.renderBrokenItemStack(stack);
-					}
 				}
 				if (!creativeMode && !world.isRemote && canInvert)
 				{
 					if (bitCountTake > 0)
-					{
-						BitStackHelper.removeOrAddInventoryBits(api, player, invertBitStack, bitCountTake, false);
-					}
+						BitHelper.removeOrAddInventoryBits(api, player, invertBitStack, bitCountTake, false);
+					
 					if (inversionBitTypes != null)
 					{
 						Cube cube = new Cube();
 						float f = 0.5F;
 						cube.init(pos.getX() + f, pos.getY() + f, pos.getZ() + f, f, 0, false, 0, false);
-						BitStackHelper.giveOrDropStacks(player, world, pos, cube, api, inversionBitTypes);
+						BitHelper.giveOrDropStacks(player, world, pos, cube, api, inversionBitTypes);
 					}
 					player.inventoryContainer.detectAndSendChanges();
 				}
@@ -297,9 +277,8 @@ public class ItemBitWrench extends ItemBitToolBase
 		{
 			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : (mode == 2 ? " front-to-back." : " their bits."))));
 			if (mode != 3)
-			{
 				tooltip.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
-			}
+			
 			tooltip.add("Mouse wheel while sneaking to cycle modes.");
 		}
 		else
@@ -311,10 +290,8 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public String getItemStackDisplayName(ItemStack stack)
 	{
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
-		String displayName = ("" + I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name")).trim()
-		+ " - " + MODE_TITLES[mode];
-		return displayName;
+		TextComponentTranslation textTrans = new TextComponentTranslation(getUnlocalizedNameInefficiently(stack) + ".name", new Object[0]);
+		return textTrans.getUnformattedText() + " - " + MODE_TITLES[stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0];
 	}
 	
 }

@@ -27,18 +27,18 @@ public class SlopedAsymmetricalShape extends AsymmetricalShape
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		float y = getBitPosY(pos, i, j, k);
-		if (isPointOffLine(y, centerY, b)) return false;
+		if (isPointOffLine(y, centerY, b))
+			return false;
+		
 		float dx = getBitPosDiffX(pos, i, j, centerX);
 		float dz = getBitPosDiffZ(pos, j, k, centerZ);
 		boolean inShape = isPointIn2DShape(y, b, b, dx, dz);
-		return sculptHollowShape ? inShape && !(isPointIn2DShape(y, aInset2, cInset2, dx, dz)
-				&& !isPointOffLine(y)) : inShape;
+		return sculptHollowShape ? inShape && !(isPointIn2DShape(y, aInset2, cInset2, dx, dz) && !isPointOffLine(y)) : inShape;
 	}
 	
 	protected boolean isPointOffLine(float val)
 	{
-		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 :
-			(!openEnds && val < insetMin) || val > insetMax2;
+		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 : (!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
 	protected boolean isPointIn2DShape(float val, float semiDiameter1, float semiDiameter2, float dv1, float dv2)

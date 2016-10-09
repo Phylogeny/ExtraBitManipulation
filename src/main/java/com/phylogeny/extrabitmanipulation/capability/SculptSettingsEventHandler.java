@@ -19,9 +19,7 @@ public class SculptSettingsEventHandler
 	public void onEntityConstruct(AttachCapabilitiesEvent.Entity event)
 	{
 		if (event.getEntity() instanceof EntityPlayer)
-		{
 			event.addCapability(new ResourceLocation(Reference.MOD_ID, "SculptSettingsHandler"), new SculptSettingsHandler());
-		}
 	}
 	
 	@SubscribeEvent
@@ -32,9 +30,7 @@ public class SculptSettingsEventHandler
 		{
 			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability((EntityPlayer) player);
 			if (cap != null)
-			{
 				cap.syncAllData((EntityPlayerMP) player);
-			}
 		}
 	}
 	
