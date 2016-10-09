@@ -380,6 +380,7 @@ public class BitHelper
 	{
 		if (world.isRemote)
 			return;
+		
 		NBTTagCompound nbtState;
 		NBTTagList nbtList = new NBTTagList();
 		for (int i = 0; i < 16; i++)
@@ -454,6 +455,11 @@ public class BitHelper
 	public static Block blockFromBytes(ByteBuf buffer)
 	{
 		return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(ByteBufUtils.readUTF8String(buffer), ByteBufUtils.readUTF8String(buffer)));
+	}
+	
+	public static String getBitName(ItemStack bitStack)
+	{
+		return bitStack.getDisplayName().replace("Chiseled Bit - ", "");
 	}
 	
 }

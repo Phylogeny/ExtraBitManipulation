@@ -12,6 +12,7 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.client.shape.Prism;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
+import com.phylogeny.extrabitmanipulation.helper.BitHelper;
 import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
@@ -237,7 +238,7 @@ public class ClientEventHandler
 												if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
 												{
 													printChatMessageWithDeletion((removeBits ? "Removing only " : "Sculpting with ")
-															+ bitStack.getDisplayName().substring(15));
+															+ BitHelper.getBitName(bitStack));
 												}
 											}
 											catch (CannotBeChiseled e)

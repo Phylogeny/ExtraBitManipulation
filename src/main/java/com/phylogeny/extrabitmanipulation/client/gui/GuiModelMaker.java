@@ -394,7 +394,7 @@ public class GuiModelMaker extends GuiContainer
 						IBitBrush bit = bitCount.getBit();
 						ItemStack bitStack = bit != null ? bit.getItemStack(1) : null;
 						boolean isAir = bit != null && bit.isAir();
-						String text = bitStack != null ? bitStack.getDisplayName().replace("Chiseled Bit - ", "") : (isAir ? "Empty / Air" : unmappedText);
+						String text = bitStack != null ? BitHelper.getBitName(bitStack) : (isAir ? "Empty / Air" : unmappedText);
 						if (bitStack != null || entry.isAir())
 						{
 							String text2 = TextFormatting.DARK_RED + (j == 0 ? "Bit:" : "	") + " " + TextFormatting.RESET;
