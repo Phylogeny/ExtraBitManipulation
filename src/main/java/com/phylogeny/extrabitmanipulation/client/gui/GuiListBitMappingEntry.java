@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker.BitCount;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
@@ -37,7 +37,7 @@ import net.minecraftforge.client.ForgeHooksClient;
 public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 {
 	private final Minecraft mc;
-	private final GuiModelMaker bitMappingScreen;
+	private final GuiModelingTool bitMappingScreen;
 	private IBlockState state;
 	private ArrayList<BitCount> bitCountArray;
 	private boolean isManuallyMapped, isInteractive;
@@ -46,7 +46,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 	public GuiListBitMappingEntry(GuiListBitMapping listBitMapping, IBlockState state,
 			ArrayList<BitCount> bitCountArray, boolean isManuallyMapped, boolean isInteractive)
 	{
-		bitMappingScreen = listBitMapping.getGuiModelMaker();
+		bitMappingScreen = listBitMapping.getGuiModelingTool();
 		mc = bitMappingScreen.mc;
 		this.state = state;
 		this.bitCountArray = bitCountArray;

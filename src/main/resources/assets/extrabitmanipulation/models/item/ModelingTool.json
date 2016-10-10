@@ -1,7 +1,7 @@
 {
     "parent": "builtin/generated",
     "textures": {
-        "layer0": "ExtraBitManipulation:items/ModelMaker"
+        "layer0": "ExtraBitManipulation:items/ModelingTool"
     },
     "display": {
         "thirdperson": {

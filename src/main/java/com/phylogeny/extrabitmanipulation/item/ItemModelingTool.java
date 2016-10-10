@@ -33,9 +33,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-public class ItemModelMaker extends ItemBitToolBase
+public class ItemModelingTool extends ItemBitToolBase
 {
-	public ItemModelMaker(String name)
+	public ItemModelingTool(String name)
 	{
 		super(name);
 	}
@@ -68,7 +68,7 @@ public class ItemModelMaker extends ItemBitToolBase
 		{
 			BitHelper.saveBlockStates(api, player, world, pos, nbt);
 			if (read)
-				player.openGui(ExtraBitManipulation.instance, GuiIDs.MODEL_MAKER_BIT_MAPPING, player.worldObj, 0, 0, 0);
+				player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
 		}
 		else
 		{

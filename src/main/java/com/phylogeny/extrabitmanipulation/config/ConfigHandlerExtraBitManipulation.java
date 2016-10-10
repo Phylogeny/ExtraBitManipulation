@@ -123,7 +123,7 @@ public class ConfigHandlerExtraBitManipulation
 					"If set to false, any block can be inverted and the bit type that empty bits will be filled with is whichever bit is " +
 					"the most prevalent in the block space. (default = false)");
 			
-			//MODEL MAKER SETTINGS
+			//MODELING TOOL SETTINGS
 			Configs.replacementBitsUnchiselable = getConfigReplacementBits(UNCHISELABLE_BLOCK_STATES, "minecraft:redstone_block", true, true, false);
 			Configs.replacementBitsInsufficient = getConfigReplacementBits(INSUFFICIENT_BITS, "minecraft:redstone_block", true, true, false);
 			

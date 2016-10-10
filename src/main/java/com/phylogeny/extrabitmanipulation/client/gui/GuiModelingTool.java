@@ -11,11 +11,11 @@ import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.container.ContainerModelMaker;
+import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
 import com.phylogeny.extrabitmanipulation.helper.BitHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker.BitCount;
-import com.phylogeny.extrabitmanipulation.packet.PacketModelMaker;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
+import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -47,12 +47,12 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
-public class GuiModelMaker extends GuiContainer
+public class GuiModelingTool extends GuiContainer
 {
-	public static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.GROUP_ID, "textures/guis/model_maker.png");
+	public static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.GROUP_ID, "textures/guis/modeling_tool.png");
 	private IChiselAndBitsAPI api;
 	private GuiListBitMapping bitMappingList;
-	private ItemStack modelMakerStack, previewStack, previewResultStack;
+	private ItemStack modelingToolStack, previewStack, previewResultStack;
 	private IBlockState[][][] stateArray;
 	private HashMap<IBlockState, Integer> stateMap;
 	private HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray;
@@ -63,21 +63,21 @@ public class GuiModelMaker extends GuiContainer
 	private static boolean stateMauallySelected;
 	private GuiTextField searchField;
 	
-	public GuiModelMaker(InventoryPlayer playerInventory, ItemStack modelMakerStack)
+	public GuiModelingTool(InventoryPlayer playerInventory, ItemStack modelingToolStack)
 	{
-		super(new ContainerModelMaker(playerInventory));
+		super(new ContainerModelingTool(playerInventory));
 		api = ChiselsAndBitsAPIAccess.apiInstance;
-		this.modelMakerStack = modelMakerStack;
+		this.modelingToolStack = modelingToolStack;
 		
 		xSize = 254;
 		ySize = 219;
 		
-		stateToBitMapPermanent = BitHelper.readStateToBitMapFromNBT(api, modelMakerStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);
-		blockToBitMapPermanent = BitHelper.readStateToBitMapFromNBT(api, modelMakerStack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
+		stateToBitMapPermanent = BitHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);
+		blockToBitMapPermanent = BitHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
 		
 		stateMap = new HashMap<IBlockState, Integer>();
 		stateArray = new IBlockState[16][16][16];
-		BitHelper.readStatesFromNBT(modelMakerStack.getTagCompound(), stateMap, stateArray);
+		BitHelper.readStatesFromNBT(modelingToolStack.getTagCompound(), stateMap, stateArray);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -152,8 +152,8 @@ public class GuiModelMaker extends GuiContainer
 			constructManualMaps();
 		}
 		String nbtKey = buttonStates.selected ? NBTKeys.STATE_TO_BIT_MAP_PERMANENT : NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT;
-		BitHelper.writeStateToBitMapToNBT(modelMakerStack, nbtKey, bitMapPermanent);
-		ExtraBitManipulation.packetNetwork.sendToServer(new PacketModelMaker(nbtKey, state, bit));
+		BitHelper.writeStateToBitMapToNBT(modelingToolStack, nbtKey, bitMapPermanent);
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketModelingTool(nbtKey, state, bit));
 		refreshList();
 	}
 	
@@ -173,8 +173,8 @@ public class GuiModelMaker extends GuiContainer
 		stateToBitCountArray = new HashMap<IBlockState, ArrayList<BitCount>>();
 		HashMap<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
 		EntityPlayer player = mc.thePlayer;
-		ItemModelMaker itemModelMaker = (ItemModelMaker) modelMakerStack.getItem();
-		if (itemModelMaker.mapBitsToStates(api, BitHelper.getInventoryBitCounts(api, player), stateMap,
+		ItemModelingTool itemModelingTool = (ItemModelingTool) modelingToolStack.getItem();
+		if (itemModelingTool.mapBitsToStates(api, BitHelper.getInventoryBitCounts(api, player), stateMap,
 				stateToBitCountArray, stateToBitMapPermanent, blockToBitMapPermanent, bitMap, player.capabilities.isCreativeMode).isEmpty())
 		{
 			IBitAccess bitAccess = api.createBitItem(null);
@@ -188,7 +188,7 @@ public class GuiModelMaker extends GuiContainer
 				}
 				stateToBitCountArrayCopy.put(entry.getKey(), bitCountArray);
 			}
-			previewResultStack = itemModelMaker.createModel(null, null, modelMakerStack, stateArray, stateToBitCountArrayCopy, bitAccess)
+			previewResultStack = itemModelingTool.createModel(null, null, modelingToolStack, stateArray, stateToBitCountArrayCopy, bitAccess)
 					? bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false) : null;
 		}
 		else
@@ -242,9 +242,9 @@ public class GuiModelMaker extends GuiContainer
 		previewStack = bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false);
 	}
 	
-	public ItemStack getModelMakerStack()
+	public ItemStack getModelingToolStack()
 	{
-		return modelMakerStack;
+		return modelingToolStack;
 	}
 	
 	public int getGuiTop()
@@ -266,7 +266,7 @@ public class GuiModelMaker extends GuiContainer
 		searchField.setEnableBackgroundDrawing(false);
 		searchField.setTextColor(-1);
 		constructStateToBitCountArray();
-		NBTTagCompound nbt = modelMakerStack.hasTagCompound() ? modelMakerStack.getTagCompound() : new NBTTagCompound();
+		NBTTagCompound nbt = modelingToolStack.hasTagCompound() ? modelingToolStack.getTagCompound() : new NBTTagCompound();
 		int slotHeight = 24;
 		for (int i = 0; i < tabButtons.length; i++)
 		{

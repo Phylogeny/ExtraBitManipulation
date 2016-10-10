@@ -5,7 +5,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
-import com.phylogeny.extrabitmanipulation.packet.PacketModelMaker;
+import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
@@ -37,7 +37,7 @@ public class PacketRegistration
 		registerPacket(PacketSetWallThickness.Handler.class, PacketSetWallThickness.class, Side.SERVER);
 		registerPacket(PacketSetBitStack.Handler.class, PacketSetBitStack.class, Side.SERVER);
 		registerPacket(PacketSetMode.Handler.class, PacketSetMode.class, Side.SERVER);
-		registerPacket(PacketModelMaker.Handler.class, PacketModelMaker.class, Side.SERVER);
+		registerPacket(PacketModelingTool.Handler.class, PacketModelingTool.class, Side.SERVER);
 		registerPacket(PacketCursorStack.Handler.class, PacketCursorStack.class, Side.SERVER);
 		registerPacket(PacketSetTabAndStateBlockButton.Handler.class, PacketSetTabAndStateBlockButton.class, Side.SERVER);
 	}

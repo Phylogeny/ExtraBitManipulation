@@ -7,7 +7,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemsExtraBitManipulation
 {
-	public static Item DiamondNugget, BitWrench, SculptingLoop, SculptingSquare, SculptingSpadeCurved, SculptingSpadeSquared, ModelMaker,
+	public static Item DiamondNugget, BitWrench, SculptingLoop, SculptingSquare, SculptingSpadeCurved, SculptingSpadeSquared, ModelingTool,
 		BitWrenchHead, SculptingLoopHead, SculptingSquareHead, SculptingSpadeCurvedHead, SculptingSpadeSquaredHead;
 	
 	public static void itemsInit()
@@ -28,7 +28,7 @@ public class ItemsExtraBitManipulation
 		SculptingSquare = new ItemSculptingTool(false, true, "SculptingSquare");
 		SculptingSpadeCurved = new ItemSculptingTool(true, false, "SculptingSpadeCurved");
 		SculptingSpadeSquared = new ItemSculptingTool(false, false, "SculptingSpadeSquared");
-		ModelMaker = new ItemModelMaker("ModelMaker");
+		ModelingTool = new ItemModelingTool("ModelingTool");
 		BitWrenchHead = new ItemExtraBitManipulationBase("BitWrenchHead"); 
 		SculptingLoopHead = new ItemExtraBitManipulationBase("SculptingLoopHead");
 		SculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
@@ -39,7 +39,7 @@ public class ItemsExtraBitManipulation
 		registerItemAndDefaultRecipe(SculptingSquare, "Straight Sculpting Wire", true, false);
 		registerItemAndDefaultRecipe(SculptingSpadeCurved, "Curved Sculpting Spade", true, false);
 		registerItemAndDefaultRecipe(SculptingSpadeSquared, "Flat Sculpting Spade", true, false);
-		registerItemAndDefaultRecipe(ModelMaker, "Model Maker", true, false);
+		registerItemAndDefaultRecipe(ModelingTool, "Modeling Tool", true, false);
 		registerItemAndDefaultRecipe(BitWrenchHead, "Bit Wrench Head", true, true,
 				"nuggetDiamond", "", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "", "nuggetDiamond", "");
 		registerItemAndDefaultRecipe(SculptingLoopHead, "Curved Sculpting Wire Head", true, true,

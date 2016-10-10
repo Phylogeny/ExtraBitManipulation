@@ -32,12 +32,12 @@ public class GuiButtonTab extends GuiButtonBase
 		
 		if (uWidth > 0 && vHeight > 0)
 		{
-			mc.getTextureManager().bindTexture(GuiModelMaker.GUI_TEXTURE);
+			mc.getTextureManager().bindTexture(GuiModelingTool.GUI_TEXTURE);
 			drawScaledCustomSizeModalRect(xPosition + 4 + getOffsetX(), yPosition + 4, u, v, uWidth, vHeight, 19, 18, 256, 256);
 		}
 		if (selected)
 		{
-			mc.getTextureManager().bindTexture(GuiModelMaker.GUI_TEXTURE);
+			mc.getTextureManager().bindTexture(GuiModelingTool.GUI_TEXTURE);
 			drawTexturedModalRect(xPosition - 2, yPosition, 67, 219, 29, 26);
 		}
 	}

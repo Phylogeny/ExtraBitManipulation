@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker.BitCount;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 
 import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.block.Block;
@@ -20,16 +20,16 @@ import net.minecraft.util.MathHelper;
 
 public class GuiListBitMapping extends GuiListExtended
 {
-	private final GuiModelMaker guiModelMaker;
+	private final GuiModelingTool guiModelingTool;
 	private final List<GuiListBitMappingEntry> entries = Lists.<GuiListBitMappingEntry>newArrayList();
 	
-	public GuiListBitMapping(GuiModelMaker guiModelMaker, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
+	public GuiListBitMapping(GuiModelingTool guiModelingTool, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
 	{
-		super(guiModelMaker.mc, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
-		this.guiModelMaker = guiModelMaker;
+		super(guiModelingTool.mc, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
+		this.guiModelingTool = guiModelingTool;
 		headerPadding += 1;
-		left = guiModelMaker.getGuiLeft() + 18;
-		right = guiModelMaker.getGuiLeft() + 93;
+		left = guiModelingTool.getGuiLeft() + 18;
+		right = guiModelingTool.getGuiLeft() + 93;
 	}
 	
 	@Override
@@ -139,13 +139,13 @@ public class GuiListBitMapping extends GuiListExtended
 	
 	protected void drawOverlays()
 	{
-		mc.getTextureManager().bindTexture(guiModelMaker.GUI_TEXTURE);
+		mc.getTextureManager().bindTexture(guiModelingTool.GUI_TEXTURE);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		int left = guiModelMaker.getGuiLeft() - 24;
-		int top = guiModelMaker.getGuiTop();
-		guiModelMaker.drawTexturedModalRect(left, top, 0, 0, 254, 21);
+		int left = guiModelingTool.getGuiLeft() - 24;
+		int top = guiModelingTool.getGuiTop();
+		guiModelingTool.drawTexturedModalRect(left, top, 0, 0, 254, 21);
 		int offsetY = 121;
-		guiModelMaker.drawTexturedModalRect(left, top + offsetY, 0, offsetY, 254, 219 - offsetY);
+		guiModelingTool.drawTexturedModalRect(left, top + offsetY, 0, offsetY, 254, 219 - offsetY);
 	}
 	
 	@Override
@@ -163,7 +163,7 @@ public class GuiListBitMapping extends GuiListExtended
 	@Override
 	protected int getScrollBarX()
 	{
-		return guiModelMaker.getGuiLeft() + 85;
+		return guiModelingTool.getGuiLeft() + 85;
 	}
 	
 	@Override
@@ -184,9 +184,9 @@ public class GuiListBitMapping extends GuiListExtended
 		return false;
 	}
 	
-	public GuiModelMaker getGuiModelMaker()
+	public GuiModelingTool getGuiModelingTool()
 	{
-		return guiModelMaker;
+		return guiModelingTool;
 	}
 	
 }
