@@ -44,7 +44,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiModelingTool extends GuiContainer
 {
@@ -424,13 +423,13 @@ public class GuiModelingTool extends GuiContainer
 							hoverTextList.add(TextFormatting.AQUA + "  - Control-click with empty cursor to remove mapping.");
 						}
 					}
-					GuiUtils.drawHoveringText(hoverTextList, mouseX, mouseY, width, height, -1, mc.fontRendererObj);
+					drawHoveringText(hoverTextList, mouseX, mouseY, mc.fontRendererObj);
 				}
 				else if (slot.isVecInside(mousePos))
 				{
-					GuiUtils.drawHoveringText(Arrays.<String>asList(new String[] {TextFormatting.DARK_RED + (buttonStates.selected ? "State" : "Block")
+					drawHoveringText(Arrays.<String>asList(new String[] {TextFormatting.DARK_RED + (buttonStates.selected ? "State" : "Block")
 							+ ": " + TextFormatting.RESET + (buttonStates.selected ? entry.getState().toString()
-									: Block.REGISTRY.getNameForObject(entry.getState().getBlock()))}), mouseX, mouseY, width, height, -1, mc.fontRendererObj);
+									: Block.REGISTRY.getNameForObject(entry.getState().getBlock()))}), mouseX, mouseY, mc.fontRendererObj);
 				}
 				RenderHelper.disableStandardItemLighting();
 			}
@@ -439,13 +438,12 @@ public class GuiModelingTool extends GuiContainer
 		{
 			List<String> textList = Arrays.<String>asList(new String[] {buttonStates.isMouseOver()
 					? buttonStates.getHoverText() : buttonBlocks.getHoverText()});
-			GuiUtils.drawHoveringText(textList, mouseX, mouseY, width, height, -1, mc.fontRendererObj);
+			drawHoveringText(textList, mouseX, mouseY, mc.fontRendererObj);
 		}
 		for (int i = 0; i < tabButtons.length; i++)
 		{
 			if (tabButtons[i].isMouseOver())
-				GuiUtils.drawHoveringText(Arrays.<String>asList(new String[] {tabButtons[i].getHoverText()}),
-						mouseX, mouseY, width, height, -1, mc.fontRendererObj);
+				drawHoveringText(Arrays.<String>asList(new String[] {tabButtons[i].getHoverText()}), mouseX, mouseY, mc.fontRendererObj);
 		}
 	}
 	
