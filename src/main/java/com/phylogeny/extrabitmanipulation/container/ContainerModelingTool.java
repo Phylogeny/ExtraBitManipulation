@@ -9,10 +9,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerModelMaker extends Container
+public class ContainerModelingTool extends Container
 {
 	
-	public ContainerModelMaker(IInventory playerInventory)
+	public ContainerModelingTool(IInventory playerInventory)
 	{
 		for (int k = 0; k < 3; ++k)
 		{

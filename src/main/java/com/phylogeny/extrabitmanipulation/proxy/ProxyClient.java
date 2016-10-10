@@ -26,7 +26,7 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.SculptingSquare);
 		register(ItemsExtraBitManipulation.SculptingSpadeCurved);
 		register(ItemsExtraBitManipulation.SculptingSpadeSquared);
-		register(ItemsExtraBitManipulation.ModelMaker);
+		register(ItemsExtraBitManipulation.ModelingTool);
 		register(ItemsExtraBitManipulation.BitWrenchHead);
 		register(ItemsExtraBitManipulation.SculptingLoopHead);
 		register(ItemsExtraBitManipulation.SculptingSquareHead);

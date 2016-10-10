@@ -15,7 +15,7 @@ import net.minecraft.item.Item;
 
 public class Configs
 {
-	//MODEL MAKER SETTINGS
+	//MODELING TOOL SETTINGS
 		public static ConfigReplacementBits replacementBitsUnchiselable;
 		public static ConfigReplacementBits replacementBitsInsufficient;
 		
