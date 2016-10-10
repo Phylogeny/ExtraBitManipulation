@@ -30,24 +30,24 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	{
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
 		
-		List<IConfigElement> configElementsModelMaker = new ArrayList<IConfigElement>();
+		List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
 		List<IConfigElement> configElementsTooSettings = new ArrayList<IConfigElement>();
 		String textReplacementBits = "Configures the procedures for finding replacement bits ";
 		String textUnchiselable = "when a blockstate is unchiselable";
 		String textInsufficient = "when the player has insufficient bits for a chiselable blockstate";
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.UNCHISELABLE_BLOCK_STATES,
-				textReplacementBits + textUnchiselable, configElementsModelMaker);
+				textReplacementBits + textUnchiselable, configElementsModelingTool);
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.INSUFFICIENT_BITS,
-				textReplacementBits + textInsufficient, configElementsModelMaker);
-		addElementsToDummyElement("Model Maker Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
-				configElementsTooSettings, configElementsModelMaker);
+				textReplacementBits + textInsufficient, configElementsModelingTool);
+		addElementsToDummyElement("Modeling Tool Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
+				configElementsTooSettings, configElementsModelingTool);
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_WRENCH_SETTINGS,
 				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, " +
 				"and the way bit removal/addition areas are displayed. (applies to all sculpting tools -- see 'Item Properties' " +
 				"menu for item-specific settings)", configElementsTooSettings);
 		addElementsToDummyElement("Tool Settings", "Configures sculpting dimensions, wrench inversion mode, the way bits are " +
 				"handled when removed from the world, and the way bit removal/addition areas are displayed. (applies to all sculpting " +
-				"tools -- see 'Item Properties' menu for item-specific settings), as well as the way the Model Maker finds replacement bits",
+				"tools -- see 'Item Properties' menu for item-specific settings), as well as the way the Modeling Tool finds replacement bits",
 				configElements, configElementsTooSettings);
 		
 		addDummyElementsOfChildElementSetsToDummyElement(configElements, false,

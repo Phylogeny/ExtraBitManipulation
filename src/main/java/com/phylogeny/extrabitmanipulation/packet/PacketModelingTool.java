@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
@@ -20,15 +20,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketModelMaker implements IMessage
+public class PacketModelingTool implements IMessage
 {
 	private IBlockState state;
 	private IBitBrush bit;
 	private String nbtKey;
 	
-	public PacketModelMaker() {}
+	public PacketModelingTool() {}
 	
-	public PacketModelMaker(String nbtKey, IBlockState state, IBitBrush bit)
+	public PacketModelingTool(String nbtKey, IBlockState state, IBitBrush bit)
 	{
 		this.nbtKey = nbtKey;
 		this.state = state;
@@ -66,10 +66,10 @@ public class PacketModelMaker implements IMessage
 		}
 	}
 	
-	public static class Handler implements IMessageHandler<PacketModelMaker, IMessage>
+	public static class Handler implements IMessageHandler<PacketModelingTool, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketModelMaker message, final MessageContext ctx)
+		public IMessage onMessage(final PacketModelingTool message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -79,7 +79,7 @@ public class PacketModelMaker implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack itemStack = player.inventory.getCurrentItem();
-					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelMaker)
+					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
 					{
 						HashMap<IBlockState, IBitBrush> bitMapPermanent = BitHelper.readStateToBitMapFromNBT(ChiselsAndBitsAPIAccess.apiInstance,
 								itemStack, message.nbtKey);

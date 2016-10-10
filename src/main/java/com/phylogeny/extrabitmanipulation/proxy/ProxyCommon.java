@@ -5,13 +5,13 @@ import com.phylogeny.extrabitmanipulation.capability.ISculptSettingsHandler;
 import com.phylogeny.extrabitmanipulation.capability.SculptSettingsEventHandler;
 import com.phylogeny.extrabitmanipulation.capability.SculptSettingsHandler;
 import com.phylogeny.extrabitmanipulation.capability.Storage;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiModelMaker;
+import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.container.ContainerModelMaker;
+import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemModelMaker;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
@@ -50,25 +50,25 @@ public class ProxyCommon implements IGuiHandler
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		return id == GuiIDs.MODEL_MAKER_BIT_MAPPING && getModelMakerStack(player) != null ? new ContainerModelMaker(player.inventory) : null;
+		return id == GuiIDs.MODELING_TOOL_BIT_MAPPING && getModelingToolStack(player) != null ? new ContainerModelingTool(player.inventory) : null;
 	}
 	
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		if (id == GuiIDs.MODEL_MAKER_BIT_MAPPING)
+		if (id == GuiIDs.MODELING_TOOL_BIT_MAPPING)
 		{
-			ItemStack modelMakerStack = getModelMakerStack(player);
-			if (modelMakerStack != null)
-				return new GuiModelMaker(player.inventory, modelMakerStack);
+			ItemStack modelingToolStack = getModelingToolStack(player);
+			if (modelingToolStack != null)
+				return new GuiModelingTool(player.inventory, modelingToolStack);
 		}
 		return null;
 	}
 	
-	private ItemStack getModelMakerStack(EntityPlayer player)
+	private ItemStack getModelingToolStack(EntityPlayer player)
 	{
 		ItemStack itemStack = player.getHeldItemMainhand();
-		return itemStack != null && itemStack.getItem() instanceof ItemModelMaker ? itemStack : null;
+		return itemStack != null && itemStack.getItem() instanceof ItemModelingTool ? itemStack : null;
 	}
 	
 }
