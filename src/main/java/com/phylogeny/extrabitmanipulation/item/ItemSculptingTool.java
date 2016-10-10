@@ -270,9 +270,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				{
 					setBit = api.createBrush(setBitStack);
 					if (!removeBits && !creativeMode)
-					{
 						initialpossibleUses = BitHelper.countInventoryBits(api, player, setBitStack);
-					}
 				}
 				catch (InvalidBitItem e) {}
 				int remainingUses = nbt.getInteger(NBTKeys.REMAINING_USES);
@@ -301,9 +299,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 				{
 					api.endUndoGroup(player);
 					if (!Configs.dropBitsPerBlock)
-					{
 						BitHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
-					}
+					
 					int change = initialpossibleUses - possibleUses;
 					ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
 					int newRemainingUses = remainingUses - (config.takesDamage ? change : 0);

@@ -310,9 +310,7 @@ public class BitHelper
 			for (IBlockState state : stateToBitMap.keySet())
 			{
 				nbtEntry = new NBTTagCompound();
-				ResourceLocation regName = state.getBlock().getRegistryName();
-				nbtEntry.setString(NBTKeys.STATE_DOMAIN, regName.getResourceDomain());
-				nbtEntry.setString(NBTKeys.STATE_PATH, regName.getResourcePath());
+				writeBlockToNBT(nbtEntry, state);
 				nbtEntry.setInteger(NBTKeys.STATE_META, state.getBlock().getMetaFromState(state));
 				ItemStackHelper.saveStackToNBT(nbtEntry, stateToBitMap.get(state).getItemStack(1), NBTKeys.BIT_STACK);
 				nbtList.appendTag(nbtEntry);
@@ -395,9 +393,7 @@ public class BitHelper
 						state = ((IMultiStateBlock) state.getBlock()).getPrimaryState(world, pos2);
 					
 					nbtState = new NBTTagCompound();
-					ResourceLocation regName = state.getBlock().getRegistryName();
-					nbtState.setString(NBTKeys.STATE_DOMAIN, regName.getResourceDomain());
-					nbtState.setString(NBTKeys.STATE_PATH, regName.getResourcePath());
+					writeBlockToNBT(nbtState, state);
 					nbtState.setInteger(NBTKeys.STATE_META, state.getBlock().getMetaFromState(state));
 					nbtList.appendTag(nbtState);
 				}
@@ -424,6 +420,13 @@ public class BitHelper
 			return Blocks.AIR.getDefaultState();
 		
 		return block.getStateFromMeta(nbt.getInteger(NBTKeys.STATE_META));
+	}
+	
+	private static void writeBlockToNBT(NBTTagCompound nbtState, IBlockState state)
+	{
+		ResourceLocation regName = state.getBlock().getRegistryName();
+		nbtState.setString(NBTKeys.STATE_DOMAIN, regName.getResourceDomain());
+		nbtState.setString(NBTKeys.STATE_PATH, regName.getResourcePath());
 	}
 	
 	public static Block readBlockFromNBT(NBTTagCompound nbt)
