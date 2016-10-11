@@ -9,18 +9,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
-import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBag;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import mod.chiselsandbits.api.IMultiStateBlock;
 import mod.chiselsandbits.api.ItemType;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
@@ -390,8 +389,8 @@ public class BitHelper
 				{
 					BlockPos pos2 = new BlockPos(pos.getX() - 8 + i, pos.getY() - 8 + j, pos.getZ() - 8 + k);
 					IBlockState state = world.getBlockState(pos2);
-					if (api.isBlockChiseled(world, pos2))
-						state = getPrimaryState(api, world, pos2);
+					if (api.isBlockChiseled(world, pos2) && state.getBlock() instanceof IMultiStateBlock)
+						state = ((IMultiStateBlock) state.getBlock()).getPrimaryState(world, pos2);
 					
 					nbtState = new NBTTagCompound();
 					writeBlockToNBT(nbtState, state);
@@ -402,48 +401,6 @@ public class BitHelper
 		}
 		nbt.setTag(NBTKeys.SAVED_STATES, nbtList);
 		player.inventoryContainer.detectAndSendChanges();
-	}
-	
-	private static IBlockState getPrimaryState(IChiselAndBitsAPI api, World world, BlockPos pos2)
-	{
-		IBitAccess bitAccess;
-		try
-		{
-			bitAccess = api.getBitAccess(world, pos2);
-		}
-		catch (CannotBeChiseled e)
-		{
-			return Blocks.AIR.getDefaultState();
-		}
-		HashMap<IBlockState, Integer> stateMap = new HashMap<IBlockState, Integer>();
-		for (int i = 0; i < 16; i++)
-		{
-			for (int j = 0; j < 16; j++)
-			{
-				for (int k = 0; k < 16; k++)
-				{
-					IBlockState state = bitAccess.getBitAt(i, j, k).getState();
-					if (state == null || state == Blocks.AIR.getDefaultState())
-						continue;
-					
-					if (!stateMap.containsKey(state))
-					{
-						stateMap.put(state, 1);
-					}
-					else
-					{
-						stateMap.put(state, stateMap.get(state) + 1);
-					}
-				}
-			}
-		}
-		Integer max = Collections.max(stateMap.values());
-		for(Entry<IBlockState, Integer> entry : stateMap.entrySet())
-		{
-			if (entry.getValue() == max)
-				return entry.getKey();
-		}
-		return Blocks.AIR.getDefaultState();
 	}
 	
 	public static boolean isAir(IBlockState state)
