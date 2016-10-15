@@ -335,7 +335,6 @@ public class ClientEventHandler
 							if (target.typeOfHit == RayTraceResult.Type.BLOCK)
 							{
 								BlockPos pos = target.getBlockPos();
-								EnumFacing side = target.sideHit;
 								Vec3d hit = target.hitVec;
 								boolean swingTool = true;
 								if (drawnMode && event.isButtonstate() && drawnStartPointModelingTool != null)
