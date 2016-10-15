@@ -20,19 +20,19 @@ public class ProxyClient extends ProxyCommon
 	{
 		super.preinit(event);
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-		register(ItemsExtraBitManipulation.DiamondNugget);
-		register(ItemsExtraBitManipulation.BitWrench);
-		register(ItemsExtraBitManipulation.SculptingLoop);
-		register(ItemsExtraBitManipulation.SculptingSquare);
-		register(ItemsExtraBitManipulation.SculptingSpadeCurved);
-		register(ItemsExtraBitManipulation.SculptingSpadeSquared);
-		register(ItemsExtraBitManipulation.ModelingTool);
-		register(ItemsExtraBitManipulation.ModelingToolHead);
-		register(ItemsExtraBitManipulation.BitWrenchHead);
-		register(ItemsExtraBitManipulation.SculptingLoopHead);
-		register(ItemsExtraBitManipulation.SculptingSquareHead);
-		register(ItemsExtraBitManipulation.SculptingSpadeCurvedHead);
-		register(ItemsExtraBitManipulation.SculptingSpadeSquaredHead);
+		register(ItemsExtraBitManipulation.diamondNugget);
+		register(ItemsExtraBitManipulation.bitWrench);
+		register(ItemsExtraBitManipulation.sculptingLoop);
+		register(ItemsExtraBitManipulation.sculptingSquare);
+		register(ItemsExtraBitManipulation.sculptingSpadeCurved);
+		register(ItemsExtraBitManipulation.sculptingSpadeSquared);
+		register(ItemsExtraBitManipulation.modelingTool);
+		register(ItemsExtraBitManipulation.modelingToolHead);
+		register(ItemsExtraBitManipulation.bitWrenchHead);
+		register(ItemsExtraBitManipulation.sculptingLoopHead);
+		register(ItemsExtraBitManipulation.sculptingSquareHead);
+		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
+		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
 	}
 	
 	private void register(Item item)
