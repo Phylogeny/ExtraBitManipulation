@@ -44,8 +44,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	{
 		initialize(stack);
 		NBTTagCompound nbt = stack.getTagCompound();
-		int mode = nbt.getInteger(NBTKeys.SCULPT_MODE);
-		nbt.setInteger(NBTKeys.SCULPT_MODE, BitToolSettingsHelper.cycleData(mode, forward, MODE_TITLES.length));
+		nbt.setInteger(NBTKeys.WRENCH_MODE, BitToolSettingsHelper.cycleData(nbt.getInteger(NBTKeys.WRENCH_MODE), forward, MODE_TITLES.length));
 	}
 	
 	@Override
@@ -54,7 +53,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.SCULPT_MODE);
+		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE);
 		if (api.isBlockChiseled(world, pos))
 		{
 			IBitAccess bitAccess;
@@ -264,7 +263,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SCULPT_MODE) : 0;
+		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE) : 0;
 		String text = MODE_TEXT[mode];
 		if (GuiScreen.isShiftKeyDown())
 		{
@@ -284,7 +283,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	public String getItemStackDisplayName(ItemStack stack)
 	{
 		TextComponentTranslation textTrans = new TextComponentTranslation(getUnlocalizedNameInefficiently(stack) + ".name", new Object[0]);
-		return textTrans.getUnformattedText() + " - " + MODE_TITLES[stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.SCULPT_MODE) : 0];
+		return textTrans.getUnformattedText() + " - " + MODE_TITLES[stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE) : 0];
 	}
 	
 }

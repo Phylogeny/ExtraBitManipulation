@@ -13,15 +13,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSyncAllSculptingData implements IMessage
+public class PacketSyncAllBitToolData implements IMessage
 {
 	private int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
 	private boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	private ItemStack setBitWire, setBitSpade;
 	
-	public PacketSyncAllSculptingData() {}
+	public PacketSyncAllBitToolData() {}
 	
-	public PacketSyncAllSculptingData(int modelAreaMode, int modelSnapMode, boolean modelGuiOpen, int sculptMode, int direction, int shapeTypeCurved,
+	public PacketSyncAllBitToolData(int modelAreaMode, int modelSnapMode, boolean modelGuiOpen, int sculptMode, int direction, int shapeTypeCurved,
 			int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
 			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
 	{
@@ -82,10 +82,10 @@ public class PacketSyncAllSculptingData implements IMessage
 		setBitSpade = ItemStackHelper.stackFromBytes(buffer);
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSyncAllSculptingData, IMessage>
+	public static class Handler implements IMessageHandler<PacketSyncAllBitToolData, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSyncAllSculptingData message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSyncAllBitToolData message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = Minecraft.getMinecraft();
 			mainThread.addScheduledTask(new Runnable()

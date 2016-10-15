@@ -73,9 +73,9 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	{
 		String dataCatagoryLower = dataCatagory.toLowerCase();
 		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
-		String defaults = ConfigHandlerExtraBitManipulation.SCULPTING_DEFAULT_VALUES;
-		String storageLoc = ConfigHandlerExtraBitManipulation.SCULPTING_PER_TOOL_OR_PER_PLAYER;
-		String inChat = ConfigHandlerExtraBitManipulation.SCULPTING_DISPLAY_IN_CHAT;
+		String defaults = ConfigHandlerExtraBitManipulation.BIT_TOOL_DEFAULT_VALUES;
+		String storageLoc = ConfigHandlerExtraBitManipulation.BIT_TOOL_PER_TOOL_OR_PER_PLAYER;
+		String inChat = ConfigHandlerExtraBitManipulation.BIT_TOOL_DISPLAY_IN_CHAT;
 		addChildElementsToDummyElement(defaults, defaults + " " + dataCatagory, "Configures " + dataCatagoryLower + " data default values.", childElements);
 		addChildElementsToDummyElement(storageLoc, storageLoc + " " + dataCatagory, "Configures whether " + dataCatagoryLower +
 				" data is stored/assessed on/from individual tools or on/from the player.", childElements);

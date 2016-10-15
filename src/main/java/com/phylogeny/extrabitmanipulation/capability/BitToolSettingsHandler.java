@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllSculptingData;
+import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllBitToolData;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
@@ -128,7 +128,7 @@ public class BitToolSettingsHandler implements ICapabilityProvider, IBitToolSett
 	@Override
 	public void syncAllData(EntityPlayerMP player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(modelAreaMode, modelSnapMode, modelGuiOpen,
+		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllBitToolData(modelAreaMode, modelSnapMode, modelGuiOpen,
 				sculptMode, direction, shapeTypeCurved, shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter,
 				sculptHollowShapeWire, sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
 	}

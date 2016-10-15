@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.reference;
 
 public class NBTKeys
 {
+	public static final String WRENCH_MODE = "wrenchMode";
 	public static final String MODEL_AREA_MODE = "modelAreaMode";
 	public static final String MODEL_SNAP_MODE = "modelSnapMode";
 	public static final String MODEL_GUI_OPEN = "modelGuiOpen";

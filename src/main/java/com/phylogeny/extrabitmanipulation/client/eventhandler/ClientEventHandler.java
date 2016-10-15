@@ -543,7 +543,7 @@ public class ClientEventHandler
 					Vec3d hit = target.hitVec;
 					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
 					{
-						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.SCULPT_MODE);
+						int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE);
 						frameCounter++;
 						int side = dir.ordinal();
 						boolean upDown = side <= 1;
