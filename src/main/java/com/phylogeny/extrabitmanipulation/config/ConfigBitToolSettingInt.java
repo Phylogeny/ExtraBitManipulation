@@ -1,10 +1,10 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-public class ConfigSculptSettingInt extends ConfigSculptSettingBase
+public class ConfigBitToolSettingInt extends ConfigBitToolSettingBase
 {
 	private int defaultValue;
 	
-	public ConfigSculptSettingInt(boolean perTool, boolean displayInChat, int defaultValue)
+	public ConfigBitToolSettingInt(boolean perTool, boolean displayInChat, int defaultValue)
 	{
 		super(perTool, displayInChat);
 		this.defaultValue = defaultValue;

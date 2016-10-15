@@ -4,7 +4,7 @@ import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
-import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerPropertiesHandler;
+import com.phylogeny.extrabitmanipulation.extendedproperties.BitToolSettingsPlayerPropertiesHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
@@ -34,7 +34,7 @@ public class ProxyCommon implements IGuiHandler
 	public void init()
 	{
 		RecipesExtraBitManipulation.recipeInit();
-		MinecraftForge.EVENT_BUS.register(new SculptSettingsPlayerPropertiesHandler());
+		MinecraftForge.EVENT_BUS.register(new BitToolSettingsPlayerPropertiesHandler());
 		Configs.sculptSetBitWire.init();
 		Configs.sculptSetBitSpade.init();
 		Configs.replacementBitsUnchiselable.defaultReplacementBit.init();

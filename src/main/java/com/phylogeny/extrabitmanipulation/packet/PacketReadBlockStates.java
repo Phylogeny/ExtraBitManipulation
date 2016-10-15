@@ -1,11 +1,13 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3i;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.Vec3;
@@ -14,15 +16,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketSculpt extends PacketBlockInteraction implements IMessage
+public class PacketReadBlockStates extends PacketBlockInteraction implements IMessage
 {
-	private Vec3 drawnStartPoint;
+	private Vec3i drawnStartPoint;
 	
-	public PacketSculpt() {}
+	public PacketReadBlockStates() {}
 	
-	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3 hit, Vec3 drawnStartPoint)
+	public PacketReadBlockStates(BlockPos pos, Vec3 hit, Vec3i drawnStartPoint)
 	{
-		super(pos, side, hit);
+		super(pos, EnumFacing.UP, hit);
 		this.drawnStartPoint = drawnStartPoint;
 	}
 	
@@ -34,9 +36,9 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 		buffer.writeBoolean(notNull);
 		if (notNull)
 		{
-			buffer.writeDouble(drawnStartPoint.xCoord);
-			buffer.writeDouble(drawnStartPoint.yCoord);
-			buffer.writeDouble(drawnStartPoint.zCoord);
+			buffer.writeInt(drawnStartPoint.getX());
+			buffer.writeInt(drawnStartPoint.getY());
+			buffer.writeInt(drawnStartPoint.getZ());
 		}
 	}
 	
@@ -45,13 +47,13 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 	{
 		super.fromBytes(buffer);
 		if (buffer.readBoolean())
-			drawnStartPoint = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+			drawnStartPoint = new Vec3i(buffer.readInt(), buffer.readInt(), buffer.readInt());
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSculpt, IMessage>
+	public static class Handler implements IMessageHandler<PacketReadBlockStates, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSculpt message, final MessageContext ctx)
+		public IMessage onMessage(final PacketReadBlockStates message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -61,9 +63,8 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (stack != null && stack.getItem() instanceof ItemSculptingTool && (!player.isSneaking() || message.drawnStartPoint != null))
-						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj,
-								message.getPos(), message.getSide(), message.getHit(), message.drawnStartPoint);
+					if (stack != null && stack.getItem() instanceof ItemModelingTool && (!player.isSneaking() || message.drawnStartPoint != null))
+						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.getPos(), message.getHit(), message.drawnStartPoint);
 				}
 			});
 			return null;

@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
-import com.phylogeny.extrabitmanipulation.helper.BitHelper;
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.shape.Cube;
@@ -43,8 +42,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	{
 		initialize(stack);
 		NBTTagCompound nbt = stack.getTagCompound();
-		int mode = nbt.getInteger(NBTKeys.MODE);
-		nbt.setInteger(NBTKeys.MODE, SculptSettingsHelper.cycleData(mode, forward, MODE_TITLES.length));
+		nbt.setInteger(NBTKeys.WRENCH_MODE, BitToolSettingsHelper.cycleData(nbt.getInteger(NBTKeys.WRENCH_MODE), forward, MODE_TITLES.length));
 	}
 	
 	@Override
@@ -53,7 +51,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.MODE);
+		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE);
 		if (api.isBlockChiseled(world, pos))
 		{
 			IBitAccess bitAccess;
@@ -169,7 +167,7 @@ public class ItemBitWrench extends ItemBitToolBase
 				if (bitCountTake > 0)
 				{
 					invertBitStack = invertBit.getItemStack(1);
-					if (invertBitStack.getItem() == null || BitHelper.countInventoryBits(api, player, invertBitStack) < bitCountTake)
+					if (invertBitStack.getItem() == null || BitInventoryHelper.countInventoryBits(api, player, invertBitStack) < bitCountTake)
 						canInvert = false;
 				}
 			}
@@ -239,24 +237,18 @@ public class ItemBitWrench extends ItemBitToolBase
 					}
 				}
 				bitAccess.commitChanges(true);
-				ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
-				if (config.takesDamage)
-				{
-					stack.damageItem(1, player);
-					if (stack.getItemDamage() > config.maxDamage)
-						player.renderBrokenItemStack(stack);
-				}
+				damageTool(stack, player);
 				if (!creativeMode && !world.isRemote && canInvert)
 				{
 					if (bitCountTake > 0)
-						BitHelper.removeOrAddInventoryBits(api, player, invertBitStack, bitCountTake, false);
+						BitInventoryHelper.removeOrAddInventoryBits(api, player, invertBitStack, bitCountTake, false);
 					
 					if (inversionBitTypes != null)
 					{
 						Cube cube = new Cube();
 						float f = 0.5F;
 						cube.init(pos.getX() + f, pos.getY() + f, pos.getZ() + f, f, 0, false, 0, false);
-						BitHelper.giveOrDropStacks(player, world, pos, cube, api, inversionBitTypes);
+						BitInventoryHelper.giveOrDropStacks(player, world, pos, cube, api, inversionBitTypes);
 					}
 					player.inventoryContainer.detectAndSendChanges();
 				}
@@ -269,7 +261,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0;
+		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE) : 0;
 		String text = MODE_TEXT[mode];
 		if (GuiScreen.isShiftKeyDown())
 		{
@@ -289,7 +281,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	public String getItemStackDisplayName(ItemStack stack)
 	{
 		return ("" + StatCollector.translateToLocal(getUnlocalizedNameInefficiently(stack) + ".name")).trim()
-				+ " - " + MODE_TITLES[stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.MODE) : 0];
+				+ " - " + MODE_TITLES[stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE) : 0];
 	}
 	
 }

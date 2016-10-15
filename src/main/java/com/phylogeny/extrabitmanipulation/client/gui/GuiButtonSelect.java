@@ -22,8 +22,8 @@ public class GuiButtonSelect extends GuiButtonBase
 		
 		super.drawButton(mc, mouseX, mouseY);
 		GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.blendFunc(770, 771);
+		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.blendFunc(770, 771);
 		drawRect(xPosition, yPosition, xPosition + width, yPosition + height, selected ? colorSelected : colorDeselected);
 		int colorText = -1;
 		if (packedFGColour != 0)

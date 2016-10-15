@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.extendedproperties;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllSculptingData;
+import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllBitToolData;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
@@ -13,17 +13,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
-public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
+public class BitToolSettingsPlayerProperties implements IExtendedEntityProperties
 {
-	private static final String ID = "SculptSettingsPlayerProperties";
-	public int mode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	public boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
+	private static final String ID = "BitToolPlayerProperties";
+	public int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	public boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	public ItemStack setBitWire, setBitSpade;
 	
 	public void syncAllData(EntityPlayerMP player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, direction, shapeTypeCurved,
-				shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter, sculptHollowShapeWire,
+		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllBitToolData(modelAreaMode, modelSnapMode, modelGuiOpen, sculptMode,
+				direction, shapeTypeCurved, shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter, sculptHollowShapeWire,
 				sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
 	}
 	
@@ -31,7 +31,9 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	public void saveNBTData(NBTTagCompound compound)
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger(NBTKeys.MODE, mode);
+		nbt.setInteger(NBTKeys.MODEL_AREA_MODE, modelAreaMode);
+		nbt.setInteger(NBTKeys.MODEL_SNAP_MODE, modelSnapMode);
+		nbt.setBoolean(NBTKeys.MODEL_GUI_OPEN, modelGuiOpen);
 		nbt.setInteger(NBTKeys.DIRECTION, direction);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_CURVED, shapeTypeCurved);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_FLAT, shapeTypeFlat);
@@ -50,7 +52,9 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	public void loadNBTData(NBTTagCompound compound)
 	{
 		NBTTagCompound nbt = (NBTTagCompound) compound.getTag(ID);
-		mode = nbt.getInteger(NBTKeys.MODE);
+		modelAreaMode = nbt.getInteger(NBTKeys.MODEL_AREA_MODE);
+		modelSnapMode = nbt.getInteger(NBTKeys.MODEL_SNAP_MODE);
+		modelGuiOpen = nbt.getBoolean(NBTKeys.MODEL_GUI_OPEN);
 		direction = nbt.getInteger(NBTKeys.DIRECTION);
 		shapeTypeCurved = nbt.getInteger(NBTKeys.SHAPE_TYPE_CURVED);
 		shapeTypeFlat = nbt.getInteger(NBTKeys.SHAPE_TYPE_FLAT);
@@ -67,7 +71,9 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 	@Override
 	public void init(Entity entity, World world)
 	{
-		mode = Configs.sculptMode.getDefaultValue();
+		modelAreaMode = Configs.modelAreaMode.getDefaultValue();
+		modelSnapMode = Configs.modelSnapMode.getDefaultValue();
+		modelGuiOpen = Configs.modelGuiOpen.getDefaultValue();
 		direction = Configs.sculptDirection.getDefaultValue();
 		shapeTypeCurved = Configs.sculptShapeTypeCurved.getDefaultValue();
 		shapeTypeFlat = Configs.sculptShapeTypeFlat.getDefaultValue();
@@ -81,14 +87,14 @@ public class SculptSettingsPlayerProperties implements IExtendedEntityProperties
 		setBitSpade = Configs.sculptSetBitSpade.getDefaultValue();
 	}
 	
-	public static SculptSettingsPlayerProperties get(Entity entity)
+	public static BitToolSettingsPlayerProperties get(Entity entity)
 	{
-		return (SculptSettingsPlayerProperties) entity.getExtendedProperties(ID);
+		return (BitToolSettingsPlayerProperties) entity.getExtendedProperties(ID);
 	}
 	
 	public static void register(Entity entity)
 	{
-		entity.registerExtendedProperties(ID, new SculptSettingsPlayerProperties());
+		entity.registerExtendedProperties(ID, new BitToolSettingsPlayerProperties());
 	}
 	
 }

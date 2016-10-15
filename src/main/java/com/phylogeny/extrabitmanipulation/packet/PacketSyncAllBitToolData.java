@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.extendedproperties.SculptSettingsPlayerProperties;
+import com.phylogeny.extrabitmanipulation.extendedproperties.BitToolSettingsPlayerProperties;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 import net.minecraft.client.Minecraft;
@@ -12,20 +12,22 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSyncAllSculptingData implements IMessage
+public class PacketSyncAllBitToolData implements IMessage
 {
-	private int mode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	private boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
+	private int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	private boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	private ItemStack setBitWire, setBitSpade;
 	
-	public PacketSyncAllSculptingData() {}
+	public PacketSyncAllBitToolData() {}
 	
-	public PacketSyncAllSculptingData(int mode, int direction, int shapeTypeCurved, int shapeTypeFlat,
-			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
-			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness,
-			ItemStack setBitWire, ItemStack setBitSpade)
+	public PacketSyncAllBitToolData(int modelAreaMode, int modelSnapMode, boolean modelGuiOpen, int sculptMode, int direction, int shapeTypeCurved,
+			int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
+			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
 	{
-		this.mode = mode;
+		this.modelAreaMode = modelAreaMode;
+		this.modelSnapMode = modelSnapMode;
+		this.modelGuiOpen = modelGuiOpen;
+		this.sculptMode = sculptMode;
 		this.direction = direction;
 		this.shapeTypeCurved = shapeTypeCurved;
 		this.shapeTypeFlat = shapeTypeFlat;
@@ -42,7 +44,10 @@ public class PacketSyncAllSculptingData implements IMessage
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeInt(mode);
+		buffer.writeInt(modelAreaMode);
+		buffer.writeInt(modelSnapMode);
+		buffer.writeBoolean(modelGuiOpen);
+		buffer.writeInt(sculptMode);
 		buffer.writeInt(direction);
 		buffer.writeInt(shapeTypeCurved);
 		buffer.writeInt(shapeTypeFlat);
@@ -59,7 +64,10 @@ public class PacketSyncAllSculptingData implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		mode = buffer.readInt();
+		modelAreaMode = buffer.readInt();
+		modelSnapMode = buffer.readInt();
+		modelGuiOpen = buffer.readBoolean();
+		sculptMode = buffer.readInt();
 		direction = buffer.readInt();
 		shapeTypeCurved = buffer.readInt();
 		shapeTypeFlat = buffer.readInt();
@@ -73,10 +81,10 @@ public class PacketSyncAllSculptingData implements IMessage
 		setBitSpade = ItemStackHelper.stackFromBytes(buffer);
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSyncAllSculptingData, IMessage>
+	public static class Handler implements IMessageHandler<PacketSyncAllBitToolData, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSyncAllSculptingData message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSyncAllBitToolData message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = Minecraft.getMinecraft();
 			mainThread.addScheduledTask(new Runnable()
@@ -85,10 +93,12 @@ public class PacketSyncAllSculptingData implements IMessage
 				public void run()
 				{
 					EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-					SculptSettingsPlayerProperties sculptProp = SculptSettingsPlayerProperties.get(player);
+					BitToolSettingsPlayerProperties sculptProp = BitToolSettingsPlayerProperties.get(player);
 					if (sculptProp != null)
 					{
-						sculptProp.mode = message.mode;
+						sculptProp.modelAreaMode = message.modelAreaMode;
+						sculptProp.modelSnapMode = message.modelSnapMode;
+						sculptProp.modelGuiOpen = message.modelGuiOpen;
 						sculptProp.direction = message.direction;
 						sculptProp.shapeTypeCurved = message.shapeTypeCurved;
 						sculptProp.shapeTypeFlat = message.shapeTypeFlat;

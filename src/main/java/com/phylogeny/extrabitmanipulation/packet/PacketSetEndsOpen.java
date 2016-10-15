@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -45,7 +45,7 @@ public class PacketSetEndsOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setEndsOpen(player, player.getCurrentEquippedItem(), message.openEnds);
+					BitToolSettingsHelper.setEndsOpen(player, player.getCurrentEquippedItem(), message.openEnds);
 				}
 			});
 			return null;

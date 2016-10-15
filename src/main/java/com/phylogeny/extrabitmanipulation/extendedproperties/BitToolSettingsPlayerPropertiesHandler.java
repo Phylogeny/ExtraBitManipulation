@@ -9,16 +9,16 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class SculptSettingsPlayerPropertiesHandler
+public class BitToolSettingsPlayerPropertiesHandler
 {
 	
 	@SubscribeEvent
 	public void registerDataForNewPlayers(EntityConstructing event)
 	{
 		Entity player = event.entity;
-		if (player instanceof EntityPlayer && SculptSettingsPlayerProperties.get(player) == null)
+		if (player instanceof EntityPlayer && BitToolSettingsPlayerProperties.get(player) == null)
 		{
-			SculptSettingsPlayerProperties.register(player);
+			BitToolSettingsPlayerProperties.register(player);
 		}
 	}
 	
@@ -28,7 +28,7 @@ public class SculptSettingsPlayerPropertiesHandler
 		Entity player = event.entity;
 		if (!player.worldObj.isRemote && player instanceof EntityPlayerMP)
 		{
-			SculptSettingsPlayerProperties.get(player).syncAllData((EntityPlayerMP) player);
+			BitToolSettingsPlayerProperties.get(player).syncAllData((EntityPlayerMP) player);
 		}
 	}
 	
@@ -37,10 +37,10 @@ public class SculptSettingsPlayerPropertiesHandler
 	{
 		if (event.wasDeath)
 		{
-			SculptSettingsPlayerProperties settingsOld = SculptSettingsPlayerProperties.get(event.original);
+			BitToolSettingsPlayerProperties settingsOld = BitToolSettingsPlayerProperties.get(event.original);
 			if (settingsOld != null)
 			{
-				SculptSettingsPlayerProperties settingsNew = SculptSettingsPlayerProperties.get(event.entity);
+				BitToolSettingsPlayerProperties settingsNew = BitToolSettingsPlayerProperties.get(event.entity);
 				if (settingsNew != null)
 				{
 					NBTTagCompound nbt = new NBTTagCompound();

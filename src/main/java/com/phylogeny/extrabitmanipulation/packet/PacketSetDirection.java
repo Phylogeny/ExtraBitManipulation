@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -45,7 +45,7 @@ public class PacketSetDirection implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setDirection(player, player.getCurrentEquippedItem(), message.direction);
+					BitToolSettingsHelper.setDirection(player, player.getCurrentEquippedItem(), message.direction);
 				}
 			});
 			return null;

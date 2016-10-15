@@ -31,7 +31,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
 		
 		List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
-		List<IConfigElement> configElementsTooSettings = new ArrayList<IConfigElement>();
+		List<IConfigElement> configElementsToolSettings = new ArrayList<IConfigElement>();
 		String textReplacementBits = "Configures the procedures for finding replacement bits ";
 		String textUnchiselable = "when a blockstate is unchiselable";
 		String textInsufficient = "when the player has insufficient bits for a chiselable blockstate";
@@ -40,25 +40,26 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.INSUFFICIENT_BITS,
 				textReplacementBits + textInsufficient, configElementsModelingTool);
 		addElementsToDummyElement("Modeling Tool Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
-				configElementsTooSettings, configElementsModelingTool);
+				configElementsToolSettings, configElementsModelingTool);
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_WRENCH_SETTINGS,
 				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, " +
 				"and the way bit removal/addition areas are displayed. (applies to all sculpting tools -- see 'Item Properties' " +
-				"menu for item-specific settings)", configElementsTooSettings);
+				"menu for item-specific settings)", configElementsToolSettings);
 		addElementsToDummyElement("Tool Settings", "Configures sculpting dimensions, wrench inversion mode, the way bits are " +
 				"handled when removed from the world, and the way bit removal/addition areas are displayed. (applies to all sculpting " +
 				"tools -- see 'Item Properties' menu for item-specific settings), as well as the way the Modeling Tool finds replacement bits",
-				configElements, configElementsTooSettings);
+				configElements, configElementsToolSettings);
 		
-		addDummyElementsOfChildElementSetsToDummyElement(configElements, false,
-				ConfigHandlerExtraBitManipulation.SCULPTING_DEFAULT_VALUES, "Configures sculpting data default values.",
-				ConfigHandlerExtraBitManipulation.SCULPTING_PER_TOOL_OR_PER_PLAYER, "Configures whether sculpting data " +
-						"is stored/assessed on/from individual tools or on/from the player.",
-				ConfigHandlerExtraBitManipulation.SCULPTING_DISPLAY_IN_CHAT, "Configures whether changes to sculpting data are displayed in chat.",
-				"Sculpting Data Settings", "Configures sculpting data storage/assesses, default values, and chat notifications upon change. " +
-				"(applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)");
+		List<IConfigElement> configElementsToolData = new ArrayList<IConfigElement>();
+		String hoverText = "Configures @@@ data storage/access, default values, and " +
+				"chat notifications upon change. (applies to all tools -- see 'Item Properties' menu for item-specific settings)";
+		addToolDataDummyElements(configElementsToolData, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_MODEL, hoverText);
+		addToolDataDummyElements(configElementsToolData, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, hoverText);
+		addElementsToDummyElement("Tool Data Settings", hoverText.replace("@@@", ConfigHandlerExtraBitManipulation.DATA_CATAGORY_MODEL.toLowerCase() +
+				" and " + ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT.toLowerCase()), configElements, configElementsToolData);
+		
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemPropertyMap, "Item Properties",
-				"Configures the damage characteristics and default data of the Bit Wrench and Sculpting Tools", false);
+				"Configures the damage characteristics and default data of the Bit Wrench, Modeling Tool, and Sculpting Tools", false);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemRecipeMap,
 				"Recipes", "Configures the recipe for the Bit Wrench", true);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(configElements, Configs.itemShapes,
@@ -66,6 +67,21 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
 				"Rendering", "Configures the rendering of the Bit Wrench's overlays and the Sculpting Tools' bit removal/addition shapes/boxes");
 		return configElements;
+	}
+
+	private static void addToolDataDummyElements(List<IConfigElement> configElementsToolData, String dataCatagory, String hoverText)
+	{
+		String dataCatagoryLower = dataCatagory.toLowerCase();
+		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
+		String defaults = ConfigHandlerExtraBitManipulation.BIT_TOOL_DEFAULT_VALUES;
+		String storageLoc = ConfigHandlerExtraBitManipulation.BIT_TOOL_PER_TOOL_OR_PER_PLAYER;
+		String inChat = ConfigHandlerExtraBitManipulation.BIT_TOOL_DISPLAY_IN_CHAT;
+		addChildElementsToDummyElement(defaults, defaults + " " + dataCatagory, "Configures " + dataCatagoryLower + " data default values.", childElements);
+		addChildElementsToDummyElement(storageLoc, storageLoc + " " + dataCatagory, "Configures whether " + dataCatagoryLower +
+				" data is stored/assessed on/from individual tools or on/from the player.", childElements);
+		addChildElementsToDummyElement(inChat, inChat + " " + dataCatagory, "Configures whether changes to " +
+				dataCatagoryLower + " data are displayed in chat.", childElements);
+		addElementsToDummyElement(dataCatagory + " Data Settings", hoverText.replace("@@@", dataCatagoryLower), configElementsToolData, childElements);
 	}
 	
 	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(List<IConfigElement> configElements,
@@ -163,8 +179,13 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	
 	private static void addChildElementsToDummyElement(String text, String toolTip, List<IConfigElement> configElements)
 	{
+		addChildElementsToDummyElement(text, text.toLowerCase(), toolTip, configElements);
+	}
+	
+	private static void addChildElementsToDummyElement(String text, String catagory, String toolTip, List<IConfigElement> configElements)
+	{
 		addElementsToDummyElement(text, toolTip, configElements, new ConfigElement(
-				ConfigHandlerExtraBitManipulation.configFile.getCategory(text.toLowerCase())).getChildElements());
+				ConfigHandlerExtraBitManipulation.configFile.getCategory(catagory)).getChildElements());
 	}
 	
 }

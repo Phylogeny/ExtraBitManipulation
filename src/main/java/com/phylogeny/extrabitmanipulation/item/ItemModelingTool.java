@@ -3,11 +3,14 @@ package com.phylogeny.extrabitmanipulation.item;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
-import com.phylogeny.extrabitmanipulation.helper.BitHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -21,6 +24,7 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -35,6 +39,9 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 public class ItemModelingTool extends ItemBitToolBase
 {
+	public static final String[] AREA_MODE_TITLES = new String[]{"Centered", "Corner", "Drawn"};
+	public static final String[] SNAP_MODE_TITLES = new String[]{"Off", "Snap-to-Chunk XZ", "Snap-to-Chunk XYZ"};
+	
 	public ItemModelingTool(String name)
 	{
 		super(name);
@@ -47,63 +54,73 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	@Override
+	
+	public boolean initialize(ItemStack stack)
+	{
+		super.initialize(stack);
+		NBTTagCompound nbt = stack.getTagCompound();
+		initInt(nbt, NBTKeys.MODEL_AREA_MODE, Configs.modelAreaMode.getDefaultValue());
+		initInt(nbt, NBTKeys.MODEL_SNAP_MODE, Configs.modelSnapMode.getDefaultValue());
+		initBoolean(nbt, NBTKeys.MODEL_GUI_OPEN, Configs.modelGuiOpen.getDefaultValue());
+		return true;
+	}
+	
+	@Override
+	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
+	{
+		if (player.isSneaking())
+			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
+		
+		return super.onItemRightClick(itemStack, world, player);
+	}
+	
+	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumFacing side, float hitX, float hitY, float hitZ)
+			EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
 		initialize(stack);
-		boolean read = player.isSneaking();
+		if (player.isSneaking())
+			return false;
+		
 		if (!world.getBlockState(pos).getBlock().isReplaceable(world, pos))
 		{
-			pos = pos.offset(side);
-			if (!read && !world.isAirBlock(pos))
+			pos = pos.offset(facing);
+			if (!world.isAirBlock(pos))
 				return false;
 		}
-		else if (!read)
-		{
-			world.setBlockToAir(pos);
-		}
+		world.setBlockToAir(pos);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		NBTTagCompound nbt = stack.getTagCompound();
-		if (read)
+		if (!nbt.hasKey(NBTKeys.SAVED_STATES))
+			return false;
+		
+		HashMap<IBlockState, Integer> stateMap = new HashMap<IBlockState, Integer>();
+		IBlockState[][][] stateArray = new IBlockState[16][16][16];
+		BitIOHelper.readStatesFromNBT(nbt, stateMap, stateArray);
+		HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray = new HashMap<IBlockState, ArrayList<BitCount>>();
+		HashMap<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
+		HashMap<IBlockState, Integer> missingBitMap = mapBitsToStates(api, BitInventoryHelper.getInventoryBitCounts(api, player), stateMap,
+				stateToBitCountArray, BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT),
+				BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT), bitMap, player.capabilities.isCreativeMode);
+		if (!missingBitMap.isEmpty())
 		{
-			BitHelper.saveBlockStates(api, player, world, pos, nbt);
-			if (read)
-				player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
-		}
-		else
-		{
-			if (!nbt.hasKey(NBTKeys.SAVED_STATES))
-				return false;
-			
-			HashMap<IBlockState, Integer> stateMap = new HashMap<IBlockState, Integer>();
-			IBlockState[][][] stateArray = new IBlockState[16][16][16];
-			BitHelper.readStatesFromNBT(nbt, stateMap, stateArray);
-			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray = new HashMap<IBlockState, ArrayList<BitCount>>();
-			HashMap<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
-			HashMap<IBlockState, Integer> missingBitMap = mapBitsToStates(api, BitHelper.getInventoryBitCounts(api, player), stateMap,
-					stateToBitCountArray, BitHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT),
-					BitHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT), bitMap, player.capabilities.isCreativeMode);
-			if (!missingBitMap.isEmpty())
+			if (world.isRemote)
 			{
-				if (world.isRemote)
+				int missingBitCount = 0;
+				for (IBlockState state : missingBitMap.keySet())
 				{
-					int missingBitCount = 0;
-					for (IBlockState state : missingBitMap.keySet())
-					{
-						missingBitCount += missingBitMap.get(state);
-					}
-					addChatMessage(player, "Missing " + missingBitCount + " bits to represent the following blocks:");
-					for (IBlockState state : missingBitMap.keySet())
-					{
-						String name = getBlockName(state, new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state)));
-						addChatMessage(player, "  " + missingBitMap.get(state) + " - " + name);
-					}
+					missingBitCount += missingBitMap.get(state);
 				}
-				return false;
+				addChatMessage(player, "Missing " + missingBitCount + " bits to represent the following blocks:");
+				for (IBlockState state : missingBitMap.keySet())
+				{
+					String name = getBlockName(state, new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state)));
+					addChatMessage(player, "  " + missingBitMap.get(state) + " - " + name);
+				}
 			}
-			return createModel(player, world, pos, stack, api, stateArray, stateToBitCountArray, bitMap);
+			return false;
 		}
-		return true;
+		return createModel(player, world, pos, stack, api, stateArray, stateToBitCountArray, bitMap);
 	}
 	
 	private boolean createModel(EntityPlayer player, World world, BlockPos pos, ItemStack stack, IChiselAndBitsAPI api, IBlockState[][][] stateArray,
@@ -135,10 +152,11 @@ public class ItemModelingTool extends ItemBitToolBase
 		{
 			for (IBitBrush bit : bitMap.keySet())
 			{
-				BitHelper.removeOrAddInventoryBits(api, player, bit.getItemStack(1), bitMap.get(bit).intValue(), false);
+				BitInventoryHelper.removeOrAddInventoryBits(api, player, bit.getItemStack(1), bitMap.get(bit).intValue(), false);
 				player.inventoryContainer.detectAndSendChanges();
 			}
 		}
+		damageTool(stack, player);
 		return true;
 	}
 	
@@ -328,6 +346,86 @@ public class ItemModelingTool extends ItemBitToolBase
 				name = item.toString();
 		}
 		return name;
+	}
+	
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
+	{
+		boolean shiftDown = GuiScreen.isShiftKeyDown();
+		boolean ctrlDown = GuiScreen.isCtrlKeyDown();
+		addColorInformation(tooltip, shiftDown);
+		NBTTagCompound nbt = stack.getTagCompound();
+		int areaMode = BitToolSettingsHelper.getModelAreaMode(player, nbt);
+		int snapMode = BitToolSettingsHelper.getModelSnapMode(player, nbt);
+		if (!ctrlDown || shiftDown)
+		{
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelAreaModeText(areaMode), Configs.modelAreaMode));
+		}
+		if (shiftDown)
+		{
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelSnapModeText(snapMode), Configs.modelSnapMode));
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelGuiOpenText(player, nbt), Configs.modelGuiOpen));
+		}
+		else
+		{
+			if (ctrlDown)
+			{
+				tooltip.add("");
+				if (areaMode == 2)
+				{
+					tooltip.add("Left click a block, drag to");
+					tooltip.add("    another block, then release");
+					tooltip.add("    to read all intersecting");
+					tooltip.add("    block states.");
+				}
+				else
+				{
+					tooltip.add("Left click a block to read all");
+					String readText = "    block states in an area";
+					if (areaMode == 0)
+					{
+						tooltip.add(readText);
+						tooltip.add("    centered on the nearest");
+					}
+					else
+					{
+						tooltip.add(readText + " that");
+						tooltip.add("    faces away from the player");
+						tooltip.add("    and has one of its corners");
+						tooltip.add("    positioned on the nearest");
+					}
+					tooltip.add("    block grid vertex.");
+					if (snapMode > 0)
+					{
+						tooltip.add("    (the area will snap in the");
+						if (snapMode == 1)
+						{
+							tooltip.add("    XZ axes to the 2D chuck");
+						}
+						else
+						{
+							tooltip.add("    XYZ axes to the 3D chuck");
+						}
+						tooltip.add("    containing the block looked at)");
+					}
+				}
+				tooltip.add("Right click to create model block.");
+				tooltip.add("");
+				tooltip.add("Shift right click to open");
+				tooltip.add("    mapping/preview GUI.");
+				tooltip.add("Shift mouse wheel to cycle");
+				tooltip.add("    area modes.");
+				tooltip.add("");
+				tooltip.add("Control right click to toggle GUI");
+				tooltip.add("    opening upon model read.");
+				tooltip.add("Control mouse wheel to");
+				tooltip.add("    cycle chunk snap mode.");
+			}
+			else
+			{
+				addKeyInformation(tooltip);
+			}
+		}
 	}
 	
 	public static class BitCount

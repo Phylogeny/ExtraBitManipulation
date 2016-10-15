@@ -12,7 +12,9 @@ import org.lwjgl.opengl.GL11;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
-import com.phylogeny.extrabitmanipulation.helper.BitHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
@@ -72,12 +74,12 @@ public class GuiModelingTool extends GuiContainer
 		xSize = 254;
 		ySize = 219;
 		
-		stateToBitMapPermanent = BitHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);
-		blockToBitMapPermanent = BitHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
+		stateToBitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);
+		blockToBitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
 		
 		stateMap = new HashMap<IBlockState, Integer>();
 		stateArray = new IBlockState[16][16][16];
-		BitHelper.readStatesFromNBT(modelingToolStack.getTagCompound(), stateMap, stateArray);
+		BitIOHelper.readStatesFromNBT(modelingToolStack.getTagCompound(), stateMap, stateArray);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -104,7 +106,7 @@ public class GuiModelingTool extends GuiContainer
 							continue;
 					}
 				}
-				if (BitHelper.isAir(block))
+				if (BitIOHelper.isAir(block))
 					continue;
 				
 				IBlockState state = block.getDefaultState();
@@ -152,7 +154,7 @@ public class GuiModelingTool extends GuiContainer
 			constructManualMaps();
 		}
 		String nbtKey = buttonStates.selected ? NBTKeys.STATE_TO_BIT_MAP_PERMANENT : NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT;
-		BitHelper.writeStateToBitMapToNBT(modelingToolStack, nbtKey, bitMapPermanent);
+		BitIOHelper.writeStateToBitMapToNBT(modelingToolStack, nbtKey, bitMapPermanent);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketModelingTool(nbtKey, state, bit));
 		refreshList();
 	}
@@ -174,7 +176,7 @@ public class GuiModelingTool extends GuiContainer
 		HashMap<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
 		EntityPlayer player = mc.thePlayer;
 		ItemModelingTool itemModelingTool = (ItemModelingTool) modelingToolStack.getItem();
-		if (itemModelingTool.mapBitsToStates(api, BitHelper.getInventoryBitCounts(api, player), stateMap,
+		if (itemModelingTool.mapBitsToStates(api, BitInventoryHelper.getInventoryBitCounts(api, player), stateMap,
 				stateToBitCountArray, stateToBitMapPermanent, blockToBitMapPermanent, bitMap, player.capabilities.isCreativeMode).isEmpty())
 		{
 			IBitAccess bitAccess = api.createBitItem(null);
@@ -296,6 +298,8 @@ public class GuiModelingTool extends GuiContainer
 		int colorDeselected = -8882056;
 		buttonStates = new GuiButtonSelect(4, x, y, 37, 12, "States", "Map bits to individual block states.", colorSelected, colorDeselected);
 		buttonBlocks = new GuiButtonSelect(5, x + 37, y, 36, 12, "Blocks", "Map bits to all posible states of a given block.", colorSelected, colorDeselected);
+		buttonStates.enabled = !tabButtons[2].selected;
+		buttonBlocks.enabled = !tabButtons[3].selected;
 		int selectedTab = getSelectedTab();
 		boolean stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
 		boolean buttonStatesSlected = selectedTab > 1 ? selectedTab == 3 : stateMauallySelected;
@@ -397,7 +401,7 @@ public class GuiModelingTool extends GuiContainer
 						IBitBrush bit = bitCount.getBit();
 						ItemStack bitStack = bit != null ? bit.getItemStack(1) : null;
 						boolean isAir = bit != null && bit.isAir();
-						String text = bitStack != null ? BitHelper.getBitName(bitStack) : (isAir ? "Empty / Air" : unmappedText);
+						String text = bitStack != null ? BitToolSettingsHelper.getBitName(bitStack) : (isAir ? "Empty / Air" : unmappedText);
 						if (bitStack != null || entry.isAir())
 						{
 							String text2 = EnumChatFormatting.DARK_RED + (j == 0 ? "Bit:" : "	") + " " + EnumChatFormatting.RESET;

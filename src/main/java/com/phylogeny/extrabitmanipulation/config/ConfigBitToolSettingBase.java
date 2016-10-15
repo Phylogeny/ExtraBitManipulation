@@ -1,10 +1,10 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-public class ConfigSculptSettingBase
+public class ConfigBitToolSettingBase
 {
 	private boolean perTool, displayInChat;
 	
-	public ConfigSculptSettingBase(boolean perTool, boolean displayInChat)
+	public ConfigBitToolSettingBase(boolean perTool, boolean displayInChat)
 	{
 		this.perTool = perTool;
 		this.displayInChat = displayInChat;

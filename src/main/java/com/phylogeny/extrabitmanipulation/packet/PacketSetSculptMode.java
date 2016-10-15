@@ -1,10 +1,8 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -12,37 +10,33 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSetBitStack implements IMessage
+public class PacketSetSculptMode implements IMessage
 {
-	private boolean isWire;
-	private ItemStack bitStack;
+	private int mode;
 	
-	public PacketSetBitStack() {}
+	public PacketSetSculptMode() {}
 	
-	public PacketSetBitStack(boolean isCurved, ItemStack bitStack)
+	public PacketSetSculptMode(int mode)
 	{
-		this.isWire = isCurved;
-		this.bitStack = bitStack;
+		this.mode = mode;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeBoolean(isWire);
-		ItemStackHelper.stackToBytes(buffer, bitStack);
+		buffer.writeInt(mode);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		isWire = buffer.readBoolean();
-		bitStack = ItemStackHelper.stackFromBytes(buffer);
+		mode = buffer.readInt();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSetBitStack, IMessage>
+	public static class Handler implements IMessageHandler<PacketSetSculptMode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetBitStack message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSetSculptMode message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -51,7 +45,7 @@ public class PacketSetBitStack implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setBitStack(player, player.getCurrentEquippedItem(), message.isWire, message.bitStack);
+					BitToolSettingsHelper.setSculptMode(player, player.getCurrentEquippedItem(), message.mode);
 				}
 			});
 			return null;

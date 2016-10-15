@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -49,7 +49,7 @@ public class PacketSetShapeType implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setShapeType(player, player.getCurrentEquippedItem(), message.isCurved, message.shapeType);
+					BitToolSettingsHelper.setShapeType(player, player.getCurrentEquippedItem(), message.isCurved, message.shapeType);
 				}
 			});
 			return null;

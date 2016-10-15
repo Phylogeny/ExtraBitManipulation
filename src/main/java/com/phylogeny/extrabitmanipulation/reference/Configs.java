@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
 import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
-import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingBoolean;
-import com.phylogeny.extrabitmanipulation.config.ConfigSculptSettingInt;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
@@ -19,7 +19,7 @@ public class Configs
 		public static ConfigReplacementBits replacementBitsUnchiselable;
 		public static ConfigReplacementBits replacementBitsInsufficient;
 		
-	//SCULPTING SETTINGS
+	//BIT TOOL SETTINGS
 		public static boolean displayNameDiameter;
 		public static boolean displayNameUseMeterUnits;
 		public static float semiDiameterPadding;
@@ -31,16 +31,19 @@ public class Configs
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
 		public static boolean oneBitTypeInversionRequirement;
-		public static ConfigSculptSettingInt sculptMode;
-		public static ConfigSculptSettingInt sculptDirection;
-		public static ConfigSculptSettingInt sculptShapeTypeCurved;
-		public static ConfigSculptSettingInt sculptShapeTypeFlat;
-		public static ConfigSculptSettingBoolean sculptTargetBitGridVertexes;
-		public static ConfigSculptSettingInt sculptSemiDiameter;
-		public static ConfigSculptSettingBoolean sculptHollowShapeWire;
-		public static ConfigSculptSettingBoolean sculptHollowShapeSpade;
-		public static ConfigSculptSettingBoolean sculptOpenEnds;
-		public static ConfigSculptSettingInt sculptWallThickness;
+		public static ConfigBitToolSettingInt modelAreaMode;
+		public static ConfigBitToolSettingInt modelSnapMode;
+		public static ConfigBitToolSettingBoolean modelGuiOpen;
+		public static ConfigBitToolSettingInt sculptMode;
+		public static ConfigBitToolSettingInt sculptDirection;
+		public static ConfigBitToolSettingInt sculptShapeTypeCurved;
+		public static ConfigBitToolSettingInt sculptShapeTypeFlat;
+		public static ConfigBitToolSettingBoolean sculptTargetBitGridVertexes;
+		public static ConfigBitToolSettingInt sculptSemiDiameter;
+		public static ConfigBitToolSettingBoolean sculptHollowShapeWire;
+		public static ConfigBitToolSettingBoolean sculptHollowShapeSpade;
+		public static ConfigBitToolSettingBoolean sculptOpenEnds;
+		public static ConfigBitToolSettingInt sculptWallThickness;
 		public static ConfigBitStack sculptSetBitWire;
 		public static ConfigBitStack sculptSetBitSpade;
 		
