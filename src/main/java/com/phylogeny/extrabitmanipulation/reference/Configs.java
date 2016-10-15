@@ -19,7 +19,7 @@ public class Configs
 		public static ConfigReplacementBits replacementBitsUnchiselable;
 		public static ConfigReplacementBits replacementBitsInsufficient;
 		
-	//SCULPTING SETTINGS
+	//BIT TOOL SETTINGS
 		public static boolean displayNameDiameter;
 		public static boolean displayNameUseMeterUnits;
 		public static float semiDiameterPadding;
