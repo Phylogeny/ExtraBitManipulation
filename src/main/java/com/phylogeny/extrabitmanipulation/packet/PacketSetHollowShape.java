@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -49,7 +49,7 @@ public class PacketSetHollowShape implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setHollowShape(player, player.getHeldItemMainhand(), message.isWire, message.hollowShape);
+					BitToolSettingsHelper.setHollowShape(player, player.getHeldItemMainhand(), message.isWire, message.hollowShape);
 				}
 			});
 			return null;

@@ -12,14 +12,14 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class SculptSettingsEventHandler
+public class BitToolSettingsEventHandler
 {
 	
 	@SubscribeEvent
 	public void onEntityConstruct(AttachCapabilitiesEvent.Entity event)
 	{
 		if (event.getEntity() instanceof EntityPlayer)
-			event.addCapability(new ResourceLocation(Reference.MOD_ID, "SculptSettingsHandler"), new SculptSettingsHandler());
+			event.addCapability(new ResourceLocation(Reference.MOD_ID, "BitToolSettingsHandler"), new BitToolSettingsHandler());
 	}
 	
 	@SubscribeEvent
@@ -28,7 +28,7 @@ public class SculptSettingsEventHandler
 		Entity player = event.getEntity();
 		if (!player.worldObj.isRemote && player instanceof EntityPlayerMP)
 		{
-			ISculptSettingsHandler cap = SculptSettingsHandler.getCapability((EntityPlayer) player);
+			IBitToolSettingsHandler cap = BitToolSettingsHandler.getCapability((EntityPlayer) player);
 			if (cap != null)
 				cap.syncAllData((EntityPlayerMP) player);
 		}
@@ -39,14 +39,14 @@ public class SculptSettingsEventHandler
 	{
 		if (event.isWasDeath())
 		{
-			ISculptSettingsHandler capOld = SculptSettingsHandler.getCapability(event.getOriginal());
+			IBitToolSettingsHandler capOld = BitToolSettingsHandler.getCapability(event.getOriginal());
 			if (capOld != null)
 			{
-				ISculptSettingsHandler capNew = SculptSettingsHandler.getCapability((EntityPlayer) event.getEntity());
+				IBitToolSettingsHandler capNew = BitToolSettingsHandler.getCapability((EntityPlayer) event.getEntity());
 				if (capNew != null)
 				{
-					NBTTagCompound nbt = ((SculptSettingsHandler) capOld).serializeNBT();
-					((SculptSettingsHandler) capNew).deserializeNBT(nbt);
+					NBTTagCompound nbt = ((BitToolSettingsHandler) capOld).serializeNBT();
+					((BitToolSettingsHandler) capNew).deserializeNBT(nbt);
 				}
 			}
 		}

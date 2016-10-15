@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ItemsExtraBitManipulation
 {
 	public static Item DiamondNugget, BitWrench, SculptingLoop, SculptingSquare, SculptingSpadeCurved, SculptingSpadeSquared, ModelingTool,
-		BitWrenchHead, SculptingLoopHead, SculptingSquareHead, SculptingSpadeCurvedHead, SculptingSpadeSquaredHead;
+	ModelingToolHead, BitWrenchHead, SculptingLoopHead, SculptingSquareHead, SculptingSpadeCurvedHead, SculptingSpadeSquaredHead;
 	
 	public static void itemsInit()
 	{
@@ -29,6 +29,7 @@ public class ItemsExtraBitManipulation
 		SculptingSpadeCurved = new ItemSculptingTool(true, false, "SculptingSpadeCurved");
 		SculptingSpadeSquared = new ItemSculptingTool(false, false, "SculptingSpadeSquared");
 		ModelingTool = new ItemModelingTool("ModelingTool");
+		ModelingToolHead = new ItemExtraBitManipulationBase("ModelingToolHead"); 
 		BitWrenchHead = new ItemExtraBitManipulationBase("BitWrenchHead"); 
 		SculptingLoopHead = new ItemExtraBitManipulationBase("SculptingLoopHead");
 		SculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
@@ -40,6 +41,8 @@ public class ItemsExtraBitManipulation
 		registerItemAndDefaultRecipe(SculptingSpadeCurved, "Curved Sculpting Spade", true, false);
 		registerItemAndDefaultRecipe(SculptingSpadeSquared, "Flat Sculpting Spade", true, false);
 		registerItemAndDefaultRecipe(ModelingTool, "Modeling Tool", true, false);
+		registerItemAndDefaultRecipe(ModelingToolHead, "Modeling Tool Head", true, true,
+				"", "", "", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "");
 		registerItemAndDefaultRecipe(BitWrenchHead, "Bit Wrench Head", true, true,
 				"nuggetDiamond", "", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "", "nuggetDiamond", "");
 		registerItemAndDefaultRecipe(SculptingLoopHead, "Curved Sculpting Wire Head", true, true,
@@ -78,8 +81,9 @@ public class ItemsExtraBitManipulation
 		Configs.itemRecipeMap.put(item, new ConfigRecipe(itemTitle, true, isShapedDefault, oreDictionaryDefault, recipeDefault));
 		if (item instanceof ItemBitToolBase)
 		{
-			Configs.itemPropertyMap.put(item, new ConfigProperty(itemTitle, true, item instanceof ItemBitWrench ? 5000 : 2000000));
-			if (item instanceof ItemSculptingTool)
+			boolean isSculptingTool = item instanceof ItemSculptingTool;
+			Configs.itemPropertyMap.put(item, new ConfigProperty(itemTitle, true, isSculptingTool ? 2000000 : (item instanceof ItemBitWrench ? 5000 : 1000)));
+			if (isSculptingTool)
 			{
 				ItemSculptingTool itemTool = (ItemSculptingTool) item;
 				ConfigShapeRender boundingBox = itemTool.removeBits() ? Configs.itemShapes[0] : Configs.itemShapes[1];

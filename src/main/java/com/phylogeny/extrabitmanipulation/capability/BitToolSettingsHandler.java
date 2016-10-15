@@ -18,18 +18,22 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettingsHandler, INBTSerializable<NBTTagCompound>
+public class BitToolSettingsHandler implements ICapabilityProvider, IBitToolSettingsHandler, INBTSerializable<NBTTagCompound>
 {
-	@CapabilityInject(ISculptSettingsHandler.class)
-	public static final Capability<ISculptSettingsHandler> SCULPT_SETTINGS_CAP = null;
-	public int mode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	public boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
+	@CapabilityInject(IBitToolSettingsHandler.class)
+	public static final Capability<IBitToolSettingsHandler> SCULPT_SETTINGS_CAP = null;
+	public int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	public boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	public ItemStack setBitWire, setBitSpade;
 	
-	public SculptSettingsHandler(int mode, int direction, int shapeTypeCurved, int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter,
-			boolean sculptHollowShapeWire, boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
+	public BitToolSettingsHandler(int modelAreaMode, int modelSnapMode, boolean modelGuiOpen, int sculptMode, int direction, int shapeTypeCurved,
+			int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire, boolean sculptHollowShapeSpade,
+			boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
 	{
-		this.mode = mode;
+		this.modelAreaMode = modelAreaMode;
+		this.modelSnapMode = modelSnapMode;
+		this.modelGuiOpen = modelGuiOpen;
+		this.sculptMode = sculptMode;
 		this.direction = direction;
 		this.shapeTypeCurved = shapeTypeCurved;
 		this.shapeTypeFlat = shapeTypeFlat;
@@ -43,9 +47,12 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 		this.setBitSpade = setBitSpade;
 	}
 	
-	public SculptSettingsHandler()
+	public BitToolSettingsHandler()
 	{
-		mode = Configs.sculptMode.getDefaultValue();
+		modelAreaMode = Configs.modelAreaMode.getDefaultValue();
+		modelSnapMode = Configs.modelSnapMode.getDefaultValue();
+		modelGuiOpen = Configs.modelGuiOpen.getDefaultValue();
+		sculptMode = Configs.sculptMode.getDefaultValue();
 		direction = Configs.sculptDirection.getDefaultValue();
 		shapeTypeCurved = Configs.sculptShapeTypeCurved.getDefaultValue();
 		shapeTypeFlat = Configs.sculptShapeTypeFlat.getDefaultValue();
@@ -71,7 +78,7 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 		return capability == SCULPT_SETTINGS_CAP ? SCULPT_SETTINGS_CAP.<T>cast(this) : null;
 	}
 	
-	public static ISculptSettingsHandler getCapability(EntityPlayer player)
+	public static IBitToolSettingsHandler getCapability(EntityPlayer player)
 	{
 		return player.getCapability(SCULPT_SETTINGS_CAP, null);
 	}
@@ -80,7 +87,10 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	public NBTTagCompound serializeNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger(NBTKeys.MODE, mode);
+		nbt.setInteger(NBTKeys.MODEL_AREA_MODE, modelAreaMode);
+		nbt.setInteger(NBTKeys.MODEL_SNAP_MODE, modelSnapMode);
+		nbt.setBoolean(NBTKeys.MODEL_GUI_OPEN, modelGuiOpen);
+		nbt.setInteger(NBTKeys.SCULPT_MODE, sculptMode);
 		nbt.setInteger(NBTKeys.DIRECTION, direction);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_CURVED, shapeTypeCurved);
 		nbt.setInteger(NBTKeys.SHAPE_TYPE_FLAT, shapeTypeFlat);
@@ -98,7 +108,10 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
-		mode = nbt.getInteger(NBTKeys.MODE);
+		modelAreaMode = nbt.getInteger(NBTKeys.MODEL_AREA_MODE);
+		modelSnapMode = nbt.getInteger(NBTKeys.MODEL_SNAP_MODE);
+		modelGuiOpen = nbt.getBoolean(NBTKeys.MODEL_GUI_OPEN);
+		sculptMode = nbt.getInteger(NBTKeys.SCULPT_MODE);
 		direction = nbt.getInteger(NBTKeys.DIRECTION);
 		shapeTypeCurved = nbt.getInteger(NBTKeys.SHAPE_TYPE_CURVED);
 		shapeTypeFlat = nbt.getInteger(NBTKeys.SHAPE_TYPE_FLAT);
@@ -115,21 +128,57 @@ public class SculptSettingsHandler implements ICapabilityProvider, ISculptSettin
 	@Override
 	public void syncAllData(EntityPlayerMP player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(mode, direction, shapeTypeCurved,
-				shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter, sculptHollowShapeWire,
-				sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
+		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllSculptingData(modelAreaMode, modelSnapMode, modelGuiOpen,
+				sculptMode, direction, shapeTypeCurved, shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter,
+				sculptHollowShapeWire, sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
 	}
 	
 	@Override
-	public int getMode()
+	public int getModelAreaMode()
 	{
-		return mode;
+		return modelAreaMode;
 	}
 	
 	@Override
-	public void setMode(int mode)
+	public void setModelAreaMode(int modelAreaMode)
 	{
-		this.mode = mode;
+		this.modelAreaMode = modelAreaMode;
+	}
+	
+	@Override
+	public int getModelSnapMode()
+	{
+		return modelSnapMode;
+	}
+	
+	@Override
+	public void setModelSnapMode(int modelSnapMode)
+	{
+		this.modelSnapMode = modelSnapMode;
+	}
+	
+	@Override
+	public boolean getModelGuiOpen()
+	{
+		return modelGuiOpen;
+	}
+	
+	@Override
+	public void setModelGuiOpen(boolean modelGuiOpen)
+	{
+		this.modelGuiOpen = modelGuiOpen;
+	}
+	
+	@Override
+	public int getSculptMode()
+	{
+		return sculptMode;
+	}
+	
+	@Override
+	public void setSculptMode(int mode)
+	{
+		this.sculptMode = mode;
 	}
 	
 	@Override

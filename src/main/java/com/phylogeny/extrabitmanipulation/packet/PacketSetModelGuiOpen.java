@@ -10,33 +10,33 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSetEndsOpen implements IMessage
+public class PacketSetModelGuiOpen implements IMessage
 {
-	private boolean openEnds;
+	private boolean openGui;
 	
-	public PacketSetEndsOpen() {}
+	public PacketSetModelGuiOpen() {}
 	
-	public PacketSetEndsOpen(boolean openEnds)
+	public PacketSetModelGuiOpen(boolean openEnds)
 	{
-		this.openEnds = openEnds;
+		this.openGui = openEnds;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeBoolean(openEnds);
+		buffer.writeBoolean(openGui);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		openEnds = buffer.readBoolean();
+		openGui = buffer.readBoolean();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSetEndsOpen, IMessage>
+	public static class Handler implements IMessageHandler<PacketSetModelGuiOpen, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetEndsOpen message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSetModelGuiOpen message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -45,7 +45,7 @@ public class PacketSetEndsOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setEndsOpen(player, player.getHeldItemMainhand(), message.openEnds);
+					BitToolSettingsHelper.setModelGuiOpen(player, player.getHeldItemMainhand(), message.openGui);
 				}
 			});
 			return null;

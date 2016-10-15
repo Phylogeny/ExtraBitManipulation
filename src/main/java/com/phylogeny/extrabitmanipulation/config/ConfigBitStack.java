@@ -7,7 +7,7 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
-public class ConfigBitStack extends ConfigSculptSettingBase
+public class ConfigBitStack extends ConfigBitToolSettingBase
 {
 	private ItemStack bitStackDefault;
 	private Block bitBlockDefault, bitBlockDefaultDefault;

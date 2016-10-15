@@ -1,7 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -51,7 +51,7 @@ public class PacketSetBitStack implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setBitStack(player, player.getHeldItemMainhand(), message.isWire, message.bitStack);
+					BitToolSettingsHelper.setBitStack(player, player.getHeldItemMainhand(), message.isWire, message.bitStack);
 				}
 			});
 			return null;

@@ -1,9 +1,9 @@
 package com.phylogeny.extrabitmanipulation.proxy;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.capability.ISculptSettingsHandler;
-import com.phylogeny.extrabitmanipulation.capability.SculptSettingsEventHandler;
-import com.phylogeny.extrabitmanipulation.capability.SculptSettingsHandler;
+import com.phylogeny.extrabitmanipulation.capability.IBitToolSettingsHandler;
+import com.phylogeny.extrabitmanipulation.capability.BitToolSettingsEventHandler;
+import com.phylogeny.extrabitmanipulation.capability.BitToolSettingsHandler;
 import com.phylogeny.extrabitmanipulation.capability.Storage;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
@@ -32,8 +32,8 @@ public class ProxyCommon implements IGuiHandler
 		ItemsExtraBitManipulation.itemsInit();
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getSuggestedConfigurationFile());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
-		MinecraftForge.EVENT_BUS.register(new SculptSettingsEventHandler());
-		CapabilityManager.INSTANCE.register(ISculptSettingsHandler.class, new Storage(), SculptSettingsHandler.class);
+		MinecraftForge.EVENT_BUS.register(new BitToolSettingsEventHandler());
+		CapabilityManager.INSTANCE.register(IBitToolSettingsHandler.class, new Storage(), BitToolSettingsHandler.class);
 		PacketRegistration.registerPackets();
 	}
 	

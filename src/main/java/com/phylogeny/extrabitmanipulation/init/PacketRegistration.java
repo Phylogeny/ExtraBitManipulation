@@ -6,11 +6,15 @@ import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetModelAreaMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetModelGuiOpen;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetModelSnapMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetSculptMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
@@ -36,10 +40,14 @@ public class PacketRegistration
 		registerPacket(PacketSetEndsOpen.Handler.class, PacketSetEndsOpen.class, Side.SERVER);
 		registerPacket(PacketSetWallThickness.Handler.class, PacketSetWallThickness.class, Side.SERVER);
 		registerPacket(PacketSetBitStack.Handler.class, PacketSetBitStack.class, Side.SERVER);
-		registerPacket(PacketSetMode.Handler.class, PacketSetMode.class, Side.SERVER);
+		registerPacket(PacketSetSculptMode.Handler.class, PacketSetSculptMode.class, Side.SERVER);
+		registerPacket(PacketSetModelAreaMode.Handler.class, PacketSetModelAreaMode.class, Side.SERVER);
+		registerPacket(PacketSetModelSnapMode.Handler.class, PacketSetModelSnapMode.class, Side.SERVER);
+		registerPacket(PacketSetModelGuiOpen.Handler.class, PacketSetModelGuiOpen.class, Side.SERVER);
 		registerPacket(PacketModelingTool.Handler.class, PacketModelingTool.class, Side.SERVER);
 		registerPacket(PacketCursorStack.Handler.class, PacketCursorStack.class, Side.SERVER);
 		registerPacket(PacketSetTabAndStateBlockButton.Handler.class, PacketSetTabAndStateBlockButton.class, Side.SERVER);
+		registerPacket(PacketReadBlockStates.Handler.class, PacketReadBlockStates.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)
