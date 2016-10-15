@@ -19,14 +19,14 @@ public class RecipesExtraBitManipulation
 	{
 		if (!OreDictionary.doesOreNameExist("nuggetDiamond"))
 		{
-			OreDictionary.registerOre("nuggetDiamond", ItemsExtraBitManipulation.DiamondNugget);
+			OreDictionary.registerOre("nuggetDiamond", ItemsExtraBitManipulation.diamondNugget);
 			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.DIAMOND),
 					new Object[]{
 						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
 						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
 						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond"
 			}));
-			GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.DiamondNugget, 9),
+			GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.diamondNugget, 9),
 					new Object[]{
 						Items.DIAMOND
 			});
