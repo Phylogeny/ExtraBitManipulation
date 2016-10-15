@@ -17,43 +17,43 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemsExtraBitManipulation
 {
-	public static Item DiamondNugget, BitWrench, SculptingLoop, SculptingSquare, SculptingSpadeCurved, SculptingSpadeSquared, ModelingTool,
-	ModelingToolHead, BitWrenchHead, SculptingLoopHead, SculptingSquareHead, SculptingSpadeCurvedHead, SculptingSpadeSquaredHead;
+	public static Item diamondNugget, bitWrench, sculptingLoop, sculptingSquare, sculptingSpadeCurved, sculptingSpadeSquared, modelingTool,
+	modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead, sculptingSpadeCurvedHead, sculptingSpadeSquaredHead;
 	
 	public static void itemsInit()
 	{
-		DiamondNugget = new ItemExtraBitManipulationBase("DiamondNugget"); 
-		BitWrench = new ItemBitWrench("BitWrench"); 
-		SculptingLoop = new ItemSculptingTool(true, true, "SculptingLoop");
-		SculptingSquare = new ItemSculptingTool(false, true, "SculptingSquare");
-		SculptingSpadeCurved = new ItemSculptingTool(true, false, "SculptingSpadeCurved");
-		SculptingSpadeSquared = new ItemSculptingTool(false, false, "SculptingSpadeSquared");
-		ModelingTool = new ItemModelingTool("ModelingTool");
-		ModelingToolHead = new ItemExtraBitManipulationBase("ModelingToolHead"); 
-		BitWrenchHead = new ItemExtraBitManipulationBase("BitWrenchHead"); 
-		SculptingLoopHead = new ItemExtraBitManipulationBase("SculptingLoopHead");
-		SculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
-		SculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("SculptingSpadeCurvedHead");
-		SculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("SculptingSpadeSquaredHead");
-		registerItemAndDefaultRecipe(BitWrench, "Bit Wrench", true, false);
-		registerItemAndDefaultRecipe(SculptingLoop, "Curved Sculpting Wire", true, false);
-		registerItemAndDefaultRecipe(SculptingSquare, "Straight Sculpting Wire", true, false);
-		registerItemAndDefaultRecipe(SculptingSpadeCurved, "Curved Sculpting Spade", true, false);
-		registerItemAndDefaultRecipe(SculptingSpadeSquared, "Flat Sculpting Spade", true, false);
-		registerItemAndDefaultRecipe(ModelingTool, "Modeling Tool", true, false);
-		registerItemAndDefaultRecipe(ModelingToolHead, "Modeling Tool Head", true, true,
+		diamondNugget = new ItemExtraBitManipulationBase("DiamondNugget"); 
+		bitWrench = new ItemBitWrench("BitWrench"); 
+		sculptingLoop = new ItemSculptingTool(true, true, "SculptingLoop");
+		sculptingSquare = new ItemSculptingTool(false, true, "SculptingSquare");
+		sculptingSpadeCurved = new ItemSculptingTool(true, false, "SculptingSpadeCurved");
+		sculptingSpadeSquared = new ItemSculptingTool(false, false, "SculptingSpadeSquared");
+		modelingTool = new ItemModelingTool("ModelingTool");
+		modelingToolHead = new ItemExtraBitManipulationBase("ModelingToolHead"); 
+		bitWrenchHead = new ItemExtraBitManipulationBase("BitWrenchHead"); 
+		sculptingLoopHead = new ItemExtraBitManipulationBase("SculptingLoopHead");
+		sculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
+		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("SculptingSpadeCurvedHead");
+		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("SculptingSpadeSquaredHead");
+		registerItemAndDefaultRecipe(bitWrench, "Bit Wrench", true, false);
+		registerItemAndDefaultRecipe(sculptingLoop, "Curved Sculpting Wire", true, false);
+		registerItemAndDefaultRecipe(sculptingSquare, "Straight Sculpting Wire", true, false);
+		registerItemAndDefaultRecipe(sculptingSpadeCurved, "Curved Sculpting Spade", true, false);
+		registerItemAndDefaultRecipe(sculptingSpadeSquared, "Flat Sculpting Spade", true, false);
+		registerItemAndDefaultRecipe(modelingTool, "Modeling Tool", true, false);
+		registerItemAndDefaultRecipe(modelingToolHead, "Modeling Tool Head", true, true,
 				"", "", "", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "");
-		registerItemAndDefaultRecipe(BitWrenchHead, "Bit Wrench Head", true, true,
+		registerItemAndDefaultRecipe(bitWrenchHead, "Bit Wrench Head", true, true,
 				"nuggetDiamond", "", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "", "nuggetDiamond", "");
-		registerItemAndDefaultRecipe(SculptingLoopHead, "Curved Sculpting Wire Head", true, true,
+		registerItemAndDefaultRecipe(sculptingLoopHead, "Curved Sculpting Wire Head", true, true,
 				"", "nuggetDiamond", "", "nuggetDiamond", "", "nuggetDiamond", "", "nuggetDiamond", "");
-		registerItemAndDefaultRecipe(SculptingSquareHead, "Straight Sculpting Wire Head", true, true,
+		registerItemAndDefaultRecipe(sculptingSquareHead, "Straight Sculpting Wire Head", true, true,
 				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "", "nuggetDiamond", "");
-		registerItemAndDefaultRecipe(SculptingSpadeCurvedHead, "Curved Sculpting Spade Head", true, true,
+		registerItemAndDefaultRecipe(sculptingSpadeCurvedHead, "Curved Sculpting Spade Head", true, true,
 				"", "nuggetDiamond", "", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
-		registerItemAndDefaultRecipe(SculptingSpadeSquaredHead, "Flat Sculpting Spade Head", true, true,
+		registerItemAndDefaultRecipe(sculptingSpadeSquaredHead, "Flat Sculpting Spade Head", true, true,
 				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
-		GameRegistry.registerItem(DiamondNugget, ((ItemExtraBitManipulationBase) DiamondNugget).getName());
+		GameRegistry.registerItem(diamondNugget, ((ItemExtraBitManipulationBase) diamondNugget).getName());
 	}
 	
 	private static void registerItemAndDefaultRecipe(Item item, String itemTitle, boolean isShapedDefault,
