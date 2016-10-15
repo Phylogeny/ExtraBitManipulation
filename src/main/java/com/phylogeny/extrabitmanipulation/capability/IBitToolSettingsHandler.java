@@ -3,12 +3,21 @@ package com.phylogeny.extrabitmanipulation.capability;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
-public interface ISculptSettingsHandler
+public interface IBitToolSettingsHandler
 {
 	public void syncAllData(EntityPlayerMP player);
 	
-	public int getMode();
-	public void setMode(int mode);
+	public int getModelAreaMode();
+	public void setModelAreaMode(int mode);
+	
+	public int getModelSnapMode();
+	public void setModelSnapMode(int mode);
+	
+	public boolean getModelGuiOpen();
+	public void setModelGuiOpen(boolean modelGuiOpen);
+	
+	public int getSculptMode();
+	public void setSculptMode(int mode);
 	
 	public int getDirection();
 	public void setDirection(int direction);

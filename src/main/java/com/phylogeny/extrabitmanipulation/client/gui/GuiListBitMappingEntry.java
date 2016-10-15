@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.helper.BitHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 
@@ -222,7 +222,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 		boolean changed = false;
 		if (cursorStack != null)
 		{
-			if (BitHelper.isBitStack(api, cursorStack))
+			if (BitInventoryHelper.isBitStack(api, cursorStack))
 			{
 				try
 				{

@@ -5,16 +5,16 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-public class Storage implements IStorage<ISculptSettingsHandler>
+public class Storage implements IStorage<IBitToolSettingsHandler>
 {
 	
 	@Override
-	public NBTBase writeNBT(Capability<ISculptSettingsHandler> capability, ISculptSettingsHandler instance, EnumFacing side)
+	public NBTBase writeNBT(Capability<IBitToolSettingsHandler> capability, IBitToolSettingsHandler instance, EnumFacing side)
 	{
 		return null;
 	}
 	
 	@Override
-	public void readNBT(Capability<ISculptSettingsHandler> capability, ISculptSettingsHandler instance, EnumFacing side, NBTBase nbt) {}
+	public void readNBT(Capability<IBitToolSettingsHandler> capability, IBitToolSettingsHandler instance, EnumFacing side, NBTBase nbt) {}
 	
 }

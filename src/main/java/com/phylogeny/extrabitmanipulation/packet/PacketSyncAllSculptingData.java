@@ -1,7 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.capability.ISculptSettingsHandler;
-import com.phylogeny.extrabitmanipulation.capability.SculptSettingsHandler;
+import com.phylogeny.extrabitmanipulation.capability.IBitToolSettingsHandler;
+import com.phylogeny.extrabitmanipulation.capability.BitToolSettingsHandler;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 import net.minecraft.client.Minecraft;
@@ -15,18 +15,20 @@ import io.netty.buffer.ByteBuf;
 
 public class PacketSyncAllSculptingData implements IMessage
 {
-	private int mode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	private boolean targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
+	private int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
+	private boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
 	private ItemStack setBitWire, setBitSpade;
 	
 	public PacketSyncAllSculptingData() {}
 	
-	public PacketSyncAllSculptingData(int mode, int direction, int shapeTypeCurved, int shapeTypeFlat,
-			boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
-			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness,
-			ItemStack setBitWire, ItemStack setBitSpade)
+	public PacketSyncAllSculptingData(int modelAreaMode, int modelSnapMode, boolean modelGuiOpen, int sculptMode, int direction, int shapeTypeCurved,
+			int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
+			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
 	{
-		this.mode = mode;
+		this.modelAreaMode = modelAreaMode;
+		this.modelSnapMode = modelSnapMode;
+		this.modelGuiOpen = modelGuiOpen;
+		this.sculptMode = sculptMode;
 		this.direction = direction;
 		this.shapeTypeCurved = shapeTypeCurved;
 		this.shapeTypeFlat = shapeTypeFlat;
@@ -43,7 +45,10 @@ public class PacketSyncAllSculptingData implements IMessage
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeInt(mode);
+		buffer.writeInt(modelAreaMode);
+		buffer.writeInt(modelSnapMode);
+		buffer.writeBoolean(modelGuiOpen);
+		buffer.writeInt(sculptMode);
 		buffer.writeInt(direction);
 		buffer.writeInt(shapeTypeCurved);
 		buffer.writeInt(shapeTypeFlat);
@@ -60,7 +65,10 @@ public class PacketSyncAllSculptingData implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		mode = buffer.readInt();
+		modelAreaMode = buffer.readInt();
+		modelSnapMode = buffer.readInt();
+		modelGuiOpen = buffer.readBoolean();
+		sculptMode = buffer.readInt();
 		direction = buffer.readInt();
 		shapeTypeCurved = buffer.readInt();
 		shapeTypeFlat = buffer.readInt();
@@ -86,10 +94,13 @@ public class PacketSyncAllSculptingData implements IMessage
 				public void run()
 				{
 					EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-					ISculptSettingsHandler cap = SculptSettingsHandler.getCapability(player);
+					IBitToolSettingsHandler cap = BitToolSettingsHandler.getCapability(player);
 					if (cap != null)
 					{
-						cap.setMode(message.mode);
+						cap.setModelAreaMode(message.modelAreaMode);
+						cap.setModelSnapMode(message.modelSnapMode);
+						cap.setModelGuiOpen(message.modelGuiOpen);
+						cap.setSculptMode(message.sculptMode);
 						cap.setDirection(message.direction);
 						cap.setShapeTypeCurved(message.shapeTypeCurved);
 						cap.setShapeTypeFlat(message.shapeTypeFlat);

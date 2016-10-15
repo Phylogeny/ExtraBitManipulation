@@ -6,6 +6,7 @@ item.extrabitmanipulation:SculptingSquare.name=Straight Sculpting Wire
 item.extrabitmanipulation:SculptingSpadeCurved.name=Curved Sculpting Spade
 item.extrabitmanipulation:SculptingSpadeSquared.name=Flat Sculpting Spade
 item.extrabitmanipulation:ModelingTool.name=Modeling Tool
+item.extrabitmanipulation:ModelingToolHead.name=Modeling Tool Head
 item.extrabitmanipulation:BitWrenchHead.name=Bit Wrench Head
 item.extrabitmanipulation:SculptingLoopHead.name=Curved Sculpting Wire Head
 item.extrabitmanipulation:SculptingSquareHead.name=Straight Sculpting Wire Head

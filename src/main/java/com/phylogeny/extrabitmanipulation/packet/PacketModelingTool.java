@@ -3,7 +3,7 @@ package com.phylogeny.extrabitmanipulation.packet;
 import java.util.HashMap;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.helper.BitHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
@@ -39,7 +39,7 @@ public class PacketModelingTool implements IMessage
 	public void toBytes(ByteBuf buffer)
 	{
 		ByteBufUtils.writeUTF8String(buffer, nbtKey);
-		BitHelper.stateToBytes(buffer, state);
+		BitIOHelper.stateToBytes(buffer, state);
 		boolean removeMapping = bit == null;
 		buffer.writeBoolean(removeMapping);
 		if (!removeMapping)
@@ -50,7 +50,7 @@ public class PacketModelingTool implements IMessage
 	public void fromBytes(ByteBuf buffer)
 	{
 		nbtKey = ByteBufUtils.readUTF8String(buffer);
-		state = BitHelper.stateFromBytes(buffer);
+		state = BitIOHelper.stateFromBytes(buffer);
 		if (buffer.readBoolean())
 		{
 			bit = null;
@@ -81,7 +81,7 @@ public class PacketModelingTool implements IMessage
 					ItemStack itemStack = player.inventory.getCurrentItem();
 					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
 					{
-						HashMap<IBlockState, IBitBrush> bitMapPermanent = BitHelper.readStateToBitMapFromNBT(ChiselsAndBitsAPIAccess.apiInstance,
+						HashMap<IBlockState, IBitBrush> bitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(ChiselsAndBitsAPIAccess.apiInstance,
 								itemStack, message.nbtKey);
 						if (message.bit != null)
 						{
@@ -91,7 +91,7 @@ public class PacketModelingTool implements IMessage
 						{
 							bitMapPermanent.remove(message.state);
 						}
-						BitHelper.writeStateToBitMapToNBT(itemStack, message.nbtKey, bitMapPermanent);
+						BitIOHelper.writeStateToBitMapToNBT(itemStack, message.nbtKey, bitMapPermanent);
 						player.inventory.markDirty();
 					}
 				}

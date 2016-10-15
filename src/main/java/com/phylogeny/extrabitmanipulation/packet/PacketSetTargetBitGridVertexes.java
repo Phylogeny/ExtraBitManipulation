@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -45,7 +45,7 @@ public class PacketSetTargetBitGridVertexes implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setBitGridTargeted(player, player.getHeldItemMainhand(), message.targetBitGridVertexes);
+					BitToolSettingsHelper.setBitGridTargeted(player, player.getHeldItemMainhand(), message.targetBitGridVertexes);
 				}
 			});
 			return null;

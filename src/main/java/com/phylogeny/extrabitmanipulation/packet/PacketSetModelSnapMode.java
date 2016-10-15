@@ -10,33 +10,33 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSetEndsOpen implements IMessage
+public class PacketSetModelSnapMode implements IMessage
 {
-	private boolean openEnds;
+	private int mode;
 	
-	public PacketSetEndsOpen() {}
+	public PacketSetModelSnapMode() {}
 	
-	public PacketSetEndsOpen(boolean openEnds)
+	public PacketSetModelSnapMode(int mode)
 	{
-		this.openEnds = openEnds;
+		this.mode = mode;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeBoolean(openEnds);
+		buffer.writeInt(mode);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		openEnds = buffer.readBoolean();
+		mode = buffer.readInt();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSetEndsOpen, IMessage>
+	public static class Handler implements IMessageHandler<PacketSetModelSnapMode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetEndsOpen message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSetModelSnapMode message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -45,7 +45,7 @@ public class PacketSetEndsOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setEndsOpen(player, player.getHeldItemMainhand(), message.openEnds);
+					BitToolSettingsHelper.setModelSnapMode(player, player.getHeldItemMainhand(), message.mode);
 				}
 			});
 			return null;

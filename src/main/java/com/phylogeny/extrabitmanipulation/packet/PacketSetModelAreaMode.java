@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.helper.SculptSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -10,13 +10,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class PacketSetMode implements IMessage
+public class PacketSetModelAreaMode implements IMessage
 {
 	private int mode;
 	
-	public PacketSetMode() {}
+	public PacketSetModelAreaMode() {}
 	
-	public PacketSetMode(int mode)
+	public PacketSetModelAreaMode(int mode)
 	{
 		this.mode = mode;
 	}
@@ -33,10 +33,10 @@ public class PacketSetMode implements IMessage
 		mode = buffer.readInt();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSetMode, IMessage>
+	public static class Handler implements IMessageHandler<PacketSetModelAreaMode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetMode message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSetModelAreaMode message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -45,7 +45,7 @@ public class PacketSetMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					SculptSettingsHelper.setMode(player, player.getHeldItemMainhand(), message.mode);
+					BitToolSettingsHelper.setModelAreaMode(player, player.getHeldItemMainhand(), message.mode);
 				}
 			});
 			return null;
