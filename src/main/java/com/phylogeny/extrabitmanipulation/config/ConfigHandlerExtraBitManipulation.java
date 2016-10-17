@@ -27,6 +27,7 @@ public class ConfigHandlerExtraBitManipulation
 	public static final String SCULPTING_WRENCH_SETTINGS = "Sculpting & Wrech Settings";
 	public static final String UNCHISELABLE_BLOCK_STATES = "Unchiselable Block States";
 	public static final String INSUFFICIENT_BITS = "Insufficient Bits";
+	public static final String MODELING_TOOL_SETTINGS = "modelingToolSettings";
 	public static final String DATA_CATAGORY_SCULPT = "Sculpting Tool";
 	public static final String DATA_CATAGORY_MODEL = "Modeling Tool";
 	public static final String BIT_TOOL_DEFAULT_VALUES = "Default Values";
@@ -127,6 +128,16 @@ public class ConfigHandlerExtraBitManipulation
 					"the most prevalent in the block space. (default = false)");
 			
 			//MODELING TOOL SETTINGS
+			Configs.saveStatesById = configFile.getBoolean("Save States By ID", MODELING_TOOL_SETTINGS, false,
+					"If set to true, manually mapped blocks and block states will be saved as state IDs (integers - 4 bytes each). If set to false, " +
+					"they will be saved as a registry name (2 strings - 1 byte per char) and metadata (1 byte). Saving states as registry name " +
+					"for blocks and as registry name and metadata for block states takes up several times more space, and if thousands of mappings " +
+					"are manually stored in an item (as unlikely as that is), client or server crashing may occur if that item is sent through a " +
+					"packet network since the maximum payload is 32767 bytes. The benefit is that if the item is transported across worlds, the " +
+					"states will remain consistent. Saving states as integers, however, takes several times less space (meaning that 10k+ mappings " +
+					"would be necessary to cause a crash, which is even less likely), but the state IDs may not remain consistent if the item is " +
+					"transported across worlds. Changing this config will not cause any previously mapped states to be lost; all saved mappings " +
+					"will simply be read and saved in the new format the next time a state is manually mapped or unmapped.");
 			Configs.replacementBitsUnchiselable = getConfigReplacementBits(UNCHISELABLE_BLOCK_STATES, "minecraft:redstone_block", true, true, false);
 			Configs.replacementBitsInsufficient = getConfigReplacementBits(INSUFFICIENT_BITS, "minecraft:redstone_block", true, true, false);
 			

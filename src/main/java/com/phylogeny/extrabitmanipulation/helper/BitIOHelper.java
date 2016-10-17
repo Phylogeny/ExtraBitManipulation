@@ -13,57 +13,125 @@ import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public class BitIOHelper
 {
 	
-	public static HashMap<IBlockState, IBitBrush> writeStateToBitMapToNBT(ItemStack bitStack, String key, HashMap<IBlockState, IBitBrush> stateToBitMap)
+	public static void writeStateToBitMapToNBT(ItemStack bitStack, String key, HashMap<IBlockState, IBitBrush> stateToBitMap, boolean saveStatesById)
 	{
-		if (bitStack.hasTagCompound())
+		if (!bitStack.hasTagCompound())
+			return;
+		
+		int counter = 0;
+		int n = stateToBitMap.size();
+		NBTTagCompound nbt = bitStack.getTagCompound();
+		if (saveStatesById)
 		{
-			NBTTagCompound nbtEntry;
-			NBTTagList nbtList = new NBTTagList();
-			for (IBlockState state : stateToBitMap.keySet())
+			int[] mapArray = new int[n * 2];
+			for (Entry<IBlockState, IBitBrush> entry : stateToBitMap.entrySet())
 			{
-				nbtEntry = new NBTTagCompound();
-				writeStateToNBT(nbtEntry, state);
-				ItemStackHelper.saveStackToNBT(nbtEntry, stateToBitMap.get(state).getItemStack(1), NBTKeys.BIT_STACK);
-				nbtList.appendTag(nbtEntry);
+				mapArray[counter++] = Block.getStateId(entry.getKey());
+				mapArray[counter++] = entry.getValue().getStateID();
 			}
-			bitStack.getTagCompound().setTag(key, nbtList);
+			writeObjectToNBT(nbt, key + 0, mapArray);
+			nbt.removeTag(key + 1);
+			nbt.removeTag(key + 2);
+			nbt.removeTag(key + 3);
 		}
-		return stateToBitMap;
+		else
+		{
+			boolean isBlockMap = key.equals(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
+			String[] domainArray = new String[n * 2];
+			String[] pathArray = new String[n * 2];
+			byte[] metaArray = isBlockMap ? null : new byte[n * 2];
+			for (Entry<IBlockState, IBitBrush> entry : stateToBitMap.entrySet())
+			{
+				saveStateToMapArrays(domainArray, pathArray, metaArray, counter++, entry.getKey());
+				saveStateToMapArrays(domainArray, pathArray, metaArray, counter++, Block.getStateById(entry.getValue().getStateID()));
+			}
+			nbt.removeTag(key + 0);
+			writeObjectToNBT(nbt, key + 1, domainArray);
+			writeObjectToNBT(nbt, key + 2, pathArray);
+			if (!isBlockMap)
+				writeObjectToNBT(nbt, key + 3, metaArray);
+		}
+	}
+	
+	private static void saveStateToMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index, IBlockState state)
+	{
+		UniqueIdentifier uniqueIdentifier = GameRegistry.findUniqueIdentifierFor(state.getBlock());
+		domainArray[index] = uniqueIdentifier != null ? uniqueIdentifier.modId : "null";
+		pathArray[index] = uniqueIdentifier != null ? uniqueIdentifier.name : "null";
+		if (metaArray != null)
+			metaArray[index] = (byte) state.getBlock().getMetaFromState(state);
 	}
 	
 	public static HashMap<IBlockState, IBitBrush> readStateToBitMapFromNBT(IChiselAndBitsAPI api, ItemStack bitStack, String key)
 	{
 		HashMap<IBlockState, IBitBrush> stateToBitMap = new HashMap<IBlockState, IBitBrush>();
-		if (bitStack.hasTagCompound() && bitStack.getTagCompound().hasKey(key))
+		if (!bitStack.hasTagCompound())
+			return stateToBitMap;
+		
+		NBTTagCompound nbt = bitStack.getTagCompound();
+		boolean saveStatesById = !nbt.hasKey(key + 2);
+		boolean isBlockMap = key.equals(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
+		if (saveStatesById ? !nbt.hasKey(key + 0) : !nbt.hasKey(key + 1) || (!isBlockMap && !nbt.hasKey(key + 3)))
+			return stateToBitMap;
+		
+		if (saveStatesById)
 		{
-			NBTTagList stateNbtList = bitStack.getTagCompound().getTagList(key, Constants.NBT.TAG_COMPOUND);
-			for (int n = 0; n < stateNbtList.tagCount(); n++)
+			int[] mapArray = (int[]) readArrayFromNBT(nbt, key + 0);
+			if (mapArray == null)
+				return stateToBitMap;
+			
+			for (int i = 0; i < mapArray.length; i += 2)
 			{
-				NBTTagCompound entryNbt = stateNbtList.getCompoundTagAt(n);
-				IBlockState state = readStateFromNBT(entryNbt);
+				IBlockState state = Block.getStateById(mapArray[i]);
 				if (!isAir(state))
 				{
 					try
 					{
-						stateToBitMap.put(state, api.createBrush(ItemStackHelper.loadStackFromNBT(entryNbt, NBTKeys.BIT_STACK)));
+						stateToBitMap.put(state, api.createBrushFromState(Block.getStateById(mapArray[i + 1])));
+					}
+					catch (InvalidBitItem e) {}
+				}
+			}
+		}
+		else
+		{
+			String[] domainArray = (String[]) readArrayFromNBT(nbt, key + 1);
+			String[] pathArray = (String[]) readArrayFromNBT(nbt, key + 2);
+			byte[] metaArray = isBlockMap ? null : (byte[]) readArrayFromNBT(nbt, key + 3);
+			if (domainArray == null || pathArray == null || (!isBlockMap && metaArray == null))
+				return stateToBitMap;
+			
+			for (int i = 0; i < domainArray.length; i += 2)
+			{
+				IBlockState state = readStateFromMapArrays(domainArray, pathArray, metaArray, i);
+				if (!isAir(state))
+				{
+					try
+					{
+						stateToBitMap.put(state, api.createBrushFromState(readStateFromMapArrays(domainArray, pathArray, metaArray, i + 1)));
 					}
 					catch (InvalidBitItem e) {}
 				}
@@ -72,22 +140,65 @@ public class BitIOHelper
 		return stateToBitMap;
 	}
 	
+	private static IBlockState readStateFromMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index)
+	{
+		Block block = GameRegistry.findBlock(domainArray[index], pathArray[index]);
+		return block == null ? Blocks.air.getDefaultState() : (metaArray != null ? block.getStateFromMeta(metaArray[index]) : block.getDefaultState());
+	}
+	
+	private static byte[] compressObject(Object object) throws IOException
+	{
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		ObjectOutputStream objectStream = new ObjectOutputStream(new DeflaterOutputStream(byteStream));
+		objectStream.writeObject(object);
+		objectStream.close();
+		return byteStream.toByteArray();
+	}
+	
+	private static Object decompressObject(byte[] bytes) throws IOException, ClassNotFoundException
+	{
+		return (new ObjectInputStream(new InflaterInputStream(new ByteArrayInputStream(bytes)))).readObject();
+	}
+	
+	private static void writeObjectToNBT(NBTTagCompound nbt, String key, Object object)
+	{
+		try
+		{
+			nbt.setByteArray(key, compressObject(object));
+		}
+		catch (IOException e) {}
+	}
+	
+	private static Object readArrayFromNBT(NBTTagCompound nbt, String key)
+	{
+		try
+		{
+			return decompressObject(nbt.getByteArray(key));
+		}
+		catch (ClassNotFoundException e) {}
+		catch (IOException e) {}
+		return null;
+	}
+	
 	public static void readStatesFromNBT(NBTTagCompound nbt, HashMap<IBlockState, Integer> stateMap, IBlockState[][][] stateArray)
 	{
-		NBTTagList stateNbtList = nbt.getTagList(NBTKeys.SAVED_STATES, Constants.NBT.TAG_COMPOUND);
-		for (int n = 0; n < stateNbtList.tagCount(); n++)
+		String key = NBTKeys.SAVED_STATES;
+		int[] stateIDs = (int[]) readArrayFromNBT(nbt, key);
+		if (stateIDs == null)
+			stateIDs = new int[4096];
+		
+		for (int n = 0; n < stateIDs.length; n++)
 		{
-			NBTTagCompound stateNbt = stateNbtList.getCompoundTagAt(n);
 			int i = n / 256;
 			int n2 = n % 256;
 			int j = n2 / 16;
 			int k = n2 % 16;
-			IBlockState state = readStateFromNBT(stateNbt);
+			IBlockState state = Block.getStateById(stateIDs[n]);
 			stateArray[i][j][k] = state;
 			if (!isAir(state))
 				stateMap.put(state, 1 + (stateMap.containsKey(state) ? stateMap.get(state) : 0));
 		}
-		if (stateNbtList.hasNoTags())
+		if (stateIDs.length == 0)
 		{
 			IBlockState air = Blocks.air.getDefaultState();
 			for (int i = 0; i < 16; i++)
@@ -108,8 +219,8 @@ public class BitIOHelper
 		if (world.isRemote)
 			return;
 		
-		NBTTagCompound nbtState;
-		NBTTagList nbtList = new NBTTagList();
+		int[] stateIDs = new int[4096];
+		int index = 0;
 		int diffX = 16 - (int) (box.maxX - box.minX);
 		int diffZ = 16 - (int) (box.maxZ - box.minZ);
 		int halfDiffX = diffX / 2;
@@ -137,13 +248,12 @@ public class BitIOHelper
 					{
 						state = airState;
 					}
-					nbtState = new NBTTagCompound();
-					writeStateToNBT(nbtState, state);
-					nbtList.appendTag(nbtState);
+					stateIDs[index++] = Block.getStateId(state);
 				}
 			}
 		}
-		nbt.setTag(NBTKeys.SAVED_STATES, nbtList);
+		String key = NBTKeys.SAVED_STATES;
+		writeObjectToNBT(nbt, key, stateIDs);
 		player.inventoryContainer.detectAndSendChanges();
 	}
 	
@@ -199,59 +309,14 @@ public class BitIOHelper
 		return block.equals(Blocks.air);
 	}
 	
-	private static void writeStateToNBT(NBTTagCompound nbtState, IBlockState state)
-	{
-		writeBlockToNBT(nbtState, state);
-		nbtState.setInteger(NBTKeys.STATE_META, state.getBlock().getMetaFromState(state));
-	}
-	
-	public static IBlockState readStateFromNBT(NBTTagCompound nbt)
-	{
-		Block block = readBlockFromNBT(nbt);
-		if (block == null)
-			return Blocks.air.getDefaultState();
-		
-		return block.getStateFromMeta(nbt.getInteger(NBTKeys.STATE_META));
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static void writeBlockToNBT(NBTTagCompound nbt, IBlockState state)
-	{
-		UniqueIdentifier uniqueIdentifier = GameRegistry.findUniqueIdentifierFor(state.getBlock());
-		nbt.setString(NBTKeys.BLOCK_MODID, uniqueIdentifier != null ? uniqueIdentifier.modId : "null");
-		nbt.setString(NBTKeys.BLOCK_NAME, uniqueIdentifier != null ? uniqueIdentifier.name : "null");
-	}
-	
-	public static Block readBlockFromNBT(NBTTagCompound nbt)
-	{
-		return GameRegistry.findBlock(nbt.getString(NBTKeys.BLOCK_MODID), nbt.getString(NBTKeys.BLOCK_NAME));
-	}
-	
 	public static void stateToBytes(ByteBuf buffer, IBlockState state)
 	{
-		Block block = state.getBlock();
-		blockToBytes(buffer, block);
-		buffer.writeInt(block.getMetaFromState(state));
+		buffer.writeInt(Block.getStateId(state));
 	}
 	
 	public static IBlockState stateFromBytes(ByteBuf buffer)
 	{
-		Block block = blockFromBytes(buffer);
-		int meta = buffer.readInt();
-		return block != null ? block.getStateFromMeta(meta) : null;
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static void blockToBytes(ByteBuf buffer, Block block)
-	{
-		UniqueIdentifier uniqueIdentifier = GameRegistry.findUniqueIdentifierFor(block);
-		ByteBufUtils.writeUTF8String(buffer, uniqueIdentifier.modId);
-		ByteBufUtils.writeUTF8String(buffer, uniqueIdentifier.name);
-	}
-	
-	public static Block blockFromBytes(ByteBuf buffer)
-	{
-		return GameRegistry.findBlock(ByteBufUtils.readUTF8String(buffer), ByteBufUtils.readUTF8String(buffer));
+		return Block.getStateById(buffer.readInt());
 	}
 	
 }
