@@ -32,14 +32,15 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 		List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
 		List<IConfigElement> configElementsToolSettings = new ArrayList<IConfigElement>();
-		String textReplacementBits = "Configures the procedures for finding replacement bits ";
+		String textStorage = "the the way block states are stored, and ";
+		String textReplacementBits = "Configures" + textStorage + "the procedures for finding replacement bits ";
 		String textUnchiselable = "when a blockstate is unchiselable";
 		String textInsufficient = "when the player has insufficient bits for a chiselable blockstate";
 		configElementsModelingTool.addAll(getChildElements(ConfigHandlerExtraBitManipulation.MODELING_TOOL_SETTINGS));
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.UNCHISELABLE_BLOCK_STATES,
-				textReplacementBits + textUnchiselable, configElementsModelingTool);
+				textReplacementBits.replace(textStorage, " ") + textUnchiselable, configElementsModelingTool);
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.INSUFFICIENT_BITS,
-				textReplacementBits + textInsufficient, configElementsModelingTool);
+				textReplacementBits.replace(textStorage, " ") + textInsufficient, configElementsModelingTool);
 		addElementsToDummyElement("Modeling Tool Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
 				configElementsToolSettings, configElementsModelingTool);
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.SCULPTING_WRENCH_SETTINGS,
@@ -48,7 +49,8 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 				"menu for item-specific settings)", configElementsToolSettings);
 		addElementsToDummyElement("Tool Settings", "Configures sculpting dimensions, wrench inversion mode, the way bits are " +
 				"handled when removed from the world, and the way bit removal/addition areas are displayed. (applies to all sculpting " +
-				"tools -- see 'Item Properties' menu for item-specific settings), as well as the way the Modeling Tool finds replacement bits",
+				"tools -- see 'Item Properties' menu for item-specific settings), as well as the way the Modeling Tool stores block " +
+				"states and finds replacement bits",
 				configElements, configElementsToolSettings);
 		
 		List<IConfigElement> configElementsToolData = new ArrayList<IConfigElement>();
