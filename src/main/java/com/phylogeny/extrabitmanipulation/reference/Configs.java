@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 public class Configs
 {
 	//MODELING TOOL SETTINGS
+		public static boolean saveStatesById;
 		public static ConfigReplacementBits replacementBitsUnchiselable;
 		public static ConfigReplacementBits replacementBitsInsufficient;
 		
