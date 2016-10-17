@@ -150,8 +150,7 @@ public class GuiModelingTool extends GuiContainer
 			constructManualMaps();
 		}
 		String nbtKey = buttonStates.selected ? NBTKeys.STATE_TO_BIT_MAP_PERMANENT : NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT;
-		BitIOHelper.writeStateToBitMapToNBT(modelingToolStack, nbtKey, bitMapPermanent);
-		ExtraBitManipulation.packetNetwork.sendToServer(new PacketModelingTool(nbtKey, state, bit));
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketModelingTool(nbtKey, state, bit, Configs.saveStatesById));
 		refreshList();
 	}
 	

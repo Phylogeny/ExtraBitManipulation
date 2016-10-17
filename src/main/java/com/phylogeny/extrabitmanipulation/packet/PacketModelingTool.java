@@ -25,14 +25,16 @@ public class PacketModelingTool implements IMessage
 	private IBlockState state;
 	private IBitBrush bit;
 	private String nbtKey;
+	protected boolean saveStatesById;
 	
 	public PacketModelingTool() {}
 	
-	public PacketModelingTool(String nbtKey, IBlockState state, IBitBrush bit)
+	public PacketModelingTool(String nbtKey, IBlockState state, IBitBrush bit, boolean saveStatesById)
 	{
 		this.nbtKey = nbtKey;
 		this.state = state;
 		this.bit = bit;
+		this.saveStatesById = saveStatesById;
 	}
 	
 	@Override
@@ -40,6 +42,7 @@ public class PacketModelingTool implements IMessage
 	{
 		ByteBufUtils.writeUTF8String(buffer, nbtKey);
 		BitIOHelper.stateToBytes(buffer, state);
+		buffer.writeBoolean(saveStatesById);
 		boolean removeMapping = bit == null;
 		buffer.writeBoolean(removeMapping);
 		if (!removeMapping)
@@ -51,6 +54,7 @@ public class PacketModelingTool implements IMessage
 	{
 		nbtKey = ByteBufUtils.readUTF8String(buffer);
 		state = BitIOHelper.stateFromBytes(buffer);
+		saveStatesById = buffer.readBoolean();
 		if (buffer.readBoolean())
 		{
 			bit = null;
@@ -91,8 +95,8 @@ public class PacketModelingTool implements IMessage
 						{
 							bitMapPermanent.remove(message.state);
 						}
-						BitIOHelper.writeStateToBitMapToNBT(itemStack, message.nbtKey, bitMapPermanent);
-						player.inventory.markDirty();
+						BitIOHelper.writeStateToBitMapToNBT(itemStack, message.nbtKey, bitMapPermanent, message.saveStatesById);
+						player.inventoryContainer.detectAndSendChanges();
 					}
 				}
 			});

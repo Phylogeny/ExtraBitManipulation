@@ -35,6 +35,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		String textReplacementBits = "Configures the procedures for finding replacement bits ";
 		String textUnchiselable = "when a blockstate is unchiselable";
 		String textInsufficient = "when the player has insufficient bits for a chiselable blockstate";
+		configElementsModelingTool.addAll(getChildElements(ConfigHandlerExtraBitManipulation.MODELING_TOOL_SETTINGS));
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.UNCHISELABLE_BLOCK_STATES,
 				textReplacementBits + textUnchiselable, configElementsModelingTool);
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.INSUFFICIENT_BITS,
@@ -184,8 +185,12 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	
 	private static void addChildElementsToDummyElement(String text, String catagory, String toolTip, List<IConfigElement> configElements)
 	{
-		addElementsToDummyElement(text, toolTip, configElements, new ConfigElement(
-				ConfigHandlerExtraBitManipulation.configFile.getCategory(catagory)).getChildElements());
+		addElementsToDummyElement(text, toolTip, configElements, getChildElements(catagory));
+	}
+	
+	private static List<IConfigElement> getChildElements(String key)
+	{
+		return new ConfigElement(ConfigHandlerExtraBitManipulation.configFile.getCategory(key.toLowerCase())).getChildElements();
 	}
 	
 }
