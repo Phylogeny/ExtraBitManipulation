@@ -210,7 +210,7 @@ public class GuiModelingTool extends GuiContainer
 		IBitBrush defaultBit = null;
 		try
 		{
-			defaultBit = api.createBrushFromState((Configs.replacementBitsUnchiselable.defaultReplacementBit.getDefaultBitBlock().getDefaultState()));
+			defaultBit = api.createBrushFromState((Configs.replacementBitsUnchiselable.defaultReplacementBit.getDefaultState()));
 		}
 		catch (InvalidBitItem e) {}
 		for (int i = 0; i < 16; i++)
