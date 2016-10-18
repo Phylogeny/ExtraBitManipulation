@@ -4,24 +4,24 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 
 public class ConfigBitStack extends ConfigBitToolSettingBase
 {
 	private ItemStack bitStackDefault;
-	private Block bitBlockDefault, bitBlockDefaultDefault;
+	private IBlockState stateDefault, stateDefaultDefault;
 	
-	public ConfigBitStack(Block bitBlockDefault, Block defaultDefaultBitBlock)
+	public ConfigBitStack(IBlockState bitBlockDefault, IBlockState defaultDefaultBitBlock)
 	{
 		this(false, false, bitBlockDefault, defaultDefaultBitBlock);
 	}
 	
-	public ConfigBitStack(boolean perTool, boolean displayInChat, Block bitBlockDefault, Block bitBlockDefaultDefault)
+	public ConfigBitStack(boolean perTool, boolean displayInChat, IBlockState stateDefault, IBlockState stateDefaultDefault)
 	{
 		super(perTool, displayInChat);
-		this.bitBlockDefault = bitBlockDefault;
-		this.bitBlockDefaultDefault = bitBlockDefaultDefault;
+		this.stateDefault = stateDefault;
+		this.stateDefaultDefault = stateDefaultDefault;
 	}
 	
 	public void init()
@@ -31,7 +31,7 @@ public class ConfigBitStack extends ConfigBitToolSettingBase
 		{
 			try
 			{
-				bitStackDefault = api.getBitItem((bitBlockDefault != null ? bitBlockDefault : bitBlockDefaultDefault).getDefaultState());
+				bitStackDefault = api.getBitItem(stateDefault != null ? stateDefault : stateDefaultDefault);
 				if (bitStackDefault.getItem() == null)
 					bitStackDefault = null;
 			}
@@ -44,9 +44,9 @@ public class ConfigBitStack extends ConfigBitToolSettingBase
 		return bitStackDefault;
 	}
 	
-	public Block getDefaultBitBlock()
+	public IBlockState getDefaultState()
 	{
-		return bitBlockDefault != null ? bitBlockDefault : bitBlockDefaultDefault;
+		return stateDefault != null ? stateDefault : stateDefaultDefault;
 	}
 	
 }

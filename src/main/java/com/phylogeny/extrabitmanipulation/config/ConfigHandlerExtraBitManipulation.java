@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -320,9 +321,9 @@ public class ConfigHandlerExtraBitManipulation
 				: "the player has insufficient bits in their inventory for a chiselable blockstate") + ", an attempt will be made to find a replacement bit. ";
 		ConfigReplacementBits replacementBitsConfig = new ConfigReplacementBits(useDefaultReplacementBitDefault,
 				useAnyBitsAsReplacementsDefault, useAirAsReplacementDefault);
-		replacementBitsConfig.defaultReplacementBit = new ConfigBitStack(getDefaultBlock(configFile.getString("Default Replacement Bit",
+		replacementBitsConfig.defaultReplacementBit = new ConfigBitStack(getState(configFile.getString("Default Replacement Bit",
 				category, defaultBlockName, condition + "If the 'Use Default Replacement Bit' config is also set to 'true', then an " +
-						"attempt will first be made to use the bit version of this block as a replacement.")), getDefaultBlock(defaultBlockName));
+						"attempt will first be made to use the bit version of this block as a replacement.")), getState(defaultBlockName));
 		replacementBitsConfig.defaultReplacementBit.init();
 		String textIfTrue = ", if this is set to 'true', ";
 		String textIfFalse = ". If this is set to 'false', this step will be skipped";
@@ -378,25 +379,32 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, catagoryEnding, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, catagoryEnding, defaultDisplayInChat, toolTipSecondary);
-		Block defaultBlock = getDefaultBlock(configFile.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
+		IBlockState defaultState = getState(configFile.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
 				getToolTipBitToolSetting(toolTipDefaultValue, toolTipDefaultValueDefault)));
-		return new ConfigBitStack(perTool, displayInChat, defaultBlock, getDefaultBlock(defaultValue));
+		return new ConfigBitStack(perTool, displayInChat, defaultState, getState(defaultValue));
 	}
 
-	private static Block getDefaultBlock(String blockName)
+	private static IBlockState getState(String blockName)
 	{
-		Block defaultBlock = null;
-		if (!blockName.isEmpty())
+		if (blockName.isEmpty())
+			return null;
+		
+		int meta = 0;
+		int i = blockName.lastIndexOf(":");
+		if (i >= 0 && i < blockName.length() - 1)
 		{
-			int i = blockName.indexOf(":");
-			if (i > 0)
+			try
 			{
-				int len = blockName.length();
-				if (len > 2 && StringUtils.countMatches(blockName, ":") == 1)
-					defaultBlock = Block.getBlockFromName(blockName);
+				meta = Integer.parseInt(blockName.substring(i + 1));
+				blockName = blockName.substring(0, i);
 			}
+			catch (NumberFormatException e) {}
 		}
-		return defaultBlock;
+		Block block = Block.getBlockFromName(blockName);
+		if (block == null)
+			return null;
+		
+		return block.getStateFromMeta(meta);
 	}
 	
 	private static String getToolTipBitToolSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)
