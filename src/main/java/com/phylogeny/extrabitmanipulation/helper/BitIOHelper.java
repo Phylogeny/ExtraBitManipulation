@@ -59,27 +59,26 @@ public class BitIOHelper
 			boolean isBlockMap = key.equals(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
 			String[] domainArray = new String[n * 2];
 			String[] pathArray = new String[n * 2];
-			byte[] metaArray = isBlockMap ? null : new byte[n * 2];
+			byte[] metaArray = new byte[isBlockMap ? n : n * 2];
 			for (Entry<IBlockState, IBitBrush> entry : stateToBitMap.entrySet())
 			{
-				saveStateToMapArrays(domainArray, pathArray, metaArray, counter++, entry.getKey());
-				saveStateToMapArrays(domainArray, pathArray, metaArray, counter++, Block.getStateById(entry.getValue().getStateID()));
+				saveStateToMapArrays(domainArray, pathArray, null, counter++, isBlockMap, entry.getKey());
+				saveStateToMapArrays(domainArray, pathArray, metaArray, counter++, isBlockMap, Block.getStateById(entry.getValue().getStateID()));
 			}
 			nbt.removeTag(key + 0);
 			writeObjectToNBT(nbt, key + 1, domainArray);
 			writeObjectToNBT(nbt, key + 2, pathArray);
-			if (!isBlockMap)
-				writeObjectToNBT(nbt, key + 3, metaArray);
+			writeObjectToNBT(nbt, key + 3, metaArray);
 		}
 	}
 	
-	private static void saveStateToMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index, IBlockState state)
+	private static void saveStateToMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index, boolean isBlockMap, IBlockState state)
 	{
 		ResourceLocation regName = state.getBlock().getRegistryName();
 		domainArray[index] = regName.getResourceDomain();
 		pathArray[index] = regName.getResourcePath();
 		if (metaArray != null)
-			metaArray[index] = (byte) state.getBlock().getMetaFromState(state);
+			metaArray[isBlockMap ? index / 2 : index] = (byte) state.getBlock().getMetaFromState(state);
 	}
 	
 	public static HashMap<IBlockState, IBitBrush> readStateToBitMapFromNBT(IChiselAndBitsAPI api, ItemStack bitStack, String key)
@@ -90,8 +89,7 @@ public class BitIOHelper
 		
 		NBTTagCompound nbt = bitStack.getTagCompound();
 		boolean saveStatesById = !nbt.hasKey(key + 2);
-		boolean isBlockMap = key.equals(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
-		if (saveStatesById ? !nbt.hasKey(key + 0) : !nbt.hasKey(key + 1) || (!isBlockMap && !nbt.hasKey(key + 3)))
+		if (saveStatesById ? !nbt.hasKey(key + 0) : !nbt.hasKey(key + 1) || !nbt.hasKey(key + 3))
 			return stateToBitMap;
 		
 		if (saveStatesById)
@@ -117,18 +115,19 @@ public class BitIOHelper
 		{
 			String[] domainArray = (String[]) readArrayFromNBT(nbt, key + 1);
 			String[] pathArray = (String[]) readArrayFromNBT(nbt, key + 2);
-			byte[] metaArray = isBlockMap ? null : (byte[]) readArrayFromNBT(nbt, key + 3);
-			if (domainArray == null || pathArray == null || (!isBlockMap && metaArray == null))
+			byte[] metaArray = (byte[]) readArrayFromNBT(nbt, key + 3);
+			if (domainArray == null || pathArray == null || metaArray == null)
 				return stateToBitMap;
 			
+			boolean isBlockMap = key.equals(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
 			for (int i = 0; i < domainArray.length; i += 2)
 			{
-				IBlockState state = readStateFromMapArrays(domainArray, pathArray, metaArray, i);
+				IBlockState state = readStateFromMapArrays(domainArray, pathArray, metaArray, i, isBlockMap);
 				if (!isAir(state))
 				{
 					try
 					{
-						stateToBitMap.put(state, api.createBrushFromState(readStateFromMapArrays(domainArray, pathArray, metaArray, i + 1)));
+						stateToBitMap.put(state, api.createBrushFromState(readStateFromMapArrays(domainArray, pathArray, metaArray, i + 1, isBlockMap)));
 					}
 					catch (InvalidBitItem e) {}
 				}
@@ -137,10 +136,11 @@ public class BitIOHelper
 		return stateToBitMap;
 	}
 	
-	private static IBlockState readStateFromMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index)
+	private static IBlockState readStateFromMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index, boolean isBlockMap)
 	{
 		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(domainArray[index], pathArray[index]));
-		return block == null ? Blocks.AIR.getDefaultState() : (metaArray != null ? block.getStateFromMeta(metaArray[index]) : block.getDefaultState());
+		return block == null ? Blocks.AIR.getDefaultState() : (metaArray != null
+				? block.getStateFromMeta(metaArray[isBlockMap ? index / 2 : index]) : block.getDefaultState());
 	}
 	
 	private static byte[] compressObject(Object object) throws IOException
