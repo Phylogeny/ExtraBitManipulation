@@ -62,7 +62,8 @@ public class GuiModelingTool extends GuiContainer
 	private GuiButtonSelect buttonStates, buttonBlocks;
 	private GuiButtonTab[] tabButtons = new GuiButtonTab[4];
 	private static final String[] tabButtonHoverText = new String[]{"Current Model", "All Saved Mappings", "All Minecraft Blocks", "Model Result"};
-	private static boolean stateMauallySelected;
+	private int savedTab;
+	private static boolean stateMauallySelected, savedBlockButton;
 	private GuiTextField searchField;
 	
 	public GuiModelingTool(InventoryPlayer playerInventory, ItemStack modelingToolStack)
@@ -70,16 +71,16 @@ public class GuiModelingTool extends GuiContainer
 		super(new ContainerModelingTool(playerInventory));
 		api = ChiselsAndBitsAPIAccess.apiInstance;
 		this.modelingToolStack = modelingToolStack;
-		
 		xSize = 254;
 		ySize = 219;
-		
+		NBTTagCompound nbt = modelingToolStack.hasTagCompound() ? modelingToolStack.getTagCompound() : new NBTTagCompound();
+		stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
+		savedTab = nbt.getInteger(NBTKeys.TAB_SETTING);
 		stateToBitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);
 		blockToBitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
-		
 		stateMap = new HashMap<IBlockState, Integer>();
 		stateArray = new IBlockState[16][16][16];
-		BitIOHelper.readStatesFromNBT(modelingToolStack.getTagCompound(), stateMap, stateArray);
+		BitIOHelper.readStatesFromNBT(nbt, stateMap, stateArray);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -96,6 +97,9 @@ public class GuiModelingTool extends GuiContainer
 			for (Block block : Block.blockRegistry)
 			{
 				UniqueIdentifier uniqueIdentifier = GameRegistry.findUniqueIdentifierFor(block);
+				if (uniqueIdentifier == null)
+					continue;
+				
 				if (uniqueIdentifier.modId.equals("chiselsandbits"))
 				{
 					Item item = Item.getItemFromBlock(block);
@@ -267,7 +271,6 @@ public class GuiModelingTool extends GuiContainer
 		searchField.setEnableBackgroundDrawing(false);
 		searchField.setTextColor(-1);
 		constructStateToBitCountArray();
-		NBTTagCompound nbt = modelingToolStack.hasTagCompound() ? modelingToolStack.getTagCompound() : new NBTTagCompound();
 		int slotHeight = 24;
 		for (int i = 0; i < tabButtons.length; i++)
 		{
@@ -284,7 +287,7 @@ public class GuiModelingTool extends GuiContainer
 				vHeight = 36;
 			}
 			GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25, tabButtonHoverText[i], iconStack, u, v, uWidth, vHeight);
-			if (i == nbt.getInteger(NBTKeys.TAB_SETTING))
+			if (i == savedTab)
 				tab.selected = true;
 			
 			tabButtons[i] = tab;
@@ -300,11 +303,9 @@ public class GuiModelingTool extends GuiContainer
 		buttonStates.enabled = !tabButtons[2].selected;
 		buttonBlocks.enabled = !tabButtons[3].selected;
 		int selectedTab = getSelectedTab();
-		boolean stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
 		boolean buttonStatesSlected = selectedTab > 1 ? selectedTab == 3 : stateMauallySelected;
 		buttonStates.selected = buttonStatesSlected;
 		buttonBlocks.selected = !buttonStatesSlected;
-		this.stateMauallySelected = stateMauallySelected;
 		buttonList.add(buttonStates);
 		buttonList.add(buttonBlocks);
 		
@@ -491,6 +492,7 @@ public class GuiModelingTool extends GuiContainer
 				{
 					tab.selected = tab.id == id;
 				}
+				savedTab = id;
 				boolean allBlocks = tabButtons[2].selected;
 				boolean results = tabButtons[3].selected;
 				buttonStates.enabled = !allBlocks;
