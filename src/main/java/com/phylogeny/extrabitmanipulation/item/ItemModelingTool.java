@@ -68,7 +68,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
 	{
-		if (player.isSneaking())
+		if (player.isSneaking() && itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey(NBTKeys.SAVED_STATES))
 			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
 		
 		return super.onItemRightClick(itemStack, world, player);
