@@ -11,6 +11,8 @@ import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 
+import mod.chiselsandbits.api.IBitBrush;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 
 public class Configs
@@ -32,9 +34,6 @@ public class Configs
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
 		public static boolean oneBitTypeInversionRequirement;
-		public static ConfigBitToolSettingInt modelAreaMode;
-		public static ConfigBitToolSettingInt modelSnapMode;
-		public static ConfigBitToolSettingBoolean modelGuiOpen;
 		public static ConfigBitToolSettingInt sculptMode;
 		public static ConfigBitToolSettingInt sculptDirection;
 		public static ConfigBitToolSettingInt sculptShapeTypeCurved;
@@ -47,6 +46,13 @@ public class Configs
 		public static ConfigBitToolSettingInt sculptWallThickness;
 		public static ConfigBitStack sculptSetBitWire;
 		public static ConfigBitStack sculptSetBitSpade;
+		public static ConfigBitToolSettingInt modelAreaMode;
+		public static ConfigBitToolSettingInt modelSnapMode;
+		public static ConfigBitToolSettingBoolean modelGuiOpen;
+		public static String[] modelBlockToBitMapEntryStrings;
+		public static String[] modelStateToBitMapEntryStrings;
+		public static HashMap<IBlockState, IBitBrush> modelBlockToBitMap;
+		public static HashMap<IBlockState, IBitBrush> modelStateToBitMap;
 		
 	//ITEM PROPERTIES
 		public static Map<Item, ConfigNamed> itemPropertyMap = new HashMap<Item, ConfigNamed>();

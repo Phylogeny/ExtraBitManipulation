@@ -3,10 +3,8 @@ package com.phylogeny.extrabitmanipulation.config;
 import java.io.File;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
@@ -15,6 +13,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEve
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -23,12 +22,13 @@ import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 public class ConfigHandlerExtraBitManipulation
 {
-	public static Configuration configFile;
+	public static Configuration configFile, modelingToolMapConfigFile;
 	public static final String VERSION = "Version";
 	public static final String SCULPTING_WRENCH_SETTINGS = "Sculpting & Wrech Settings";
 	public static final String UNCHISELABLE_BLOCK_STATES = "Unchiselable Block States";
 	public static final String INSUFFICIENT_BITS = "Insufficient Bits";
-	public static final String MODELING_TOOL_SETTINGS = "modelingToolSettings";
+	public static final String MODELING_TOOL_SETTINGS = "Modeling Tool Settings";
+	public static final String MODELING_TOOL_MANUAL_MAPPINGS = "Modeling Tool Manual Mappings";
 	public static final String DATA_CATAGORY_SCULPT = "Sculpting Tool";
 	public static final String DATA_CATAGORY_MODEL = "Modeling Tool";
 	public static final String BIT_TOOL_DEFAULT_VALUES = "Default Values";
@@ -37,10 +37,16 @@ public class ConfigHandlerExtraBitManipulation
 	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	
-	public static void setUpConfigs(File file)
+	public static void setUpConfigs(File configDir)
 	{
-		configFile = new Configuration(file);
+		configFile = getConfigFile(configDir, "");
+		modelingToolMapConfigFile = getConfigFile(configDir, "_modeling");
 		updateConfigs();
+	}
+	
+	private static Configuration getConfigFile(File configDir, String suffix)
+	{
+		return new Configuration(new File(configDir, Reference.MOD_ID + suffix + ".cfg"));
 	}
 	
 	@SubscribeEvent
@@ -67,11 +73,192 @@ public class ConfigHandlerExtraBitManipulation
 			removeCategory(VERSION);
 			getVersion(Reference.VERSION);
 			
+			//MODELING TOOL MAPs
+			String toolTip = "This is a list of entries of mappings of @@@ to bits for the Modeling Tool";
+			
+			Configs.modelBlockToBitMapEntryStrings = modelingToolMapConfigFile.getStringList("Block To Bit Map", MODELING_TOOL_MANUAL_MAPPINGS,
+					new String[]{"chiselsandbits:bittank-minecraft:log",
+					"minecraft:acacia_door-minecraft:planks:4",
+					"minecraft:acacia_fence_gate-minecraft:planks:4",
+					"minecraft:acacia_fence-minecraft:planks:4",
+					"minecraft:acacia_stairs-minecraft:planks:4",
+					"minecraft:activator_rail-minecraft:redstone_block",
+					"minecraft:anvil-minecraft:wool:7",
+					"minecraft:barrier-minecraft:air",
+					"minecraft:beacon-minecraft:diamond_block",
+					"minecraft:bed-minecraft:wool:14",
+					"minecraft:bedrock-minecraft:cobblestone",
+					"minecraft:beetroots-minecraft:wool:5",
+					"minecraft:birch_door-minecraft:planks:2",
+					"minecraft:birch_fence_gate-minecraft:planks:2",
+					"minecraft:birch_fence-minecraft:planks:2",
+					"minecraft:birch_stairs-minecraft:planks:2",
+					"minecraft:brewing_stand-minecraft:wool:7",
+					"minecraft:brick_block-minecraft:stained_hardened_clay:6",
+					"minecraft:brick_stairs-minecraft:stained_hardened_clay:6",
+					"minecraft:brown_mushroom-minecraft:brown_mushroom_block:0",
+					"minecraft:cactus-minecraft:wool:5",
+					"minecraft:cake-minecraft:stained_hardened_clay:1",
+					"minecraft:carpet-minecraft:air",
+					"minecraft:carrots-minecraft:wool:5",
+					"minecraft:cauldron-minecraft:wool:7",
+					"minecraft:chain_command_block-minecraft:stained_hardened_clay:5",
+					"minecraft:chest-minecraft:stained_hardened_clay:4",
+					"minecraft:chorus_flower-minecraft:stained_hardened_clay:10",
+					"minecraft:chorus_plant-minecraft:stained_hardened_clay:10",
+					"minecraft:coal_ore-minecraft:coal_block",
+					"minecraft:cobblestone_wall-minecraft:cobblestone",
+					"minecraft:cocoa-minecraft:stained_hardened_clay:5",
+					"minecraft:command_block-minecraft:hardened_clay",
+					"minecraft:crafting_table-minecraft:planks:3",
+					"minecraft:dark_oak_door-minecraft:planks:5",
+					"minecraft:dark_oak_fence_gate-minecraft:planks:5",
+					"minecraft:dark_oak_fence-minecraft:planks:5",
+					"minecraft:dark_oak_stairs-minecraft:planks:5",
+					"minecraft:daylight_detector_inverted-minecraft:planks:5",
+					"minecraft:daylight_detector-minecraft:planks:5",
+					"minecraft:deadbush-minecraft:wool:12",
+					"minecraft:detector_rail-minecraft:red_nether_brick",
+					"minecraft:diamond_ore-minecraft:diamond_block",
+					"minecraft:dispenser-minecraft:wool:7",
+					"minecraft:double_plant-minecraft:wool:5",
+					"minecraft:double_stone_slab2-minecraft:red_sandstone",
+					"minecraft:double_stone_slab-minecraft:stonebrick",
+					"minecraft:double_wooden_slab-minecraft:planks",
+					"minecraft:dragon_egg-minecraft:obsidian",
+					"minecraft:dropper-minecraft:wool:7",
+					"minecraft:emerald_ore-minecraft:emerald_block",
+					"minecraft:enchanting_table-minecraft:obsidian",
+					"minecraft:end_gateway-minecraft:obsidian",
+					"minecraft:end_portal_frame-minecraft:end_stone",
+					"minecraft:end_portal-minecraft:obsidian",
+					"minecraft:end_rod-minecraft:quartz_block",
+					"minecraft:ender_chest-minecraft:obsidian",
+					"minecraft:farmland-minecraft:dirt",
+					"minecraft:fence_gate-minecraft:planks",
+					"minecraft:fence-minecraft:planks",
+					"minecraft:fire-minecraft:air",
+					"minecraft:flower_pot-minecraft:hardened_clay",
+					"minecraft:flowing_lava-minecraft:lava",
+					"minecraft:flowing_water-minecraft:water",
+					"minecraft:frosted_ice-minecraft:ice",
+					"minecraft:furnace-minecraft:wool:7",
+					"minecraft:glass_pane-minecraft:air",
+					"minecraft:glass-minecraft:air",
+					"minecraft:gold_ore-minecraft:gold_block",
+					"minecraft:golden_rail-minecraft:gold_block",
+					"minecraft:grass_path-minecraft:brown_mushroom_block:0",
+					"minecraft:hay_block-minecraft:stained_hardened_clay:4",
+					"minecraft:heavy_weighted_pressure_plate-minecraft:air",
+					"minecraft:hopper-minecraft:wool:7",
+					"minecraft:iron_bars-minecraft:air",
+					"minecraft:iron_door-minecraft:iron_block",
+					"minecraft:iron_ore-minecraft:stained_hardened_clay",
+					"minecraft:iron_trapdoor-minecraft:iron_block",
+					"minecraft:jukebox-minecraft:hardened_clay",
+					"minecraft:jungle_door-minecraft:planks:3",
+					"minecraft:jungle_fence_gate-minecraft:planks:3",
+					"minecraft:jungle_fence-minecraft:planks:3",
+					"minecraft:jungle_stairs-minecraft:planks:3",
+					"minecraft:ladder-minecraft:air",
+					"minecraft:lapis_ore-minecraft:lapis_block",
+					"minecraft:leaves2-minecraft:wool:5",
+					"minecraft:leaves-minecraft:wool:5",
+					"minecraft:lever-minecraft:stone",
+					"minecraft:light_weighted_pressure_plate-minecraft:air",
+					"minecraft:lit_furnace-minecraft:wool:7",
+					"minecraft:lit_pumpkin-minecraft:wool:1",
+					"minecraft:lit_redstone_lamp-minecraft:stained_hardened_clay:12",
+					"minecraft:lit_redstone_ore-minecraft:redstone_block",
+					"minecraft:magma-minecraft:lava",
+					"minecraft:melon_stem-minecraft:wool:5",
+					"minecraft:mob_spawner-minecraft:stained_hardened_clay:9",
+					"minecraft:mossy_cobblestone-minecraft:wool:13",
+					"minecraft:mycelium-minecraft:stained_hardened_clay:3",
+					"minecraft:nether_brick_fence-minecraft:nether_brick",
+					"minecraft:nether_brick_stairs-minecraft:nether_brick",
+					"minecraft:nether_wart-minecraft:wool:14",
+					"minecraft:noteblock-minecraft:hardened_clay",
+					"minecraft:oak_stairs-minecraft:planks",
+					"minecraft:piston_extension-minecraft:planks",
+					"minecraft:piston_head-minecraft:planks",
+					"minecraft:piston-minecraft:wool:7",
+					"minecraft:portal-minecraft:stained_glass:10",
+					"minecraft:potatoes-minecraft:wool:5",
+					"minecraft:powered_comparator-minecraft:stonebrick",
+					"minecraft:powered_repeater-minecraft:stonebrick",
+					"minecraft:pumpkin_stem-minecraft:wool:5",
+					"minecraft:pumpkin-minecraft:wool:1",
+					"minecraft:purpur_double_slab-minecraft:purpur_block",
+					"minecraft:purpur_slab-minecraft:purpur_block",
+					"minecraft:purpur_stairs-minecraft:purpur_block",
+					"minecraft:quartz_ore-minecraft:quartz_block",
+					"minecraft:quartz_stairs-minecraft:quartz_block",
+					"minecraft:rail-minecraft:iron_block",
+					"minecraft:red_flower-minecraft:wool:14",
+					"minecraft:red_mushroom_block-minecraft:redstone_block",
+					"minecraft:red_mushroom-minecraft:wool:14",
+					"minecraft:red_sandstone_stairs-minecraft:red_sandstone",
+					"minecraft:redstone_lamp-minecraft:stained_hardened_clay:12",
+					"minecraft:redstone_ore-minecraft:redstone_block",
+					"minecraft:redstone_torch-minecraft:redstone_block",
+					"minecraft:redstone_wire-minecraft:redstone_block",
+					"minecraft:reeds-minecraft:stained_hardened_clay:5",
+					"minecraft:repeating_command_block-minecraft:stained_hardened_clay:11",
+					"minecraft:sandstone_stairs-minecraft:sandstone",
+					"minecraft:sapling-minecraft:wool:5",
+					"minecraft:sea_lantern-minecraft:quartz_block",
+					"minecraft:skull-minecraft:air",
+					"minecraft:snow_layer-minecraft:air",
+					"minecraft:soul_sand-minecraft:wool:12",
+					"minecraft:spruce_door-minecraft:planks:1",
+					"minecraft:spruce_fence_gate-minecraft:planks:1",
+					"minecraft:spruce_fence-minecraft:planks:1",
+					"minecraft:spruce_stairs-minecraft:planks:1",
+					"minecraft:stained_glass_pane-minecraft:air",
+					"minecraft:standing_banner-minecraft:planks",
+					"minecraft:standing_sign-minecraft:planks",
+					"minecraft:sticky_piston-minecraft:wool:7",
+					"minecraft:stone_brick_stairs-minecraft:stonebrick",
+					"minecraft:stone_button-minecraft:stone",
+					"minecraft:stone_pressure_plate-minecraft:air",
+					"minecraft:stone_slab2-minecraft:red_sandstone",
+					"minecraft:stone_slab-minecraft:stonebrick",
+					"minecraft:stone_stairs-minecraft:cobblestone",
+					"minecraft:structure_block-minecraft:stained_hardened_clay:11",
+					"minecraft:structure_void-minecraft:air",
+					"minecraft:tallgrass-minecraft:wool:5",
+					"minecraft:tnt-minecraft:wool:14",
+					"minecraft:torch-minecraft:glowstone",
+					"minecraft:trapdoor-minecraft:planks",
+					"minecraft:trapped_chest-minecraft:stained_hardened_clay:4",
+					"minecraft:tripwire_hook-minecraft:planks",
+					"minecraft:tripwire-minecraft:wool",
+					"minecraft:unlit_redstone_torch-minecraft:redstone_block",
+					"minecraft:unpowered_comparator-minecraft:stonebrick",
+					"minecraft:unpowered_repeater-minecraft:stonebrick",
+					"minecraft:vine-minecraft:wool:5",
+					"minecraft:wall_banner-minecraft:planks",
+					"minecraft:wall_sign-minecraft:planks",
+					"minecraft:waterlily-minecraft:stained_hardened_clay:5",
+					"minecraft:web-minecraft:wool",
+					"minecraft:wheat-minecraft:wool:5",
+					"minecraft:wooden_button-minecraft:planks",
+					"minecraft:wooden_door-minecraft:planks",
+					"minecraft:wooden_pressure_plate-minecraft:air",
+					"minecraft:wooden_slab-minecraft:planks",
+					"minecraft:yellow_flower-minecraft:wool:4"},
+					toolTip.replace("@@@", "block states"));
+			
+			Configs.modelStateToBitMapEntryStrings = modelingToolMapConfigFile.getStringList("State To Bit Map", MODELING_TOOL_MANUAL_MAPPINGS,
+					new String[]{"minecraft:wheat:7-minecraft:melon_block"},
+					toolTip.replace("@@@", "states"));
+			
 			//SCULPTING SETTINGS
-			Configs.maxSemiDiameter = configFile. getInt("Max Semi-Diameter", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
+			Configs.maxSemiDiameter = configFile.getInt("Max Semi-Diameter", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
 					"the maximum size (in bits) of sculpting shape semi-diameter (i.e. radius if it is a sphere). (default = 5 bits)");
 			
-			Configs.maxWallThickness = configFile. getInt("Max Wall Thickness", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
+			Configs.maxWallThickness = configFile.getInt("Max Wall Thickness", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
 					"the maximum size (in bits) of hollow sculpting shapes. (default = 2 bits)");
 			
 			Configs.displayNameDiameter = configFile.getBoolean("Display Name Diameter", SCULPTING_WRENCH_SETTINGS, true, 
@@ -311,9 +498,12 @@ public class ConfigHandlerExtraBitManipulation
 		{
 			if (configFile.hasChanged())
 				configFile.save();
+			
+			if (modelingToolMapConfigFile.hasChanged())
+				modelingToolMapConfigFile.save();
 		}
 	}
-
+	
 	private static ConfigReplacementBits getConfigReplacementBits(String category, String defaultBlockName, boolean useDefaultReplacementBitDefault,
 			boolean useAnyBitsAsReplacementsDefault, boolean useAirAsReplacementDefault)
 	{
@@ -321,9 +511,9 @@ public class ConfigHandlerExtraBitManipulation
 				: "the player has insufficient bits in their inventory for a chiselable blockstate") + ", an attempt will be made to find a replacement bit. ";
 		ConfigReplacementBits replacementBitsConfig = new ConfigReplacementBits(useDefaultReplacementBitDefault,
 				useAnyBitsAsReplacementsDefault, useAirAsReplacementDefault);
-		replacementBitsConfig.defaultReplacementBit = new ConfigBitStack(getState(configFile.getString("Default Replacement Bit",
+		replacementBitsConfig.defaultReplacementBit = new ConfigBitStack(BitIOHelper.getStateFromString(configFile.getString("Default Replacement Bit",
 				category, defaultBlockName, condition + "If the 'Use Default Replacement Bit' config is also set to 'true', then an " +
-						"attempt will first be made to use the bit version of this block as a replacement.")), getState(defaultBlockName));
+						"attempt will first be made to use the bit version of this block as a replacement.")), BitIOHelper.getStateFromString(defaultBlockName));
 		replacementBitsConfig.defaultReplacementBit.init();
 		String textIfTrue = ", if this is set to 'true', ";
 		String textIfFalse = ". If this is set to 'false', this step will be skipped";
@@ -379,34 +569,11 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, catagoryEnding, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, catagoryEnding, defaultDisplayInChat, toolTipSecondary);
-		IBlockState defaultState = getState(configFile.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
+		IBlockState defaultState = BitIOHelper.getStateFromString(configFile.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
 				getToolTipBitToolSetting(toolTipDefaultValue, toolTipDefaultValueDefault)));
-		return new ConfigBitStack(perTool, displayInChat, defaultState, getState(defaultValue));
+		return new ConfigBitStack(perTool, displayInChat, defaultState, BitIOHelper.getStateFromString(defaultValue));
 	}
 
-	private static IBlockState getState(String blockName)
-	{
-		if (blockName.isEmpty())
-			return null;
-		
-		int meta = 0;
-		int i = blockName.lastIndexOf(":");
-		if (i >= 0 && i < blockName.length() - 1)
-		{
-			try
-			{
-				meta = Integer.parseInt(blockName.substring(i + 1));
-				blockName = blockName.substring(0, i);
-			}
-			catch (NumberFormatException e) {}
-		}
-		Block block = Block.getBlockFromName(blockName);
-		if (block == null)
-			return null;
-		
-		return block.getStateFromMeta(meta);
-	}
-	
 	private static String getToolTipBitToolSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)
 	{
 		return "Players and sculpting tools will initialize with this " + toolTipDefaultValue + " (default = " + toolTipDefaultValueDefault + ")";
