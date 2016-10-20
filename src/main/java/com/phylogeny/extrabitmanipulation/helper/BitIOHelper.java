@@ -62,7 +62,7 @@ public class BitIOHelper
 			byte[] metaArray = new byte[isBlockMap ? n : n * 2];
 			for (Entry<IBlockState, IBitBrush> entry : stateToBitMap.entrySet())
 			{
-				saveStateToMapArrays(domainArray, pathArray, null, counter++, isBlockMap, entry.getKey());
+				saveStateToMapArrays(domainArray, pathArray, isBlockMap ? null : metaArray, counter++, isBlockMap, entry.getKey());
 				saveStateToMapArrays(domainArray, pathArray, metaArray, counter++, isBlockMap, Block.getStateById(entry.getValue().getStateID()));
 			}
 			nbt.removeTag(key + 0);
@@ -75,6 +75,9 @@ public class BitIOHelper
 	private static void saveStateToMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index, boolean isBlockMap, IBlockState state)
 	{
 		ResourceLocation regName = state.getBlock().getRegistryName();
+		if (regName == null)
+			return;
+		
 		domainArray[index] = regName.getResourceDomain();
 		pathArray[index] = regName.getResourcePath();
 		if (metaArray != null)
@@ -122,7 +125,7 @@ public class BitIOHelper
 			boolean isBlockMap = key.equals(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
 			for (int i = 0; i < domainArray.length; i += 2)
 			{
-				IBlockState state = readStateFromMapArrays(domainArray, pathArray, metaArray, i, isBlockMap);
+				IBlockState state = readStateFromMapArrays(domainArray, pathArray, isBlockMap ? null : metaArray, i, isBlockMap);
 				if (!isAir(state))
 				{
 					try
