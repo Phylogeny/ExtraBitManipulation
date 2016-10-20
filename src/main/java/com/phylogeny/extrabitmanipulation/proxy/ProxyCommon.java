@@ -5,6 +5,7 @@ import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
 import com.phylogeny.extrabitmanipulation.extendedproperties.BitToolSettingsPlayerPropertiesHandler;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
@@ -26,7 +27,7 @@ public class ProxyCommon implements IGuiHandler
 	public void preinit(FMLPreInitializationEvent event)
 	{
 		ItemsExtraBitManipulation.itemsInit();
-		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getSuggestedConfigurationFile());
+		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		PacketRegistration.registerPackets();
 	}
@@ -39,6 +40,8 @@ public class ProxyCommon implements IGuiHandler
 		Configs.sculptSetBitSpade.init();
 		Configs.replacementBitsUnchiselable.defaultReplacementBit.init();
 		Configs.replacementBitsInsufficient.defaultReplacementBit.init();
+		Configs.modelBlockToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelBlockToBitMapEntryStrings);
+		Configs.modelStateToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelStateToBitMapEntryStrings);
 		NetworkRegistry.INSTANCE.registerGuiHandler(ExtraBitManipulation.instance, new ProxyCommon());
 	}
 	

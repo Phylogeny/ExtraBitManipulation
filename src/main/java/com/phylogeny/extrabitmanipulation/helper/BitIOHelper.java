@@ -21,6 +21,8 @@ import java.io.ObjectOutputStream;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +37,32 @@ import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public class BitIOHelper
 {
+	
+	public static HashMap<IBlockState, IBitBrush> getModelBitMapFromEntryStrings(String[] entryStrings)
+	{
+		HashMap<IBlockState, IBitBrush> bitMap = new HashMap<IBlockState, IBitBrush>();
+		for (String entryString : entryStrings)
+		{
+			if (entryString.indexOf("-") < 0 || entryString.length() < 3)
+				continue;
+			
+			String[] entryStringArray = entryString.split("-");
+			IBlockState key = getStateFromString(entryStringArray[0]);
+			if (key == null || BitIOHelper.isAir(key))
+				continue;
+			
+			IBlockState value = getStateFromString(entryStringArray[1]);
+			if (value == null)
+				continue;
+			
+			try
+			{
+				bitMap.put(key, ChiselsAndBitsAPIAccess.apiInstance.createBrushFromState(value));
+			}
+			catch (InvalidBitItem e) {}
+		}
+		return bitMap;
+	}
 	
 	public static void writeStateToBitMapToNBT(ItemStack bitStack, String key, HashMap<IBlockState, IBitBrush> stateToBitMap, boolean saveStatesById)
 	{
@@ -320,6 +348,29 @@ public class BitIOHelper
 	public static IBlockState stateFromBytes(ByteBuf buffer)
 	{
 		return Block.getStateById(buffer.readInt());
+	}
+	
+	public static IBlockState getStateFromString(String stateString)
+	{
+		if (stateString.isEmpty())
+			return null;
+		
+		int meta = -1;
+		int i = stateString.lastIndexOf(":");
+		if (i >= 0 && i < stateString.length() - 1)
+		{
+			try
+			{
+				meta = Integer.parseInt(stateString.substring(i + 1));
+				stateString = stateString.substring(0, i);
+			}
+			catch (NumberFormatException e) {}
+		}
+		Block block = Block.getBlockFromName(stateString);
+		if (block == null)
+			return null;
+		
+		return meta < 0 ? block.getDefaultState() : block.getStateFromMeta(meta);
 	}
 	
 }
