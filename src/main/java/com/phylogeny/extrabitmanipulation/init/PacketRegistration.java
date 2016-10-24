@@ -20,7 +20,6 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
-import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllBitToolData;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
 
 public class PacketRegistration
@@ -31,7 +30,6 @@ public class PacketRegistration
 	{
 		registerPacket(PacketCycleBitWrenchMode.Handler.class, PacketCycleBitWrenchMode.class, Side.SERVER);
 		registerPacket(PacketSculpt.Handler.class, PacketSculpt.class, Side.SERVER);
-		registerPacket(PacketSyncAllBitToolData.Handler.class, PacketSyncAllBitToolData.class, Side.CLIENT);
 		registerPacket(PacketSetDirection.Handler.class, PacketSetDirection.class, Side.SERVER);
 		registerPacket(PacketSetShapeType.Handler.class, PacketSetShapeType.class, Side.SERVER);
 		registerPacket(PacketSetTargetBitGridVertexes.Handler.class, PacketSetTargetBitGridVertexes.class, Side.SERVER);

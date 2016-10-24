@@ -29,7 +29,7 @@ public class ExtraBitManipulation
 	}
 	
 	@EventHandler
-	public void init(FMLInitializationEvent event)
+	public void init(@SuppressWarnings("unused") FMLInitializationEvent event)
 	{
 		proxy.init();
 	}

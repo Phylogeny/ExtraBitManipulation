@@ -45,7 +45,7 @@ public class PacketSetSculptMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setSculptMode(player, player.getCurrentEquippedItem(), message.mode);
+					BitToolSettingsHelper.setSculptMode(player, player.getCurrentEquippedItem(), message.mode, null);
 				}
 			});
 			return null;

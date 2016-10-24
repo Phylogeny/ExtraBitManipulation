@@ -1,11 +1,12 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-public class ConfigBitToolSettingBase
+public class ConfigBitToolSettingBase extends ConfigNamed
 {
 	private boolean perTool, displayInChat;
 	
-	public ConfigBitToolSettingBase(boolean perTool, boolean displayInChat)
+	public ConfigBitToolSettingBase(String name, boolean perTool, boolean displayInChat)
 	{
+		super(name);
 		this.perTool = perTool;
 		this.displayInChat = displayInChat;
 	}

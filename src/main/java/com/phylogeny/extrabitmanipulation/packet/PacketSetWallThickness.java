@@ -45,7 +45,7 @@ public class PacketSetWallThickness implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setWallThickness(player, player.getCurrentEquippedItem(), message.wallThickness);
+					BitToolSettingsHelper.setWallThickness(player, player.getCurrentEquippedItem(), message.wallThickness, null);
 				}
 			});
 			return null;

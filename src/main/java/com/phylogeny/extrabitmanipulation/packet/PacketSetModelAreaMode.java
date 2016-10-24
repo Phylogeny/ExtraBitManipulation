@@ -45,7 +45,7 @@ public class PacketSetModelAreaMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setModelAreaMode(player, player.getCurrentEquippedItem(), message.mode);
+					BitToolSettingsHelper.setModelAreaMode(player, player.getCurrentEquippedItem(), message.mode, null);
 				}
 			});
 			return null;

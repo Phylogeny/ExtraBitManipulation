@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.shape.Cube;
@@ -41,7 +42,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	public void cycleModes(ItemStack stack, boolean forward)
 	{
 		initialize(stack);
-		NBTTagCompound nbt = stack.getTagCompound();
+		NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 		nbt.setInteger(NBTKeys.WRENCH_MODE, BitToolSettingsHelper.cycleData(nbt.getInteger(NBTKeys.WRENCH_MODE), forward, MODE_TITLES.length));
 	}
 	
@@ -51,7 +52,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-		int mode = !stack.hasTagCompound() ? 0 : stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE);
+		int mode = getMode(stack);
 		if (api.isBlockChiseled(world, pos))
 		{
 			IBitAccess bitAccess;
@@ -77,9 +78,7 @@ public class ItemBitWrench extends ItemBitToolBase
 			ItemStack invertBitStack = null;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
 			boolean creativeMode = player.capabilities.isCreativeMode;
-			HashMap<IBlockState, Integer> inversionBitTypes = null;
-			if (mode == 3)
-				inversionBitTypes = new HashMap<IBlockState, Integer>();
+			HashMap<IBlockState, Integer> inversionBitTypes = new HashMap<IBlockState, Integer>();
 			
 			for (int i = 0; i < 16; i++)
 			{
@@ -136,7 +135,7 @@ public class ItemBitWrench extends ItemBitToolBase
 					}
 				}
 			}
-			if (Configs.oneBitTypeInversionRequirement && inversionBitTypes != null && inversionBitTypes.size() > 1)
+			if (Configs.oneBitTypeInversionRequirement && mode == 3 && inversionBitTypes.size() > 1)
 				canInvert = false;
 			
 			if (canInvert)
@@ -161,6 +160,7 @@ public class ItemBitWrench extends ItemBitToolBase
 			}
 			if (!creativeMode && canInvert)
 			{
+				@SuppressWarnings("null")
 				IBlockState invertBitState = invertBit.getState();
 				bitCountTake = bitCountEmpty - inversionBitTypes.get(invertBitState);
 				inversionBitTypes.put(invertBitState, Math.max(0, inversionBitTypes.get(invertBitState) - bitCountEmpty));
@@ -243,7 +243,7 @@ public class ItemBitWrench extends ItemBitToolBase
 					if (bitCountTake > 0)
 						BitInventoryHelper.removeOrAddInventoryBits(api, player, invertBitStack, bitCountTake, false);
 					
-					if (inversionBitTypes != null)
+					if (mode == 3)
 					{
 						Cube cube = new Cube();
 						float f = 0.5F;
@@ -261,7 +261,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
-		int mode = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE) : 0;
+		int mode = getMode(stack);
 		String text = MODE_TEXT[mode];
 		if (GuiScreen.isShiftKeyDown())
 		{
@@ -281,7 +281,12 @@ public class ItemBitWrench extends ItemBitToolBase
 	public String getItemStackDisplayName(ItemStack stack)
 	{
 		return ("" + StatCollector.translateToLocal(getUnlocalizedNameInefficiently(stack) + ".name")).trim()
-				+ " - " + MODE_TITLES[stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.WRENCH_MODE) : 0];
+				+ " - " + MODE_TITLES[getMode(stack)];
+	}
+	
+	private int getMode(ItemStack stack)
+	{
+		return ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.WRENCH_MODE);
 	}
 	
 }

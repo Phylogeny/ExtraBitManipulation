@@ -15,6 +15,7 @@ import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
@@ -63,7 +64,7 @@ public class GuiModelingTool extends GuiContainer
 	private GuiButtonTab[] tabButtons = new GuiButtonTab[4];
 	private static final String[] tabButtonHoverText = new String[]{"Current Model", "All Saved Mappings", "All Minecraft Blocks", "Model Result"};
 	private int savedTab;
-	private static boolean stateMauallySelected, savedBlockButton;
+	private static boolean stateMauallySelected;
 	private GuiTextField searchField;
 	
 	public GuiModelingTool(InventoryPlayer playerInventory, ItemStack modelingToolStack)
@@ -73,7 +74,7 @@ public class GuiModelingTool extends GuiContainer
 		this.modelingToolStack = modelingToolStack;
 		xSize = 254;
 		ySize = 219;
-		NBTTagCompound nbt = modelingToolStack.hasTagCompound() ? modelingToolStack.getTagCompound() : new NBTTagCompound();
+		NBTTagCompound nbt = ItemStackHelper.getNBTOrNew(modelingToolStack);
 		stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
 		savedTab = nbt.getInteger(NBTKeys.TAB_SETTING);
 		stateToBitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(api, modelingToolStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);

@@ -71,7 +71,7 @@ public class BitIOHelper
 		
 		int counter = 0;
 		int n = stateToBitMap.size();
-		NBTTagCompound nbt = bitStack.getTagCompound();
+		NBTTagCompound nbt = ItemStackHelper.getNBT(bitStack);
 		if (saveStatesById)
 		{
 			int[] mapArray = new int[n * 2];
@@ -103,6 +103,7 @@ public class BitIOHelper
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private static void saveStateToMapArrays(String[] domainArray, String[] pathArray, byte[] metaArray, int index, boolean isBlockMap, IBlockState state)
 	{
 		UniqueIdentifier uniqueIdentifier = GameRegistry.findUniqueIdentifierFor(state.getBlock());
@@ -121,7 +122,7 @@ public class BitIOHelper
 		if (!bitStack.hasTagCompound())
 			return stateToBitMap;
 		
-		NBTTagCompound nbt = bitStack.getTagCompound();
+		NBTTagCompound nbt = ItemStackHelper.getNBT(bitStack);
 		boolean saveStatesById = !nbt.hasKey(key + 2);
 		if (saveStatesById ? !nbt.hasKey(key + 0) : !nbt.hasKey(key + 1) || !nbt.hasKey(key + 3))
 			return stateToBitMap;
@@ -174,7 +175,7 @@ public class BitIOHelper
 	{
 		Block block = GameRegistry.findBlock(domainArray[index], pathArray[index]);
 		return block == null ? Blocks.air.getDefaultState() : (metaArray != null
-				? block.getStateFromMeta(metaArray[isBlockMap ? index / 2 : index]) : block.getDefaultState());
+				? getStateFromMeta(block, metaArray[isBlockMap ? index / 2 : index]) : block.getDefaultState());
 	}
 	
 	private static byte[] compressObject(Object object) throws IOException
@@ -370,7 +371,31 @@ public class BitIOHelper
 		if (block == null)
 			return null;
 		
-		return meta < 0 ? block.getDefaultState() : block.getStateFromMeta(meta);
+		return meta < 0 ? block.getDefaultState() : getStateFromMeta(block, meta);
+	}
+	
+	public static IBlockState getStateFromMeta(Block block, int meta)
+	{
+		return block.getStateFromMeta(meta);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static String getStringFromState(IBlockState state)
+	{
+		if (state == null)
+			return "minecraft:air";
+		
+		Block block = state.getBlock();
+		UniqueIdentifier uniqueIdentifier = GameRegistry.findUniqueIdentifierFor(state.getBlock());
+		if (uniqueIdentifier == null)
+			return "minecraft:air";
+		
+		String valueString = uniqueIdentifier.modId + ":" + uniqueIdentifier.name;
+		int meta = block.getMetaFromState(state);
+		if (meta > 0)
+			valueString += ":" + meta;
+		
+		return valueString;
 	}
 	
 }

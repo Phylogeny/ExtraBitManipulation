@@ -63,6 +63,7 @@ public class Shape
 		return true;
 	}
 	
+	@SuppressWarnings("unused")
 	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
 	{
 		return false;

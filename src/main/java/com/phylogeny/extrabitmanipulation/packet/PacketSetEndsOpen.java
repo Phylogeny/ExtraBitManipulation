@@ -45,7 +45,7 @@ public class PacketSetEndsOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setEndsOpen(player, player.getCurrentEquippedItem(), message.openEnds);
+					BitToolSettingsHelper.setEndsOpen(player, player.getCurrentEquippedItem(), message.openEnds, null);
 				}
 			});
 			return null;

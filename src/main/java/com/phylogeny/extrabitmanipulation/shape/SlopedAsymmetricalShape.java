@@ -41,6 +41,7 @@ public class SlopedAsymmetricalShape extends AsymmetricalShape
 		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 : (!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
+	@SuppressWarnings("unused")
 	protected boolean isPointIn2DShape(float val, float semiDiameter1, float semiDiameter2, float dv1, float dv2)
 	{
 		return false;
