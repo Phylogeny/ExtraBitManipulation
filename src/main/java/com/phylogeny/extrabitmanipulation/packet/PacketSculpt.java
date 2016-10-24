@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 
 import io.netty.buffer.ByteBuf;
@@ -17,13 +18,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class PacketSculpt extends PacketBlockInteraction implements IMessage
 {
 	private Vec3d drawnStartPoint;
+	private SculptingData sculptingData = new SculptingData();
 	
 	public PacketSculpt() {}
 	
-	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3d hit, Vec3d drawnStartPoint)
+	public PacketSculpt(BlockPos pos, EnumFacing side, Vec3d hit, Vec3d drawnStartPoint, SculptingData sculptingData)
 	{
 		super(pos, side, hit);
 		this.drawnStartPoint = drawnStartPoint;
+		this.sculptingData = sculptingData;
 	}
 	
 	@Override
@@ -38,6 +41,7 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 			buffer.writeDouble(drawnStartPoint.yCoord);
 			buffer.writeDouble(drawnStartPoint.zCoord);
 		}
+		sculptingData.toBytes(buffer);
 	}
 	
 	@Override
@@ -46,6 +50,8 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 		super.fromBytes(buffer);
 		if (buffer.readBoolean())
 			drawnStartPoint = new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+		
+		sculptingData.fromBytes(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSculpt, IMessage>
@@ -62,8 +68,8 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (stack != null && stack.getItem() instanceof ItemSculptingTool && (!player.isSneaking() || message.drawnStartPoint != null))
-						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj,
-								message.getPos(), message.getSide(), message.getHit(), message.drawnStartPoint);
+						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.getPos(),
+								message.getSide(), message.getHit(), message.drawnStartPoint, message.sculptingData);
 				}
 			});
 			return null;

@@ -45,7 +45,7 @@ public class PacketSetModelSnapMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setModelSnapMode(player, player.getHeldItemMainhand(), message.mode);
+					BitToolSettingsHelper.setModelSnapMode(player, player.getHeldItemMainhand(), message.mode, null);
 				}
 			});
 			return null;

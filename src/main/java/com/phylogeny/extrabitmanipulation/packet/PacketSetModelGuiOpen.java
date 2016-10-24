@@ -45,7 +45,7 @@ public class PacketSetModelGuiOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setModelGuiOpen(player, player.getHeldItemMainhand(), message.openGui);
+					BitToolSettingsHelper.setModelGuiOpen(player, player.getHeldItemMainhand(), message.openGui, null);
 				}
 			});
 			return null;

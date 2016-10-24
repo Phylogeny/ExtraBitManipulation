@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
@@ -57,32 +58,32 @@ public class BitAreaHelper
 		return new Vec3d(x, y, z);
 	}
 	
-	public static boolean readBlockStates(ItemStack stack, EntityPlayer player, World world, BlockPos pos, Vec3d hit, Vec3i drawnStartPoint)
+	public static boolean readBlockStates(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+			Vec3d hit, Vec3i drawnStartPoint, ModelingData modelingData)
 	{
 		ItemModelingTool modelingTool = (ItemModelingTool) (stack != null && stack.getItem() instanceof ItemModelingTool ? stack.getItem() : null);
 		if (modelingTool == null)
 			return false;
 		
-		modelingTool.initialize(stack);
-		ModelingBoxSet boxSet = getModelingToolBoxSet(player, stack, pos.getX(), pos.getY(), pos.getZ(), hit, drawnStartPoint, false);
+		NBTTagCompound nbt = modelingTool.initialize(stack, modelingData);
+		ModelingBoxSet boxSet = getModelingToolBoxSet(player, pos.getX(), pos.getY(), pos.getZ(),
+				hit, drawnStartPoint, false, modelingData.getAreaMode(), modelingData.getSnapMode());
 		if (boxSet.isEmpty())
 			return false;
 		
-		NBTTagCompound nbt = stack.getTagCompound();
 		BitIOHelper.saveBlockStates(ChiselsAndBitsAPIAccess.apiInstance, player, world, boxSet.getBoundingBox(), nbt);
-		if (BitToolSettingsHelper.getModelGuiOpen(player, nbt))
+		if (modelingData.getGuiOpen())
 			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
 		
 		return true;
 	}
 	
-	public static ModelingBoxSet getModelingToolBoxSet(EntityPlayer player, ItemStack stack, int x, int y, int z,
-			Vec3d hit, Vec3i drawnStartPointModelingTool, boolean addToBoxForRender)
+	public static ModelingBoxSet getModelingToolBoxSet(EntityPlayer player, int x, int y, int z, Vec3d hit,
+			Vec3i drawnStartPointModelingTool, boolean addToBoxForRender, int modelAreaMode, int modeSnapToChunk)
 	{
-		int modeArea = BitToolSettingsHelper.getModelAreaMode(player, stack.getTagCompound());
 		AxisAlignedBB boxBounding = null;
 		AxisAlignedBB boxPoint = null;
-		if (modeArea == 2)
+		if (modelAreaMode == 2)
 		{
 			if (drawnStartPointModelingTool != null)
 			{
@@ -130,7 +131,7 @@ public class BitAreaHelper
 			boxBounding = new AxisAlignedBB(hitX, hitY, hitZ, hitX, hitY, hitZ);
 			boxPoint = boxBounding.expandXyz(0.005);
 			boxBounding = boxBounding.expandXyz(8);
-			if (modeArea == 1)
+			if (modelAreaMode == 1)
 			{
 				float yaw = Math.abs(player.rotationYaw) % 360;
 				int greaterX = 8;
@@ -163,7 +164,6 @@ public class BitAreaHelper
 				boxBounding = boxBounding.offset(yaw > angleX ? greaterX : lesserX,
 						player.rotationPitch > 0 ? -8 : 8, yaw > angleZ ? greaterZ : lesserZ);
 			}
-			int modeSnapToChunk = BitToolSettingsHelper.getModelSnapMode(player, stack.getTagCompound());
 			if (modeSnapToChunk > 0)
 			{
 				if (x < 0)

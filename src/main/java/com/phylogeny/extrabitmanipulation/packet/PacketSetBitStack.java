@@ -1,8 +1,11 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
+import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
+import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
@@ -19,10 +22,10 @@ public class PacketSetBitStack implements IMessage
 	
 	public PacketSetBitStack() {}
 	
-	public PacketSetBitStack(boolean isCurved, ItemStack bitStack)
+	public PacketSetBitStack(boolean isCurved, IBitBrush bit)
 	{
 		this.isWire = isCurved;
-		this.bitStack = bitStack;
+		this.bitStack = bit == null ? null : bit.getItemStack(1);
 	}
 	
 	@Override
@@ -51,7 +54,12 @@ public class PacketSetBitStack implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setBitStack(player, player.getHeldItemMainhand(), message.isWire, message.bitStack);
+					try
+					{
+						BitToolSettingsHelper.setBitStack(player, player.getHeldItemMainhand(), message.isWire,
+								ChiselsAndBitsAPIAccess.apiInstance.createBrush(message.bitStack), null);
+					}
+					catch (InvalidBitItem e) {}
 				}
 			});
 			return null;

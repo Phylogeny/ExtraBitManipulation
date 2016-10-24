@@ -9,34 +9,46 @@ import net.minecraft.item.ItemStack;
 
 public class ConfigBitStack extends ConfigBitToolSettingBase
 {
-	private ItemStack bitStackDefault;
-	private IBlockState stateDefault, stateDefaultDefault;
+	private ItemStack value, bitStackDefault;
+	private IBlockState valueDefault, stateDefault, stateDefaultDefault;
+	private String stringDeafult;
 	
-	public ConfigBitStack(IBlockState bitBlockDefault, IBlockState defaultDefaultBitBlock)
+	public ConfigBitStack(String name, IBlockState bitBlockDefault, IBlockState defaultDefaultBitBlock, String stringDefault, IBlockState valueDefault)
 	{
-		this(false, false, bitBlockDefault, defaultDefaultBitBlock);
+		this(name, false, false, bitBlockDefault, defaultDefaultBitBlock, stringDefault, valueDefault);
 	}
 	
-	public ConfigBitStack(boolean perTool, boolean displayInChat, IBlockState stateDefault, IBlockState stateDefaultDefault)
+	public ConfigBitStack(String name, boolean perTool, boolean displayInChat, IBlockState stateDefault,
+			IBlockState stateDefaultDefault, String stringDefault, IBlockState valueDefault)
 	{
-		super(perTool, displayInChat);
+		super(name, perTool, displayInChat);
 		this.stateDefault = stateDefault;
 		this.stateDefaultDefault = stateDefaultDefault;
+		this.stringDeafult = stringDefault;
+		this.valueDefault = valueDefault;
 	}
 	
 	public void init()
 	{
+		bitStackDefault = getBitStack(stateDefault);
+		value = getBitStack(valueDefault);
+	}
+	
+	private ItemStack getBitStack(IBlockState defaultState)
+	{
+		ItemStack bitStack = null;
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		if (api != null)
 		{
 			try
 			{
-				bitStackDefault = api.getBitItem(stateDefault != null ? stateDefault : stateDefaultDefault);
-				if (bitStackDefault.getItem() == null)
-					bitStackDefault = null;
+				bitStack = api.getBitItem(defaultState != null ? defaultState : stateDefaultDefault);
+				if (bitStack.getItem() == null)
+					bitStack = null;
 			}
 			catch (InvalidBitItem e) {}
 		}
+		return bitStack;
 	}
 	
 	public ItemStack getDefaultValue()
@@ -47,6 +59,21 @@ public class ConfigBitStack extends ConfigBitToolSettingBase
 	public IBlockState getDefaultState()
 	{
 		return stateDefault != null ? stateDefault : stateDefaultDefault;
+	}
+	
+	public ItemStack getValue()
+	{
+		return value;
+	}
+	
+	public void setValue(ItemStack value)
+	{
+		this.value = value;
+	}
+	
+	public String getStringDeafult()
+	{
+		return stringDeafult;
 	}
 	
 }

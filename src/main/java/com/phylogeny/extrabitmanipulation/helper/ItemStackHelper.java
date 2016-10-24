@@ -39,4 +39,24 @@ public class ItemStackHelper
 		return buffer.readBoolean() ? ByteBufUtils.readItemStack(buffer) : null;
 	}
 	
+	public static boolean hasNBT(ItemStack stack)
+	{
+		return stack == null ? false : stack.hasTagCompound();
+	}
+	
+	public static boolean hasKey(ItemStack stack, String key)
+	{
+		return hasNBT(stack) && getNBT(stack).hasKey(key);
+	}
+	
+	public static NBTTagCompound getNBT(ItemStack stack)
+	{
+		return stack == null ? null : stack.getTagCompound();
+	}
+	
+	public static NBTTagCompound getNBTOrNew(ItemStack stack)
+	{
+		return hasNBT(stack) ? stack.getTagCompound() : new NBTTagCompound();
+	}
+	
 }
