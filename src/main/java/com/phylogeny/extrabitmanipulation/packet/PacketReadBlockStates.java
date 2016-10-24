@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
@@ -19,13 +20,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class PacketReadBlockStates extends PacketBlockInteraction implements IMessage
 {
 	private Vec3i drawnStartPoint;
+	private ModelingData modelingData = new ModelingData();
 	
 	public PacketReadBlockStates() {}
 	
-	public PacketReadBlockStates(BlockPos pos, Vec3d hit, Vec3i drawnStartPoint)
+	public PacketReadBlockStates(BlockPos pos, Vec3d hit, Vec3i drawnStartPoint, ModelingData modelingData)
 	{
 		super(pos, EnumFacing.UP, hit);
 		this.drawnStartPoint = drawnStartPoint;
+		this.modelingData = modelingData;
 	}
 	
 	@Override
@@ -40,6 +43,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 			buffer.writeInt(drawnStartPoint.getY());
 			buffer.writeInt(drawnStartPoint.getZ());
 		}
+		modelingData.toBytes(buffer);
 	}
 	
 	@Override
@@ -48,6 +52,8 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 		super.fromBytes(buffer);
 		if (buffer.readBoolean())
 			drawnStartPoint = new Vec3i(buffer.readInt(), buffer.readInt(), buffer.readInt());
+		
+		modelingData.fromBytes(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketReadBlockStates, IMessage>
@@ -64,7 +70,8 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (stack != null && stack.getItem() instanceof ItemModelingTool && (!player.isSneaking() || message.drawnStartPoint != null))
-						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.getPos(), message.getHit(), message.drawnStartPoint);
+						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.getPos(),
+								message.getHit(), message.drawnStartPoint, message.modelingData);
 				}
 			});
 			return null;

@@ -8,8 +8,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ProxyClient extends ProxyCommon
@@ -33,6 +35,16 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.sculptingSquareHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
+	}
+	
+	@Override
+	public void init()
+	{
+		super.init();
+		Configs.sculptSetBitWire.init();
+		Configs.sculptSetBitSpade.init();
+		Configs.modelBlockToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelBlockToBitMapEntryStrings);
+		Configs.modelStateToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelStateToBitMapEntryStrings);
 	}
 	
 	private void register(Item item)

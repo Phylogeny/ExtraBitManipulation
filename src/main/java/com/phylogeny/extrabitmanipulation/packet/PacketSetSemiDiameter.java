@@ -45,7 +45,7 @@ public class PacketSetSemiDiameter implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setSemiDiameter(player, player.getHeldItemMainhand(), message.semiDiameter);
+					BitToolSettingsHelper.setSemiDiameter(player, player.getHeldItemMainhand(), message.semiDiameter, null);
 				}
 			});
 			return null;

@@ -11,6 +11,8 @@ import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -56,21 +58,19 @@ public class ItemModelingTool extends ItemBitToolBase
 		return slotChanged;
 	}
 	
-	@Override
-	public boolean initialize(ItemStack stack)
+	public NBTTagCompound initialize(ItemStack stack, ModelingData modelingData)
 	{
-		super.initialize(stack);
-		NBTTagCompound nbt = stack.getTagCompound();
-		initInt(nbt, NBTKeys.MODEL_AREA_MODE, Configs.modelAreaMode.getDefaultValue());
-		initInt(nbt, NBTKeys.MODEL_SNAP_MODE, Configs.modelSnapMode.getDefaultValue());
-		initBoolean(nbt, NBTKeys.MODEL_GUI_OPEN, Configs.modelGuiOpen.getDefaultValue());
-		return true;
+		NBTTagCompound nbt = BitToolSettingsHelper.initNBT(stack);
+		initInt(nbt, NBTKeys.MODEL_AREA_MODE, modelingData.getAreaMode());
+		initInt(nbt, NBTKeys.MODEL_SNAP_MODE, modelingData.getSnapMode());
+		initBoolean(nbt, NBTKeys.MODEL_GUI_OPEN, modelingData.getGuiOpen());
+		return nbt;
 	}
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
 	{
-		if (player.isSneaking() && itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey(NBTKeys.SAVED_STATES))
+		if (player.isSneaking() && ItemStackHelper.hasKey(itemStack, NBTKeys.SAVED_STATES))
 			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
 		
 		return super.onItemRightClick(itemStack, world, player, hand);
@@ -80,8 +80,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world,
 			BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
-		initialize(stack);
-		if (player.isSneaking())
+		if (player.isSneaking() || !stack.hasTagCompound())
 			return EnumActionResult.FAIL;
 		
 		if (!world.getBlockState(pos).getBlock().isReplaceable(world, pos))
@@ -92,7 +91,7 @@ public class ItemModelingTool extends ItemBitToolBase
 		}
 		world.setBlockToAir(pos);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-		NBTTagCompound nbt = stack.getTagCompound();
+		NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 		if (!nbt.hasKey(NBTKeys.SAVED_STATES))
 			return EnumActionResult.FAIL;
 		
@@ -165,7 +164,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	public boolean createModel(EntityPlayer player, World world, ItemStack stack, IBlockState[][][] stateArray,
 			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray, IBitAccess bitAccess)
 	{
-		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey(NBTKeys.SAVED_STATES))
+		if (!ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
 			return false;
 		
 		for (int i = 0; i < 16; i++)
@@ -357,8 +356,8 @@ public class ItemModelingTool extends ItemBitToolBase
 		boolean ctrlDown = GuiScreen.isCtrlKeyDown();
 		addColorInformation(tooltip, shiftDown);
 		NBTTagCompound nbt = stack.getTagCompound();
-		int areaMode = BitToolSettingsHelper.getModelAreaMode(player, nbt);
-		int snapMode = BitToolSettingsHelper.getModelSnapMode(player, nbt);
+		int areaMode = BitToolSettingsHelper.getModelAreaMode(nbt);
+		int snapMode = BitToolSettingsHelper.getModelSnapMode(nbt);
 		if (!ctrlDown || shiftDown)
 		{
 			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelAreaModeText(areaMode), Configs.modelAreaMode));
@@ -366,7 +365,7 @@ public class ItemModelingTool extends ItemBitToolBase
 		if (shiftDown)
 		{
 			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelSnapModeText(snapMode), Configs.modelSnapMode));
-			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelGuiOpenText(player, nbt), Configs.modelGuiOpen));
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getModelGuiOpenText(nbt), Configs.modelGuiOpen));
 		}
 		else
 		{

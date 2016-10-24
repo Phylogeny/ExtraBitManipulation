@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
@@ -238,7 +239,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 				{
 					try
 					{
-						bit = api.createBrushFromState(block.getStateFromMeta(cursorStack.getMetadata()));
+						bit = api.createBrushFromState(BitIOHelper.getStateFromMeta(block, cursorStack.getMetadata()));
 						changed = true;
 					}
 					catch (InvalidBitItem e) {}

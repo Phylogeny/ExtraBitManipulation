@@ -1,14 +1,9 @@
 package com.phylogeny.extrabitmanipulation.proxy;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.capability.IBitToolSettingsHandler;
-import com.phylogeny.extrabitmanipulation.capability.BitToolSettingsEventHandler;
-import com.phylogeny.extrabitmanipulation.capability.BitToolSettingsHandler;
-import com.phylogeny.extrabitmanipulation.capability.Storage;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
-import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
@@ -20,7 +15,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -33,20 +27,14 @@ public class ProxyCommon implements IGuiHandler
 		ItemsExtraBitManipulation.itemsInit();
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
-		MinecraftForge.EVENT_BUS.register(new BitToolSettingsEventHandler());
-		CapabilityManager.INSTANCE.register(IBitToolSettingsHandler.class, new Storage(), BitToolSettingsHandler.class);
 		PacketRegistration.registerPackets();
 	}
 	
 	public void init()
 	{
 		RecipesExtraBitManipulation.recipeInit();
-		Configs.sculptSetBitWire.init();
-		Configs.sculptSetBitSpade.init();
 		Configs.replacementBitsUnchiselable.defaultReplacementBit.init();
 		Configs.replacementBitsInsufficient.defaultReplacementBit.init();
-		Configs.modelBlockToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelBlockToBitMapEntryStrings);
-		Configs.modelStateToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelStateToBitMapEntryStrings);
 		NetworkRegistry.INSTANCE.registerGuiHandler(ExtraBitManipulation.instance, new ProxyCommon());
 	}
 	

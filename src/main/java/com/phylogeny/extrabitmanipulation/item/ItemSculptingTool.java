@@ -30,6 +30,8 @@ import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
@@ -74,17 +76,15 @@ public class ItemSculptingTool extends ItemBitToolBase
 	@Override
 	public boolean showDurabilityBar(ItemStack stack)
 	{
-		ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
-		return stack.hasTagCompound() && stack.getTagCompound().hasKey(NBTKeys.REMAINING_USES)
-				&& stack.getTagCompound().getInteger(NBTKeys.REMAINING_USES) < config.maxDamage;
+		return ItemStackHelper.hasKey(stack, NBTKeys.REMAINING_USES) && ItemStackHelper.getNBT(stack).getInteger(NBTKeys.REMAINING_USES)
+				< ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage;
 	}
 	
 	@Override
 	public double getDurabilityForDisplay(ItemStack stack)
 	{
-		ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
-		int damage = stack.hasTagCompound() ? stack.getTagCompound().getInteger(NBTKeys.REMAINING_USES) : 0;
-		return 1 - damage / ((double) config.maxDamage);
+		return 1 - ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.REMAINING_USES)
+				/ ((double) ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
 	}
 	
 	@Override
@@ -93,37 +93,45 @@ public class ItemSculptingTool extends ItemBitToolBase
 		super.initialize(stack);
 		NBTTagCompound nbt = stack.getTagCompound();
 		initInt(nbt, NBTKeys.REMAINING_USES, ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
-		initInt(nbt, NBTKeys.SCULPT_MODE, Configs.sculptMode.getDefaultValue());
-		initInt(nbt, NBTKeys.SCULPT_SEMI_DIAMETER, Configs.sculptSemiDiameter.getDefaultValue());
-		initInt(nbt, NBTKeys.DIRECTION, Configs.sculptDirection.getDefaultValue());
-		initBoolean(nbt, NBTKeys.TARGET_BIT_GRID_VERTEXES, Configs.sculptTargetBitGridVertexes.getDefaultValue());
-		initInt(nbt, NBTKeys.SHAPE_TYPE, (curved ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat).getDefaultValue());
-		initBoolean(nbt, NBTKeys.SCULPT_HOLLOW_SHAPE, (removeBits ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade).getDefaultValue());
-		initBoolean(nbt, NBTKeys.OPEN_ENDS, Configs.sculptOpenEnds.getDefaultValue());
-		initInt(nbt, NBTKeys.WALL_THICKNESS, Configs.sculptWallThickness.getDefaultValue());
-		if (!nbt.hasKey(NBTKeys.SET_BIT))
-		{
-			ItemStack bitStack = (removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).getDefaultValue();
-			if (bitStack != null)
-			{
-				NBTTagCompound nbt2 = new NBTTagCompound();
-				bitStack.writeToNBT(nbt2);
-				nbt.setTag(NBTKeys.SET_BIT, nbt2);
-			}
-		}
 		return true;
 	}
 	
-	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, Vec3d hit, Vec3d drawnStartPoint)
+	public NBTTagCompound initialize(ItemStack stack, SculptingData sculptingData)
 	{
-		initialize(stack);
+		NBTTagCompound nbt = BitToolSettingsHelper.initNBT(stack);
+		initInt(nbt, NBTKeys.REMAINING_USES, ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
+		initInt(nbt, NBTKeys.SCULPT_MODE, sculptingData.getSculptMode());
+		initInt(nbt, NBTKeys.SCULPT_SEMI_DIAMETER, sculptingData.getSemiDiameter());
+		initInt(nbt, NBTKeys.DIRECTION, sculptingData.getDirection());
+		initBoolean(nbt, NBTKeys.TARGET_BIT_GRID_VERTEXES, sculptingData.isBitGridTargeted());
+		initInt(nbt, NBTKeys.SHAPE_TYPE, sculptingData.getShapeType());
+		initBoolean(nbt, NBTKeys.SCULPT_HOLLOW_SHAPE, sculptingData.isHollowShape());
+		initBoolean(nbt, NBTKeys.OPEN_ENDS, sculptingData.areEndsOpen());
+		initInt(nbt, NBTKeys.WALL_THICKNESS, sculptingData.getWallThickness());
+		if (!nbt.hasKey(NBTKeys.SET_BIT) && sculptingData.getBitStack() != null)
+		{
+			NBTTagCompound nbt2 = new NBTTagCompound();
+			sculptingData.getBitStack().writeToNBT(nbt2);
+			nbt.setTag(NBTKeys.SET_BIT, nbt2);
+		}
+		return nbt;
+	}
+	
+	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+			EnumFacing side, Vec3d hit, Vec3d drawnStartPoint, SculptingData sculptingData)
+	{
+		if (!world.isRemote)
+		{
+			initialize(stack);
+			player.inventoryContainer.detectAndSendChanges();
+		}
+		NBTTagCompound nbt = initialize(stack, sculptingData);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		boolean inside = wasInsideClicked(side, hit, pos);
 		if (!removeBits && !inside)
 			pos = pos.offset(side);
 		
-		NBTTagCompound nbt = stack.getTagCompound();
-		boolean globalMode = BitToolSettingsHelper.getSculptMode(player, nbt) == 1;
+		boolean globalMode = sculptingData.getSculptMode() == 1;
 		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
 		{
 			float hitX = (float) hit.xCoord - pos.getX();
@@ -132,7 +140,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 			IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, side, pos, false);
 			if (bitLoc != null)
 			{
-				int sculptSemiDiameter =  BitToolSettingsHelper.getSemiDiameter(player, nbt);
+				int direction = sculptingData.getDirection();
+				int shapeType = sculptingData.getShapeType();
+				boolean hollowShape = sculptingData.isHollowShape();
+				boolean openEnds = sculptingData.areEndsOpen();
+				float wallThickness = sculptingData.getWallThickness() * Utility.PIXEL_F;
 				int x = pos.getX();
 				int y = pos.getY();
 				int z = pos.getZ();
@@ -147,14 +159,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				Shape shape;
 				AxisAlignedBB box;
-				int shapeType = BitToolSettingsHelper.getShapeType(player, nbt, curved);
-				int direction = BitToolSettingsHelper.getDirection(player, nbt);
 				if (shapeType != 4 && shapeType != 5)
 					direction %= 6;
 				
-				boolean sculptHollowShape = BitToolSettingsHelper.isHollowShape(player, nbt, removeBits);
-				float wallThickness = BitToolSettingsHelper.getWallThickness(player, nbt) * Utility.PIXEL_F;
-				boolean openEnds = BitToolSettingsHelper.areEndsOpen(player, nbt);
 				if (drawnStartPoint != null)
 				{
 					switch(shapeType)
@@ -186,7 +193,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					maxY *= f;
 					maxZ *= f;
 					((AsymmetricalShape) shape).init(maxX + minX, maxY + minY, maxZ + minZ, maxX - minX, maxY - minY, maxZ - minZ,
-							direction, sculptHollowShape, wallThickness, openEnds);
+							direction, hollowShape, wallThickness, openEnds);
 				}
 				else
 				{
@@ -200,12 +207,13 @@ public class ItemSculptingTool extends ItemBitToolBase
 						case 6: shape = new PyramidSquare(); break;
 						default: shape = new Sphere(); break;
 					}
-					int blockSemiDiameter = globalMode ? (int) Math.ceil(sculptSemiDiameter / 16.0) : 0;
+					int semiDiameter = sculptingData.getSemiDiameter();
+					int blockSemiDiameter = globalMode ? (int) Math.ceil(semiDiameter  / 16.0) : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
 					float f = 0;
 					Vec3d vecOffset = new Vec3d(0, 0, 0);
-					if (BitToolSettingsHelper.isBitGridTargeted(player, nbt))
+					if (sculptingData.isBitGridTargeted())
 					{
 						f = Utility.PIXEL_F * 0.5F;
 						vecOffset = BitAreaHelper.getBitGridOffset(side, inside, hitX, hitY, hitZ, removeBits);
@@ -214,14 +222,14 @@ public class ItemSculptingTool extends ItemBitToolBase
 					{
 						AsymmetricalShape asymmetricalShape = (AsymmetricalShape) shape;
 						asymmetricalShape.setEquilateral(true);
-						float radius = addPadding(sculptSemiDiameter) - f;
+						float radius = addPadding(semiDiameter) - f;
 						asymmetricalShape.init(x2 + f * (float) vecOffset.xCoord, y2 + f * (float) vecOffset.yCoord, z2 + f * (float) vecOffset.zCoord, radius,
-								radius, radius, direction, sculptHollowShape, wallThickness, openEnds);
+								radius, radius, direction, hollowShape, wallThickness, openEnds);
 					}
 					else
 					{
 						((SymmetricalShape) shape).init(x2 + f * (float) vecOffset.xCoord, y2 + f * (float) vecOffset.yCoord, z2 + f * (float) vecOffset.zCoord,
-								addPadding(sculptSemiDiameter) - f, direction, sculptHollowShape, wallThickness, openEnds);
+								addPadding(semiDiameter) - f, direction, hollowShape, wallThickness, openEnds);
 					}
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
@@ -230,8 +238,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 					bitTypes = new HashMap<IBlockState, Integer>();
 				
 				int initialpossibleUses = Integer.MAX_VALUE;
-				ItemStack setBitStack = BitToolSettingsHelper.getBitStack(player, nbt, removeBits);
 				IBitBrush setBit = null;
+				ItemStack setBitStack = sculptingData.getBitStack();
 				try
 				{
 					setBit = api.createBrush(setBitStack);
@@ -255,8 +263,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 							for (int k = (int) box.minZ; k <= box.maxZ; k++)
 							{
 								if (possibleUses > 0)
-									possibleUses = sculptBlock(api, player, world, new BlockPos(i, j, k), shape, bitTypes,
-											possibleUses, Configs.dropBitsPerBlock, setBit);
+									possibleUses = sculptBlock(api, player, world, new BlockPos(i, j, k), shape, bitTypes, possibleUses, setBit);
 							}
 						}
 					}
@@ -264,12 +271,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 				finally
 				{
 					api.endUndoGroup(player);
-					if (!Configs.dropBitsPerBlock)
+					if (!world.isRemote && !Configs.dropBitsPerBlock)
 						BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 					
 					int change = initialpossibleUses - possibleUses;
-					ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
-					int newRemainingUses = remainingUses - (config.takesDamage ? change : 0);
+					int newRemainingUses = remainingUses - (((ConfigProperty) Configs.itemPropertyMap.get(this)).takesDamage ? change : 0);
 					if (!world.isRemote && !creativeMode)
 					{
 						nbt.setInteger(NBTKeys.REMAINING_USES, newRemainingUses);
@@ -332,7 +338,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	private int sculptBlock(IChiselAndBitsAPI api, EntityPlayer player, World world, BlockPos pos, Shape shape,
-			HashMap<IBlockState, Integer> bitTypes, int remainingUses, boolean dropsPerBlock, IBitBrush setBit)
+			HashMap<IBlockState, Integer> bitTypes, int remainingUses, IBitBrush setBit)
 	{
 		if (isValidBlock(api, world, pos))
 		{
@@ -385,7 +391,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 				}
 			}
-			if (dropsPerBlock)
+			if (!world.isRemote && !Configs.dropBitsPerBlock)
 				BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			
 			if (remainingUses < initialRemainingUses)
@@ -406,11 +412,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 		boolean ctrlDown = GuiScreen.isCtrlKeyDown();
 		addColorInformation(tooltip, shiftDown);
 		NBTTagCompound nbt = stack.getTagCompound();
-		int mode = BitToolSettingsHelper.getSculptMode(player, nbt);
+		int mode = BitToolSettingsHelper.getSculptMode(nbt);
 		if (shiftDown)
 			tooltip.add(colorSettingText(BitToolSettingsHelper.getSculptModeText(mode), Configs.sculptMode));
 		
-		ItemStack setBitStack = BitToolSettingsHelper.getBitStack(player, nbt, removeBits);
+		ItemStack setBitStack = BitToolSettingsHelper.getBitStack(nbt, removeBits);
 		if (!ctrlDown || shiftDown)
 		{
 			String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
@@ -428,18 +434,18 @@ public class ItemSculptingTool extends ItemBitToolBase
 		}
 		if (shiftDown)
 		{
-			int shapeType = BitToolSettingsHelper.getShapeType(player, nbt, curved);
-			tooltip.add(colorSettingText(BitToolSettingsHelper.getDirectionText(player, nbt, shapeType == 4 || shapeType == 5), Configs.sculptDirection));
+			int shapeType = BitToolSettingsHelper.getShapeType(nbt, curved);
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getDirectionText(nbt, shapeType == 4 || shapeType == 5), Configs.sculptDirection));
 			tooltip.add(colorSettingText(BitToolSettingsHelper.getShapeTypeText(shapeType),
 					removeBits ? Configs.sculptShapeTypeCurved : Configs.sculptShapeTypeFlat));
-			boolean targetBits = BitToolSettingsHelper.isBitGridTargeted(player, nbt);
+			boolean targetBits = BitToolSettingsHelper.isBitGridTargeted(nbt);
 			tooltip.add(colorSettingText(BitToolSettingsHelper.getBitGridTargetedText(targetBits), Configs.sculptTargetBitGridVertexes)
 					+ (targetBits ? " (corners)" : " (centers)"));
-			tooltip.add(colorSettingText(BitToolSettingsHelper.getSemiDiameterText(player, nbt), Configs.sculptSemiDiameter));
-			tooltip.add(colorSettingText(BitToolSettingsHelper.getHollowShapeText(player, nbt, this),
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getSemiDiameterText(nbt), Configs.sculptSemiDiameter));
+			tooltip.add(colorSettingText(BitToolSettingsHelper.getHollowShapeText(nbt, this),
 					removeBits ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade));
-			tooltip.add(colorSettingText("  - " + BitToolSettingsHelper.getOpenEndsText(player, nbt), Configs.sculptOpenEnds));
-			tooltip.add(colorSettingText("  - " + BitToolSettingsHelper.getWallThicknessText(player, nbt), Configs.sculptWallThickness));
+			tooltip.add(colorSettingText("  - " + BitToolSettingsHelper.getOpenEndsText(nbt), Configs.sculptOpenEnds));
+			tooltip.add(colorSettingText("  - " + BitToolSettingsHelper.getWallThicknessText(nbt), Configs.sculptWallThickness));
 		}
 		else
 		{

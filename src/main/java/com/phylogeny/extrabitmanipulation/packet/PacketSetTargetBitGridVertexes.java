@@ -45,7 +45,7 @@ public class PacketSetTargetBitGridVertexes implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					BitToolSettingsHelper.setBitGridTargeted(player, player.getHeldItemMainhand(), message.targetBitGridVertexes);
+					BitToolSettingsHelper.setBitGridTargeted(player, player.getHeldItemMainhand(), message.targetBitGridVertexes, null);
 				}
 			});
 			return null;
