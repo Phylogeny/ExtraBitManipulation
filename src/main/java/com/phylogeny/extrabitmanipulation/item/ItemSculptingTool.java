@@ -383,7 +383,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 				}
 			}
-			if (!world.isRemote && !Configs.dropBitsPerBlock)
+			if (!world.isRemote && Configs.dropBitsPerBlock)
 				BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			
 			if (remainingUses < initialRemainingUses)

@@ -36,7 +36,10 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		{
 			stack.damageItem(1, player);
 			if (stack.getItemDamage() > config.maxDamage)
+			{
 				player.renderBrokenItemStack(stack);
+				player.destroyCurrentEquippedItem();
+			}
 		}
 	}
 	
