@@ -24,6 +24,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
@@ -284,8 +285,8 @@ public class ItemSculptingTool extends ItemBitToolBase
 						
 						if (newRemainingUses <= 0)
 						{
-							player.renderBrokenItemStack(stack);
 							player.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
+							ForgeEventFactory.onPlayerDestroyItem(player, stack, player.getActiveHand());
 						}
 						player.inventoryContainer.detectAndSendChanges();
 					}
@@ -391,7 +392,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 				}
 			}
-			if (!world.isRemote && !Configs.dropBitsPerBlock)
+			if (!world.isRemote && Configs.dropBitsPerBlock)
 				BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			
 			if (remainingUses < initialRemainingUses)

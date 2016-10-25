@@ -9,7 +9,9 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.event.ForgeEventFactory;
 
 public class ItemBitToolBase extends ItemExtraBitManipulationBase
 {
@@ -36,7 +38,11 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		{
 			stack.damageItem(1, player);
 			if (stack.getItemDamage() > config.maxDamage)
+			{
 				player.renderBrokenItemStack(stack);
+				player.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
+				ForgeEventFactory.onPlayerDestroyItem(player, stack, EnumHand.MAIN_HAND);
+			}
 		}
 	}
 	
