@@ -1,31 +1,64 @@
 package com.phylogeny.extrabitmanipulation.config;
 
+import io.netty.buffer.ByteBuf;
+
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+
 public class ConfigReplacementBits
 {
-	public ConfigBitStack defaultReplacementBit;
-	public boolean useDefaultReplacementBit, useAnyBitsAsReplacements, useAirAsReplacement;
-	private boolean useDefaultReplacementBitDefault, useAnyBitsAsReplacementsDefault, useAirAsReplacementDefault;
+	private ConfigBitStack defaultReplacementBit;
+	private boolean useDefaultReplacementBit, useAnyBitsAsReplacements, useAirAsReplacement;
 	
-	public ConfigReplacementBits(boolean useDefaultReplacementBitDefault, boolean useAnyBitsAsReplacementsDefault, boolean useAirAsReplacementDefault)
+	public ConfigReplacementBits() {}
+	
+	public ConfigReplacementBits(ConfigBitStack defaultReplacementBit, boolean useDefaultReplacementBit,
+			boolean useAnyBitsAsReplacements, boolean useAirAsReplacement)
 	{
-		this.useDefaultReplacementBitDefault = useDefaultReplacementBitDefault;
-		this.useAnyBitsAsReplacementsDefault = useAnyBitsAsReplacementsDefault;
-		this.useAirAsReplacementDefault = useAirAsReplacementDefault;
+		this.defaultReplacementBit = defaultReplacementBit;
+		this.useDefaultReplacementBit = useDefaultReplacementBit;
+		this.useAnyBitsAsReplacements = useAnyBitsAsReplacements;
+		this.useAirAsReplacement = useAirAsReplacement;
 	}
 	
-	public boolean getUseDefaultReplacementBitDefault()
+	public void toBytes(ByteBuf buffer)
 	{
-		return useDefaultReplacementBitDefault;
+		ItemStackHelper.stackToBytes(buffer, defaultReplacementBit.getDefaultValue());
+		buffer.writeBoolean(useDefaultReplacementBit);
+		buffer.writeBoolean(useAnyBitsAsReplacements);
+		buffer.writeBoolean(useAirAsReplacement);
 	}
 	
-	public boolean getUseAnyBitsAsReplacementsDefault()
+	public void fromBytes(ByteBuf buffer)
 	{
-		return useAnyBitsAsReplacementsDefault;
+		defaultReplacementBit = new ConfigBitStack(ItemStackHelper.stackFromBytes(buffer));
+		useDefaultReplacementBit = buffer.readBoolean();
+		useAnyBitsAsReplacements = buffer.readBoolean();
+		useAirAsReplacement = buffer.readBoolean();
 	}
 	
-	public boolean getUseAirAsReplacementDefault()
+	public void initDefaultReplacementBit()
 	{
-		return useAirAsReplacementDefault;
+		defaultReplacementBit.init();
+	}
+	
+	public ConfigBitStack getDefaultReplacementBit()
+	{
+		return defaultReplacementBit;
+	}
+	
+	public boolean useDefaultReplacementBit()
+	{
+		return useDefaultReplacementBit;
+	}
+	
+	public boolean useAnyBitsAsReplacements()
+	{
+		return useAnyBitsAsReplacements;
+	}
+	
+	public boolean useAirAsReplacement()
+	{
+		return useAirAsReplacement;
 	}
 	
 }

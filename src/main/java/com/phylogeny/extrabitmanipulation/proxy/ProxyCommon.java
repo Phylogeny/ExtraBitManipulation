@@ -8,7 +8,6 @@ import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,8 +32,6 @@ public class ProxyCommon implements IGuiHandler
 	public void init()
 	{
 		RecipesExtraBitManipulation.recipeInit();
-		Configs.replacementBitsUnchiselable.defaultReplacementBit.init();
-		Configs.replacementBitsInsufficient.defaultReplacementBit.init();
 		NetworkRegistry.INSTANCE.registerGuiHandler(ExtraBitManipulation.instance, new ProxyCommon());
 	}
 	

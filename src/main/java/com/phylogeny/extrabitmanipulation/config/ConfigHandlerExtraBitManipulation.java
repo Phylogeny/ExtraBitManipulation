@@ -22,7 +22,7 @@ import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 public class ConfigHandlerExtraBitManipulation
 {
-	public static Configuration configFile, modelingMapConfigFile, sculptingMapConfigFile;
+	public static Configuration configFileClient, configFileServer, configFileCommon, modelingMapConfigFile, sculptingMapConfigFile;
 	public static final String VERSION = "Version";
 	public static final String SCULPTING_WRENCH_SETTINGS = "Sculpting & Wrech Settings";
 	public static final String UNCHISELABLE_BLOCK_STATES = "Unchiselable Block States";
@@ -39,15 +39,17 @@ public class ConfigHandlerExtraBitManipulation
 	
 	public static void setUpConfigs(File configDir)
 	{
-		configFile = getConfigFile(configDir, "");
-		modelingMapConfigFile = getConfigFile(configDir, "_modeling");
-		sculptingMapConfigFile = getConfigFile(configDir, "_sculpting");
+		configFileClient = getConfigFile(configDir, "client");
+		configFileServer = getConfigFile(configDir, "server");
+		configFileCommon = getConfigFile(configDir, "common");
+		modelingMapConfigFile = getConfigFile(configDir, "modeling_data");
+		sculptingMapConfigFile = getConfigFile(configDir, "sculpting_data");
 		updateConfigs();
 	}
 	
 	private static Configuration getConfigFile(File configDir, String suffix)
 	{
-		return new Configuration(new File(configDir, Reference.MOD_ID + suffix + ".cfg"));
+		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.MOD_ID, suffix + ".cfg"));
 	}
 	
 	@SubscribeEvent
@@ -63,17 +65,6 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		try
 		{
-			String version = getVersion(VERSION);
-			if (!version.equals(Reference.VERSION))
-			{
-				removeCategory("curved sculpting wire properties");
-				removeCategory("curved sculpting spade properties");
-				removeCategory("straight sculpting wire properties");
-				removeCategory("flat sculpting spade properties");
-			}
-			removeCategory(VERSION);
-			getVersion(Reference.VERSION);
-			
 			//MODELING TOOL MAPs
 			String toolTip = "This is a list of entries of mappings of @@@ to bits for the Modeling Tool";
 			
@@ -256,46 +247,46 @@ public class ConfigHandlerExtraBitManipulation
 					toolTip.replace("@@@", "states"));
 			
 			//SCULPTING SETTINGS
-			Configs.maxSemiDiameter = configFile.getInt("Max Semi-Diameter", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
+			Configs.maxSemiDiameter = configFileClient.getInt("Max Semi-Diameter", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
 					"the maximum size (in bits) of sculpting shape semi-diameter (i.e. radius if it is a sphere). (default = 5 bits)");
 			
-			Configs.maxWallThickness = configFile.getInt("Max Wall Thickness", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
+			Configs.maxWallThickness = configFileClient.getInt("Max Wall Thickness", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
 					"the maximum size (in bits) of hollow sculpting shapes. (default = 2 bits)");
 			
-			Configs.displayNameDiameter = configFile.getBoolean("Display Name Diameter", SCULPTING_WRENCH_SETTINGS, true, 
+			Configs.displayNameDiameter = configFileClient.getBoolean("Display Name Diameter", SCULPTING_WRENCH_SETTINGS, true, 
 					"If set to true, sculpting tool display names will indicate the diameter of their bit removal/addition areas. " +
 					"If set to false, they will indicate the radius (default = true)");
 			
-			Configs.displayNameUseMeterUnits = configFile.getBoolean("Display Name Meter Units", SCULPTING_WRENCH_SETTINGS, false, 
+			Configs.displayNameUseMeterUnits = configFileClient.getBoolean("Display Name Meter Units", SCULPTING_WRENCH_SETTINGS, false, 
 					"If set to true, sculpting tool display names will indicate the size of their bit removal/addition areas in meters. " +
 					"If set to false, they will be in bits (default = false)");
 			
-			Configs.semiDiameterPadding = configFile.getFloat("Semi-Diameter Padding", SCULPTING_WRENCH_SETTINGS, 0.2F, 0, 1, 
+			Configs.semiDiameterPadding = configFileClient.getFloat("Semi-Diameter Padding", SCULPTING_WRENCH_SETTINGS, 0.2F, 0, 1, 
 					"Distance (in bits) to add to the semi-diameter of a sculpting tool's bit removal/addition area shape. If set to zero, no padding " +
 					"will be added; spheres, for example, will have single bits protruding from each cardinal direction at any size, since only those " +
 					"bits of those layers will be exactly on the sphere's perimeter. If set to 1, there will effectively be no padding for the same reason, " +
 					"but the radius will be one bit larger than specified. A value between 0 and 1 is suggested. (default = 0.2 bits)");
 			
-			Configs.placeBitsInInventory = configFile.getBoolean("Place Bits In Inventory", SCULPTING_WRENCH_SETTINGS, true, 
+			Configs.placeBitsInInventory = configFileServer.getBoolean("Place Bits In Inventory", SCULPTING_WRENCH_SETTINGS, true, 
 					"If set to true, when bits are removed from blocks with a sculpting tool, as many of them will be given to the player as is possible. " +
 					"Any bits that cannot fit in the player's inventory will be spawned in the world. If set to false, no attempt will be made to give them " +
 					"to the player; they will always be spawned in the world. (default = true)");
 			
-			Configs.dropBitsInBlockspace = configFile.getBoolean("Drop Bits In Block Space", SCULPTING_WRENCH_SETTINGS, true, 
+			Configs.dropBitsInBlockspace = configFileServer.getBoolean("Drop Bits In Block Space", SCULPTING_WRENCH_SETTINGS, true, 
 					"If set to true, when bits removed from blocks with a sculpting tool are spawned in the world, they will be spawned at a random " +
 					"point within the area that intersects the block space and the removal area bounding box (if 'Drop Bits Per Block' is true, they " +
 					"will be spawned in the block they are removed from; otherwise they will be spawned at the block they player right-clicked). " +
 					"If set to false, they will be spawned at the player, in the same way that items are spawned when throwing them on the ground " +
 					"by pressing Q. (default = true)");
 			
-			Configs.bitSpawnBoxContraction = configFile.getFloat("Bit Spawn Box Contraction", SCULPTING_WRENCH_SETTINGS, 0.25F, 0, 0.5F, 
+			Configs.bitSpawnBoxContraction = configFileServer.getFloat("Bit Spawn Box Contraction", SCULPTING_WRENCH_SETTINGS, 0.25F, 0, 0.5F, 
 					"Amount in meters to contract the box that removed bits randomly spawn in (assuming they spawn in the block space as per 'Drop Bits " +
 					"In Block Space') If set to 0, there will be no contraction and they will be able to spawn anywhere in the box. If set to 0.5, the " +
 					"box will contract by half in all directions down to a point in the center of the original box and they will always spawn from that " +
 					"central point. The default of 0.25 (which is the default behavior when spawning items with Block.spawnAsEntity) contracts the box " +
 					"to half its original size. (default = 0.25 meters)");
 			
-			Configs.dropBitsPerBlock = configFile.getBoolean("Drop Bits Per Block", SCULPTING_WRENCH_SETTINGS, true, 
+			Configs.dropBitsPerBlock = configFileServer.getBoolean("Drop Bits Per Block", SCULPTING_WRENCH_SETTINGS, true, 
 					"When bits are removed from blocks with a sculpting tool, all the removed bits of each type are counted and a collection of item " +
 					"stacks are created of each item. For the sake of efficiency, the number of stacks generated is the minimum number necessary for " +
 					"that amount (Ex: 179 bits would become 2 stacks of 64 and 1 stack of 51). If this config is set to true, the counts for each block " +
@@ -307,17 +298,17 @@ public class ConfigHandlerExtraBitManipulation
 					"spaces they are removed from is not possible. Rather, the bits will either spawn in the space of the block clicked or spawn at " +
 					"the player as per 'Drop Bits In Block Space'. (default = true)");
 			
-			Configs.dropBitsAsFullChiseledBlocks = configFile.getBoolean("Drop Bits As Full Chiseled Blocks", SCULPTING_WRENCH_SETTINGS, false, 
+			Configs.dropBitsAsFullChiseledBlocks = configFileServer.getBoolean("Drop Bits As Full Chiseled Blocks", SCULPTING_WRENCH_SETTINGS, false, 
 					"If set to true, full meter cubed blocks of bits that have all their bits removed will drop as full chiseled blocks. " +
 					"If set to false, they will drop normally as item stacks of bits (64 stacks of size 64). (default = false)");
 			
-			Configs.oneBitTypeInversionRequirement = configFile.getBoolean("One Bit Type Inversion Requirement", SCULPTING_WRENCH_SETTINGS, false, 
+			Configs.oneBitTypeInversionRequirement = configFileClient.getBoolean("One Bit Type Inversion Requirement", SCULPTING_WRENCH_SETTINGS, false, 
 					"If set to true, the Bit Wrench will only be able to invert blocks that are comprised of one bit type. " +
 					"If set to false, any block can be inverted and the bit type that empty bits will be filled with is whichever bit is " +
 					"the most prevalent in the block space. (default = false)");
 			
 			//MODELING TOOL SETTINGS
-			Configs.saveStatesById = configFile.getBoolean("Save States By ID", MODELING_TOOL_SETTINGS, false,
+			Configs.saveStatesById = configFileClient.getBoolean("Save States By ID", MODELING_TOOL_SETTINGS, false,
 					"If set to true, manually mapped blocks and block states will be saved as state IDs (integers - 4 bytes each). If set to false, " +
 					"they will be saved as a registry name (2 strings - 1 byte per char) and metadata (1 byte). Saving states as registry name " +
 					"for blocks and as registry name and metadata for block states takes up several times more space, and if thousands of mappings " +
@@ -453,39 +444,39 @@ public class ConfigHandlerExtraBitManipulation
 			}
 			
 			//RENDER OVERLAYS
-			Configs.disableOverlays = configFile.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
+			Configs.disableOverlays = configFileClient.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
 					"Prevents overlays from rendering. (default = false)");
 			
-			Configs.rotationPeriod = getDouble(configFile, "Rotation Period", RENDER_OVERLAYS, 180, 1, Double.MAX_VALUE,
+			Configs.rotationPeriod = getDouble(configFileClient, "Rotation Period", RENDER_OVERLAYS, 180, 1, Double.MAX_VALUE,
 					"Number of frames over which the cyclical arrow overlay used in block/texture rotation will complete one rotation. If this is " +
 					"set to the minimum value of 1, no rotation will occur. (default = 3 seconds at 60 fps)");
 			
-			Configs.mirrorPeriod = getDouble(configFile, "Mirror Oscillation Period", RENDER_OVERLAYS, 50, 1, Double.MAX_VALUE,
+			Configs.mirrorPeriod = getDouble(configFileClient, "Mirror Oscillation Period", RENDER_OVERLAYS, 50, 1, Double.MAX_VALUE,
 					"Number of frames over which the bidirectional arrow overlay used in block/texture mirroring will complete one oscillation. If this is " +
 					"set to the minimum value of 1, no oscillation will occur. (default = 0.83 seconds at 60 fps)");
 			
-			Configs.mirrorAmplitude = getDouble(configFile, "Mirror Oscillation Amplitude", RENDER_OVERLAYS, 0.1, 0, Double.MAX_VALUE,
+			Configs.mirrorAmplitude = getDouble(configFileClient, "Mirror Oscillation Amplitude", RENDER_OVERLAYS, 0.1, 0, Double.MAX_VALUE,
 					"Half the total travel distance of the bidirectional arrow overlay used in block/texture mirroring as measured from the center of " +
 					"the block face the player is looking at. If this is set to the minimum value of 0, no oscillation will occur. (default = 0.1 meters)");
 			
-			Configs.translationScalePeriod = getDouble(configFile, "Translation Scale Period", RENDER_OVERLAYS, 80, 1, Double.MAX_VALUE,
+			Configs.translationScalePeriod = getDouble(configFileClient, "Translation Scale Period", RENDER_OVERLAYS, 80, 1, Double.MAX_VALUE,
 					"Number of frames over which the circle overlay used in block translation will complete one cycle of scaling from a point to " +
 					"full-sized or vice versa. If this is set to the minimum value of 1, no scaling will occur. (default = 1.33 seconds at 60 fps)");
 			
-			Configs.translationDistance = getDouble(configFile, "Arrow Movement Distance", RENDER_OVERLAYS, 0.75, 0, Double.MAX_VALUE,
+			Configs.translationDistance = getDouble(configFileClient, "Arrow Movement Distance", RENDER_OVERLAYS, 0.75, 0, Double.MAX_VALUE,
 					"Total travel distance of the arrowhead overlay used in block/texture translation/rotation as measured from the center of " +
 					"the block face the player is looking at. If this is set to the minimum value of 0, only one arrow head will be rendered and " +
 					"no movement will occur. (default = 0.75 meters)");
 			
-			Configs.translationOffsetDistance = getDouble(configFile, "Arrow Spacing", RENDER_OVERLAYS, 0.25, 0, Double.MAX_VALUE,
+			Configs.translationOffsetDistance = getDouble(configFileClient, "Arrow Spacing", RENDER_OVERLAYS, 0.25, 0, Double.MAX_VALUE,
 					"Distance between the three moving arrowhead overlays used in block/texture translation/rotation. If this is set to the minimum " +
 					"value of 0, only one arrow head will be rendered. (default = 1/3 of the default distance of 0.75 meters, i.e. evenly spaced)");
 			
-			Configs.translationFadeDistance = getDouble(configFile, "Arrow Fade Distance", RENDER_OVERLAYS, 0.3, 0, Double.MAX_VALUE,
+			Configs.translationFadeDistance = getDouble(configFileClient, "Arrow Fade Distance", RENDER_OVERLAYS, 0.3, 0, Double.MAX_VALUE,
 					"Distance over which the arrowhead overlay used in block/texture translation/rotation will fade in (as well as out) as it moves. " +
 					"If this is set to the minimum value of 0, no fading will occur. (default = 0.3 meters)");
 			
-			Configs.translationMovementPeriod = getDouble(configFile, "Arrow Movement Period", RENDER_OVERLAYS, 120, 1, Double.MAX_VALUE,
+			Configs.translationMovementPeriod = getDouble(configFileClient, "Arrow Movement Period", RENDER_OVERLAYS, 120, 1, Double.MAX_VALUE,
 					"Number of frames over which the arrowhead overlay used in block/texture translation/rotation will travel from one end to the " +
 					"other of the distance specified by 'Arrow Movement Distance'. If this is set to the minimum value of 1, no movement will occur. " +
 					"(default = 2 seconds at 60 fps)");
@@ -512,15 +503,18 @@ public class ConfigHandlerExtraBitManipulation
 		}
 		finally
 		{
-			if (configFile.hasChanged())
-				configFile.save();
-			
-			if (modelingMapConfigFile.hasChanged())
-				modelingMapConfigFile.save();
-			
-			if (sculptingMapConfigFile.hasChanged())
-				sculptingMapConfigFile.save();
+			saveConfigFile(configFileClient);
+			saveConfigFile(configFileServer);
+			saveConfigFile(configFileCommon);
+			saveConfigFile(modelingMapConfigFile);
+			saveConfigFile(sculptingMapConfigFile);
 		}
+	}
+	
+	private static void saveConfigFile(Configuration configFile)
+	{
+		if (configFile.hasChanged())
+			configFile.save();
 	}
 	
 	private static ConfigReplacementBits getConfigReplacementBits(String category, String defaultBlockName, boolean useDefaultReplacementBitDefault,
@@ -528,22 +522,22 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		String condition = "If " + (category == UNCHISELABLE_BLOCK_STATES ? "an unchiselable blockstate is encountered"
 				: "the player has insufficient bits in their inventory for a chiselable blockstate") + ", an attempt will be made to find a replacement bit. ";
-		ConfigReplacementBits replacementBitsConfig = new ConfigReplacementBits(useDefaultReplacementBitDefault,
-				useAnyBitsAsReplacementsDefault, useAirAsReplacementDefault);
-		replacementBitsConfig.defaultReplacementBit = new ConfigBitStack("TODO", BitIOHelper.getStateFromString(configFile.getString("Default Replacement Bit",
+		ConfigBitStack defaultReplacementBit = new ConfigBitStack("", BitIOHelper.getStateFromString(configFileClient.getString("Default Replacement Bit",
 				category, defaultBlockName, condition + "If the 'Use Default Replacement Bit' config is also set to 'true', then an attempt will first " +
-				"be made to use the bit version of this block as a replacement.")), BitIOHelper.getStateFromString(defaultBlockName), defaultBlockName, null);//TODO
-		replacementBitsConfig.defaultReplacementBit.init();
+				"be made to use the bit version of this block as a replacement.")), BitIOHelper.getStateFromString(defaultBlockName), defaultBlockName, null);
 		String textIfTrue = ", if this is set to 'true', ";
 		String textIfFalse = ". If this is set to 'false', this step will be skipped";
-		replacementBitsConfig.useDefaultReplacementBit = configFile.getBoolean("1st Check: Use Default Replacement Bit", category,
+		boolean useDefaultReplacementBit = configFileClient.getBoolean("1st Check: Use Default Replacement Bit", category,
 				useDefaultReplacementBitDefault, condition + "First" + textIfTrue + "an attempt will be made to use the bit specified " +
 						"by the 'Default Replacement Bit' config" + textIfFalse);
-		replacementBitsConfig.useAnyBitsAsReplacements = configFile.getBoolean("2nd Check: Use Any Bit As Replacement", category,
+		boolean useAnyBitsAsReplacements = configFileClient.getBoolean("2nd Check: Use Any Bit As Replacement", category,
 				useAnyBitsAsReplacementsDefault, condition + "Second" + textIfTrue + "any/all bits in the player's inventory will " +
 						"be used, from the most numerous to the least numerous" + textIfFalse);
-		replacementBitsConfig.useAirAsReplacement = configFile.getBoolean("3rd Check: Use Air As Replacement", category, useAirAsReplacementDefault,
+		boolean useAirAsReplacement = configFileClient.getBoolean("3rd Check: Use Air As Replacement", category, useAirAsReplacementDefault,
 				condition + "Third" + textIfTrue + "air bits will be used, i.e. the bits will simply be left empty" + textIfFalse);
+		ConfigReplacementBits replacementBitsConfig = new ConfigReplacementBits(defaultReplacementBit,
+				useDefaultReplacementBit, useAnyBitsAsReplacements, useAirAsReplacement);
+		replacementBitsConfig.initDefaultReplacementBit();
 		return replacementBitsConfig;
 	}
 	
@@ -552,7 +546,7 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, catagoryEnding, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, catagoryEnding, defaultDisplayInChat, toolTipSecondary);
-		boolean defaultBoolean = configFile.getBoolean(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
+		boolean defaultBoolean = configFileClient.getBoolean(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
 				getToolTipBitToolSetting(toolTipDefaultValue, Boolean.toString(defaultValue)));
 		boolean value = dataConfigFile.getBoolean(name, catagoryEnding, defaultValue, "");
 		return new ConfigBitToolSettingBoolean(name, perTool, displayInChat, defaultBoolean, value);
@@ -564,7 +558,7 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, catagoryEnding, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, catagoryEnding, defaultDisplayInChat, toolTipSecondary);
-		int defaultInt = configFile.getInt(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue, minValue, maxValue,
+		int defaultInt = configFileClient.getInt(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue, minValue, maxValue,
 				getToolTipBitToolSetting(toolTipDefaultValue, toolTipDefaultValueDefault));
 		int value = dataConfigFile.getInt(name, catagoryEnding, defaultValue, minValue, maxValue, "");
 		return new ConfigBitToolSettingInt(name, perTool, displayInChat, defaultInt, value);
@@ -577,7 +571,7 @@ public class ConfigHandlerExtraBitManipulation
 		boolean perTool = getPerTool(name, catagoryEnding, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, catagoryEnding, defaultDisplayInChat, toolTipSecondary);
 		String defaultInt = validValues[defaultValue];
-		String entry = configFile.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultInt,
+		String entry = configFileClient.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultInt,
 				getToolTipBitToolSetting(toolTipDefaultValue, defaultInt), validValues);
 		for (int i = 0; i < validValues.length; i++)
 		{
@@ -593,7 +587,7 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		boolean perTool = getPerTool(name, catagoryEnding, defaultPerTool, toolTipSecondary);
 		boolean displayInChat = getDisplayInChat(name, catagoryEnding, defaultDisplayInChat, toolTipSecondary);
-		IBlockState defaultState = BitIOHelper.getStateFromString(configFile.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
+		IBlockState defaultState = BitIOHelper.getStateFromString(configFileClient.getString(name, BIT_TOOL_DEFAULT_VALUES + " " + catagoryEnding, defaultValue,
 				getToolTipBitToolSetting(toolTipDefaultValue, toolTipDefaultValueDefault)));
 		IBlockState valueDefault = BitIOHelper.getStateFromString(dataConfigFile.getString(name, catagoryEnding, defaultValue, ""));
 		return new ConfigBitStack(name, perTool, displayInChat, defaultState, BitIOHelper.getStateFromString(defaultValue), defaultValue, valueDefault);
@@ -606,7 +600,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static boolean getPerTool(String name, String catagoryEnding, boolean defaultPerTool, String toolTipPerTool)
 	{
-		return configFile.getBoolean(name, BIT_TOOL_PER_TOOL_OR_PER_PLAYER + " " + catagoryEnding, defaultPerTool,
+		return configFileClient.getBoolean(name, BIT_TOOL_PER_TOOL_OR_PER_PLAYER + " " + catagoryEnding, defaultPerTool,
 				"If set to true, " + toolTipPerTool + " will be set/stored in each individual sculpting tool and apply only to that tool. " +
 				"If set to false, it will be stored in the player and will apply to all tools. Regardless of this setting, players and tools " +
 				"will still initialize with data, but this setting determines which is considered for use. " +
@@ -615,7 +609,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static boolean getDisplayInChat(String name, String catagoryEnding, boolean defaultDisplayInChat, String toolTipDisplayInChat)
 	{
-		return configFile.getBoolean(name, BIT_TOOL_DISPLAY_IN_CHAT + " " + catagoryEnding, defaultDisplayInChat,
+		return configFileClient.getBoolean(name, BIT_TOOL_DISPLAY_IN_CHAT + " " + catagoryEnding, defaultDisplayInChat,
 				"If set to true, whenever " + toolTipDisplayInChat + " is changed, a message will be added to chat indicating the change. " +
 				"This will not fill chat with messages, since any pre-existing messages from this mod will be deleted before adding the next." +
 				getReferralString(toolTipDisplayInChat) + " (default = " + defaultDisplayInChat + ")");
@@ -626,27 +620,17 @@ public class ConfigHandlerExtraBitManipulation
 		return "See 'Default Value' config for a description of " + settingString + ".";
 	}
 	
-	private static void removeCategory(String category)
-	{
-		configFile.removeCategory(configFile.getCategory(category.toLowerCase()));
-	}
-	
-	private static String getVersion(String defaultValue)
-	{
-		return configFile.getString(VERSION, VERSION, defaultValue.toLowerCase(), "Used for cofig updating when updating mod version. Do not change.");
-	}
-	
 	private static boolean getShapeRender(String category, boolean inner, boolean defaultValue)
 	{
 		String shape = getShape(category);
-		return configFile.getBoolean("Render " + (inner ? "Inner " : "Outer ") + shape, category, defaultValue,
+		return configFileClient.getBoolean("Render " + (inner ? "Inner " : "Outer ") + shape, category, defaultValue,
 				"Causes " + getSidedShapeText(shape, inner) + " to be rendered. (default = " + defaultValue + ")");
 	}
 	
 	private static float getShapeAlpha(String category, boolean inner, int defaultValue)
 	{
 		String shape = getShape(category);
-		return configFile.getInt("Alpha " + (inner ? "Inner " : "Outer ") + shape, category, defaultValue, 0, 255,
+		return configFileClient.getInt("Alpha " + (inner ? "Inner " : "Outer ") + shape, category, defaultValue, 0, 255,
 				"Sets the alpha value of " + getSidedShapeText(shape, inner) + ". (default = " + defaultValue + ")") / 255F;
 	}
 	
@@ -658,13 +642,13 @@ public class ConfigHandlerExtraBitManipulation
 	private static float getShapeColor(String category, int colorFlag, int defaultValue)
 	{
 		String name = COLOR_NAMES[colorFlag];
-		return configFile.getInt("Color - " + name, category, defaultValue, 0, 255,
+		return configFileClient.getInt("Color - " + name, category, defaultValue, 0, 255,
 				"Sets the " + name.toLowerCase() + " value of the " + getShape(category).toLowerCase() + ". (default = " + defaultValue + ")") / 255F;
 	}
 	
 	private static float getShapeLineWidth(String category, float defaultValue)
 	{
-		return configFile.getFloat("Line Width", category, defaultValue, 0, Float.MAX_VALUE, 
+		return configFileClient.getFloat("Line Width", category, defaultValue, 0, Float.MAX_VALUE, 
 				"Sets the line width of the " + getShape(category).toLowerCase() + ". (default = " + defaultValue + ")");
 	}
 	
@@ -675,41 +659,41 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static int getToolMaxDamage(String name, String category, int defaultValue, int min, int max, boolean perBit)
 	{
-		return configFile.getInt("Max Damage", category, defaultValue, min, max,
+		return configFileCommon.getInt("Max Damage", category, defaultValue, min, max,
 				"The " + name + " will " + (perBit ? "be able to add/remove this many bits " : "have this many uses ") +
 				"if it is configured to take damage. (default = " + defaultValue + ")");
 	}
 	
 	private static boolean getToolTakesDamage(String name, String category, boolean defaultValue, boolean perBit)
 	{
-		return configFile.getBoolean("Takes Damage", category, defaultValue,
+		return configFileCommon.getBoolean("Takes Damage", category, defaultValue,
 				"Causes the " + name + " to take a point of damage " + (perBit ? " for every bit added/removed " : "") +
 				"when used. (default = " + defaultValue + ")");
 	}
 	
 	private static boolean getRecipeEnabled(String name, String category, boolean defaultValue)
 	{
-		return configFile.getBoolean("Is Enabled", category, defaultValue,
+		return configFileCommon.getBoolean("Is Enabled", category, defaultValue,
 				"If set to true, the " + name + " will be craftable, otherwise it will not be. (default = " + defaultValue + ")");
 	}
 	
 	private static boolean getRecipeShaped(String name, String category, boolean defaultValue)
 	{
-		return configFile.getBoolean("Is Shaped", category, defaultValue,
+		return configFileCommon.getBoolean("Is Shaped", category, defaultValue,
 				"If set to true, the recipe for the " + name + " will be shaped, and thus depend on the order/number of elements." +
 				". If set to false, it will be shapeless and will be order-independent. (default = " + defaultValue + ")");
 	}
 	
 	private static boolean getRecipeOreDictionary(String name, String category, boolean defaultValue)
 	{
-		return configFile.getBoolean("Use Ore Dictionary", category, defaultValue,
+		return configFileCommon.getBoolean("Use Ore Dictionary", category, defaultValue,
 				"If set to true, the string names given for the " + name + " recipe will be used to look up entries in the Ore Dictionary. " +
 				"If set to false, they will be used to look up Items by name or ID. (default = " + defaultValue + ")");
 	}
 	
 	private static String[] getRecipeList(String name, String category, String[] defaultValue)
 	{
-		return configFile.getStringList("Recipe", category, defaultValue,
+		return configFileCommon.getStringList("Recipe", category, defaultValue,
 				"The Ore Dictionary names or Item names/IDs of components of the crafting recipe for the " + name + ". The elements of the list " +
 				"correspond to the slots of the crafting grid (left to right / top to bottom). If the recipe shaped, the list must have 4 " +
 				"elements to be a 2x2 recipe, 9 elements to be a 3x3 recipe, etc (i.e. must make a whole grid; root n elements for an n by n " +

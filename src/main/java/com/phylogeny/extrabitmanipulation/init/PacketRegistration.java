@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.init;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
@@ -21,6 +22,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
+import com.phylogeny.extrabitmanipulation.packet.PacketUseWrench;
 
 public class PacketRegistration
 {
@@ -46,6 +48,8 @@ public class PacketRegistration
 		registerPacket(PacketCursorStack.Handler.class, PacketCursorStack.class, Side.SERVER);
 		registerPacket(PacketSetTabAndStateBlockButton.Handler.class, PacketSetTabAndStateBlockButton.class, Side.SERVER);
 		registerPacket(PacketReadBlockStates.Handler.class, PacketReadBlockStates.class, Side.SERVER);
+		registerPacket(PacketCreateModel.Handler.class, PacketCreateModel.class, Side.SERVER);
+		registerPacket(PacketUseWrench.Handler.class, PacketUseWrench.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)
