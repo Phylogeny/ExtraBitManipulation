@@ -143,6 +143,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				boolean hollowShape = sculptingData.isHollowShape();
 				boolean openEnds = sculptingData.areEndsOpen();
 				float wallThickness = sculptingData.getWallThickness() * Utility.PIXEL_F;
+				float padding = sculptingData.getSemiDiameterPadding();
 				int x = pos.getX();
 				int y = pos.getY();
 				int z = pos.getZ();
@@ -175,12 +176,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 					float x3 = (float) drawnStartPoint.xCoord;
 					float y3 = (float) drawnStartPoint.yCoord;
 					float z3 = (float) drawnStartPoint.zCoord;
-					float minX = addPaddingToMin(x2, x3);
-					float minY = addPaddingToMin(y2, y3);
-					float minZ = addPaddingToMin(z2, z3);
-					float maxX = addPaddingToMax(x2, x3);
-					float maxY = addPaddingToMax(y2, y3);
-					float maxZ = addPaddingToMax(z2, z3);
+					float minX = addPaddingToMin(x2, x3, padding);
+					float minY = addPaddingToMin(y2, y3, padding);
+					float minZ = addPaddingToMin(z2, z3, padding);
+					float maxX = addPaddingToMax(x2, x3, padding);
+					float maxY = addPaddingToMax(y2, y3, padding);
+					float maxZ = addPaddingToMax(z2, z3, padding);
 					box = new AxisAlignedBB(Math.floor(minX), Math.floor(minY), Math.floor(minZ),
 							Math.ceil(maxX), Math.ceil(maxY), Math.ceil(maxZ));
 					float f = 0.5F;
@@ -220,14 +221,14 @@ public class ItemSculptingTool extends ItemBitToolBase
 					{
 						AsymmetricalShape asymmetricalShape = (AsymmetricalShape) shape;
 						asymmetricalShape.setEquilateral(true);
-						float radius = addPadding(semiDiameter) - f;
+						float radius = addPadding(semiDiameter, padding) - f;
 						asymmetricalShape.init(x2 + f * (float) vecOffset.xCoord, y2 + f * (float) vecOffset.yCoord, z2 + f * (float) vecOffset.zCoord, radius,
 								radius, radius, direction, hollowShape, wallThickness, openEnds);
 					}
 					else
 					{
 						((SymmetricalShape) shape).init(x2 + f * (float) vecOffset.xCoord, y2 + f * (float) vecOffset.yCoord, z2 + f * (float) vecOffset.zCoord,
-								addPadding(semiDiameter) - f, direction, hollowShape, wallThickness, openEnds);
+								addPadding(semiDiameter, padding) - f, direction, hollowShape, wallThickness, openEnds);
 					}
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
@@ -297,19 +298,19 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return false;
 	}
 	
-	private float addPadding(float value)
+	private float addPadding(float value, float padding)
 	{
-		return (value + Configs.semiDiameterPadding) * Utility.PIXEL_F;
+		return (value + padding) * Utility.PIXEL_F;
 	}
 	
-	private float addPaddingToMin(float value1, float value2)
+	private float addPaddingToMin(float value1, float value2, float padding)
 	{
-		return Math.min(value1, value2) - Configs.semiDiameterPadding * Utility.PIXEL_F;
+		return Math.min(value1, value2) - padding * Utility.PIXEL_F;
 	}
 	
-	private float addPaddingToMax(float value1, float value2)
+	private float addPaddingToMax(float value1, float value2, float padding)
 	{
-		return Math.max(value1, value2) + Configs.semiDiameterPadding * Utility.PIXEL_F;
+		return Math.max(value1, value2) + padding * Utility.PIXEL_F;
 	}
 	
 	public static boolean wasInsideClicked(EnumFacing dir, Vec3 hit, BlockPos pos)

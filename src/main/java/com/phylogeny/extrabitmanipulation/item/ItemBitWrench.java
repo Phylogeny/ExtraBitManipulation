@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.packet.PacketUseWrench;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.shape.Cube;
@@ -47,8 +49,17 @@ public class ItemBitWrench extends ItemBitToolBase
 	}
 	
 	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
+	{
+		if (world.isRemote)
+		{
+			useWrench(stack, player, world, pos, side, Configs.oneBitTypeInversionRequirement);
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketUseWrench(pos, side, Configs.oneBitTypeInversionRequirement));
+		}
+		return true;
+	}
+	
+	public boolean useWrench(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, boolean oneBitTypeInversionRequirement)
 	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
@@ -135,7 +146,7 @@ public class ItemBitWrench extends ItemBitToolBase
 					}
 				}
 			}
-			if (Configs.oneBitTypeInversionRequirement && mode == 3 && inversionBitTypes.size() > 1)
+			if (oneBitTypeInversionRequirement && mode == 3 && inversionBitTypes.size() > 1)
 				canInvert = false;
 			
 			if (canInvert)

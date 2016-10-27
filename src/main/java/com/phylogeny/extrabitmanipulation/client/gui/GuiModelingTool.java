@@ -180,8 +180,9 @@ public class GuiModelingTool extends GuiContainer
 		HashMap<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
 		EntityPlayer player = mc.thePlayer;
 		ItemModelingTool itemModelingTool = (ItemModelingTool) modelingToolStack.getItem();
-		if (itemModelingTool.mapBitsToStates(api, BitInventoryHelper.getInventoryBitCounts(api, player), stateMap,
-				stateToBitCountArray, stateToBitMapPermanent, blockToBitMapPermanent, bitMap, player.capabilities.isCreativeMode).isEmpty())
+		if (itemModelingTool.mapBitsToStates(api, Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient,
+				BitInventoryHelper.getInventoryBitCounts(api, player), stateMap, stateToBitCountArray,
+				stateToBitMapPermanent, blockToBitMapPermanent, bitMap, player.capabilities.isCreativeMode).isEmpty())
 		{
 			IBitAccess bitAccess = api.createBitItem(null);
 			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArrayCopy = new HashMap<IBlockState, ArrayList<BitCount>>();
@@ -219,7 +220,7 @@ public class GuiModelingTool extends GuiContainer
 		IBitBrush defaultBit = null;
 		try
 		{
-			defaultBit = api.createBrushFromState((Configs.replacementBitsUnchiselable.defaultReplacementBit.getDefaultState()));
+			defaultBit = api.createBrushFromState((Configs.replacementBitsUnchiselable.getDefaultReplacementBit().getDefaultState()));
 		}
 		catch (InvalidBitItem e) {}
 		for (int i = 0; i < 16; i++)

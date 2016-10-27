@@ -13,6 +13,12 @@ public class ConfigBitStack extends ConfigBitToolSettingBase
 	private IBlockState valueDefault, stateDefault, stateDefaultDefault;
 	private String stringDeafult;
 	
+	public ConfigBitStack(ItemStack bitStackDefault)
+	{
+		super("", false, false);
+		this.bitStackDefault = bitStackDefault;
+	}
+	
 	public ConfigBitStack(String name, IBlockState bitBlockDefault, IBlockState defaultDefaultBitBlock, String stringDefault, IBlockState valueDefault)
 	{
 		this(name, false, false, bitBlockDefault, defaultDefaultBitBlock, stringDefault, valueDefault);
