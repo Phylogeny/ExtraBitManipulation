@@ -696,6 +696,7 @@ public class BitToolSettingsHelper
 		private int sculptMode, direction, shapeType, semiDiameter, wallThickness;
 		private boolean targetBitGridVertexes, hollowShape, openEnds;
 		private ItemStack setBitStack;
+		private float semiDiameterPadding;
 		
 		public SculptingData() {}
 		
@@ -710,6 +711,7 @@ public class BitToolSettingsHelper
 			openEnds = BitToolSettingsHelper.areEndsOpen(nbt);
 			wallThickness = BitToolSettingsHelper.getWallThickness(nbt);
 			setBitStack = BitToolSettingsHelper.getBitStack(nbt, toolItem.removeBits());
+			semiDiameterPadding = Configs.semiDiameterPadding;
 		}
 		
 		public void toBytes(ByteBuf buffer)
@@ -723,6 +725,7 @@ public class BitToolSettingsHelper
 			buffer.writeBoolean(openEnds);
 			buffer.writeInt(wallThickness);
 			ItemStackHelper.stackToBytes(buffer, setBitStack);
+			buffer.writeFloat(semiDiameterPadding);
 		}
 		
 		public void fromBytes(ByteBuf buffer)
@@ -736,6 +739,7 @@ public class BitToolSettingsHelper
 			openEnds = buffer.readBoolean();
 			wallThickness = buffer.readInt();
 			setBitStack = ItemStackHelper.stackFromBytes(buffer);
+			semiDiameterPadding = buffer.readFloat();
 		}
 		
 		public int getSculptMode()
@@ -781,6 +785,11 @@ public class BitToolSettingsHelper
 		public ItemStack getBitStack()
 		{
 			return setBitStack;
+		}
+		
+		public float getSemiDiameterPadding()
+		{
+			return semiDiameterPadding;
 		}
 		
 	}

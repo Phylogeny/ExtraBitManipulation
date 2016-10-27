@@ -43,6 +43,8 @@ public class ProxyClient extends ProxyCommon
 		super.init();
 		Configs.sculptSetBitWire.init();
 		Configs.sculptSetBitSpade.init();
+		Configs.replacementBitsUnchiselable.initDefaultReplacementBit();
+		Configs.replacementBitsInsufficient.initDefaultReplacementBit();
 		Configs.modelBlockToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelBlockToBitMapEntryStrings);
 		Configs.modelStateToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(Configs.modelStateToBitMapEntryStrings);
 	}
