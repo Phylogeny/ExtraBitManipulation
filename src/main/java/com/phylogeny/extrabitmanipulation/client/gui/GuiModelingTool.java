@@ -400,8 +400,10 @@ public class GuiModelingTool extends GuiContainer
 			@SuppressWarnings("unchecked")
 			private String getName(Object object)
 			{
-				ResourceLocation regName = ((Map.Entry<IBlockState, IBitBrush>) (object)).getKey().getBlock().getRegistryName();
-				return regName == null ? "" : (regName.getResourceDomain() + regName.getResourcePath());
+				IBlockState state = ((Map.Entry<IBlockState, IBitBrush>) (object)).getKey();
+				Block block = state.getBlock();
+				ResourceLocation regName = block.getRegistryName();
+				return regName == null ? "" : (regName.getResourceDomain() + regName.getResourcePath() + block.getMetaFromState(state));
 			}
 		});
 	}
