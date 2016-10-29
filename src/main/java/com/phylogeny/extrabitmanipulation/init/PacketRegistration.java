@@ -3,10 +3,13 @@ package com.phylogeny.extrabitmanipulation.init;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.packet.PacketBitMappingsPerTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketClearStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
@@ -50,6 +53,9 @@ public class PacketRegistration
 		registerPacket(PacketReadBlockStates.Handler.class, PacketReadBlockStates.class, Side.SERVER);
 		registerPacket(PacketCreateModel.Handler.class, PacketCreateModel.class, Side.SERVER);
 		registerPacket(PacketUseWrench.Handler.class, PacketUseWrench.class, Side.SERVER);
+		registerPacket(PacketBitMappingsPerTool.Handler.class, PacketBitMappingsPerTool.class, Side.SERVER);
+		registerPacket(PacketClearStackBitMappings.Handler.class, PacketClearStackBitMappings.class, Side.SERVER);
+		registerPacket(PacketOverwriteStackBitMappings.Handler.class, PacketOverwriteStackBitMappings.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

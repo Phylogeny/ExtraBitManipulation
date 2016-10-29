@@ -1,7 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
@@ -20,11 +20,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class PacketReadBlockStates extends PacketBlockInteraction implements IMessage
 {
 	private Vec3i drawnStartPoint;
-	private ModelingData modelingData = new ModelingData();
+	private ModelReadData modelingData = new ModelReadData();
 	
 	public PacketReadBlockStates() {}
 	
-	public PacketReadBlockStates(BlockPos pos, Vec3d hit, Vec3i drawnStartPoint, ModelingData modelingData)
+	public PacketReadBlockStates(BlockPos pos, Vec3d hit, Vec3i drawnStartPoint, ModelReadData modelingData)
 	{
 		super(pos, EnumFacing.UP, hit);
 		this.drawnStartPoint = drawnStartPoint;

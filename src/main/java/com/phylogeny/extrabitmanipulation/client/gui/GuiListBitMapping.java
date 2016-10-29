@@ -1,7 +1,6 @@
 package com.phylogeny.extrabitmanipulation.client.gui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +41,8 @@ public class GuiListBitMapping extends GuiListExtended
 		return posX < getScrollBarX() && posX >= i && posX <= j && l >= 0 && k >= 0 && l < getSize() ? l : -1;
 	}
 	
-	public void refreshList(HashMap<IBlockState, IBitBrush> stateToBitMap, HashMap<IBlockState, IBitBrush> stateToBitMapPermanent,
-			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray, String searchText, boolean stateMode)
+	public void refreshList(Map<IBlockState, IBitBrush> stateToBitMap, Map<IBlockState, IBitBrush> stateToBitMapPermanent,
+			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray, String searchText, boolean stateMode)
 	{
 		entries.clear();
 		if (stateToBitCountArray != null)

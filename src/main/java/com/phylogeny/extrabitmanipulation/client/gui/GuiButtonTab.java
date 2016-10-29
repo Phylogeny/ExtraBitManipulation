@@ -38,6 +38,7 @@ public class GuiButtonTab extends GuiButtonBase
 		if (selected)
 		{
 			mc.getTextureManager().bindTexture(GuiModelingTool.GUI_TEXTURE);
+			GlStateManager.color(1, 1, 1);
 			drawTexturedModalRect(xPosition - 2, yPosition, 67, 219, 29, 26);
 		}
 	}

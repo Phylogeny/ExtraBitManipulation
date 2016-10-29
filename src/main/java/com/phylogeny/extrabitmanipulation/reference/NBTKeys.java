@@ -27,5 +27,6 @@ public class NBTKeys
 	public static final String BLOCK_TO_BIT_MAP_PERMANENT = "blockToBitMapPermanent";
 	public static final String TAB_SETTING = "tabSetting";
 	public static final String BUTTON_STATE_BLOCK_SETTING = "buttonStateBlockSetting";
+	public static final String BIT_MAPS_PER_TOOL = "bitMapsPerTool";
 	
 }
