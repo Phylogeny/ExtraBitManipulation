@@ -76,7 +76,7 @@ public class GuiModelingTool extends GuiContainer
 	private GuiButtonTab[] tabButtons = new GuiButtonTab[4];
 	private static final String[] tabButtonHoverText = new String[]{"Current Model", "All Saved Mappings", "All Minecraft Blocks", "Model Result"};
 	private int savedTab;
-	private static boolean stateMauallySelected, showSettings, bitMapPerTool;
+	private boolean stateMauallySelected, showSettings, bitMapPerTool;
 	private GuiTextField searchField;
 	
 	public GuiModelingTool(InventoryPlayer playerInventory, ItemStack modelingToolStack)
@@ -418,6 +418,17 @@ public class GuiModelingTool extends GuiContainer
 		if (!showSettings)
 			return;
 		
+		LinkedHashMap stateToBitMapSorted = getSortedLinkedBitMap(Configs.modelStateToBitMap);
+		LinkedHashMap blockToBitMapSorted = getSortedLinkedBitMap(Configs.modelBlockToBitMap);
+		buttonOverwriteStackMapsWithConfig.enabled = buttonOverwriteConfigMapsWithStack.enabled
+				= !BitIOHelper.areSortedBitMapsIdentical(stateToBitMapSorted,
+					getSortedLinkedBitMap(BitIOHelper.readStateToBitMapFromNBT(api, getModelingToolStack(), NBTKeys.STATE_TO_BIT_MAP_PERMANENT)))
+				|| !BitIOHelper.areSortedBitMapsIdentical(blockToBitMapSorted,
+						getSortedLinkedBitMap(BitIOHelper.readStateToBitMapFromNBT(api, getModelingToolStack(), NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT)));
+		buttonRestoreConfigMaps.enabled = !BitIOHelper.areSortedBitMapsIdentical(stateToBitMapSorted,
+				getSortedLinkedBitMap(BitIOHelper.getModelBitMapFromEntryStrings(ConfigHandlerExtraBitManipulation.STATE_TO_BIT_MAP_DEFAULT_VALUES)))
+			|| !BitIOHelper.areSortedBitMapsIdentical(blockToBitMapSorted,
+					getSortedLinkedBitMap(BitIOHelper.getModelBitMapFromEntryStrings(ConfigHandlerExtraBitManipulation.BLOCK_TO_BIT_MAP_DEFAULT_VALUES)));
 		buttonClearStackMaps.enabled = BitIOHelper.hasBitMapsInNbt(getModelingToolStack());
 	}
 	
