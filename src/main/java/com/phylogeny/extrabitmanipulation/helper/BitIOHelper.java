@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.DeflaterOutputStream;
@@ -67,7 +68,7 @@ public class BitIOHelper
 		int index = 0;
 		for (Entry<IBlockState, IBitBrush> entry : bitMap.entrySet())
 		{
-			entryStrings[index++] = getStringFromState(entry.getKey()) + "-" + getStringFromState(entry.getValue().getState());
+			entryStrings[index++] = getModelBitMapEntryString(entry);
 		}
 		return entryStrings;
 	}
@@ -437,6 +438,30 @@ public class BitIOHelper
 			nbt.removeTag(NBTKeys.STATE_TO_BIT_MAP_PERMANENT + i);
 			nbt.removeTag(NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT + i);
 		}
+	}
+	
+	public static boolean areSortedBitMapsIdentical(Map<IBlockState, IBitBrush> map1, Map<IBlockState, IBitBrush> map2)
+	{
+		int n = map1.size();
+		if (n != map2.size())
+			return false;
+		
+		int matches = 0;
+		Iterator<Entry<IBlockState, IBitBrush>> iterator1 = map1.entrySet().iterator();
+		Iterator<Entry<IBlockState, IBitBrush>> iterator2 = map2.entrySet().iterator();
+		while (iterator1.hasNext() && iterator2.hasNext())
+		{
+			Entry<IBlockState, IBitBrush> entry1 = iterator1.next();
+			Entry<IBlockState, IBitBrush> entry2 = iterator2.next();
+			if (getModelBitMapEntryString(entry1).equals(getModelBitMapEntryString(entry2)))
+				matches++;
+		}
+		return matches == n;
+	}
+	
+	private static String getModelBitMapEntryString(Entry<IBlockState, IBitBrush> entry)
+	{
+		return getStringFromState(entry.getKey()) + "-" + getStringFromState(entry.getValue().getState());
 	}
 	
 }
