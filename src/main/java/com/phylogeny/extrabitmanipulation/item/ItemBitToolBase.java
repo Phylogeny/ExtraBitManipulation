@@ -65,7 +65,7 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		if (shiftDown)
 		{
 			tooltip.add("");
-			tooltip.add(EnumChatFormatting.BLUE + "Blue = data stored/accessed per player");
+			tooltip.add(EnumChatFormatting.BLUE + "Blue = data stored/accessed per client");
 			tooltip.add(EnumChatFormatting.GREEN + "Green = data stored/accessed per tool");
 			tooltip.add("");
 		}
