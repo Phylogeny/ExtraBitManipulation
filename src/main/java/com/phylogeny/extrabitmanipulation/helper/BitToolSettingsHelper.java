@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
+import java.util.Map;
+
 import io.netty.buffer.ByteBuf;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
@@ -7,6 +9,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
@@ -27,6 +30,7 @@ import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 import mod.chiselsandbits.api.IBitBrush;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -144,6 +148,18 @@ public class BitToolSettingsHelper
 		{
 			config.setValue(value == null ? null : value.getItemStack(1));
 			prop.setValue(BitIOHelper.getStringFromState(value == null ? null : value.getState()));
+			configFile.save();
+		}
+	}
+	
+	public static void setBitMapProperty(boolean isStateMap, String[] stringEntries)
+	{
+		Configuration configFile = ConfigHandlerExtraBitManipulation.modelingMapConfigFile;
+		Property prop = configFile.get(ConfigHandlerExtraBitManipulation.MODELING_TOOL_MANUAL_MAPPINGS,
+				isStateMap ? ConfigHandlerExtraBitManipulation.STATE_TO_BIT_MAP : ConfigHandlerExtraBitManipulation.BLOCK_TO_BIT_MAP, new String[]{});
+		if (prop != null)
+		{
+			prop.setValues(stringEntries);
 			configFile.save();
 		}
 	}
@@ -646,14 +662,14 @@ public class BitToolSettingsHelper
 		return bitStack.getDisplayName().replace("Chiseled Bit - ", "");
 	}
 	
-	public static class ModelingData
+	public static class ModelReadData
 	{
 		private int areaMode, chunkSnapMode;
 		private boolean guiOpen;
 		
-		public ModelingData() {}
+		public ModelReadData() {}
 		
-		public ModelingData(NBTTagCompound nbt)
+		public ModelReadData(NBTTagCompound nbt)
 		{
 			areaMode = BitToolSettingsHelper.getModelAreaMode(nbt);
 			chunkSnapMode = BitToolSettingsHelper.getModelSnapMode(nbt);
@@ -687,6 +703,61 @@ public class BitToolSettingsHelper
 		public boolean getGuiOpen()
 		{
 			return guiOpen;
+		}
+		
+	}
+	
+	public static class ModelWriteData
+	{
+		private ConfigReplacementBits replacementBitsUnchiselable = new ConfigReplacementBits();
+		private ConfigReplacementBits replacementBitsInsufficient = new ConfigReplacementBits();
+		private Map<IBlockState, IBitBrush> stateToBitMap, blockToBitMap;
+		
+		public ModelWriteData() {}
+		
+		public ModelWriteData(ConfigReplacementBits replacementBitsUnchiselable, ConfigReplacementBits replacementBitsInsufficient,
+				Map<IBlockState, IBitBrush> stateToBitMap, Map<IBlockState, IBitBrush> blockToBitMap)
+		{
+			this.replacementBitsUnchiselable = replacementBitsUnchiselable;
+			this.replacementBitsInsufficient = replacementBitsInsufficient;
+			this.stateToBitMap = stateToBitMap;
+			this.blockToBitMap = blockToBitMap;
+		}
+		
+		public void toBytes(ByteBuf buffer)
+		{
+			replacementBitsUnchiselable.toBytes(buffer);
+			replacementBitsInsufficient.toBytes(buffer);
+			BitIOHelper.stateToBitMapToBytes(buffer, stateToBitMap);
+			BitIOHelper.stateToBitMapToBytes(buffer, blockToBitMap);
+		}
+		
+		public void fromBytes(ByteBuf buffer)
+		{
+			replacementBitsUnchiselable.fromBytes(buffer);
+			replacementBitsInsufficient.fromBytes(buffer);
+			stateToBitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
+			blockToBitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
+		}
+		
+		public ConfigReplacementBits getReplacementBitsUnchiselable()
+		{
+			return replacementBitsUnchiselable;
+		}
+		
+		public ConfigReplacementBits getReplacementBitsInsufficient()
+		{
+			return replacementBitsInsufficient;
+		}
+		
+		public Map<IBlockState, IBitBrush> getStateToBitMap()
+		{
+			return stateToBitMap;
+		}
+		
+		public Map<IBlockState, IBitBrush> getBlockToBitMap()
+		{
+			return blockToBitMap;
 		}
 		
 	}

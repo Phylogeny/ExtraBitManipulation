@@ -2,8 +2,8 @@ package com.phylogeny.extrabitmanipulation.item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
@@ -11,8 +11,9 @@ import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelWriteData;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
@@ -59,7 +60,7 @@ public class ItemModelingTool extends ItemBitToolBase
 		return slotChanged;
 	}
 	
-	public NBTTagCompound initialize(ItemStack stack, ModelingData modelingData)
+	public NBTTagCompound initialize(ItemStack stack, ModelReadData modelingData)
 	{
 		NBTTagCompound nbt = BitToolSettingsHelper.initNBT(stack);
 		initInt(nbt, NBTKeys.MODEL_AREA_MODE, modelingData.getAreaMode());
@@ -81,17 +82,20 @@ public class ItemModelingTool extends ItemBitToolBase
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world,
 			BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
+		if (player.isSneaking())
+			return EnumActionResult.FAIL;
+		
 		if (world.isRemote)
 		{
-			createModel(stack, player, world, pos, facing, Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient);
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCreateModel(pos, facing,
-					Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient));
+			ModelWriteData modelingData = new ModelWriteData(Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient,
+					Configs.modelStateToBitMap, Configs.modelBlockToBitMap);
+			createModel(stack, player, world, pos, facing, modelingData);
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCreateModel(pos, facing, modelingData));
 		}
 		return EnumActionResult.SUCCESS;
 	}
 	
-	public EnumActionResult createModel(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing facing,
-			ConfigReplacementBits replacementBitsUnchiselable, ConfigReplacementBits replacementBitsInsufficient)
+	public EnumActionResult createModel(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing facing, ModelWriteData modelingData)
 	{
 		if (player.isSneaking() || !stack.hasTagCompound())
 			return EnumActionResult.FAIL;
@@ -108,15 +112,17 @@ public class ItemModelingTool extends ItemBitToolBase
 		if (!nbt.hasKey(NBTKeys.SAVED_STATES))
 			return EnumActionResult.FAIL;
 		
-		HashMap<IBlockState, Integer> stateMap = new HashMap<IBlockState, Integer>();
+		Map<IBlockState, Integer> stateMap = new HashMap<IBlockState, Integer>();
 		IBlockState[][][] stateArray = new IBlockState[16][16][16];
 		BitIOHelper.readStatesFromNBT(nbt, stateMap, stateArray);
-		HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray = new HashMap<IBlockState, ArrayList<BitCount>>();
-		HashMap<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
-		HashMap<IBlockState, Integer> missingBitMap = mapBitsToStates(api, replacementBitsUnchiselable,
-				replacementBitsInsufficient, BitInventoryHelper.getInventoryBitCounts(api, player),
-				stateMap, stateToBitCountArray, BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT),
-				BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT), bitMap, player.capabilities.isCreativeMode);
+		Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray = new HashMap<IBlockState, ArrayList<BitCount>>();
+		Map<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
+		boolean bitMapPerTool = nbt.getBoolean(NBTKeys.BIT_MAPS_PER_TOOL);
+		Map<IBlockState, Integer> missingBitMap = mapBitsToStates(api, modelingData.getReplacementBitsUnchiselable(),
+				modelingData.getReplacementBitsInsufficient(), BitInventoryHelper.getInventoryBitCounts(api, player), stateMap, stateToBitCountArray,
+				bitMapPerTool ? BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT) : modelingData.getStateToBitMap(),
+				bitMapPerTool ? BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT) : modelingData.getBlockToBitMap(),
+				bitMap, player.capabilities.isCreativeMode);
 		if (!missingBitMap.isEmpty())
 		{
 			if (world.isRemote)
@@ -139,7 +145,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	private EnumActionResult createModel(EntityPlayer player, World world, BlockPos pos, ItemStack stack, IChiselAndBitsAPI api, IBlockState[][][] stateArray,
-			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray, HashMap<IBitBrush, Integer> bitMap)
+			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray, Map<IBitBrush, Integer> bitMap)
 	{
 		IBitAccess bitAccess;
 		try
@@ -176,7 +182,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	public boolean createModel(EntityPlayer player, World world, ItemStack stack, IBlockState[][][] stateArray,
-			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray, IBitAccess bitAccess)
+			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray, IBitAccess bitAccess)
 	{
 		if (!ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
 			return false;
@@ -218,14 +224,14 @@ public class ItemModelingTool extends ItemBitToolBase
 		return true;
 	}
 	
-	public HashMap<IBlockState, Integer> mapBitsToStates(IChiselAndBitsAPI api, ConfigReplacementBits replacementBitsUnchiselable,
-			ConfigReplacementBits replacementBitsInsufficient, LinkedHashMap<Integer, Integer> inventoryBitCounts, HashMap<IBlockState, Integer> stateMap,
-			HashMap<IBlockState, ArrayList<BitCount>> stateToBitCountArray, HashMap<IBlockState, IBitBrush> manualStateToBitMap,
-			HashMap<IBlockState, IBitBrush> manualBlockToBitMap, HashMap<IBitBrush, Integer> bitMap, boolean isCreative)
+	public Map<IBlockState, Integer> mapBitsToStates(IChiselAndBitsAPI api, ConfigReplacementBits replacementBitsUnchiselable,
+			ConfigReplacementBits replacementBitsInsufficient, Map<Integer, Integer> inventoryBitCounts, Map<IBlockState, Integer> stateMap,
+			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray, Map<IBlockState, IBitBrush> manualStateToBitMap,
+			Map<IBlockState, IBitBrush> manualBlockToBitMap, Map<IBitBrush, Integer> bitMap, boolean isCreative)
 	{
-		HashMap<IBlockState, Integer> missingBitMap = new HashMap<IBlockState, Integer>();
-		HashMap<IBlockState, Integer> skippedStatesMap = new HashMap<IBlockState, Integer>();
-		HashMap<IBlockState, ArrayList<BitCount>> skippedBitCountArrayMap = new HashMap<IBlockState, ArrayList<BitCount>>();
+		Map<IBlockState, Integer> missingBitMap = new HashMap<IBlockState, Integer>();
+		Map<IBlockState, Integer> skippedStatesMap = new HashMap<IBlockState, Integer>();
+		Map<IBlockState, ArrayList<BitCount>> skippedBitCountArrayMap = new HashMap<IBlockState, ArrayList<BitCount>>();
 		for (int pass = 0; pass < 2; pass++)
 		{
 			for (IBlockState state : stateMap.keySet())
@@ -274,7 +280,7 @@ public class ItemModelingTool extends ItemBitToolBase
 		return missingBitMap;
 	}
 	
-	private int getReplacementBit(IChiselAndBitsAPI api, ConfigReplacementBits replacementBitsConfig, HashMap<IBitBrush, Integer> bitMap, LinkedHashMap<Integer, Integer> inventoryBitCounts,
+	private int getReplacementBit(IChiselAndBitsAPI api, ConfigReplacementBits replacementBitsConfig, Map<IBitBrush, Integer> bitMap, Map<Integer, Integer> inventoryBitCounts,
 			ArrayList<BitCount> bitCountArray, int remainingBitCount, boolean isCreative, int pass)
 	{
 		if (pass == 0 && replacementBitsConfig.useDefaultReplacementBit())
@@ -315,8 +321,8 @@ public class ItemModelingTool extends ItemBitToolBase
 		return remainingBitCount;
 	}
 	
-	private int addBitCountObject(ArrayList<BitCount> bitCountArray, HashMap<IBitBrush, Integer> bitMap,
-			LinkedHashMap<Integer, Integer> inventoryBitCounts, IBitBrush bit, int bitCount, boolean isCreative)
+	private int addBitCountObject(ArrayList<BitCount> bitCountArray, Map<IBitBrush, Integer> bitMap,
+			Map<Integer, Integer> inventoryBitCounts, IBitBrush bit, int bitCount, boolean isCreative)
 	{
 		if (bit.isAir())
 		{
