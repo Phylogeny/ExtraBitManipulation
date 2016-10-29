@@ -7,6 +7,7 @@ import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
@@ -27,6 +28,7 @@ public class ProxyCommon implements IGuiHandler
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		PacketRegistration.registerPackets();
+		SoundsExtraBitManipulation.registerSounds();
 	}
 	
 	public void init()
