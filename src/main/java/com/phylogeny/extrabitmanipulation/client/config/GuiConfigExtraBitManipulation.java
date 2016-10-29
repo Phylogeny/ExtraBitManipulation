@@ -104,12 +104,12 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		String dataCatagoryLower = dataCatagory.toLowerCase();
 		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
 		String defaults = ConfigHandlerExtraBitManipulation.BIT_TOOL_DEFAULT_VALUES;
-		String storageLoc = ConfigHandlerExtraBitManipulation.BIT_TOOL_PER_TOOL_OR_PER_PLAYER;
+		String storageLoc = ConfigHandlerExtraBitManipulation.BIT_TOOL_PER_TOOL_OR_PER_CLIENT;
 		String inChat = ConfigHandlerExtraBitManipulation.BIT_TOOL_DISPLAY_IN_CHAT;
 		addChildElementsToDummyElement(configFile, defaults, defaults + " " + dataCatagory,
 				"Configures " + dataCatagoryLower + " data default values.", childElements, null);
 		addChildElementsToDummyElement(configFile, storageLoc, storageLoc + " " + dataCatagory, "Configures whether " + dataCatagoryLower +
-				" data is stored/assessed on/from individual tools or on/from the player.", childElements, null);
+				" data is stored/assessed on/from individual tools or on/from the modeling data client config file.", childElements, null);
 		addChildElementsToDummyElement(configFile, inChat, inChat + " " + dataCatagory, "Configures whether changes to " +
 				dataCatagoryLower + " data are displayed in chat.", childElements, null);
 		addElementsToDummyElement(dataCatagory + " Data Settings", hoverText.replace("@@@", dataCatagoryLower), configElementsToolData, childElements, null);
