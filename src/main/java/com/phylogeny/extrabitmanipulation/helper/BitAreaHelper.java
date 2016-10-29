@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
@@ -59,7 +59,7 @@ public class BitAreaHelper
 	}
 	
 	public static boolean readBlockStates(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			Vec3 hit, Vec3i drawnStartPoint, ModelingData modelingData)
+			Vec3 hit, Vec3i drawnStartPoint, ModelReadData modelingData)
 	{
 		ItemModelingTool modelingTool = (ItemModelingTool) (stack != null && stack.getItem() instanceof ItemModelingTool ? stack.getItem() : null);
 		if (modelingTool == null)

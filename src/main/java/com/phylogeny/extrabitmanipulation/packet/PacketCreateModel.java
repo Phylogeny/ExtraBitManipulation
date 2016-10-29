@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelWriteData;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
@@ -17,33 +17,28 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PacketCreateModel extends PacketBlockInteraction implements IMessage
 {
-	private ConfigReplacementBits replacementBitsUnchiselable = new ConfigReplacementBits();
-	private ConfigReplacementBits replacementBitsInsufficient = new ConfigReplacementBits();
+	private ModelWriteData modelingData = new ModelWriteData();
 	
 	public PacketCreateModel() {}
 	
-	public PacketCreateModel(BlockPos pos, EnumFacing side, ConfigReplacementBits replacementBitsUnchiselable,
-			ConfigReplacementBits replacementBitsInsufficient)
+	public PacketCreateModel(BlockPos pos, EnumFacing side, ModelWriteData modelingData)
 	{
 		super(pos, side, new Vec3(0, 0, 0));
-		this.replacementBitsUnchiselable = replacementBitsUnchiselable;
-		this.replacementBitsInsufficient = replacementBitsInsufficient;
+		this.modelingData = modelingData;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
 		super.toBytes(buffer);
-		replacementBitsUnchiselable.toBytes(buffer);
-		replacementBitsInsufficient.toBytes(buffer);
+		modelingData.toBytes(buffer);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
 		super.fromBytes(buffer);
-		replacementBitsUnchiselable.fromBytes(buffer);
-		replacementBitsInsufficient.fromBytes(buffer);
+		modelingData.fromBytes(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketCreateModel, IMessage>
@@ -60,8 +55,8 @@ public class PacketCreateModel extends PacketBlockInteraction implements IMessag
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (stack != null && stack.getItem() instanceof ItemModelingTool)
-						((ItemModelingTool) stack.getItem()).createModel(stack, player, player.worldObj, message.getPos(),
-								message.getSide(), message.replacementBitsUnchiselable, message.replacementBitsInsufficient);
+						((ItemModelingTool) stack.getItem()).createModel(stack, player, player.worldObj,
+								message.getPos(), message.getSide(), message.modelingData);
 				}
 			});
 			return null;

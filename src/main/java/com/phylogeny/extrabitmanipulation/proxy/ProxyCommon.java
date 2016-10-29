@@ -35,6 +35,8 @@ public class ProxyCommon implements IGuiHandler
 		NetworkRegistry.INSTANCE.registerGuiHandler(ExtraBitManipulation.instance, new ProxyCommon());
 	}
 	
+	public void postinit() {}
+	
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{

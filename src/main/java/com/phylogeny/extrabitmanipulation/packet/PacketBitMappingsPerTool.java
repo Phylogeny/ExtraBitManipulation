@@ -14,37 +14,33 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketSetTabAndStateBlockButton implements IMessage
+public class PacketBitMappingsPerTool implements IMessage
 {
-	private int tabSelected;
-	private boolean stateButtonSelected;
-
-	public PacketSetTabAndStateBlockButton() {}
+	protected boolean perTool;
 	
-	public PacketSetTabAndStateBlockButton(int tabSelected, boolean stateButtonSelected)
+	public PacketBitMappingsPerTool() {}
+	
+	public PacketBitMappingsPerTool(boolean perTool)
 	{
-		this.tabSelected = tabSelected;
-		this.stateButtonSelected = stateButtonSelected;
+		this.perTool = perTool;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeInt(tabSelected);
-		buffer.writeBoolean(stateButtonSelected);
+		buffer.writeBoolean(perTool);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		tabSelected = buffer.readInt();
-		stateButtonSelected = buffer.readBoolean();
+		perTool = buffer.readBoolean();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketSetTabAndStateBlockButton, IMessage>
+	public static class Handler implements IMessageHandler<PacketBitMappingsPerTool, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetTabAndStateBlockButton message, final MessageContext ctx)
+		public IMessage onMessage(final PacketBitMappingsPerTool message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -57,8 +53,7 @@ public class PacketSetTabAndStateBlockButton implements IMessage
 					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
 					{
 						NBTTagCompound nbt = ItemStackHelper.getNBT(itemStack);
-						nbt.setInteger(NBTKeys.TAB_SETTING, message.tabSelected);
-						nbt.setBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING, message.stateButtonSelected);
+						nbt.setBoolean(NBTKeys.BIT_MAPS_PER_TOOL, message.perTool);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}

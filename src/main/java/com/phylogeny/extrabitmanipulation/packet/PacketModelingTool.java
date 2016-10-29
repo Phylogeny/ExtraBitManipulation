@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
@@ -25,7 +25,7 @@ public class PacketModelingTool implements IMessage
 	private IBlockState state;
 	private IBitBrush bit;
 	private String nbtKey;
-	protected boolean saveStatesById;
+	private boolean saveStatesById;
 	
 	public PacketModelingTool() {}
 	
@@ -82,10 +82,10 @@ public class PacketModelingTool implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack itemStack = player.inventory.getCurrentItem();
+					ItemStack itemStack = player.getCurrentEquippedItem();
 					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
 					{
-						HashMap<IBlockState, IBitBrush> bitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(ChiselsAndBitsAPIAccess.apiInstance,
+						Map<IBlockState, IBitBrush> bitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(ChiselsAndBitsAPIAccess.apiInstance,
 								itemStack, message.nbtKey);
 						if (message.bit != null)
 						{

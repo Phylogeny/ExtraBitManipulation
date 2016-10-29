@@ -10,6 +10,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 
 import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.block.state.IBlockState;
@@ -51,8 +52,8 @@ public class Configs
 		public static ConfigBitToolSettingBoolean modelGuiOpen;
 		public static String[] modelBlockToBitMapEntryStrings;
 		public static String[] modelStateToBitMapEntryStrings;
-		public static HashMap<IBlockState, IBitBrush> modelBlockToBitMap;
-		public static HashMap<IBlockState, IBitBrush> modelStateToBitMap;
+		public static Map<IBlockState, IBitBrush> modelBlockToBitMap;
+		public static Map<IBlockState, IBitBrush> modelStateToBitMap;
 		
 	//ITEM PROPERTIES
 		public static Map<Item, ConfigNamed> itemPropertyMap = new HashMap<Item, ConfigNamed>();
@@ -79,5 +80,11 @@ public class Configs
 					new ConfigShapeRender("Bit Removal Enveloped Shape", false, true, 38, 115, 0, 0, 255, 2.0F),
 					new ConfigShapeRender("Bit Addition Enveloped Shape", true, false, 38, 115, 0, 0, 255, 2.0F)
 				};
-		
+	
+	public static void initModelingBitMaps()
+	{
+		modelBlockToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(modelBlockToBitMapEntryStrings);
+		modelStateToBitMap = BitIOHelper.getModelBitMapFromEntryStrings(modelStateToBitMapEntryStrings);
+	}
+	
 }

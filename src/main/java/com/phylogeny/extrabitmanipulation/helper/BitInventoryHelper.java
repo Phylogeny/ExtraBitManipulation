@@ -31,9 +31,9 @@ import net.minecraft.world.World;
 public class BitInventoryHelper
 {
 
-	public static LinkedHashMap<Integer, Integer> getInventoryBitCounts(IChiselAndBitsAPI api, EntityPlayer player)
+	public static Map<Integer, Integer> getInventoryBitCounts(IChiselAndBitsAPI api, EntityPlayer player)
 	{
-		HashMap<Integer, Integer> bitCounts = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> bitCounts = new HashMap<Integer, Integer>();
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++)
 		{
 			ItemStack stack = player.inventory.getStackInSlot(i);
@@ -48,16 +48,23 @@ public class BitInventoryHelper
 				catch (InvalidBitItem e) {}
 			}
 		}
-		List<Map.Entry<Integer, Integer>> bitCountsList = new LinkedList(bitCounts.entrySet());
-		Collections.sort(bitCountsList, new Comparator<Object>() {
+		return getSortedLinkedHashMap(bitCounts, new Comparator<Object>() {
 			@Override
 			@SuppressWarnings("unchecked")
-			public int compare(Object object1, Object object2) {
-				return ((Comparable<Integer>) ((Map.Entry<Integer, Integer>) (object2)).getValue()).compareTo(((Map.Entry<Integer, Integer>) (object1)).getValue());
+			public int compare(Object object1, Object object2)
+			{
+				return ((Comparable<Integer>) ((Map.Entry<Integer, Integer>) (object2)).getValue())
+						.compareTo(((Map.Entry<Integer, Integer>) (object1)).getValue());
 			}
 		});
-		LinkedHashMap<Integer, Integer> bitCountsSorted = new LinkedHashMap<Integer, Integer>();
-		for (Map.Entry<Integer, Integer> entry : bitCountsList)
+	}
+
+	public static LinkedHashMap getSortedLinkedHashMap(Map bitCounts, Comparator<Object> comparator)
+	{
+		List<Map.Entry> bitCountsList = new LinkedList(bitCounts.entrySet());
+		Collections.sort(bitCountsList, comparator);
+		LinkedHashMap bitCountsSorted = new LinkedHashMap();
+		for (Map.Entry entry : bitCountsList)
 		{
 			bitCountsSorted.put(entry.getKey(), entry.getValue());
 		}
@@ -178,7 +185,7 @@ public class BitInventoryHelper
 	}
 	
 	public static void giveOrDropStacks(EntityPlayer player, World world, BlockPos pos, Shape shape,
-			IChiselAndBitsAPI api, HashMap<IBlockState, Integer> bitTypes)
+			IChiselAndBitsAPI api, Map<IBlockState, Integer> bitTypes)
 	{
 		if (bitTypes != null)
 		{

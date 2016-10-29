@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.item;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
@@ -232,7 +233,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 				}
 				boolean creativeMode = player.capabilities.isCreativeMode;
-				HashMap<IBlockState, Integer> bitTypes = null;
+				Map<IBlockState, Integer> bitTypes = null;
 				if (removeBits && !world.isRemote && !creativeMode)
 					bitTypes = new HashMap<IBlockState, Integer>();
 				
@@ -331,7 +332,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	private int sculptBlock(IChiselAndBitsAPI api, EntityPlayer player, World world, BlockPos pos, Shape shape,
-			HashMap<IBlockState, Integer> bitTypes, int remainingUses, IBitBrush setBit)
+			Map<IBlockState, Integer> bitTypes, int remainingUses, IBitBrush setBit)
 	{
 		if (isValidBlock(api, world, pos))
 		{

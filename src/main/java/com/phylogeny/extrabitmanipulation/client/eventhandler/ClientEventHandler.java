@@ -15,7 +15,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper.ModelingBoxSet;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelingData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
@@ -172,7 +172,7 @@ public class ClientEventHandler
 			if (!player.capabilities.allowEdit)
 				return;
 			
-			ItemStack stack = player.inventory.getCurrentItem();
+			ItemStack stack = player.getCurrentEquippedItem();
 			if (stack != null)
 			{
 				Item item = stack.getItem();
@@ -289,7 +289,7 @@ public class ClientEventHandler
 		}
 		if (!event.isCanceled() && event.button == 1 && event.buttonstate)
 		{
-			ItemStack stack = player.inventory.getCurrentItem();
+			ItemStack stack = player.getCurrentEquippedItem();
 			if (stack != null)
 			{
 				Item item = stack.getItem();
@@ -367,7 +367,7 @@ public class ClientEventHandler
 								{
 									if (!player.isSneaking() || drawnMode)
 									{
-										ModelingData modelingData = new ModelingData(stack.getTagCompound());
+										ModelReadData modelingData = new ModelReadData(stack.getTagCompound());
 										swingTool = BitAreaHelper.readBlockStates(stack, player, player.worldObj, pos, hit,
 												drawnStartPointModelingTool, modelingData);
 										ExtraBitManipulation.packetNetwork.sendToServer(new PacketReadBlockStates(pos, hit,
@@ -512,7 +512,7 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void cancelBoundingBoxDraw(DrawBlockHighlightEvent event)
 	{
-		ItemStack itemStack = event.player.inventory.getCurrentItem();
+		ItemStack itemStack = event.player.getCurrentEquippedItem();
 		if (itemStack != null)
 		{
 			Item item = itemStack.getItem();

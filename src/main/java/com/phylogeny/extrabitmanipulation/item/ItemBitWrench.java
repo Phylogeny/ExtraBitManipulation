@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.item;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
@@ -89,7 +90,7 @@ public class ItemBitWrench extends ItemBitToolBase
 			ItemStack invertBitStack = null;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
 			boolean creativeMode = player.capabilities.isCreativeMode;
-			HashMap<IBlockState, Integer> inversionBitTypes = new HashMap<IBlockState, Integer>();
+			Map<IBlockState, Integer> inversionBitTypes = new HashMap<IBlockState, Integer>();
 			
 			for (int i = 0; i < 16; i++)
 			{
