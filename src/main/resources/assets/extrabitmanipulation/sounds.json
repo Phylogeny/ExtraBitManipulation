@@ -1,0 +1,22 @@
+{
+	"box_check":
+	{
+		"category": "master",
+		"sounds":
+		[
+			{
+				"name": "ExtraBitManipulation:box_check","stream": false
+			}
+		]
+	},
+	"box_uncheck":
+	{
+		"category": "master",
+		"sounds":
+		[
+			{
+				"name": "ExtraBitManipulation:box_uncheck","stream": false
+			}
+		]
+	}
+}

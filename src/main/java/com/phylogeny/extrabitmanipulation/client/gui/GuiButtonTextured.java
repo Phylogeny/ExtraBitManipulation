@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 
 public class GuiButtonTextured extends GuiButtonBase
 {
@@ -13,15 +14,15 @@ public class GuiButtonTextured extends GuiButtonBase
 	private String selectedHoverText;
 	
 	public GuiButtonTextured(int buttonId, int x, int y, int widthIn, int heightIn, String hoverText,
-			ResourceLocation selectedTexture, ResourceLocation deselectedTexture)
+			ResourceLocation selectedTexture, ResourceLocation deselectedTexture, SoundEvent boxCheck, SoundEvent boxUncheck)
 	{
-		this(buttonId, x, y, widthIn, heightIn, hoverText, hoverText, selectedTexture, deselectedTexture);
+		this(buttonId, x, y, widthIn, heightIn, hoverText, hoverText, selectedTexture, deselectedTexture, boxCheck, boxUncheck);
 	}
 	
 	public GuiButtonTextured(int buttonId, int x, int y, int widthIn, int heightIn, String hoverText, String selectedHoverText,
-			ResourceLocation selectedTexture, ResourceLocation deselectedTexture)
+			ResourceLocation selectedTexture, ResourceLocation deselectedTexture, SoundEvent boxCheck, SoundEvent boxUncheck)
 	{
-		super(buttonId, x, y, widthIn, heightIn, "", hoverText);
+		super(buttonId, x, y, widthIn, heightIn, "", hoverText, boxCheck, boxUncheck);
 		this.selectedHoverText = selectedHoverText;
 		this.selectedTexture = selectedTexture;
 		this.deselectedTexture = deselectedTexture;

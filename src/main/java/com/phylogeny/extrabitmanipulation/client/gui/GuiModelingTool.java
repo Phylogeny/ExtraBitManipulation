@@ -19,6 +19,7 @@ import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketBitMappingsPerTool;
@@ -299,9 +300,9 @@ public class GuiModelingTool extends GuiContainer
 		super.initGui();
 		guiLeft -= 12;
 		buttonSettings = new GuiButtonTextured(7, guiLeft + 237, guiTop + 6, 12, 12,
-				"Bit Mapping Settings", "Back To Preview", SETTINGS_BACK, SETTINGS_MAIN);
-		buttonBitMapPerTool = new GuiButtonTextured(8, guiLeft + 143, guiTop + 26, 12, 12,
-				"Save/access mappings per tool or per client config", BOX_CHECKED, BOX_UNCHECKED);
+				"Bit Mapping Settings", "Back To Preview", SETTINGS_BACK, SETTINGS_MAIN, null, null);
+		buttonBitMapPerTool = new GuiButtonTextured(8, guiLeft + 143, guiTop + 26, 12, 12, "Save/access mappings per tool or per client config",
+				BOX_CHECKED, BOX_UNCHECKED, SoundsExtraBitManipulation.boxCheck, SoundsExtraBitManipulation.boxUncheck);
 		if (showSettings)
 			buttonSettings.selected = true;
 		
