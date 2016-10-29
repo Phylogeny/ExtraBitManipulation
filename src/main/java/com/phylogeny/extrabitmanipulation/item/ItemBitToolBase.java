@@ -68,7 +68,7 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		if (shiftDown)
 		{
 			tooltip.add("");
-			tooltip.add(TextFormatting.BLUE + "Blue = data stored/accessed per player");
+			tooltip.add(TextFormatting.BLUE + "Blue = data stored/accessed per client");
 			tooltip.add(TextFormatting.GREEN + "Green = data stored/accessed per tool");
 			tooltip.add("");
 		}

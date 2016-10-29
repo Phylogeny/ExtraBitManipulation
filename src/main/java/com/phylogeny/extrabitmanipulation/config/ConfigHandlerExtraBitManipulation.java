@@ -33,7 +33,7 @@ public class ConfigHandlerExtraBitManipulation
 	public static final String DATA_CATAGORY_SCULPT = "Sculpting Tool";
 	public static final String DATA_CATAGORY_MODEL = "Modeling Tool";
 	public static final String BIT_TOOL_DEFAULT_VALUES = "Default Values";
-	public static final String BIT_TOOL_PER_TOOL_OR_PER_PLAYER = "Per Tool or Per Player";
+	public static final String BIT_TOOL_PER_TOOL_OR_PER_CLIENT = "Per Tool or Per Client";
 	public static final String BIT_TOOL_DISPLAY_IN_CHAT = "Display In Chat";
 	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
@@ -604,10 +604,10 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static boolean getPerTool(String name, String catagoryEnding, boolean defaultPerTool, String toolTipPerTool)
 	{
-		return configFileClient.getBoolean(name, BIT_TOOL_PER_TOOL_OR_PER_PLAYER + " " + catagoryEnding, defaultPerTool,
+		return configFileClient.getBoolean(name, BIT_TOOL_PER_TOOL_OR_PER_CLIENT + " " + catagoryEnding, defaultPerTool,
 				"If set to true, " + toolTipPerTool + " will be set/stored in each individual sculpting tool and apply only to that tool. " +
-				"If set to false, it will be stored in the player and will apply to all tools. Regardless of this setting, players and tools " +
-				"will still initialize with data, but this setting determines which is considered for use. " +
+				"If set to false, it will be stored in the client config file called 'modeling_data' and will apply to all tools. Regardless " +
+				"of this setting, the client and tools will still initialize with data, but this setting determines which is considered for use. " +
 				getReferralString(toolTipPerTool) + " (default = " + defaultPerTool + ")");
 	}
 	
