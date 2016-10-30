@@ -5,12 +5,10 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class SoundsExtraBitManipulation
 {
-	public static SoundEvent boxCheck, boxUncheck;
+	public static ResourceLocation boxCheck, boxUncheck;
 	
 	public static void registerSounds()
 	{
@@ -18,15 +16,14 @@ public class SoundsExtraBitManipulation
 		boxUncheck = registerSound("box_uncheck");
 	}
 	
-	private static SoundEvent registerSound(String soundName)
+	private static ResourceLocation registerSound(String soundName)
 	{
-		ResourceLocation soundNameResLoc = new ResourceLocation(Reference.MOD_ID + ":" + soundName);
-		return GameRegistry.register(new SoundEvent(soundNameResLoc).setRegistryName(soundNameResLoc));
+		return new ResourceLocation(Reference.MOD_ID + ":" + soundName);
 	}
 	
-	public static void playSound(SoundEvent sound)
+	public static void playSound(ResourceLocation sound)
 	{
-		Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1.0F));
+		Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.create(sound, 1.0F));
 	}
 	
 }

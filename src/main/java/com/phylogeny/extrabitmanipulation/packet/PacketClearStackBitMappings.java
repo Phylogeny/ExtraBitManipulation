@@ -1,7 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,10 +34,10 @@ public class PacketClearStackBitMappings implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack itemStack = player.getCurrentEquippedItem();
-					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
+					ItemStack stack = player.getCurrentEquippedItem();
+					if (ItemStackHelper.isModelingToolStack(stack))
 					{
-						BitIOHelper.clearAllBitMapsFromNbt(itemStack);
+						BitIOHelper.clearAllBitMapsFromNbt(stack);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}

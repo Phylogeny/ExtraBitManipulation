@@ -4,11 +4,11 @@ import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,25 +42,17 @@ public class ProxyCommon implements IGuiHandler
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		return id == GuiIDs.MODELING_TOOL_BIT_MAPPING && getModelingToolStack(player) != null ? new ContainerModelingTool(player.inventory) : null;
+		return id == GuiIDs.MODELING_TOOL_BIT_MAPPING.getID() && ItemStackHelper.isModelingToolStack(player.getCurrentEquippedItem())
+				? new ContainerModelingTool(player.inventory) : null;
 	}
 	
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		if (id == GuiIDs.MODELING_TOOL_BIT_MAPPING)
-		{
-			ItemStack modelingToolStack = getModelingToolStack(player);
-			if (modelingToolStack != null)
-				return new GuiModelingTool(player.inventory, modelingToolStack);
-		}
+		ItemStack stack = player.getCurrentEquippedItem();
+		if (id == GuiIDs.MODELING_TOOL_BIT_MAPPING.getID() && ItemStackHelper.isModelingToolStack(stack))
+			return new GuiModelingTool(player.inventory);
 		return null;
-	}
-	
-	private ItemStack getModelingToolStack(EntityPlayer player)
-	{
-		ItemStack itemStack = player.getCurrentEquippedItem();
-		return itemStack != null && itemStack.getItem() instanceof ItemModelingTool ? itemStack : null;
 	}
 	
 }

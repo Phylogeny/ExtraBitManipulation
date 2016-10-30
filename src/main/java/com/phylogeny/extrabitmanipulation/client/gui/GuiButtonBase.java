@@ -5,20 +5,21 @@ import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.ResourceLocation;
 
 public class GuiButtonBase extends GuiButton
 {
 	public boolean selected;
 	private String hoverText;
-	private SoundEvent soundSelect, soundDeselect;
+	private ResourceLocation soundSelect, soundDeselect;
 	
 	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String text, String hoverText)
 	{
 		this(buttonId, x, y, widthIn, heightIn, text, hoverText, null, null);
 	}
 	
-	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String text, String hoverText, SoundEvent soundSelect, SoundEvent soundDeselect)
+	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String text,
+			String hoverText, ResourceLocation soundSelect, ResourceLocation soundDeselect)
 	{
 		super(buttonId, x, y, widthIn, heightIn, text);
 		this.hoverText = hoverText;
@@ -54,13 +55,13 @@ public class GuiButtonBase extends GuiButton
 		return hoverText;
 	}
 	
-	public GuiButtonBase setSoundSelect(SoundEvent sound)
+	public GuiButtonBase setSoundSelect(ResourceLocation sound)
 	{
 		soundSelect = sound;
 		return this;
 	}
 	
-	public GuiButtonBase setSoundDeselect(SoundEvent sound)
+	public GuiButtonBase setSoundDeselect(ResourceLocation sound)
 	{
 		soundDeselect = sound;
 		return this;

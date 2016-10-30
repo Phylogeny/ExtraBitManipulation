@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 
@@ -67,7 +68,7 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (stack != null && stack.getItem() instanceof ItemSculptingTool && (!player.isSneaking() || message.drawnStartPoint != null))
+					if (ItemStackHelper.isSculptingToolStack(stack) && (!player.isSneaking() || message.drawnStartPoint != null))
 						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.getPos(),
 								message.getSide(), message.getHit(), message.drawnStartPoint, message.sculptingData);
 				}

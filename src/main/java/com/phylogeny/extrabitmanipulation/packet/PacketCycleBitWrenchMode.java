@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 
 import io.netty.buffer.ByteBuf;
@@ -47,7 +48,7 @@ public class PacketCycleBitWrenchMode implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (stack != null && stack.getItem() instanceof ItemBitWrench)
+					if (ItemStackHelper.isBitWrenchStack(stack))
 						((ItemBitWrench) stack.getItem()).cycleModes(stack, message.forward);
 				}
 			});
