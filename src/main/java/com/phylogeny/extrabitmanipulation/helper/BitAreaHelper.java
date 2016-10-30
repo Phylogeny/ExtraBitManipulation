@@ -61,7 +61,7 @@ public class BitAreaHelper
 	public static boolean readBlockStates(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
 			Vec3d hit, Vec3i drawnStartPoint, ModelReadData modelingData)
 	{
-		ItemModelingTool modelingTool = (ItemModelingTool) (stack != null && stack.getItem() instanceof ItemModelingTool ? stack.getItem() : null);
+		ItemModelingTool modelingTool = (ItemModelingTool) (ItemStackHelper.isModelingToolStack(stack) ? stack.getItem() : null);
 		if (modelingTool == null)
 			return false;
 		
@@ -73,7 +73,7 @@ public class BitAreaHelper
 		
 		BitIOHelper.saveBlockStates(ChiselsAndBitsAPIAccess.apiInstance, player, world, boxSet.getBoundingBox(), nbt);
 		if (modelingData.getGuiOpen())
-			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
+			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING.getID(), player.worldObj, 0, 0, 0);
 		
 		return true;
 	}

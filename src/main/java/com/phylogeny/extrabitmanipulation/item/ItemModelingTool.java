@@ -70,12 +70,12 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
 	{
-		if (player.isSneaking() && ItemStackHelper.hasKey(itemStack, NBTKeys.SAVED_STATES))
-			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING, player.worldObj, 0, 0, 0);
+		if (player.isSneaking() && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
+			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING.getID(), player.worldObj, 0, 0, 0);
 		
-		return super.onItemRightClick(itemStack, world, player, hand);
+		return super.onItemRightClick(stack, world, player, hand);
 	}
 	
 	@Override

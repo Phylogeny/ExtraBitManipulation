@@ -1,7 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import io.netty.buffer.ByteBuf;
@@ -53,10 +52,10 @@ public class PacketSetTabAndStateBlockButton implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack itemStack = player.getHeldItemMainhand();
-					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
+					ItemStack stack = player.getHeldItemMainhand();
+					if (ItemStackHelper.isModelingToolStack(stack))
 					{
-						NBTTagCompound nbt = ItemStackHelper.getNBT(itemStack);
+						NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 						nbt.setInteger(NBTKeys.TAB_SETTING, message.tabSelected);
 						nbt.setBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING, message.stateButtonSelected);
 						player.inventoryContainer.detectAndSendChanges();

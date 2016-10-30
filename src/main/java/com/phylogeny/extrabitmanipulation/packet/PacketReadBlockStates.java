@@ -1,8 +1,8 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -69,7 +69,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
-					if (stack != null && stack.getItem() instanceof ItemModelingTool && (!player.isSneaking() || message.drawnStartPoint != null))
+					if (ItemStackHelper.isModelingToolStack(stack) || message.drawnStartPoint != null)
 						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.getPos(),
 								message.getHit(), message.drawnStartPoint, message.modelingData);
 				}

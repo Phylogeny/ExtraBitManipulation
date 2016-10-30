@@ -1,7 +1,12 @@
 package com.phylogeny.extrabitmanipulation.reference;
 
-public class GuiIDs
+public enum GuiIDs
 {
-	public static final int MODELING_TOOL_BIT_MAPPING = 0;
+	MODELING_TOOL_BIT_MAPPING;
+	
+	public int getID()
+	{
+		return this.ordinal();
+	}
 	
 }

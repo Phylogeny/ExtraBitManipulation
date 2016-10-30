@@ -3,7 +3,7 @@ package com.phylogeny.extrabitmanipulation.packet;
 import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import io.netty.buffer.ByteBuf;
@@ -59,11 +59,11 @@ public class PacketOverwriteStackBitMappings implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack itemStack = player.getHeldItemMainhand();
-					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
+					ItemStack stack = player.getHeldItemMainhand();
+					if (ItemStackHelper.isModelingToolStack(stack))
 					{
-						BitIOHelper.writeStateToBitMapToNBT(itemStack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT, message.stateToBitMap, message.saveStatesById);
-						BitIOHelper.writeStateToBitMapToNBT(itemStack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT, message.blockToBitMap, message.saveStatesById);
+						BitIOHelper.writeStateToBitMapToNBT(stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT, message.stateToBitMap, message.saveStatesById);
+						BitIOHelper.writeStateToBitMapToNBT(stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT, message.blockToBitMap, message.saveStatesById);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}
