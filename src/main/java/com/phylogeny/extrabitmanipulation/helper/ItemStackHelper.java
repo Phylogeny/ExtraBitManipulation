@@ -1,6 +1,12 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
+import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
+import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+
 import io.netty.buffer.ByteBuf;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -57,6 +63,46 @@ public class ItemStackHelper
 	public static NBTTagCompound getNBTOrNew(ItemStack stack)
 	{
 		return hasNBT(stack) ? stack.getTagCompound() : new NBTTagCompound();
+	}
+	
+	public static boolean isModelingToolStack(ItemStack stack)
+	{
+		return stack != null && isModelingToolItem(stack.getItem());
+	}
+	
+	public static boolean isModelingToolItem(Item item)
+	{
+		return item != null && item instanceof ItemModelingTool;
+	}
+	
+	public static boolean isSculptingToolStack(ItemStack stack)
+	{
+		return stack != null && isSculptingToolItem(stack.getItem());
+	}
+	
+	public static boolean isSculptingToolItem(Item item)
+	{
+		return item != null && item instanceof ItemSculptingTool;
+	}
+	
+	public static boolean isBitToolStack(ItemStack stack)
+	{
+		return stack != null && isBitToolItem(stack.getItem());
+	}
+	
+	public static boolean isBitToolItem(Item item)
+	{
+		return item != null && item instanceof ItemBitToolBase;
+	}
+	
+	public static boolean isBitWrenchStack(ItemStack stack)
+	{
+		return stack != null && isBitWrenchItem(stack.getItem());
+	}
+	
+	public static boolean isBitWrenchItem(Item item)
+	{
+		return item != null && item instanceof ItemBitWrench;
 	}
 	
 }

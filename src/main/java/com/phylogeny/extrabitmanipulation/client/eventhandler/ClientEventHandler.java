@@ -18,8 +18,6 @@ import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
-import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
@@ -98,6 +96,7 @@ public class ClientEventHandler
 		Minecraft.getMinecraft().renderEngine.loadTexture(resourceLocation, texture);
 	}
 	
+	@SuppressWarnings("null")
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
 	{
@@ -105,12 +104,12 @@ public class ClientEventHandler
 		if (event.getDwheel() != 0)
 		{
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null && stack.getItem() instanceof ItemBitToolBase)
+			if (ItemStackHelper.isBitToolStack(stack))
 			{
 				boolean forward = event.getDwheel() < 0;
 				if (player.isSneaking())
 				{
-					if (stack.getItem() instanceof ItemBitWrench)
+					if (ItemStackHelper.isBitWrenchItem(stack.getItem()))
 					{
 						ExtraBitManipulation.packetNetwork.sendToServer(new PacketCycleBitWrenchMode(forward));
 					}
@@ -120,7 +119,7 @@ public class ClientEventHandler
 					}
 					event.setCanceled(true);
 				}
-				else if (stack.getItem() instanceof ItemSculptingTool && (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()))
+				else if (ItemStackHelper.isSculptingToolItem(stack.getItem()) && (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()))
 				{
 					if (GuiScreen.isCtrlKeyDown())
 					{
@@ -144,7 +143,7 @@ public class ClientEventHandler
 			if (stack != null)
 			{
 				Item item = stack.getItem();
-				if (item != null && item instanceof ItemSculptingTool)
+				if (ItemStackHelper.isSculptingToolItem(item))
 				{
 					if (GuiScreen.isCtrlKeyDown())
 					{
@@ -175,11 +174,11 @@ public class ClientEventHandler
 			if (stack != null)
 			{
 				Item item = stack.getItem();
-				if (event.isButtonstate() && item instanceof ItemBitWrench)
+				if (event.isButtonstate() && ItemStackHelper.isBitWrenchItem(item))
 				{
 					event.setCanceled(true);
 				}
-				else if (item != null && item instanceof ItemSculptingTool)
+				else if (ItemStackHelper.isSculptingToolItem(item))
 				{
 					boolean drawnMode = BitToolSettingsHelper.getSculptMode(stack.getTagCompound()) == 2;
 					if (!drawnMode)
@@ -289,17 +288,13 @@ public class ClientEventHandler
 		if (!event.isCanceled() && event.getButton() == 1 && event.isButtonstate())
 		{
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null)
-			{
-				Item item = stack.getItem();
-				if (item != null && item instanceof ItemSculptingTool)
-					cycleSculptMode(player, stack, !player.isSneaking());
-			}
+			if (ItemStackHelper.isSculptingToolStack(stack))
+				cycleSculptMode(player, stack, !player.isSneaking());	
 		}
 		if (event.getDwheel() != 0)
 		{
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null && stack.getItem() instanceof ItemModelingTool)
+			if (ItemStackHelper.isModelingToolStack(stack))
 			{
 				boolean forward = event.getDwheel() < 0;
 				if (GuiScreen.isCtrlKeyDown() || player.isSneaking())
@@ -323,7 +318,7 @@ public class ClientEventHandler
 		else if (GuiScreen.isCtrlKeyDown() && event.isButtonstate())
 		{
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null && stack.getItem() instanceof ItemModelingTool)
+			if (ItemStackHelper.isModelingToolStack(stack))
 			{
 				if (event.getButton() == 1)
 					toggleModelGuiOpen(player, stack);
@@ -334,7 +329,7 @@ public class ClientEventHandler
 		else if (event.getButton() == 0)
 		{
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null && stack.getItem() instanceof ItemModelingTool)
+			if (ItemStackHelper.isModelingToolStack(stack))
 			{
 				Item item = stack.getItem();
 				if (item != null)
@@ -508,16 +503,13 @@ public class ClientEventHandler
 		chatGUI.printChatMessageWithOptionalDeletion(new TextComponentString(text), 627250);
 	}
 	
+	@SuppressWarnings("null")
 	@SubscribeEvent
 	public void cancelBoundingBoxDraw(DrawBlockHighlightEvent event)
 	{
-		ItemStack itemStack = event.getPlayer().getHeldItemMainhand();
-		if (itemStack != null)
-		{
-			Item item = itemStack.getItem();
-			if (item != null && item instanceof ItemSculptingTool && BitToolSettingsHelper.getSculptMode(itemStack.getTagCompound()) == 1)
-				event.setCanceled(true);
-		}
+		ItemStack stack = event.getPlayer().getHeldItemMainhand();
+		if (ItemStackHelper.isSculptingToolStack(stack) && BitToolSettingsHelper.getSculptMode(stack.getTagCompound()) == 1)
+			event.setCanceled(true);
 	}
 	
 	@SubscribeEvent
@@ -531,7 +523,7 @@ public class ClientEventHandler
 			if (stack != null)
 			{
 				RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
-				if (target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK) && stack.getItem() instanceof ItemBitToolBase)
+				if (target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK) && ItemStackHelper.isBitToolItem(stack.getItem()))
 				{
 					IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 					float ticks = event.getPartialTicks();
@@ -549,7 +541,7 @@ public class ClientEventHandler
 					double diffY = playerY - y;
 					double diffZ = playerZ - z;
 					Vec3d hit = target.hitVec;
-					if (stack.getItem() instanceof ItemBitWrench && api.isBlockChiseled(world, target.getBlockPos()))
+					if (ItemStackHelper.isBitWrenchItem(stack.getItem()) && api.isBlockChiseled(world, target.getBlockPos()))
 					{
 						int mode = ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.WRENCH_MODE);
 						frameCounter++;
@@ -792,7 +784,7 @@ public class ClientEventHandler
 						GlStateManager.enableTexture2D();
 						GlStateManager.popMatrix();
 					}
-					else if (stack.getItem() instanceof ItemSculptingTool)
+					else if (ItemStackHelper.isSculptingToolItem(stack.getItem()))
 					{
 						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
 						boolean removeBits = toolItem.removeBits();
@@ -934,7 +926,7 @@ public class ClientEventHandler
 							}
 						}
 					}
-					else if (stack.getItem() instanceof ItemModelingTool)
+					else if (ItemStackHelper.isModelingToolItem(stack.getItem()))
 					{
 						glStart();
 						ModelingBoxSet boxSet = BitAreaHelper.getModelingToolBoxSet(player, x, y, z, hit,

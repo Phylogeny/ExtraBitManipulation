@@ -146,9 +146,9 @@ public class RecipesExtraBitManipulation
 		}
 		else
 		{
-			ItemStack itemStack = getStack(Item.getByNameOrId(name));
-			if (isShaped || !ingredients.contains(itemStack))
-				ingredients.add(itemStack);
+			ItemStack stack = getStack(Item.getByNameOrId(name));
+			if (isShaped || !ingredients.contains(stack))
+				ingredients.add(stack);
 		}
 	}
 	

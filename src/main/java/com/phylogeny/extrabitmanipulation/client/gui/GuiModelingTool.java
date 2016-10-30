@@ -78,13 +78,13 @@ public class GuiModelingTool extends GuiContainer
 	private boolean stateMauallySelected, showSettings, bitMapPerTool;
 	private GuiTextField searchField;
 	
-	public GuiModelingTool(InventoryPlayer playerInventory, ItemStack modelingToolStack)
+	public GuiModelingTool(InventoryPlayer playerInventory)
 	{
 		super(new ContainerModelingTool(playerInventory));
 		api = ChiselsAndBitsAPIAccess.apiInstance;
 		xSize = 254;
 		ySize = 219;
-		NBTTagCompound nbt = ItemStackHelper.getNBTOrNew(modelingToolStack);
+		NBTTagCompound nbt = ItemStackHelper.getNBTOrNew(playerInventory.getCurrentItem());
 		stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
 		savedTab = nbt.getInteger(NBTKeys.TAB_SETTING);
 		bitMapPerTool = nbt.getBoolean(NBTKeys.BIT_MAPS_PER_TOOL);

@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelWriteData;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
@@ -49,12 +50,13 @@ public class PacketCreateModel extends PacketBlockInteraction implements IMessag
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
 			{
+				@SuppressWarnings("null")
 				@Override
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
-					if (stack != null && stack.getItem() instanceof ItemModelingTool)
+					if (ItemStackHelper.isModelingToolStack(stack))
 						((ItemModelingTool) stack.getItem()).createModel(stack, player, player.worldObj,
 								message.getPos(), message.getSide(), message.modelingData);
 				}

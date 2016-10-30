@@ -5,7 +5,6 @@ import java.util.Map;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 
 import io.netty.buffer.ByteBuf;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
@@ -82,11 +81,11 @@ public class PacketModelingTool implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack itemStack = player.getHeldItemMainhand();
-					if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemModelingTool)
+					ItemStack stack = player.getHeldItemMainhand();
+					if (ItemStackHelper.isModelingToolStack(stack))
 					{
 						Map<IBlockState, IBitBrush> bitMapPermanent = BitIOHelper.readStateToBitMapFromNBT(ChiselsAndBitsAPIAccess.apiInstance,
-								itemStack, message.nbtKey);
+								stack, message.nbtKey);
 						if (message.bit != null)
 						{
 							bitMapPermanent.put(message.state, message.bit);
@@ -95,7 +94,7 @@ public class PacketModelingTool implements IMessage
 						{
 							bitMapPermanent.remove(message.state);
 						}
-						BitIOHelper.writeStateToBitMapToNBT(itemStack, message.nbtKey, bitMapPermanent, message.saveStatesById);
+						BitIOHelper.writeStateToBitMapToNBT(stack, message.nbtKey, bitMapPermanent, message.saveStatesById);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}
