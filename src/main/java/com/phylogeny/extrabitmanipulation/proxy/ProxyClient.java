@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
@@ -17,9 +16,9 @@ public class ProxyClient extends ProxyCommon
 {
 	
 	@Override
-	public void preinit(FMLPreInitializationEvent event)
+	public void init()
 	{
-		super.preinit(event);
+		super.init();
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 		register(ItemsExtraBitManipulation.diamondNugget);
 		register(ItemsExtraBitManipulation.bitWrench);
