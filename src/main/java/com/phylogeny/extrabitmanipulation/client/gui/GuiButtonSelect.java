@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.client.gui;
 
 public class GuiButtonSelect extends GuiButtonCustom
 {
-	private int colorFirst, colorSecond;
+	protected int colorFirst, colorSecond;
 	
 	public GuiButtonSelect(int buttonId, int x, int y, int widthIn, int heightIn, String text,
 			String hoverText, int colorFirst, int colorSecond)

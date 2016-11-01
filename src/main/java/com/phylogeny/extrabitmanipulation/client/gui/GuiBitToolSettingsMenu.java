@@ -1,0 +1,226 @@
+package com.phylogeny.extrabitmanipulation.client.gui;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.shape.Shape;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.client.config.GuiSlider.ISlider;
+
+public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
+{
+	private List<ButtonsSetting> buttonsSettingList = Lists.<ButtonsSetting>newArrayList();
+	private int counter, buttonCountCurrent, buttonCountTotal;
+	private GuiSlider semiDiameter, wallThickness;
+	
+	@Override
+	public boolean doesGuiPauseGame()
+	{
+		return false;
+	}
+	
+	@Override
+	public void initGui()
+	{
+		ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+		if (stack == null)
+			return;
+		
+		if (stack.getItem() instanceof ItemModelingTool)
+		{
+			buttonCountTotal = 3;
+			addButtonsSettings(new ButtonsSetting.ModelAreaMode(), ItemModelingTool.AREA_MODE_TITLES, "Area Mode");
+			String[] snapTexts = ItemModelingTool.SNAP_MODE_TITLES;
+			String[] snapTextsNew = new String[snapTexts.length];
+			for (int i = 0; i < snapTexts.length; i++)
+			{
+				snapTextsNew[i] = snapTexts[i].replace("Snap-to-Chunk ", "");
+			}
+			addButtonsSettings(new ButtonsSetting.ModelSnapMode(), snapTextsNew, "Chunk Snap");
+			addButtonsSettings(new ButtonsSetting.ModelGuiOpen(), new String[]{"On Read", "Off"}, "Open GUI");
+		}
+		else if (stack.getItem() instanceof ItemSculptingTool)
+		{
+			buttonCountTotal = 8; // TODO set to 9 when triangular shapes are implemented
+			addButtonsSettings(new ButtonsSetting.SculptMode(), ItemSculptingTool.MODE_TITLES, "Mode");
+			String[] texts = ((ItemSculptingTool) stack.getItem()).isCurved() ? Arrays.copyOfRange(Shape.SHAPE_NAMES, 0, 3)
+					: new String[]{Shape.SHAPE_NAMES[3], Shape.SHAPE_NAMES[6]};
+			//Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7) TODO
+			addButtonsSettings(new ButtonsSetting.ShapeType(), texts, "Shape");
+			addButtonsSettings(new ButtonsSetting.Direction(), BitToolSettingsHelper.getDirectionNames(), "Direction");
+			addButtonsSettings(new ButtonsSetting.BitGridTargeted(), new String[]{"Bits", "Bit Grid"}, "Target");
+			addButtonsSettings(new ButtonsSetting.HollowShape(), new String[]{"Hollow", "Solid"}, "Interior");
+			addButtonsSettings(new ButtonsSetting.OpenEnds(), new String[]{"Open", "Closed"}, "Ends");
+			semiDiameter = addSliderSetting("Semi Diameter", Configs.maxSemiDiameter, BitToolSettingsHelper.getSemiDiameter(stack.getTagCompound()));
+			wallThickness = addSliderSetting("Wall Thickness", Configs.maxWallThickness, BitToolSettingsHelper.getWallThickness(stack.getTagCompound()));
+		}
+	}
+	
+	protected GuiSlider addSliderSetting(String title, int maxVal, int currentVal)
+	{
+		int x = getX();
+		int y = getY();
+		creatLabel(title, x, y);
+		GuiSlider slider = new GuiSlider(buttonCountCurrent++, x, y - 1, 100, 14, "", " Bits", 0, maxVal, currentVal, false, true, this);
+		buttonList.add(slider);
+		buttonCountTotal -= 2;
+		return slider;
+	}
+	
+	private void addButtonsSettings(ButtonsSetting buttons, String[] buttonTexts, String title)
+	{
+		int x = getX();
+		int y = getY();
+		creatLabel(title, x, y);
+		for (int i = 0; i < buttonTexts.length; i++)
+		{
+			int buttonWidth = fontRendererObj.getStringWidth(buttonTexts[i]) + 6;
+			buttons.addButton(new GuiButtonSetting(buttonCountCurrent++, x, y, buttonWidth, 12, buttonTexts[i], "", -16726016, -8882056));
+			x += buttonWidth + 4;
+		}
+		buttons.initButtons();
+		buttonList.addAll(buttons.getButtons());
+		buttonsSettingList.add(buttons);
+	}
+
+	protected void creatLabel(String title, int x, int y)
+	{
+		GuiLabel label = new GuiLabel(fontRendererObj, buttonCountCurrent, x - fontRendererObj.getStringWidth(title) - 10, y + 1, width, 13, -1);
+		label.func_175202_a(title + "");
+		labelList.add(label);
+	}
+	
+	private int getX()
+	{
+		return width / 2 + 5;
+	}
+	
+	private int getY()
+	{
+		return height / 2 - buttonCountTotal * 10 + buttonsSettingList.size() * 20 + 4;
+	}
+	
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	{
+		float visibility = counter / 6F;
+		drawGradientRect(0, 0, width, height, (int) (visibility * 98) << 24, (int) (visibility * 128) << 24);
+		MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent(this));
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		counter = Math.min(counter + (ClientEventHandler.isChiselsAndBitsMenuKeyBindPressed() ? 1 : -1), 6);
+		if (counter < 0)
+		{
+			if (semiDiameter != null)
+			{
+				semiDiameter.mousePressed(mc, mouseX, mouseY);
+				wallThickness.mousePressed(mc, mouseX, mouseY);
+			}
+			setToolValuesIfDiffrent();
+			mc.thePlayer.closeScreen();
+		}
+	}
+	
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+	{
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		setToolValuesIfDiffrent();
+	}
+	
+	@Override
+	protected void actionPerformed(GuiButton button) throws IOException
+	{
+		for (ButtonsSetting buttonsSetting : buttonsSettingList)
+		{
+			for (int i = 0; i < buttonsSetting.buttons.size(); i++)
+			{
+				GuiButtonBase button2 = buttonsSetting.buttons.get(i);
+				if (button2.id == button.id)
+				{
+					for (int i2 = 0; i2 < buttonsSetting.buttons.size(); i2++)
+					{
+						buttonsSetting.buttons.get(i2).selected = false;
+					}
+					button2.selected = true;
+				}
+			}
+		}
+	}
+	
+	private void setToolValuesIfDiffrent()
+	{
+		EntityPlayer player = mc.thePlayer;
+		ItemStack stack = player.getCurrentEquippedItem();
+		for (ButtonsSetting buttonsSetting : buttonsSettingList)
+		{
+			buttonsSetting.setValueIfDiffrent();
+		}
+		if (semiDiameter == null)
+			return;
+		
+		if (semiDiameter.getValueInt() != BitToolSettingsHelper.getSemiDiameter(ItemStackHelper.getNBTOrNew(stack)))
+		{
+			BitToolSettingsHelper.setSemiDiameter(player, stack, semiDiameter.getValueInt(), Configs.sculptSemiDiameter);
+		}
+		if (wallThickness.getValueInt() != BitToolSettingsHelper.getWallThickness(ItemStackHelper.getNBTOrNew(stack)))
+		{
+			BitToolSettingsHelper.setWallThickness(player, stack, wallThickness.getValueInt(), Configs.sculptWallThickness);
+		}
+	}
+	
+	@Override
+	public void onChangeSliderValue(GuiSlider slider)
+	{
+		setToolValuesIfDiffrent();
+	}
+	
+	public class GuiButtonSetting extends GuiButtonSelect
+	{
+		private List<GuiButtonSetting> buttons;
+		
+		public GuiButtonSetting(int buttonId, int x, int y, int widthIn, int heightIn, String text, String hoverText, int colorFirst, int colorSecond)
+		{
+			super(buttonId, x, y, widthIn, heightIn, text, hoverText, colorFirst, colorSecond);
+		}
+		
+		@Override
+		protected void drawCustomRect()
+		{
+			boolean noneElseHovered = true;
+			for (GuiButtonSetting button : buttons)
+			{
+				if (id != button.id && button.isMouseOver())
+				{
+					noneElseHovered = false;
+					break;
+				}
+			}
+			boolean selected = (this.selected && noneElseHovered) || isMouseOver();
+			drawRect(xPosition, yPosition, xPosition + width, yPosition + height, selected ? colorFirst : colorSecond);
+		}
+		
+		public void setButtonList(List<GuiButtonSetting> buttons)
+		{
+			this.buttons = buttons;
+		}
+		
+	}
+	
+}

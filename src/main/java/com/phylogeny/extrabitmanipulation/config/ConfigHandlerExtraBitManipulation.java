@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -355,11 +356,11 @@ public class ConfigHandlerExtraBitManipulation
 					"the sculpting shape when a block is clicked (global) or when the mouse is released after a click and drag (drawn)).",
 					ItemSculptingTool.MODE_TITLES);
 			
-			Configs.sculptDirection = getBitToolSettingInt("Direction", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, 1, 0, 5,
-					"sculpting shape direction",
-					"direction. 0 = down; 1 = up; 2 = north; 3 = south; 4 = west; 5 = east (adding 6 times 1, 2, or 3 specifies rotation; 1 = 90\u00B0, " +
-					"2 = 180\u00B0, and 3 = 270\u00B0)", "direction up - rotation 0\u00B0");
+			Configs.sculptDirection = getBitToolSettingIntFromStringArray("Direction", DATA_CATAGORY_SCULPT,
+						sculptingMapConfigFile, false, true, 1, 0,
+						"sculpting shape direction",
+						"direction.",
+						BitToolSettingsHelper.getDirectionNames());// TODO decompose to direction and rotation when triangular shapes are implemented
 			
 			Configs.sculptShapeTypeCurved = getBitToolSettingIntFromStringArray("Shape (curved)", DATA_CATAGORY_SCULPT,
 					sculptingMapConfigFile, false, true, 0, 0,
@@ -371,7 +372,8 @@ public class ConfigHandlerExtraBitManipulation
 					sculptingMapConfigFile, false, true, 0, 3,
 					"flat/straight tool sculpting shape",
 					"sculpting shape.",
-					Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7));
+					new String[]{Shape.SHAPE_NAMES[3], Shape.SHAPE_NAMES[6]});
+					//Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7) TODO
 			
 			Configs.sculptTargetBitGridVertexes = getBitToolSettingBoolean("Target Bit Grid Vertexes", DATA_CATAGORY_SCULPT,
 					sculptingMapConfigFile, false, true, false,
