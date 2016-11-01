@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.client.eventhandler;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.Disk;
@@ -9,6 +10,7 @@ import org.lwjgl.util.glu.Sphere;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu;
 import com.phylogeny.extrabitmanipulation.client.shape.Prism;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
@@ -42,6 +44,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -61,6 +64,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 public class ClientEventHandler
 {
@@ -77,7 +81,7 @@ public class ClientEventHandler
 	private static final int[] AXIS_FORWARD = new int[]{2, 3, 4, 5, 0, 1};
 	private static final int[] AXIS_BACKWARD = new int[]{4, 5, 0, 1, 2, 3};
 	private static final int[] SHAPE_CURVED = new int[]{1, 2, 0, 0, 0, 0, 0};
-//	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 4, 5, 6, 3};
+//	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 4, 5, 6, 3}; TODO
 	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 6, 3, 3, 3};
 	
 	@SubscribeEvent
@@ -94,6 +98,23 @@ public class ClientEventHandler
 	{
 		SimpleTexture texture = new SimpleTexture(resourceLocation);
 		Minecraft.getMinecraft().renderEngine.loadTexture(resourceLocation, texture);
+	}
+	
+	@SubscribeEvent
+	public void onKeyInput(@SuppressWarnings("unused") InputEvent.KeyInputEvent event)
+	{
+		if (isChiselsAndBitsMenuKeyBindPressed() && ItemStackHelper.isBitToolStack(Minecraft.getMinecraft().thePlayer.getHeldItemMainhand()))
+			Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
+	}
+	
+	public static boolean isChiselsAndBitsMenuKeyBindPressed()
+	{
+		for (KeyBinding keyBind : Minecraft.getMinecraft().gameSettings.keyBindings)
+		{
+			if (keyBind.getKeyDescription().equals("mod.chiselsandbits.other.mode") && Keyboard.isKeyDown(keyBind.getKeyCode()))
+				return true;
+		}
+		return false;
 	}
 	
 	@SuppressWarnings("null")

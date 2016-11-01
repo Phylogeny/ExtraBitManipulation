@@ -42,6 +42,16 @@ import net.minecraftforge.common.config.Property;
 public class BitToolSettingsHelper
 {
 	
+	public static String[] getDirectionNames()
+	{
+		String[] directionTexts = new String[6];
+		for (EnumFacing facing : EnumFacing.VALUES)
+		{
+			directionTexts[facing.getIndex()] = facing.getName().substring(0, 1).toUpperCase() + facing.getName().substring(1);
+		}
+		return directionTexts;
+	}
+	
 	public static NBTTagCompound initNBT(ItemStack stack)
 	{
 		if (!stack.hasTagCompound())
