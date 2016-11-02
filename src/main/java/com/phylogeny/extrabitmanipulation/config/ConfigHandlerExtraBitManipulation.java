@@ -51,7 +51,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:beacon-minecraft:diamond_block",
 		"minecraft:bed-minecraft:wool:14",
 		"minecraft:bedrock-minecraft:cobblestone",
-		"minecraft:beetroots-minecraft:wool:5",
 		"minecraft:birch_door-minecraft:planks:2",
 		"minecraft:birch_fence_gate-minecraft:planks:2",
 		"minecraft:birch_fence-minecraft:planks:2",
@@ -65,10 +64,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:carpet-minecraft:air",
 		"minecraft:carrots-minecraft:wool:5",
 		"minecraft:cauldron-minecraft:wool:7",
-		"minecraft:chain_command_block-minecraft:stained_hardened_clay:5",
 		"minecraft:chest-minecraft:stained_hardened_clay:4",
-		"minecraft:chorus_flower-minecraft:stained_hardened_clay:10",
-		"minecraft:chorus_plant-minecraft:stained_hardened_clay:10",
 		"minecraft:coal_ore-minecraft:coal_block",
 		"minecraft:cobblestone_wall-minecraft:cobblestone",
 		"minecraft:cocoa-minecraft:stained_hardened_clay:5",
@@ -81,7 +77,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:daylight_detector_inverted-minecraft:planks:5",
 		"minecraft:daylight_detector-minecraft:planks:5",
 		"minecraft:deadbush-minecraft:wool:12",
-		"minecraft:detector_rail-minecraft:red_nether_brick",
+		"minecraft:detector_rail-minecraft:redstone_block",
 		"minecraft:diamond_ore-minecraft:diamond_block",
 		"minecraft:dispenser-minecraft:wool:7",
 		"minecraft:double_plant-minecraft:wool:5",
@@ -92,23 +88,21 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:dropper-minecraft:wool:7",
 		"minecraft:emerald_ore-minecraft:emerald_block",
 		"minecraft:enchanting_table-minecraft:obsidian",
-		"minecraft:end_gateway-minecraft:obsidian",
 		"minecraft:end_portal_frame-minecraft:end_stone",
 		"minecraft:end_portal-minecraft:obsidian",
-		"minecraft:end_rod-minecraft:quartz_block",
 		"minecraft:ender_chest-minecraft:obsidian",
 		"minecraft:farmland-minecraft:dirt",
 		"minecraft:fence_gate-minecraft:planks",
 		"minecraft:fence-minecraft:planks",
 		"minecraft:fire-minecraft:air",
 		"minecraft:flower_pot-minecraft:hardened_clay",
-		"minecraft:frosted_ice-minecraft:ice",
+		"minecraft:flowing_lava-minecraft:lava",
+		"minecraft:flowing_water-minecraft:water",
 		"minecraft:furnace-minecraft:wool:7",
 		"minecraft:glass_pane-minecraft:air",
 		"minecraft:glass-minecraft:air",
 		"minecraft:gold_ore-minecraft:gold_block",
 		"minecraft:golden_rail-minecraft:gold_block",
-		"minecraft:grass_path-minecraft:brown_mushroom_block:0",
 		"minecraft:hay_block-minecraft:stained_hardened_clay:4",
 		"minecraft:heavy_weighted_pressure_plate-minecraft:air",
 		"minecraft:hopper-minecraft:wool:7",
@@ -131,7 +125,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:lit_pumpkin-minecraft:wool:1",
 		"minecraft:lit_redstone_lamp-minecraft:stained_hardened_clay:12",
 		"minecraft:lit_redstone_ore-minecraft:redstone_block",
-		"minecraft:magma-minecraft:lava",
+		"minecraft:melon_block-minecraft:wool:4",
 		"minecraft:melon_stem-minecraft:wool:5",
 		"minecraft:mob_spawner-minecraft:stained_hardened_clay:9",
 		"minecraft:mossy_cobblestone-minecraft:wool:13",
@@ -150,9 +144,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:powered_repeater-minecraft:stonebrick",
 		"minecraft:pumpkin_stem-minecraft:wool:5",
 		"minecraft:pumpkin-minecraft:wool:1",
-		"minecraft:purpur_double_slab-minecraft:purpur_block",
-		"minecraft:purpur_slab-minecraft:purpur_block",
-		"minecraft:purpur_stairs-minecraft:purpur_block",
 		"minecraft:quartz_ore-minecraft:quartz_block",
 		"minecraft:quartz_stairs-minecraft:quartz_block",
 		"minecraft:rail-minecraft:iron_block",
@@ -165,13 +156,13 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:redstone_torch-minecraft:redstone_block",
 		"minecraft:redstone_wire-minecraft:redstone_block",
 		"minecraft:reeds-minecraft:stained_hardened_clay:5",
-		"minecraft:repeating_command_block-minecraft:stained_hardened_clay:11",
 		"minecraft:sandstone_stairs-minecraft:sandstone",
 		"minecraft:sapling-minecraft:wool:5",
 		"minecraft:sea_lantern-minecraft:quartz_block",
 		"minecraft:skull-minecraft:air",
 		"minecraft:snow_layer-minecraft:air",
 		"minecraft:soul_sand-minecraft:wool:12",
+		"minecraft:sponge-minecraft:wool:4",
 		"minecraft:spruce_door-minecraft:planks:1",
 		"minecraft:spruce_fence_gate-minecraft:planks:1",
 		"minecraft:spruce_fence-minecraft:planks:1",
@@ -186,8 +177,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:stone_slab2-minecraft:red_sandstone",
 		"minecraft:stone_slab-minecraft:stonebrick",
 		"minecraft:stone_stairs-minecraft:cobblestone",
-		"minecraft:structure_block-minecraft:stained_hardened_clay:11",
-		"minecraft:structure_void-minecraft:air",
 		"minecraft:tallgrass-minecraft:wool:5",
 		"minecraft:tnt-minecraft:wool:14",
 		"minecraft:torch-minecraft:glowstone",
@@ -212,7 +201,7 @@ public class ConfigHandlerExtraBitManipulation
 	};
 	public static final String[] STATE_TO_BIT_MAP_DEFAULT_VALUES = new String[]
 	{
-		"minecraft:wheat:7-minecraft:melon_block"
+		"minecraft:wheat:7-minecraft:wool:4"
 	};
 	
 	public static void setUpConfigs(File configDir)
@@ -227,7 +216,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static Configuration getConfigFile(File configDir, String suffix)
 	{
-		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.GROUP_ID, suffix + ".cfg"));
+		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.MOD_ID, suffix + ".cfg"));
 	}
 	
 	@SubscribeEvent

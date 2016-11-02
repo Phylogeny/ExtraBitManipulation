@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitAccess;
@@ -23,6 +24,8 @@ import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.logging.log4j.Level;
+
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 
 import net.minecraft.block.Block;
@@ -34,6 +37,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
@@ -438,7 +442,10 @@ public class BitIOHelper
 		}
 		Block block = Block.getBlockFromName(stateString);
 		if (block == null)
+		{
+			FMLLog.log(Reference.MOD_NAME, Level.ERROR, "Block failed to load from the following string: " + stateString);
 			return null;
+		}
 		
 		return meta < 0 ? block.getDefaultState() : getStateFromMeta(block, meta);
 	}
