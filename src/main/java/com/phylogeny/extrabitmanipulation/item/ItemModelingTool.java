@@ -14,9 +14,9 @@ import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelWriteData;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.sun.xml.internal.ws.util.StringUtils;
 
@@ -34,7 +34,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -70,21 +69,9 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
-	{
-		if (player.isSneaking() && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
-			player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING.getID(), player.worldObj, 0, 0, 0);
-		
-		return super.onItemRightClick(stack, world, player, hand);
-	}
-	
-	@Override
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world,
 			BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
-		if (player.isSneaking())
-			return EnumActionResult.FAIL;
-		
 		if (world.isRemote)
 		{
 			ModelWriteData modelingData = new ModelWriteData(Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient,
@@ -97,7 +84,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	
 	public EnumActionResult createModel(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing facing, ModelWriteData modelingData)
 	{
-		if (player.isSneaking() || !stack.hasTagCompound())
+		if (!stack.hasTagCompound())
 			return EnumActionResult.FAIL;
 		
 		if (!world.getBlockState(pos).getBlock().isReplaceable(world, pos))
@@ -280,8 +267,8 @@ public class ItemModelingTool extends ItemBitToolBase
 		return missingBitMap;
 	}
 	
-	private int getReplacementBit(IChiselAndBitsAPI api, ConfigReplacementBits replacementBitsConfig, Map<IBitBrush, Integer> bitMap, Map<Integer, Integer> inventoryBitCounts,
-			ArrayList<BitCount> bitCountArray, int remainingBitCount, boolean isCreative, int pass)
+	private int getReplacementBit(IChiselAndBitsAPI api, ConfigReplacementBits replacementBitsConfig, Map<IBitBrush, Integer> bitMap,
+			Map<Integer, Integer> inventoryBitCounts, ArrayList<BitCount> bitCountArray, int remainingBitCount, boolean isCreative, int pass)
 	{
 		if (pass == 0 && replacementBitsConfig.useDefaultReplacementBit())
 		{
@@ -392,7 +379,6 @@ public class ItemModelingTool extends ItemBitToolBase
 		{
 			if (ctrlDown)
 			{
-				tooltip.add("");
 				if (areaMode == 2)
 				{
 					tooltip.add("Left click a block, drag to");
@@ -431,21 +417,33 @@ public class ItemModelingTool extends ItemBitToolBase
 						tooltip.add("    containing the block looked at)");
 					}
 				}
+				
 				tooltip.add("Right click to create model block.");
 				tooltip.add("");
-				tooltip.add("Shift right click to open");
-				tooltip.add("    mapping/preview GUI.");
-				tooltip.add("Shift mouse wheel to cycle");
+				String shiftText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.SHIFT);
+				if (KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.getKeyBinding().isSetToDefaultValue())
+				{
+					tooltip.add(shiftText + " right click to open");
+					tooltip.add("    mapping/preview GUI.");
+				}
+				else
+				{
+					tooltip.add(shiftText + " right click or press " + KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.getText());
+					tooltip.add("    to open mapping/preview GUI.");
+				}
+				tooltip.add(shiftText + " mouse wheel to cycle");
 				tooltip.add("    area modes.");
 				tooltip.add("");
-				tooltip.add("Control right click to toggle GUI");
+				String controlText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.CONTROL);
+				tooltip.add(controlText + " right click to toggle GUI");
 				tooltip.add("    opening upon model read.");
-				tooltip.add("Control mouse wheel to");
+				tooltip.add(controlText + " mouse wheel to");
 				tooltip.add("    cycle chunk snap mode.");
+				addKeybindReminders(tooltip, KeyBindingsExtraBitManipulation.SHIFT, KeyBindingsExtraBitManipulation.CONTROL);
 			}
 			else
 			{
-				addKeyInformation(tooltip);
+				addKeyInformation(tooltip, true);
 			}
 		}
 	}

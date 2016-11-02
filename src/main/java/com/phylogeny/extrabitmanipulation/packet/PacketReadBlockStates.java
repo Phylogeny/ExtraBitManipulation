@@ -69,7 +69,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
-					if (ItemStackHelper.isModelingToolStack(stack) && (!player.isSneaking() || message.drawnStartPoint != null))
+					if (ItemStackHelper.isModelingToolStack(stack))
 						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.getPos(),
 								message.getHit(), message.drawnStartPoint, message.modelingData);
 				}

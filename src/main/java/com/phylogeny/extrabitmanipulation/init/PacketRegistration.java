@@ -9,6 +9,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenModelingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
@@ -25,6 +26,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetWrechMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketUseWrench;
 
 public class PacketRegistration
@@ -56,6 +58,8 @@ public class PacketRegistration
 		registerPacket(PacketBitMappingsPerTool.Handler.class, PacketBitMappingsPerTool.class, Side.SERVER);
 		registerPacket(PacketClearStackBitMappings.Handler.class, PacketClearStackBitMappings.class, Side.SERVER);
 		registerPacket(PacketOverwriteStackBitMappings.Handler.class, PacketOverwriteStackBitMappings.class, Side.SERVER);
+		registerPacket(PacketOpenModelingGui.Handler.class, PacketOpenModelingGui.class, Side.SERVER);
+		registerPacket(PacketSetWrechMode.Handler.class, PacketSetWrechMode.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

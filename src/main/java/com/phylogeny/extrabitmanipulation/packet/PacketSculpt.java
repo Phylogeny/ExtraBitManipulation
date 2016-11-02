@@ -69,7 +69,7 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
-					if (ItemStackHelper.isSculptingToolStack(stack) && (!player.isSneaking() || message.drawnStartPoint != null))
+					if (ItemStackHelper.isSculptingToolStack(stack))
 						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.getPos(),
 								message.getSide(), message.getHit(), message.drawnStartPoint, message.sculptingData);
 				}

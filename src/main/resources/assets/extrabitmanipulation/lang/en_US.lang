@@ -1,4 +1,10 @@
 itemGroup.ExtraBitManipulation=Extra Bit Manipulation
+
+keybinding.extrabitmanipulation.modeling.gui=Open Modeling Tool Gui
+keybinding.extrabitmanipulation.shift=Bit Tool SHIFT Replacement
+keybinding.extrabitmanipulation.control=Bit Tool CONTROL Replacement
+keybinding.extrabitmanipulation.alt=Bit Tool ALT Replacement
+
 item.extrabitmanipulation:DiamondNugget.name=Diamond Nugget
 item.extrabitmanipulation:BitWrench.name=Bit Wrench
 item.extrabitmanipulation:SculptingLoop.name=Curved Sculpting Wire

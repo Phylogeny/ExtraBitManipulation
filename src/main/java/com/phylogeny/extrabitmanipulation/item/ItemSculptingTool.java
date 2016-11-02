@@ -34,6 +34,7 @@ import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
@@ -454,11 +455,11 @@ public class ItemSculptingTool extends ItemBitToolBase
 		{
 			if (ctrlDown)
 			{
-				tooltip.add("");
+				String shiftText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.SHIFT);
 				String removeAddText = removeBits ? "remove" : "add";
 				String toFromText = removeBits ? "from" : "to";
 				if (!removeBits)
-					tooltip.add("Shift left click bit to set bit type.");
+					tooltip.add(shiftText + " left click bit to set bit type.");
 				
 				if (mode == 2)
 				{
@@ -481,27 +482,31 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 				}
 				tooltip.add("Right click to cycle modes.");
-				tooltip.add("Shift mouse wheel to change");
+				tooltip.add(shiftText + " mouse wheel to change");
 				tooltip.add("    " + (removeBits ? "removal" : "addition") + (Configs.displayNameDiameter ? " " : " semi-") + "diameter.");
 				tooltip.add("");
-				tooltip.add("Control right click to");
+				String controlText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.CONTROL);
+				tooltip.add(controlText + " right click to");
 				tooltip.add("    change shape.");
-				tooltip.add("Control left click to toggle");
+				tooltip.add(controlText + " left click to toggle");
 				tooltip.add("    target between");
 				tooltip.add("    bits & vertecies.");
-				tooltip.add("Control mouse wheel to");
+				tooltip.add(controlText + " mouse wheel to");
 				tooltip.add("    change direction.");
 				tooltip.add("");
-				tooltip.add("Alt right click to toggle");
+				String altText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.ALT);
+				tooltip.add(altText + " right click to toggle");
 				tooltip.add("    shapes solid or hollow.");
-				tooltip.add("Alt left click to toggle hollow");
+				tooltip.add(altText + " left click to toggle hollow");
 				tooltip.add("    shapes open or closed.");
-				tooltip.add("Alt mouse wheel to change hollow");
+				tooltip.add(altText + " mouse wheel to change hollow");
 				tooltip.add("    shape wall thickness.");
+				addKeybindReminders(tooltip, KeyBindingsExtraBitManipulation.SHIFT,
+						KeyBindingsExtraBitManipulation.CONTROL, KeyBindingsExtraBitManipulation.ALT);
 			}
 			else
 			{
-				addKeyInformation(tooltip);
+				addKeyInformation(tooltip, true);
 			}
 		}
 	}
