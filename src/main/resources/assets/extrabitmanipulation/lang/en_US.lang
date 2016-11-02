@@ -1,5 +1,6 @@
 itemGroup.ExtraBitManipulation=Extra Bit Manipulation
 <<<<<<< HEAD
+<<<<<<< HEAD
 item.DiamondNugget.name=Diamond Nugget
 item.BitWrench.name=Bit Wrench
 item.SculptingLoop.name=Curved Sculpting Wire
@@ -13,6 +14,14 @@ item.SculptingSquareHead.name=Straight Sculpting Wire Head
 item.SculptingSpadeCurvedHead.name=Curved Sculpting Spade Head
 item.SculptingSpadeSquaredHead.name=Flat Sculpting Spade Head
 =======
+=======
+
+keybinding.extrabitmanipulation.modeling.gui=Open Modeling Tool Gui
+keybinding.extrabitmanipulation.shift=Bit Tool SHIFT Replacement
+keybinding.extrabitmanipulation.control=Bit Tool CONTROL Replacement
+keybinding.extrabitmanipulation.alt=Bit Tool ALT Replacement
+
+>>>>>>> 66bb480... Made the following changes: 1) added SHIFT, CONTROL, and ALT replacement keybinds, as well as a keybind to open the Modeling Tool GUI; 2) added settings menu support for Bit Wrench; 3) fixed settings menu slider rendering; 4) add increment buttons either side of settings menu sliders.
 item.extrabitmanipulation:DiamondNugget.name=Diamond Nugget
 item.extrabitmanipulation:BitWrench.name=Bit Wrench
 item.extrabitmanipulation:SculptingLoop.name=Curved Sculpting Wire

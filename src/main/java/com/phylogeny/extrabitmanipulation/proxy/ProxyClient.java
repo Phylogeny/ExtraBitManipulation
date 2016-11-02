@@ -8,6 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -33,6 +34,10 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.sculptingSquareHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
+		for (KeyBindingsExtraBitManipulation keyBinding : KeyBindingsExtraBitManipulation.values())
+		{
+			keyBinding.register();
+		}
 	}
 	
 	@Override

@@ -8,11 +8,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu.GuiButtonSetting;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetWrechMode;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class ButtonsSetting
 {
@@ -85,6 +88,23 @@ public class ButtonsSetting
 	{
 		ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
 		return stack == null ? null : (ItemSculptingTool) stack.getItem();
+	}
+	
+	public static class WrenchMode extends ButtonsSetting
+	{
+		
+		@Override
+		protected int getValue()
+		{
+			return getHeldStackNBT().getInteger(NBTKeys.WRENCH_MODE);
+		}
+		
+		@Override
+		protected void setValue(EntityPlayer player, int value)
+		{
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetWrechMode(value));
+		}
+		
 	}
 	
 	public static class ModelAreaMode extends ButtonsSetting

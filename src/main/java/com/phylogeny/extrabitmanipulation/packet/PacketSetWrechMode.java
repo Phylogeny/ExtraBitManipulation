@@ -2,52 +2,44 @@ package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import io.netty.buffer.ByteBuf;
 
-public class PacketUseWrench extends PacketBlockInteraction implements IMessage
+public class PacketSetWrechMode implements IMessage
 {
-	private boolean bitRequirement, invertDirection;
+	private int mode;
 	
-	public PacketUseWrench() {}
+	public PacketSetWrechMode() {}
 	
-	public PacketUseWrench(BlockPos pos, EnumFacing side, boolean bitRequirement, boolean invertDirection)
+	public PacketSetWrechMode(int mode)
 	{
-		super(pos, side, new Vec3(0, 0, 0));
-		this.bitRequirement = bitRequirement;
-		this.invertDirection = invertDirection;
+		this.mode = mode;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		super.toBytes(buffer);
-		buffer.writeBoolean(bitRequirement);
-		buffer.writeBoolean(invertDirection);
+		buffer.writeInt(mode);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		super.fromBytes(buffer);
-		bitRequirement = buffer.readBoolean();
-		invertDirection = buffer.readBoolean();
+		mode = buffer.readInt();
 	}
 	
-	public static class Handler implements IMessageHandler<PacketUseWrench, IMessage>
+	public static class Handler implements IMessageHandler<PacketSetWrechMode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketUseWrench message, final MessageContext ctx)
+		public IMessage onMessage(final PacketSetWrechMode message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -58,8 +50,11 @@ public class PacketUseWrench extends PacketBlockInteraction implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (ItemStackHelper.isBitWrenchStack(stack))
-						((ItemBitWrench) stack.getItem()).useWrench(stack, player, player.worldObj,
-								message.getPos(), message.getSide(), message.bitRequirement, message.invertDirection);
+					{
+						((ItemBitWrench) stack.getItem()).initialize(stack);
+						ItemStackHelper.getNBT(stack).setInteger(NBTKeys.WRENCH_MODE, message.mode);
+						player.inventoryContainer.detectAndSendChanges();
+					}
 				}
 			});
 			return null;

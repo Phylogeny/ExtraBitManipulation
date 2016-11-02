@@ -11,6 +11,7 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.packet.PacketUseWrench;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -35,7 +36,7 @@ import net.minecraft.world.World;
 public class ItemBitWrench extends ItemBitToolBase
 {
 	private static final String[] MODE_TITLES = new String[]{"Rotation", "Mirroring", "Translation", "Inversion"};
-	private static final String[] MODE_TEXT = new String[]{"rotate", "mirror", "translate", "invert"};
+	public static final String[] MODE_TEXT = new String[]{"Rotate", "Mirror", "Translate", "Invert"};
 	
 	public ItemBitWrench(String name)
 	{
@@ -54,13 +55,15 @@ public class ItemBitWrench extends ItemBitToolBase
 	{
 		if (world.isRemote)
 		{
-			useWrench(stack, player, world, pos, side, Configs.oneBitTypeInversionRequirement);
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketUseWrench(pos, side, Configs.oneBitTypeInversionRequirement));
+			useWrench(stack, player, world, pos, side, Configs.oneBitTypeInversionRequirement, KeyBindingsExtraBitManipulation.SHIFT.isKeyDown());
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketUseWrench(pos, side,
+					Configs.oneBitTypeInversionRequirement, KeyBindingsExtraBitManipulation.SHIFT.isKeyDown()));
 		}
 		return true;
 	}
 	
-	public boolean useWrench(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, boolean oneBitTypeInversionRequirement)
+	public boolean useWrench(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+			EnumFacing side, boolean oneBitTypeInversionRequirement, boolean invertDirection)
 	{
 		initialize(stack);
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
@@ -79,8 +82,7 @@ public class ItemBitWrench extends ItemBitToolBase
 			}
 			IBitBrush[][][] bitArray = new IBitBrush[16][16][16];
 			int increment = 1; //currently fixed
-			boolean invertDirection = player.isSneaking();
-			int s = (player.isSneaking() ? (mode == 1 ? (side.rotateAround((side.getAxis().isHorizontal()
+			int s = (invertDirection ? (mode == 1 ? (side.rotateAround((side.getAxis().isHorizontal()
 					? EnumFacing.UP : player.getHorizontalFacing()).getAxis())) : side.getOpposite()) : side).ordinal();
 			boolean canTranslate = true;
 			boolean canInvert = false;
@@ -274,18 +276,21 @@ public class ItemBitWrench extends ItemBitToolBase
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
 	{
 		int mode = getMode(stack);
-		String text = MODE_TEXT[mode];
-		if (GuiScreen.isShiftKeyDown())
+		String text = MODE_TEXT[mode].toLowerCase();
+		if (GuiScreen.isCtrlKeyDown())
 		{
-			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back." : (mode == 2 ? " front-to-back." : " their bits."))));
+			String shiftText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.SHIFT);
+			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back."
+					: (mode == 2 ? " front-to-back." : " their bits."))));
 			if (mode != 3)
-				tooltip.add("Do so while sneaking to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
+				tooltip.add(shiftText + "right click blocks to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
 			
-			tooltip.add("Mouse wheel while sneaking to cycle modes.");
+			tooltip.add(shiftText + "mouse wheel to cycle modes.");
+			addKeybindReminders(tooltip, KeyBindingsExtraBitManipulation.SHIFT);
 		}
 		else
 		{
-			tooltip.add("Hold SHIFT for info.");
+			addKeyInformation(tooltip, false);
 		}
 	}
 	

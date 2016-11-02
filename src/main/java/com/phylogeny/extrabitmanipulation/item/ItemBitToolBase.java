@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBase;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,17 +65,29 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 	{
 		if (shiftDown)
 		{
-			tooltip.add("");
 			tooltip.add(EnumChatFormatting.BLUE + "Blue = data stored/accessed per client");
 			tooltip.add(EnumChatFormatting.GREEN + "Green = data stored/accessed per tool");
 			tooltip.add("");
 		}
 	}
 	
-	protected void addKeyInformation(List tooltip)
+	protected void addKeyInformation(List tooltip, boolean hasSettings)
 	{
-		tooltip.add("Hold SHIFT for settings.");
+		if (hasSettings)
+			tooltip.add("Hold SHIFT for settings.");
+		
 		tooltip.add("Hold CONTROL for controls.");
+	}
+	
+	protected void addKeybindReminders(List<String> tooltip, KeyBindingsExtraBitManipulation... keyBinds)
+	{
+		tooltip.add("");
+		tooltip.add(EnumChatFormatting.DARK_AQUA + ">>Replacable with " + (keyBinds.length > 1 ? "Keybinds" : "a Keybind") + "<<");
+	}
+	
+	protected String getColoredKeyBindText(KeyBindingsExtraBitManipulation keyBind)
+	{
+		return EnumChatFormatting.DARK_AQUA + keyBind.getText() + EnumChatFormatting.GRAY;
 	}
 	
 }
