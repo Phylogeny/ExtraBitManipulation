@@ -37,11 +37,11 @@ public class GuiButtonTextured extends GuiButtonBase
 		
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-        		GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(1, 1, 1, 1);
-        mc.getTextureManager().bindTexture(selected ? selectedTexture : deselectedTexture);
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+		GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.color(1, 1, 1, 1);
+		mc.getTextureManager().bindTexture(selected ? selectedTexture : deselectedTexture);
 		Tessellator t = Tessellator.getInstance();
 		VertexBuffer vb = t.getBuffer();
 		int offset = 0;

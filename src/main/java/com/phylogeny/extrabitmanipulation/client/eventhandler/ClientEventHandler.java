@@ -20,12 +20,15 @@ import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenModelingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
@@ -37,7 +40,6 @@ import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
@@ -103,8 +105,27 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void onKeyInput(@SuppressWarnings("unused") InputEvent.KeyInputEvent event)
 	{
-		if (isChiselsAndBitsMenuKeyBindPressed() && ItemStackHelper.isBitToolStack(Minecraft.getMinecraft().thePlayer.getHeldItemMainhand()))
-			Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
+		if (isChiselsAndBitsMenuKeyBindPressed() || KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.isKeyDown())
+		{
+			if (KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.isKeyDown())
+			{
+				ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
+				if (ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
+					openModelingGui();
+			}
+			else
+			{
+				if (ItemStackHelper.isBitToolStack(Minecraft.getMinecraft().thePlayer.getHeldItemMainhand()))
+						Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
+			}
+		}
+	}
+	
+	private void openModelingGui()
+	{
+		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING.getID(), player.worldObj, 0, 0, 0);
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenModelingGui());
 	}
 	
 	public static boolean isChiselsAndBitsMenuKeyBindPressed()
@@ -128,7 +149,7 @@ public class ClientEventHandler
 			if (ItemStackHelper.isBitToolStack(stack))
 			{
 				boolean forward = event.getDwheel() < 0;
-				if (player.isSneaking())
+				if (KeyBindingsExtraBitManipulation.SHIFT.isKeyDown())
 				{
 					if (ItemStackHelper.isBitWrenchItem(stack.getItem()))
 					{
@@ -140,9 +161,11 @@ public class ClientEventHandler
 					}
 					event.setCanceled(true);
 				}
-				else if (ItemStackHelper.isSculptingToolItem(stack.getItem()) && (GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()))
+				else if (ItemStackHelper.isSculptingToolItem(stack.getItem())
+						&& (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown()
+								|| KeyBindingsExtraBitManipulation.ALT.isKeyDown()))
 				{
-					if (GuiScreen.isCtrlKeyDown())
+					if (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown())
 					{
 						cycleDirection(player, stack, forward);
 					}
@@ -158,7 +181,7 @@ public class ClientEventHandler
 				drawnStartPoint = null;
 			}
 		}
-		else if ((GuiScreen.isCtrlKeyDown() || GuiScreen.isAltKeyDown()) && event.isButtonstate())
+		else if ((KeyBindingsExtraBitManipulation.CONTROL.isKeyDown() || KeyBindingsExtraBitManipulation.ALT.isKeyDown()) && event.isButtonstate())
 		{
 			ItemStack stack = player.getHeldItemMainhand();
 			if (stack != null)
@@ -166,7 +189,7 @@ public class ClientEventHandler
 				Item item = stack.getItem();
 				if (ItemStackHelper.isSculptingToolItem(item))
 				{
-					if (GuiScreen.isCtrlKeyDown())
+					if (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown())
 					{
 						if (event.getButton() == 1)
 							cycleShapeType(player, stack, item);
@@ -210,6 +233,7 @@ public class ClientEventHandler
 						ItemSculptingTool toolItem = (ItemSculptingTool) item;
 						boolean removeBits = toolItem.removeBits();
 						RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
+						boolean shiftDown = KeyBindingsExtraBitManipulation.SHIFT.isKeyDown();
 						if (target != null && target.typeOfHit != RayTraceResult.Type.MISS)
 						{
 							if (target.typeOfHit == RayTraceResult.Type.BLOCK)
@@ -223,7 +247,7 @@ public class ClientEventHandler
 									event.setCanceled(true);
 									return;
 								}
-								if (!player.isSneaking() && drawnMode && event.isButtonstate())
+								if (!shiftDown && drawnMode && event.isButtonstate())
 								{
 									IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
 											(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
@@ -251,7 +275,7 @@ public class ClientEventHandler
 								}
 								else
 								{
-									if (player.isSneaking())
+									if (shiftDown)
 									{
 										IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 										IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
@@ -277,7 +301,7 @@ public class ClientEventHandler
 											}
 										}
 									}
-									else if (!player.isSneaking() || removeBits || drawnMode)
+									else if (!shiftDown || removeBits || drawnMode)
 									{
 										SculptingData sculptingData = new SculptingData(stack.getTagCompound(), toolItem);
 										swingTool = toolItem.sculptBlocks(stack, player, player.worldObj, pos, side, hit, drawnStartPoint, sculptingData);
@@ -292,7 +316,7 @@ public class ClientEventHandler
 								event.setCanceled(true);
 							}
 						}
-						else if (player.isSneaking() && event.isButtonstate() && removeBits)
+						else if (shiftDown && event.isButtonstate() && removeBits)
 						{
 							BitToolSettingsHelper.setBitStack(player, stack, true, null, Configs.sculptSetBitWire);
 							if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
@@ -306,11 +330,21 @@ public class ClientEventHandler
 				}
 			}
 		}
+		else if (event.getButton() == 1 && event.isButtonstate())
+		{
+			ItemStack stack = player.getHeldItemMainhand();
+			if (ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES)
+					&& KeyBindingsExtraBitManipulation.SHIFT.isKeyDown())
+			{
+				openModelingGui();
+				event.setCanceled(true);
+			}
+		}
 		if (!event.isCanceled() && event.getButton() == 1 && event.isButtonstate())
 		{
 			ItemStack stack = player.getHeldItemMainhand();
 			if (ItemStackHelper.isSculptingToolStack(stack))
-				cycleSculptMode(player, stack, !player.isSneaking());	
+				cycleSculptMode(player, stack, !KeyBindingsExtraBitManipulation.SHIFT.isKeyDown());	
 		}
 		if (event.getDwheel() != 0)
 		{
@@ -318,9 +352,9 @@ public class ClientEventHandler
 			if (ItemStackHelper.isModelingToolStack(stack))
 			{
 				boolean forward = event.getDwheel() < 0;
-				if (GuiScreen.isCtrlKeyDown() || player.isSneaking())
+				if (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown() || KeyBindingsExtraBitManipulation.SHIFT.isKeyDown())
 				{
-					if (player.isSneaking())
+					if (KeyBindingsExtraBitManipulation.SHIFT.isKeyDown())
 					{
 						cycleModelAreaMode(player, stack, forward);
 					}
@@ -336,7 +370,7 @@ public class ClientEventHandler
 				drawnStartPointModelingTool = null;
 			}
 		}
-		else if (GuiScreen.isCtrlKeyDown() && event.isButtonstate())
+		else if (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown() && event.isButtonstate())
 		{
 			ItemStack stack = player.getHeldItemMainhand();
 			if (ItemStackHelper.isModelingToolStack(stack))
@@ -374,13 +408,13 @@ public class ClientEventHandler
 									event.setCanceled(true);
 									return;
 								}
-								if (!player.isSneaking() && drawnMode && event.isButtonstate())
+								if (!KeyBindingsExtraBitManipulation.SHIFT.isKeyDown() && drawnMode && event.isButtonstate())
 								{
 									drawnStartPointModelingTool = new Vec3i(pos.getX(), pos.getY(), pos.getZ());
 								}
 								else
 								{
-									if (!player.isSneaking() || drawnMode)
+									if (!KeyBindingsExtraBitManipulation.SHIFT.isKeyDown() || drawnMode)
 									{
 										ModelReadData modelingData = new ModelReadData(stack.getTagCompound());
 										swingTool = BitAreaHelper.readBlockStates(stack, player, player.worldObj, pos, hit,
@@ -580,7 +614,7 @@ public class ClientEventHandler
 						double invOffsetY = offsetY ^ 1;
 						double invOffsetZ = offsetZ ^ 1;
 						
-						boolean invertDirection = player.isSneaking();
+						boolean invertDirection = KeyBindingsExtraBitManipulation.SHIFT.isKeyDown();
 						GlStateManager.pushMatrix();
 						GlStateManager.disableLighting();
 						GlStateManager.enableAlpha();
