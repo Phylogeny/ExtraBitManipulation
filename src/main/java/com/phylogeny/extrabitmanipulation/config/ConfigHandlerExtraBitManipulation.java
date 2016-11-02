@@ -81,7 +81,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:daylight_detector_inverted-minecraft:planks:5",
 		"minecraft:daylight_detector-minecraft:planks:5",
 		"minecraft:deadbush-minecraft:wool:12",
-		"minecraft:detector_rail-minecraft:red_nether_brick",
+		"minecraft:detector_rail-minecraft:redstone_block",
 		"minecraft:diamond_ore-minecraft:diamond_block",
 		"minecraft:dispenser-minecraft:wool:7",
 		"minecraft:double_plant-minecraft:wool:5",
@@ -102,6 +102,8 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:fence-minecraft:planks",
 		"minecraft:fire-minecraft:air",
 		"minecraft:flower_pot-minecraft:hardened_clay",
+		"minecraft:flowing_lava-minecraft:lava",
+		"minecraft:flowing_water-minecraft:water",
 		"minecraft:frosted_ice-minecraft:ice",
 		"minecraft:furnace-minecraft:wool:7",
 		"minecraft:glass_pane-minecraft:air",
@@ -131,7 +133,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:lit_pumpkin-minecraft:wool:1",
 		"minecraft:lit_redstone_lamp-minecraft:stained_hardened_clay:12",
 		"minecraft:lit_redstone_ore-minecraft:redstone_block",
-		"minecraft:magma-minecraft:lava",
 		"minecraft:melon_stem-minecraft:wool:5",
 		"minecraft:mob_spawner-minecraft:stained_hardened_clay:9",
 		"minecraft:mossy_cobblestone-minecraft:wool:13",
@@ -187,7 +188,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:stone_slab-minecraft:stonebrick",
 		"minecraft:stone_stairs-minecraft:cobblestone",
 		"minecraft:structure_block-minecraft:stained_hardened_clay:11",
-		"minecraft:structure_void-minecraft:air",
 		"minecraft:tallgrass-minecraft:wool:5",
 		"minecraft:tnt-minecraft:wool:14",
 		"minecraft:torch-minecraft:glowstone",
@@ -227,7 +227,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static Configuration getConfigFile(File configDir, String suffix)
 	{
-		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.GROUP_ID, suffix + ".cfg"));
+		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.MOD_ID, suffix + ".cfg"));
 	}
 	
 	@SubscribeEvent

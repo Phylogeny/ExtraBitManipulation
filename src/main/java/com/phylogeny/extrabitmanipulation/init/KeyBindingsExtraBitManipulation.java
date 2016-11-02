@@ -73,8 +73,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	public void register()
 	{
-		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(),
-				this, 0, "itemGroup." + Reference.MOD_ID);
+		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), this, 0, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
 	}
 	
