@@ -102,6 +102,8 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:fence-minecraft:planks",
 		"minecraft:fire-minecraft:air",
 		"minecraft:flower_pot-minecraft:hardened_clay",
+		"minecraft:flowing_lava-minecraft:lava",
+		"minecraft:flowing_water-minecraft:water",
 		"minecraft:frosted_ice-minecraft:ice",
 		"minecraft:furnace-minecraft:wool:7",
 		"minecraft:glass_pane-minecraft:air",
@@ -227,7 +229,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static Configuration getConfigFile(File configDir, String suffix)
 	{
-		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.GROUP_ID, suffix + ".cfg"));
+		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.MOD_ID, suffix + ".cfg"));
 	}
 	
 	@SubscribeEvent
