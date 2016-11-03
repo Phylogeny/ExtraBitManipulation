@@ -72,12 +72,12 @@ public class ItemModelingTool extends ItemBitToolBase
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world,
 			BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
-		if (world.isRemote)
+		if (world.isRemote && stack.hasTagCompound())
 		{
-			ModelWriteData modelingData = new ModelWriteData(Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient,
-					Configs.modelStateToBitMap, Configs.modelBlockToBitMap);
-			createModel(stack, player, world, pos, facing, modelingData);
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCreateModel(pos, facing, modelingData));
+			@SuppressWarnings("null")
+			ModelWriteData modelingData = new ModelWriteData(stack.getTagCompound().getBoolean(NBTKeys.BIT_MAPS_PER_TOOL));
+			if (createModel(stack, player, world, pos, facing, modelingData) == EnumActionResult.SUCCESS)
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCreateModel(pos, facing, modelingData));
 		}
 		return EnumActionResult.SUCCESS;
 	}
@@ -104,12 +104,9 @@ public class ItemModelingTool extends ItemBitToolBase
 		BitIOHelper.readStatesFromNBT(nbt, stateMap, stateArray);
 		Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray = new HashMap<IBlockState, ArrayList<BitCount>>();
 		Map<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
-		boolean bitMapPerTool = nbt.getBoolean(NBTKeys.BIT_MAPS_PER_TOOL);
 		Map<IBlockState, Integer> missingBitMap = mapBitsToStates(api, modelingData.getReplacementBitsUnchiselable(),
 				modelingData.getReplacementBitsInsufficient(), BitInventoryHelper.getInventoryBitCounts(api, player), stateMap, stateToBitCountArray,
-				bitMapPerTool ? BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT) : modelingData.getStateToBitMap(),
-				bitMapPerTool ? BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT) : modelingData.getBlockToBitMap(),
-				bitMap, player.capabilities.isCreativeMode);
+				modelingData.getStateToBitMap(api, stack), modelingData.getBlockToBitMap(api, stack), bitMap, player.capabilities.isCreativeMode);
 		if (!missingBitMap.isEmpty())
 		{
 			if (world.isRemote)

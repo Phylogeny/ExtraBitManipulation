@@ -663,10 +663,8 @@ public class GuiModelingTool extends GuiContainer
 		else if (id == 9)
 		{
 			ItemStack stack = getModelingToolStack();
-			BitIOHelper.writeStateToBitMapToNBT(stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT, Configs.modelStateToBitMap, Configs.saveStatesById);
-			BitIOHelper.writeStateToBitMapToNBT(stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT, Configs.modelBlockToBitMap, Configs.saveStatesById);
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketOverwriteStackBitMappings(Configs.modelStateToBitMap,
-					Configs.modelBlockToBitMap, Configs.saveStatesById));
+			overwriteStackBitMappings(stack, Configs.modelBlockToBitMap, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT);
+			overwriteStackBitMappings(stack, Configs.modelStateToBitMap, NBTKeys.STATE_TO_BIT_MAP_PERMANENT);
 		}
 		else if (id == 10 || id == 11)
 		{
@@ -693,6 +691,12 @@ public class GuiModelingTool extends GuiContainer
 		}
 		if (id >= 8)
 			setWorldAndResolution(mc, width, height);
+	}
+	
+	private void overwriteStackBitMappings(ItemStack stack, Map<IBlockState, IBitBrush> bitMap, String key)
+	{
+		BitIOHelper.writeStateToBitMapToNBT(stack, key, bitMap, Configs.saveStatesById);
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOverwriteStackBitMappings(bitMap, key, Configs.saveStatesById));
 	}
 	
 	private String[] overwriteConfigMapWithStackMap(Map<IBlockState, IBitBrush> bitMap, String key)

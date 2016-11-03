@@ -59,8 +59,8 @@ public class PacketUseWrench extends PacketBlockInteraction implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isBitWrenchStack(stack))
-						((ItemBitWrench) stack.getItem()).useWrench(stack, player, player.worldObj,
-								message.getPos(), message.getSide(), message.bitRequirement, message.invertDirection);
+						((ItemBitWrench) stack.getItem()).useWrench(stack, player, player.worldObj, message.pos,
+								message.side, message.bitRequirement, message.invertDirection);
 				}
 			});
 			return null;
