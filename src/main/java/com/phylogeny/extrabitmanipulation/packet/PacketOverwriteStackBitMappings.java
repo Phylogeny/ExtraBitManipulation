@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import io.netty.buffer.ByteBuf;
 import mod.chiselsandbits.api.IBitBrush;
@@ -17,34 +16,30 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketOverwriteStackBitMappings implements IMessage
+public class PacketOverwriteStackBitMappings extends PacketBitMapIO
 {
-	private Map<IBlockState, IBitBrush> stateToBitMap, blockToBitMap;
-	private boolean saveStatesById;
+	private Map<IBlockState, IBitBrush> bitMap;
 	
 	public PacketOverwriteStackBitMappings() {}
 	
-	public PacketOverwriteStackBitMappings(Map<IBlockState, IBitBrush> stateToBitMap, Map<IBlockState, IBitBrush> blockToBitMap, boolean saveStatesById)
+	public PacketOverwriteStackBitMappings(Map<IBlockState, IBitBrush> bitMap, String nbtKey, boolean saveStatesById)
 	{
-		this.stateToBitMap = stateToBitMap;
-		this.blockToBitMap = blockToBitMap;
-		this.saveStatesById = saveStatesById;
+		super(nbtKey, saveStatesById);
+		this.bitMap = bitMap;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		BitIOHelper.stateToBitMapToBytes(buffer, stateToBitMap);
-		BitIOHelper.stateToBitMapToBytes(buffer, blockToBitMap);
-		buffer.writeBoolean(saveStatesById);
+		super.toBytes(buffer);
+		BitIOHelper.stateToBitMapToBytes(buffer, bitMap);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		stateToBitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
-		blockToBitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
-		saveStatesById = buffer.readBoolean();
+		super.fromBytes(buffer);
+		bitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketOverwriteStackBitMappings, IMessage>
@@ -62,8 +57,7 @@ public class PacketOverwriteStackBitMappings implements IMessage
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (ItemStackHelper.isModelingToolStack(stack))
 					{
-						BitIOHelper.writeStateToBitMapToNBT(stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT, message.stateToBitMap, message.saveStatesById);
-						BitIOHelper.writeStateToBitMapToNBT(stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT, message.blockToBitMap, message.saveStatesById);
+						BitIOHelper.writeStateToBitMapToNBT(stack, message.nbtKey, message.bitMap, message.saveStatesById);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}

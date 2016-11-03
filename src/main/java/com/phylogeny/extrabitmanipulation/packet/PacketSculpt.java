@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
@@ -34,9 +35,7 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 	public void toBytes(ByteBuf buffer)
 	{
 		super.toBytes(buffer);
-		boolean notNull = drawnStartPoint != null;
-		buffer.writeBoolean(notNull);
-		if (notNull)
+		if (BitIOHelper.notNullToBuffer(buffer, drawnStartPoint))
 		{
 			buffer.writeDouble(drawnStartPoint.xCoord);
 			buffer.writeDouble(drawnStartPoint.yCoord);
@@ -69,8 +68,8 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (ItemStackHelper.isSculptingToolStack(stack))
-						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.getPos(),
-								message.getSide(), message.getHit(), message.drawnStartPoint, message.sculptingData);
+						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.pos,
+								message.side, message.hit, message.drawnStartPoint, message.sculptingData);
 				}
 			});
 			return null;

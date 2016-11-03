@@ -14,34 +14,29 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketModelingTool implements IMessage
+public class PacketModelingTool extends PacketBitMapIO
 {
 	private IBlockState state;
 	private IBitBrush bit;
-	private String nbtKey;
-	private boolean saveStatesById;
 	
 	public PacketModelingTool() {}
 	
 	public PacketModelingTool(String nbtKey, IBlockState state, IBitBrush bit, boolean saveStatesById)
 	{
-		this.nbtKey = nbtKey;
+		super(nbtKey, saveStatesById);
 		this.state = state;
 		this.bit = bit;
-		this.saveStatesById = saveStatesById;
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		ByteBufUtils.writeUTF8String(buffer, nbtKey);
+		super.toBytes(buffer);
 		BitIOHelper.stateToBytes(buffer, state);
-		buffer.writeBoolean(saveStatesById);
 		boolean removeMapping = bit == null;
 		buffer.writeBoolean(removeMapping);
 		if (!removeMapping)
@@ -51,9 +46,8 @@ public class PacketModelingTool implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		nbtKey = ByteBufUtils.readUTF8String(buffer);
+		super.fromBytes(buffer);
 		state = BitIOHelper.stateFromBytes(buffer);
-		saveStatesById = buffer.readBoolean();
 		if (buffer.readBoolean())
 		{
 			bit = null;

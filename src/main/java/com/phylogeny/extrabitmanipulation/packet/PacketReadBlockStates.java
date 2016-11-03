@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
 
@@ -35,9 +36,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 	public void toBytes(ByteBuf buffer)
 	{
 		super.toBytes(buffer);
-		boolean notNull = drawnStartPoint != null;
-		buffer.writeBoolean(notNull);
-		if (notNull)
+		if (BitIOHelper.notNullToBuffer(buffer, drawnStartPoint))
 		{
 			buffer.writeInt(drawnStartPoint.getX());
 			buffer.writeInt(drawnStartPoint.getY());
@@ -70,8 +69,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (ItemStackHelper.isModelingToolStack(stack))
-						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.getPos(),
-								message.getHit(), message.drawnStartPoint, message.modelingData);
+						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.pos, message.hit, message.drawnStartPoint, message.modelingData);
 				}
 			});
 			return null;

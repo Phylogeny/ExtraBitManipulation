@@ -8,9 +8,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PacketBlockInteraction implements IMessage
 {
-	private BlockPos pos;
-	private EnumFacing side;
-	private Vec3 hit;
+	protected BlockPos pos;
+	protected EnumFacing side;
+	protected Vec3 hit;
 	
 	public PacketBlockInteraction() {}
 	
@@ -39,21 +39,6 @@ public class PacketBlockInteraction implements IMessage
 		pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
 		side = EnumFacing.getFront(buffer.readInt());
 		hit = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-	}
-	
-	public BlockPos getPos()
-	{
-		return pos;
-	}
-	
-	public EnumFacing getSide()
-	{
-		return side;
-	}
-	
-	public Vec3 getHit()
-	{
-		return hit;
 	}
 	
 }
