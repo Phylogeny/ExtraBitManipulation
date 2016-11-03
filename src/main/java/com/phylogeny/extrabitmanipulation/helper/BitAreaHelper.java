@@ -174,10 +174,8 @@ public class BitAreaHelper
 				
 				x -= x % 16;
 				z -= z % 16;
-				boolean snapY = modeSnapToChunk == 2;
-				if (snapY)
+				if (modeSnapToChunk == 2)
 				{
-					y += 1;
 					y -= y % 16;
 				}
 				else
