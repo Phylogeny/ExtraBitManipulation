@@ -10,22 +10,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ProxyClient extends ProxyCommon
 {
-	
-	@Override
-	public void init()
-	{
-		super.init();
-		for (KeyBindingsExtraBitManipulation keyBinding : KeyBindingsExtraBitManipulation.values())
-		{
-			keyBinding.register();
-		}
-	}
 	
 	@Override
 	public void preinit(FMLPreInitializationEvent event)
@@ -45,6 +36,17 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.sculptingSquareHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
+		SoundsExtraBitManipulation.registerSounds();
+	}
+	
+	@Override
+	public void init()
+	{
+		super.init();
+		for (KeyBindingsExtraBitManipulation keyBinding : KeyBindingsExtraBitManipulation.values())
+		{
+			keyBinding.register();
+		}
 	}
 	
 	@Override
