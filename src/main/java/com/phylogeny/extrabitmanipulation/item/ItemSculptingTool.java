@@ -123,6 +123,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 	public boolean sculptBlocks(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
 			EnumFacing side, Vec3d hit, Vec3d drawnStartPoint, SculptingData sculptingData)
 	{
+		ItemStack setBitStack = sculptingData.getBitStack();
+		if (setBitStack == null && !removeBits)
+			return false;
+		
 		if (!world.isRemote)
 		{
 			initialize(stack);
@@ -243,7 +247,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 				
 				int initialpossibleUses = Integer.MAX_VALUE;
 				IBitBrush setBit = null;
-				ItemStack setBitStack = sculptingData.getBitStack();
 				try
 				{
 					setBit = api.createBrush(setBitStack);
