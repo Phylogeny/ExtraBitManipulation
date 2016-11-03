@@ -34,9 +34,7 @@ public class ItemStackHelper
 	
 	public static void stackToBytes(ByteBuf buffer, ItemStack bitStack)
 	{
-		boolean notNull = bitStack != null;
-		buffer.writeBoolean(notNull);
-		if (notNull)
+		if (BitIOHelper.notNullToBuffer(buffer, bitStack))
 			ByteBufUtils.writeItemStack(buffer, bitStack);
 	}
 	

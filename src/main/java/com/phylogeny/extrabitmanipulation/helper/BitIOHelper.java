@@ -79,12 +79,16 @@ public class BitIOHelper
 	
 	public static void stateToBitMapToBytes(ByteBuf buffer, Map<IBlockState, IBitBrush> stateToBitMap)
 	{
-		objectToBytes(buffer, stateToBitMapToStateIdArray(stateToBitMap));
+		if (notNullToBuffer(buffer, stateToBitMap))
+			objectToBytes(buffer, stateToBitMapToStateIdArray(stateToBitMap));
 	}
 	
 	public static Map<IBlockState, IBitBrush> stateToBitMapFromBytes(ByteBuf buffer)
 	{
 		Map<IBlockState, IBitBrush> stateToBitMap = new HashMap<IBlockState, IBitBrush>();
+		if (!buffer.readBoolean())
+			return stateToBitMap;
+		
 		int[] mapArray = (int[]) objectFromBytes(buffer);
 		if (mapArray == null)
 			return stateToBitMap;
@@ -469,6 +473,13 @@ public class BitIOHelper
 	private static String getModelBitMapEntryString(Entry<IBlockState, IBitBrush> entry)
 	{
 		return getStringFromState(entry.getKey()) + "-" + getStringFromState(entry.getValue().getState());
+	}
+	
+	public static boolean notNullToBuffer(ByteBuf buffer, Object object)
+	{
+		boolean notNull = object != null;
+		buffer.writeBoolean(notNull);
+		return notNull;
 	}
 	
 }

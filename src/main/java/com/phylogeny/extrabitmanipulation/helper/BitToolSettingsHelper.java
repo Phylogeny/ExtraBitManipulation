@@ -30,6 +30,7 @@ import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 import mod.chiselsandbits.api.IBitBrush;
+import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -722,32 +723,38 @@ public class BitToolSettingsHelper
 		private ConfigReplacementBits replacementBitsUnchiselable = new ConfigReplacementBits();
 		private ConfigReplacementBits replacementBitsInsufficient = new ConfigReplacementBits();
 		private Map<IBlockState, IBitBrush> stateToBitMap, blockToBitMap;
+		private boolean bitMapPerTool;
 		
 		public ModelWriteData() {}
 		
-		public ModelWriteData(ConfigReplacementBits replacementBitsUnchiselable, ConfigReplacementBits replacementBitsInsufficient,
-				Map<IBlockState, IBitBrush> stateToBitMap, Map<IBlockState, IBitBrush> blockToBitMap)
+		public ModelWriteData(boolean bitMapPerTool)
 		{
-			this.replacementBitsUnchiselable = replacementBitsUnchiselable;
-			this.replacementBitsInsufficient = replacementBitsInsufficient;
-			this.stateToBitMap = stateToBitMap;
-			this.blockToBitMap = blockToBitMap;
+			this.bitMapPerTool = bitMapPerTool;
+			replacementBitsUnchiselable = Configs.replacementBitsUnchiselable;
+			replacementBitsInsufficient = Configs.replacementBitsInsufficient;
+			stateToBitMap = Configs.modelStateToBitMap;
+			blockToBitMap = Configs.modelBlockToBitMap;
 		}
 		
 		public void toBytes(ByteBuf buffer)
 		{
 			replacementBitsUnchiselable.toBytes(buffer);
 			replacementBitsInsufficient.toBytes(buffer);
-			BitIOHelper.stateToBitMapToBytes(buffer, stateToBitMap);
-			BitIOHelper.stateToBitMapToBytes(buffer, blockToBitMap);
+			buffer.writeBoolean(bitMapPerTool);
+			if (!bitMapPerTool)
+			{
+				BitIOHelper.stateToBitMapToBytes(buffer, stateToBitMap);
+				BitIOHelper.stateToBitMapToBytes(buffer, blockToBitMap);
+			}
 		}
 		
 		public void fromBytes(ByteBuf buffer)
 		{
 			replacementBitsUnchiselable.fromBytes(buffer);
 			replacementBitsInsufficient.fromBytes(buffer);
-			stateToBitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
-			blockToBitMap = BitIOHelper.stateToBitMapFromBytes(buffer);
+			bitMapPerTool = buffer.readBoolean();
+			stateToBitMap = bitMapPerTool ? null : BitIOHelper.stateToBitMapFromBytes(buffer);
+			blockToBitMap = bitMapPerTool ? null : BitIOHelper.stateToBitMapFromBytes(buffer);
 		}
 		
 		public ConfigReplacementBits getReplacementBitsUnchiselable()
@@ -760,14 +767,14 @@ public class BitToolSettingsHelper
 			return replacementBitsInsufficient;
 		}
 		
-		public Map<IBlockState, IBitBrush> getStateToBitMap()
+		public Map<IBlockState, IBitBrush> getStateToBitMap(IChiselAndBitsAPI api, ItemStack stack)
 		{
-			return stateToBitMap;
+			return bitMapPerTool ? BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.STATE_TO_BIT_MAP_PERMANENT) : stateToBitMap;
 		}
 		
-		public Map<IBlockState, IBitBrush> getBlockToBitMap()
+		public Map<IBlockState, IBitBrush> getBlockToBitMap(IChiselAndBitsAPI api, ItemStack stack)
 		{
-			return blockToBitMap;
+			return bitMapPerTool ? BitIOHelper.readStateToBitMapFromNBT(api, stack, NBTKeys.BLOCK_TO_BIT_MAP_PERMANENT) : blockToBitMap;
 		}
 		
 	}
