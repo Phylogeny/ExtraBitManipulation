@@ -256,7 +256,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:stone_slab:6-minecraft:nether_brick",
 		"minecraft:stone_slab:7-minecraft:quartz_block",
 		"minecraft:stone_slab:9-minecraft:sandstone",
-		"minecraft:tallgrass:1-minecraft:wool:5",
+		"minecraft:tallgrass:1-minecraft:wool:13",
 		"minecraft:tallgrass-minecraft:wool:12",
 		"minecraft:wheat:7-minecraft:melon_block",
 		"minecraft:wooden_slab:10-minecraft:planks:2",
