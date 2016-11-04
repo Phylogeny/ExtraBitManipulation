@@ -80,11 +80,11 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:dark_oak_stairs-minecraft:planks:5",
 		"minecraft:daylight_detector_inverted-minecraft:planks:5",
 		"minecraft:daylight_detector-minecraft:planks:5",
-		"minecraft:deadbush-minecraft:wool:12",
+		"minecraft:deadbush-minecraft:air",
 		"minecraft:detector_rail-minecraft:redstone_block",
 		"minecraft:diamond_ore-minecraft:diamond_block",
 		"minecraft:dispenser-minecraft:wool:7",
-		"minecraft:double_plant-minecraft:wool:13",
+		"minecraft:double_plant-minecraft:air",
 		"minecraft:double_stone_slab2-minecraft:red_sandstone",
 		"minecraft:double_stone_slab-minecraft:stonebrick",
 		"minecraft:double_wooden_slab-minecraft:planks",
@@ -188,7 +188,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:stone_slab-minecraft:stonebrick",
 		"minecraft:stone_stairs-minecraft:cobblestone",
 		"minecraft:structure_block-minecraft:stained_hardened_clay:11",
-		"minecraft:tallgrass-minecraft:wool:13",
+		"minecraft:tallgrass-minecraft:air",
 		"minecraft:tnt-minecraft:wool:14",
 		"minecraft:torch-minecraft:glowstone",
 		"minecraft:trapdoor-minecraft:planks",
@@ -221,9 +221,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:cocoa:7-minecraft:hardened_clay",
 		"minecraft:cocoa:8-minecraft:stained_hardened_clay:1",
 		"minecraft:cocoa:9-minecraft:stained_hardened_clay:1",
-		"minecraft:double_plant:1-minecraft:wool:6",
-		"minecraft:double_plant:4-minecraft:wool:14",
-		"minecraft:double_plant:5-minecraft:wool:6",
 		"minecraft:double_stone_slab:10-minecraft:planks",
 		"minecraft:double_stone_slab:11-minecraft:cobblestone",
 		"minecraft:double_stone_slab:12-minecraft:stained_hardened_clay:6",
@@ -249,12 +246,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:red_flower:6-minecraft:snow",
 		"minecraft:red_flower:7-minecraft:wool:6",
 		"minecraft:red_flower:8-minecraft:snow",
-		"minecraft:sapling:10-minecraft:stained_hardened_clay:5",
-		"minecraft:sapling:12-minecraft:stained_hardened_clay:5",
-		"minecraft:sapling:1-minecraft:stained_hardened_clay:13",
-		"minecraft:sapling:2-minecraft:stained_hardened_clay:5",
-		"minecraft:sapling:4-minecraft:stained_hardened_clay:5",
-		"minecraft:sapling:9-minecraft:stained_hardened_clay:13",
 		"minecraft:stone_slab:10-minecraft:planks",
 		"minecraft:stone_slab:11-minecraft:cobblestone",
 		"minecraft:stone_slab:12-minecraft:stained_hardened_clay:6",
@@ -267,8 +258,6 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:stone_slab:6-minecraft:nether_brick",
 		"minecraft:stone_slab:7-minecraft:quartz_block",
 		"minecraft:stone_slab:9-minecraft:sandstone",
-		"minecraft:tallgrass:1-minecraft:wool:13",
-		"minecraft:tallgrass-minecraft:wool:12",
 		"minecraft:wheat:7-minecraft:melon_block",
 		"minecraft:wooden_slab:10-minecraft:planks:2",
 		"minecraft:wooden_slab:11-minecraft:planks:3",
@@ -381,13 +370,14 @@ public class ConfigHandlerExtraBitManipulation
 			
 			//MODELING TOOL SETTINGS
 			Configs.saveStatesById = configFileClient.getBoolean("Save States By ID", MODELING_TOOL_SETTINGS, false,
-					"If set to true, manually mapped blocks and block states will be saved as state IDs (integers - 4 bytes each). If set to false, " +
-					"they will be saved as a registry name (2 strings - 1 byte per char) and metadata (1 byte). Saving states as registry name " +
-					"for blocks and as registry name and metadata for block states takes up several times more space, and if thousands of mappings " +
-					"are manually stored in an item (as unlikely as that is), client or server crashing may occur if that item is sent through a " +
-					"packet network since the maximum payload is 32767 bytes. The benefit is that if the item is transported across worlds, the " +
-					"states will remain consistent. Saving states as integers, however, takes several times less space (meaning that 10k+ mappings " +
-					"would be necessary to cause a crash, which is even less likely), but the state IDs may not remain consistent if the item is " +
+					"If set to true, and if the 'per tool' box is checked in a given Modeling Tool (causing mappings to be read/written from/to the " +
+					"NBT tag of the itemstack), manually mapped blocks and block states will be saved to the itemstack's NBT as state IDs (integers - " +
+					"4 bytes each). If set to false, they will be saved as a registry name (2 strings - 1 byte per char) and metadata (1 byte). Saving " +
+					"states as registry name for blocks and as registry name and metadata for block states takes up several times more space, and if " +
+					"thousands of mappings are manually stored in an item (as unlikely as that is), client or server crashing may occur if that item " +
+					"is sent through a packet network since the maximum payload is 32767 bytes. The benefit is that if the item is transported across " +
+					"worlds, the states will remain consistent. Saving states as integers, however, takes several times less space (meaning that 10k+ " +
+					"mappings would be necessary to cause a crash, which is even less likely), but the state IDs may not remain consistent if the item is " +
 					"transported across worlds. Changing this config will not cause any previously mapped states to be lost; all saved mappings " +
 					"will simply be read and saved in the new format the next time a state is manually mapped or unmapped.");
 			Configs.replacementBitsUnchiselable = getConfigReplacementBits(UNCHISELABLE_BLOCK_STATES, "minecraft:redstone_block", true, true, false);
