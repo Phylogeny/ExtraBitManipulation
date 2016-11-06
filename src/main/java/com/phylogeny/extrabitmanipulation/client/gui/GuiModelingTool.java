@@ -123,11 +123,14 @@ public class GuiModelingTool extends GuiContainer
 				addBitToManualMap(state.getBlock().getDefaultState(), blockToBitMapPermanent, blockToBitMapAllBlocks);
 			}
 		}
+		blockToBitMapAllBlocks = getSortedLinkedBitMap(blockToBitMapAllBlocks);
 		for (IBlockState state : stateMap.keySet())
 		{
 			addBitToManualMap(state, stateToBitMapPermanent, stateToBitMapManual);
 			addBitToManualMap(state.getBlock().getDefaultState(), blockToBitMapPermanent, blockToBitMapManual);
 		}
+		stateToBitMapManual = getSortedLinkedBitMap(stateToBitMapManual);
+		blockToBitMapManual = getSortedLinkedBitMap(blockToBitMapManual);
 	}
 	
 	private void addBitToManualMap(IBlockState state, Map<IBlockState, IBitBrush> bitMapPermanent, Map<IBlockState, IBitBrush> bitMapManual)
@@ -214,6 +217,7 @@ public class GuiModelingTool extends GuiContainer
 				BitInventoryHelper.getInventoryBitCounts(api, player), stateMap, stateToBitCountArray,
 				stateToBitMapPermanent, blockToBitMapPermanent, bitMap, player.capabilities.isCreativeMode).isEmpty())
 		{
+			stateToBitCountArray = getSortedLinkedBitMap(stateToBitCountArray);
 			IBitAccess bitAccess = api.createBitItem(null);
 			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArrayCopy = new HashMap<IBlockState, ArrayList<BitCount>>();
 			for (Entry<IBlockState, ArrayList<BitCount>> entry : stateToBitCountArray.entrySet())
@@ -389,7 +393,7 @@ public class GuiModelingTool extends GuiContainer
 		refreshList();
 	}
 	
-	private LinkedHashMap getSortedLinkedBitMap(Map<IBlockState, IBitBrush> bitMap)
+	private LinkedHashMap getSortedLinkedBitMap(Map bitMap)
 	{
 		return BitInventoryHelper.getSortedLinkedHashMap(bitMap, new Comparator<Object>() {
 			@Override
@@ -401,7 +405,7 @@ public class GuiModelingTool extends GuiContainer
 			@SuppressWarnings("unchecked")
 			private String getName(Object object)
 			{
-				IBlockState state = ((Map.Entry<IBlockState, IBitBrush>) (object)).getKey();
+				IBlockState state = (IBlockState) ((Map.Entry) object).getKey();
 				Block block = state.getBlock();
 				ResourceLocation regName = block.getRegistryName();
 				return regName == null ? "" : (regName.getResourceDomain() + regName.getResourcePath() + block.getMetaFromState(state));
