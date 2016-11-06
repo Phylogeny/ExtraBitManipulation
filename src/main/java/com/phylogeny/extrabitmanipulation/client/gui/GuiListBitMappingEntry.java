@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.renderer.RenderState;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
@@ -20,20 +21,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.ForgeHooksClient;
 
 public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 {
@@ -99,7 +93,6 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 		return bit != null && bit.isAir();
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
 	{
@@ -117,83 +110,48 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			mc.getTextureManager().bindTexture(bitMappingScreen.GUI_TEXTURE);
 			bitMappingScreen.drawTexturedModalRect(x, y, 0, 219, listWidth, slotHeight);
-			
 			RenderHelper.enableGUIStandardItemLighting();
-			
 			if (getBitStack() != null)
 			{
 				mc.getRenderItem().renderItemIntoGUI(getBitStack(), x + 44, y + 2);
 			}
 			else if (getBit() == null)
 			{
-				GlStateManager.pushMatrix();
-				GlStateManager.disableTexture2D();
-				GlStateManager.color(1, 0, 0);
-				Tessellator tessellator = Tessellator.getInstance();
-				WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-				ScaledResolution scaledresolution = new ScaledResolution(mc);
-				GL11.glLineWidth(scaledresolution.getScaleFactor() * 2);
-				worldRenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
-				int x2 = x + 44;
-				int y2 = y + 2;
-				int x3 = x2 + 16;
-				int y3 = y2 + 16;
-				worldRenderer.pos(x2, y2, 0).color(255, 0, 0, 255).endVertex();
-				worldRenderer.pos(x3, y3, 0).color(255, 0, 0, 255).endVertex();
-				tessellator.draw();
-				worldRenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
-				worldRenderer.pos(x3, y2, 0).color(255, 0, 0, 255).endVertex();
-				worldRenderer.pos(x2, y3, 0).color(255, 0, 0, 255).endVertex();
-				tessellator.draw();
-				GlStateManager.enableTexture2D();
-				GlStateManager.popMatrix();
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				x2 -= 1;
-				y2 -= 1;
-				bitMappingScreen.drawTexturedModalRect(x2, y2, 43, 220, 18, 1);
-				bitMappingScreen.drawTexturedModalRect(x2, y2 + 17, 43, 237, 18, 1);
+				drawCross(x, y);
 			}
-			
-			BlockRendererDispatcher rendererDispatcher = mc.getBlockRendererDispatcher();
-			IBakedModel model = rendererDispatcher.getBlockModelShapes().getModelForState(state);
-			TextureManager textureManager = mc.getTextureManager();
-			GlStateManager.pushMatrix();
-			textureManager.bindTexture(TextureMap.locationBlocksTexture);
-			textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
-			GlStateManager.enableRescaleNormal();
-			GlStateManager.enableAlpha();
-			GlStateManager.alphaFunc(516, 0.1F);
-			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(770, 771);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.translate(x + 6, y + 2, 100.0F + mc.getRenderItem().zLevel);
-			GlStateManager.translate(8.0F, 8.0F, 0.0F);
-			GlStateManager.scale(1.0F, 1.0F, -1.0F);
-			GlStateManager.scale(0.5F, 0.5F, 0.5F);
-			if (model.isGui3d())
-			{
-				GlStateManager.scale(40.0F, 40.0F, 40.0F);
-				GlStateManager.rotate(210.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.enableLighting();
-			}
-			else
-			{
-				GlStateManager.scale(64.0F, 64.0F, 64.0F);
-				GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.disableLighting();
-			}
-			model = ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.GUI);
-			mc.getRenderItem().renderItem(new ItemStack(Items.apple), model);
-			GlStateManager.disableAlpha();
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.disableLighting();
-			GlStateManager.popMatrix();
-			textureManager.bindTexture(TextureMap.locationBlocksTexture);
-			textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
-			
+			RenderState.renderStateModelIntoGUI(state, x, y);
 			RenderHelper.disableStandardItemLighting();
 		}
+	}
+	
+	private void drawCross(int x, int y)
+	{
+		GlStateManager.pushMatrix();
+		GlStateManager.disableTexture2D();
+		GlStateManager.color(1, 0, 0);
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+		ScaledResolution scaledresolution = new ScaledResolution(mc);
+		GL11.glLineWidth(scaledresolution.getScaleFactor() * 2);
+		worldRenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+		int x2 = x + 44;
+		int y2 = y + 2;
+		int x3 = x2 + 16;
+		int y3 = y2 + 16;
+		worldRenderer.pos(x2, y2, 0).color(255, 0, 0, 255).endVertex();
+		worldRenderer.pos(x3, y3, 0).color(255, 0, 0, 255).endVertex();
+		tessellator.draw();
+		worldRenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+		worldRenderer.pos(x3, y2, 0).color(255, 0, 0, 255).endVertex();
+		worldRenderer.pos(x2, y3, 0).color(255, 0, 0, 255).endVertex();
+		tessellator.draw();
+		GlStateManager.enableTexture2D();
+		GlStateManager.popMatrix();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		x2 -= 1;
+		y2 -= 1;
+		bitMappingScreen.drawTexturedModalRect(x2, y2, 43, 220, 18, 1);
+		bitMappingScreen.drawTexturedModalRect(x2, y2 + 17, 43, 237, 18, 1);
 	}
 	
 	@Override

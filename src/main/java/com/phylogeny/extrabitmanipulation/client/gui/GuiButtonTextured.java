@@ -38,8 +38,8 @@ public class GuiButtonTextured extends GuiButtonBase
 		GlStateManager.enableBlend();
 		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 		GlStateManager.blendFunc(770, 771);
-        GlStateManager.color(1, 1, 1, 1);
-        mc.getTextureManager().bindTexture(selected ? selectedTexture : deselectedTexture);
+		GlStateManager.color(1, 1, 1, 1);
+		mc.getTextureManager().bindTexture(selected ? selectedTexture : deselectedTexture);
 		Tessellator t = Tessellator.getInstance();
 		WorldRenderer wr = t.getWorldRenderer();
 		int offset = 0;
