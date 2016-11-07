@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
@@ -311,18 +312,19 @@ public class BitInventoryHelper
 		IBitAccess bitAccess = ChiselsAndBitsAPIAccess.apiInstance.createBitItem(stackChiseledBlock);
 		if (bitAccess != null)
 		{
-			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack).getInteger("side")), itemType, false);
+			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack)
+					.getInteger(NBTKeys.CHISELS_AND_BITS_DESIGN_SIDE)), itemType, false);
 			if (stackDesign == null)
 				stackDesign = new ItemStack(Item.getByNameOrId("chiselsandbits:" + (itemType == ItemType.POSITIVE_DESIGN
 				? "positiveprint" : (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint"))));
 			
 			if (stack != null && stack.hasTagCompound())
 			{
-				String mode = ItemStackHelper.getNBT(stack).getString("mode");
+				String mode = ItemStackHelper.getNBT(stack).getString(NBTKeys.CHISELS_AND_BITS_DESIGN_MODE);
 				if (!stackDesign.hasTagCompound())
 					stackDesign.setTagCompound(new NBTTagCompound());
 				
-				ItemStackHelper.getNBT(stackDesign).setString("mode", mode);
+				ItemStackHelper.getNBT(stackDesign).setString(NBTKeys.CHISELS_AND_BITS_DESIGN_MODE, mode);
 			}
 			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign);
 		}
