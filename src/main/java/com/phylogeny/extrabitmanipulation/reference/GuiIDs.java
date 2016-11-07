@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.reference;
 
 public enum GuiIDs
 {
-	MODELING_TOOL_BIT_MAPPING;
+	BIT_MAPPING_GUI;
 	
 	public int getID()
 	{

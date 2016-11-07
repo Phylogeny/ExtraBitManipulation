@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
@@ -23,7 +24,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -293,6 +297,24 @@ public class BitInventoryHelper
 					catch (SpaceOccupied e) {}
 				}
 			}
+		}
+	}
+	
+	public static void setHeldDesignStack(EntityPlayer player, ItemStack stackChiseledBlock)
+	{
+		ItemType itemType = ChiselsAndBitsAPIAccess.apiInstance.getItemType(player.getHeldItemMainhand());
+		if (itemType == null || !ItemStackHelper.isDesignItemType(itemType))
+			return;
+		
+		IBitAccess bitAccess = ChiselsAndBitsAPIAccess.apiInstance.createBitItem(stackChiseledBlock);
+		if (bitAccess != null)
+		{
+			@SuppressWarnings("null")
+			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(player.getHeldItemMainhand()
+					.getTagCompound().getInteger("side")),itemType, false);
+			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign != null ? stackDesign : new ItemStack(Item.getByNameOrId("chiselsandbits:"
+			+ (itemType == ItemType.POSITIVE_DESIGN ? "positiveprint"
+					: (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint")))));
 		}
 	}
 	

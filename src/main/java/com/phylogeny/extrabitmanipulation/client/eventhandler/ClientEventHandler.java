@@ -24,7 +24,7 @@ import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
-import com.phylogeny.extrabitmanipulation.packet.PacketOpenModelingGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -105,13 +105,14 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void onKeyInput(@SuppressWarnings("unused") InputEvent.KeyInputEvent event)
 	{
-		if (isChiselsAndBitsMenuKeyBindPressed() || KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.isKeyDown())
+		if (isChiselsAndBitsMenuKeyBindPressed() || KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 		{
-			if (KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.isKeyDown())
+			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
 				ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
-				if (ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
-					openModelingGui();
+				if ((ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
+						|| ItemStackHelper.isDesignStack(stack))
+					openBitMappingGui();
 			}
 			else
 			{
@@ -121,11 +122,11 @@ public class ClientEventHandler
 		}
 	}
 	
-	private void openModelingGui()
+	private void openBitMappingGui()
 	{
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING.getID(), player.worldObj, 0, 0, 0);
-		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenModelingGui());
+		player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenBitMappingGui());
 	}
 	
 	public static boolean isChiselsAndBitsMenuKeyBindPressed()
@@ -336,7 +337,7 @@ public class ClientEventHandler
 			if (ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES)
 					&& KeyBindingsExtraBitManipulation.SHIFT.isKeyDown())
 			{
-				openModelingGui();
+				openBitMappingGui();
 				event.setCanceled(true);
 			}
 		}
