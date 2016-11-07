@@ -17,6 +17,7 @@ import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
@@ -40,7 +41,7 @@ public class ConfigHandlerExtraBitManipulation
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	public static final String[] BLOCK_TO_BIT_MAP_DEFAULT_VALUES = new String[]
 	{
-		"chiselsandbits:bittank-minecraft:log",
+		ChiselsAndBitsReferences.MOD_ID + ":bittank-minecraft:log",
 		"minecraft:acacia_door-minecraft:planks:4",
 		"minecraft:acacia_fence_gate-minecraft:planks:4",
 		"minecraft:acacia_fence-minecraft:planks:4",
