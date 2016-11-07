@@ -310,12 +310,9 @@ public class BitInventoryHelper
 		IBitAccess bitAccess = ChiselsAndBitsAPIAccess.apiInstance.createBitItem(stackChiseledBlock);
 		if (bitAccess != null)
 		{
-			@SuppressWarnings("null")
-			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(stack.hasTagCompound()
-					? stack.getTagCompound().getInteger("side") : 0),itemType, false);
+			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack).getInteger("side")), itemType, false);
 			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign != null ? stackDesign : new ItemStack(Item.getByNameOrId("chiselsandbits:"
-			+ (itemType == ItemType.POSITIVE_DESIGN ? "positiveprint"
-					: (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint")))));
+					+ (itemType == ItemType.POSITIVE_DESIGN ? "positiveprint" : (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint")))));
 		}
 	}
 	
