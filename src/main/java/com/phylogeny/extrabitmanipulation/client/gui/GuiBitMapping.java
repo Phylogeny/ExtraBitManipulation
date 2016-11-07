@@ -533,7 +533,8 @@ public class GuiBitMapping extends GuiContainer
 		GlStateManager.enableLighting();
 		if (designMode)
 		{
-			fontRendererObj.drawString("Design", getGuiLeft() + 103, guiTop + 8, -8882056);
+			fontRendererObj.drawString("Design", getGuiLeft() + 103, guiTop + 8, -12566464);
+			fontRendererObj.drawString(mc.thePlayer.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, -12566464);
 		}
 		else
 		{
@@ -542,14 +543,14 @@ public class GuiBitMapping extends GuiContainer
 				GuiButtonTab tab = tabButtons[i];
 				tab.renderIconStack();
 				if (tab.selected)
-					fontRendererObj.drawString(tabButtonHoverText[i], getGuiLeft() + 103, guiTop + 7, 4210752);
+					fontRendererObj.drawString(tabButtonHoverText[i], getGuiLeft() + 103, guiTop + 7, -12566464);
 			}
 		}
 		if (!designMode && showSettings)
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, 0.5, 0);
-			fontRendererObj.drawString("Map Per Tool", getGuiLeft() + 133, guiTop + 29, 4210752);
+			fontRendererObj.drawString("Map Per Tool", getGuiLeft() + 133, guiTop + 29, -12566464);
 			GlStateManager.popMatrix();
 		}
 		else

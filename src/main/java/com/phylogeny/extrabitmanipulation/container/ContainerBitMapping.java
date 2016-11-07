@@ -41,11 +41,36 @@ public class ContainerBitMapping extends Container
 		return true;
 	}
 	
+	@SuppressWarnings("null")
 	@Override
 	@Nullable
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
 	{
-		return null;
+		ItemStack stack = null;
+		Slot slot = inventorySlots.get(index);
+		if (slot != null && slot.getHasStack())
+		{
+			ItemStack stack2 = slot.getStack();
+			stack = stack2.copy();
+			if (index < inventorySlots.size() - 9)
+			{
+				if (!mergeItemStack(stack2, inventorySlots.size() - 9, inventorySlots.size(), true))
+					return null;
+			}
+			else if (!mergeItemStack(stack2, 0, inventorySlots.size() - 9, false))
+			{
+				return null;
+			}
+			if (stack2.stackSize == 0)
+			{
+				slot.putStack(null);
+			}
+			else
+			{
+				slot.onSlotChanged();
+			}
+		}
+		return stack;
 	}
 	
 }
