@@ -302,7 +302,8 @@ public class BitInventoryHelper
 	
 	public static void setHeldDesignStack(EntityPlayer player, ItemStack stackChiseledBlock)
 	{
-		ItemType itemType = ChiselsAndBitsAPIAccess.apiInstance.getItemType(player.getHeldItemMainhand());
+		ItemStack stack = player.getHeldItemMainhand();
+		ItemType itemType = ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack);
 		if (itemType == null || !ItemStackHelper.isDesignItemType(itemType))
 			return;
 		
@@ -310,8 +311,8 @@ public class BitInventoryHelper
 		if (bitAccess != null)
 		{
 			@SuppressWarnings("null")
-			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(player.getHeldItemMainhand()
-					.getTagCompound().getInteger("side")),itemType, false);
+			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(stack.hasTagCompound()
+					? stack.getTagCompound().getInteger("side") : 0),itemType, false);
 			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign != null ? stackDesign : new ItemStack(Item.getByNameOrId("chiselsandbits:"
 			+ (itemType == ItemType.POSITIVE_DESIGN ? "positiveprint"
 					: (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint")))));
