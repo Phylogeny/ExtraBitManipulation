@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.init;
 
+import org.lwjgl.input.Keyboard;
+
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -9,7 +11,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public enum KeyBindingsExtraBitManipulation
 {
-	OPEN_MODEING_TOOL_GUI("modeling.gui")
+	
+	OPEN_BIT_MAPPING_GUI("bitmapping.gui", Keyboard.KEY_R)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -18,7 +21,7 @@ public enum KeyBindingsExtraBitManipulation
 		}
 	},
 	
-	SHIFT("Shift")
+	SHIFT("Shift", 0) 
 	{
 		@Override
 		public boolean isKeyDown()
@@ -27,7 +30,7 @@ public enum KeyBindingsExtraBitManipulation
 		}
 	},
 	
-	CONTROL("Control")
+	CONTROL("Control", 0)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -36,7 +39,7 @@ public enum KeyBindingsExtraBitManipulation
 		}
 	},
 	
-	ALT("Alt")
+	ALT("Alt", 0)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -47,10 +50,12 @@ public enum KeyBindingsExtraBitManipulation
 	
 	private KeyBinding keyBinding;
 	private String description;
+	private int defaultKeyCode;
 	
-	private KeyBindingsExtraBitManipulation(String description)
+	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode)
 	{
 		this.description = description;
+		this.defaultKeyCode = defaultKeyCode;
 	}
 	
 	public boolean isKeyDown()
@@ -70,7 +75,7 @@ public enum KeyBindingsExtraBitManipulation
 	
 	public void register()
 	{
-		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), 0, "itemGroup." + Reference.MOD_ID);
+		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
 	}
 	

@@ -32,7 +32,7 @@ import net.minecraft.item.ItemStack;
 public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 {
 	private final Minecraft mc;
-	private final GuiModelingTool bitMappingScreen;
+	private final GuiBitMapping bitMappingScreen;
 	private IBlockState state;
 	private ArrayList<BitCount> bitCountArray;
 	private boolean isManuallyMapped, isInteractive;

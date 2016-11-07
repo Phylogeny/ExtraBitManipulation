@@ -1,6 +1,6 @@
 itemGroup.ExtraBitManipulation=Extra Bit Manipulation
 
-keybinding.extrabitmanipulation.modeling.gui=Open Modeling Tool Gui
+keybinding.extrabitmanipulation.bitmapping.gui=Open Modeling Tool or Design Gui
 keybinding.extrabitmanipulation.shift=Bit Tool SHIFT Replacement
 keybinding.extrabitmanipulation.control=Bit Tool CONTROL Replacement
 keybinding.extrabitmanipulation.alt=Bit Tool ALT Replacement

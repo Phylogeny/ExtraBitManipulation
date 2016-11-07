@@ -1,9 +1,9 @@
 package com.phylogeny.extrabitmanipulation.proxy;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiModelingTool;
+import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.container.ContainerModelingTool;
+import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
@@ -11,6 +11,7 @@ import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -39,18 +40,19 @@ public class ProxyCommon implements IGuiHandler
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		return openBitMappingGui(id, player) ? new ContainerModelingTool(player.inventory) : null;
+		return openBitMappingGui(id, player) ? new ContainerBitMapping(player.inventory) : null;
 	}
 	
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		return openBitMappingGui(id, player) ? new GuiModelingTool(player.inventory) : null;
+		return openBitMappingGui(id, player) ? new GuiBitMapping(player.inventory, ItemStackHelper.isDesignStack(player.getCurrentEquippedItem())) : null;
 	}
 	
 	private boolean openBitMappingGui(int id, EntityPlayer player)
 	{
-		return id == GuiIDs.MODELING_TOOL_BIT_MAPPING.getID() && ItemStackHelper.isModelingToolStack(player.getCurrentEquippedItem());
+		ItemStack stack = player.getCurrentEquippedItem();
+		return (id == GuiIDs.BIT_MAPPING_GUI.getID() && (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack)));
 	}
 	
 }

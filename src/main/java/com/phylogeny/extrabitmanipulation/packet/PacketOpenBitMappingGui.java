@@ -13,9 +13,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketOpenModelingGui implements IMessage
+public class PacketOpenBitMappingGui implements IMessage
 {
-	public PacketOpenModelingGui() {}
+	public PacketOpenBitMappingGui() {}
 	
 	@Override
 	public void toBytes(ByteBuf buffer) {}
@@ -23,10 +23,10 @@ public class PacketOpenModelingGui implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer) {}
 	
-	public static class Handler implements IMessageHandler<PacketOpenModelingGui, IMessage>
+	public static class Handler implements IMessageHandler<PacketOpenBitMappingGui, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketOpenModelingGui message, final MessageContext ctx)
+		public IMessage onMessage(final PacketOpenBitMappingGui message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
@@ -36,9 +36,9 @@ public class PacketOpenModelingGui implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getCurrentEquippedItem();
-					if (ItemStackHelper.isModelingToolStack(stack))
+					if (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack))
 					{
-						player.openGui(ExtraBitManipulation.instance, GuiIDs.MODELING_TOOL_BIT_MAPPING.getID(), player.worldObj, 0, 0, 0);
+						player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
 					}
 				}
 			});

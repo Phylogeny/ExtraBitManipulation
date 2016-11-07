@@ -415,14 +415,14 @@ public class ItemModelingTool extends ItemBitToolBase
 				tooltip.add("Right click to create model block.");
 				tooltip.add("");
 				String shiftText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.SHIFT);
-				if (KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.isSetToDefaultValue())
+				if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isSetToDefaultValue())
 				{
 					tooltip.add(shiftText + " right click to open");
 					tooltip.add("    mapping/preview GUI.");
 				}
 				else
 				{
-					tooltip.add(shiftText + " right click or press " + KeyBindingsExtraBitManipulation.OPEN_MODEING_TOOL_GUI.getText());
+					tooltip.add(shiftText + " right click or press " + KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.getText());
 					tooltip.add("    to open mapping/preview GUI.");
 				}
 				tooltip.add(shiftText + " mouse wheel to cycle");

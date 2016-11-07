@@ -8,10 +8,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerModelingTool extends Container
+public class ContainerBitMapping extends Container
 {
 	
-	public ContainerModelingTool(IInventory playerInventory)
+	public ContainerBitMapping(IInventory playerInventory)
 	{
 		for (int k = 0; k < 3; ++k)
 		{

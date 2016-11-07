@@ -1,11 +1,13 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 
 import io.netty.buffer.ByteBuf;
+import mod.chiselsandbits.api.ItemType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -101,6 +103,17 @@ public class ItemStackHelper
 	public static boolean isBitWrenchItem(Item item)
 	{
 		return item != null && item instanceof ItemBitWrench;
+	}
+	
+	public static boolean isDesignStack(ItemStack stack)
+	{
+		ItemType itemType = ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack);
+		return stack != null && isDesignItemType(itemType);
+	}
+	
+	public static boolean isDesignItemType(ItemType itemType)
+	{
+		return itemType == ItemType.MIRROR_DESIGN || itemType == ItemType.NEGATIVE_DESIGN || itemType == ItemType.POSITIVE_DESIGN;
 	}
 	
 }

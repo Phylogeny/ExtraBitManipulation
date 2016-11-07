@@ -18,14 +18,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketModelingTool extends PacketBitMapIO
+public class PacketAddBitMapping extends PacketBitMapIO
 {
 	private IBlockState state;
 	private IBitBrush bit;
 	
-	public PacketModelingTool() {}
+	public PacketAddBitMapping() {}
 	
-	public PacketModelingTool(String nbtKey, IBlockState state, IBitBrush bit, boolean saveStatesById)
+	public PacketAddBitMapping(String nbtKey, IBlockState state, IBitBrush bit, boolean saveStatesById)
 	{
 		super(nbtKey, saveStatesById);
 		this.state = state;
@@ -63,10 +63,10 @@ public class PacketModelingTool extends PacketBitMapIO
 		}
 	}
 	
-	public static class Handler implements IMessageHandler<PacketModelingTool, IMessage>
+	public static class Handler implements IMessageHandler<PacketAddBitMapping, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketModelingTool message, final MessageContext ctx)
+		public IMessage onMessage(final PacketAddBitMapping message, final MessageContext ctx)
 		{
 			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
 			mainThread.addScheduledTask(new Runnable()
