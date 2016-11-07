@@ -25,6 +25,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketBitMappingsPerTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketClearStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketAddBitMapping;
+import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDesign;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
@@ -629,8 +630,9 @@ public class GuiBitMapping extends GuiContainer
 								: EnumChatFormatting.AQUA + "  - Click with bit or block on cursor to add mapping.");
 						if (isShiftKeyDown())
 						{
-							hoverTextList.add(EnumChatFormatting.AQUA + "  - Shift-click with empty cursor to map to air.");
-							hoverTextList.add(EnumChatFormatting.AQUA + "  - Control-click with empty cursor to remove mapping.");
+							hoverTextList.add(EnumChatFormatting.AQUA + "  - Shift click with empty cursor to map to air.");
+							hoverTextList.add(EnumChatFormatting.AQUA + "  - Control click with empty cursor to remove mapping.");
+							hoverTextList.add(EnumChatFormatting.AQUA + "  - Midle mouse click blocks or bits in crative mode to get stack.");
 						}
 					}
 					drawHoveringText(hoverTextList, mouseX, mouseY, mc.fontRendererObj);
@@ -855,6 +857,18 @@ public class GuiBitMapping extends GuiContainer
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
 		bitMappingList.mouseClicked(mouseX, mouseY, mouseButton);
+		
+		if (mc.thePlayer.inventory.getItemStack() == null && mouseButton == 2 && mc.thePlayer.capabilities.isCreativeMode
+				&& mouseX > guiLeft + 127 && mouseX < guiLeft + 235 && mouseY > guiTop + 20 && mouseY < guiTop + 121)
+		{
+			ItemStack previewStack = !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
+			if (previewStack == null)
+				return;
+			
+			ItemStack stack = previewStack.copy();
+			mc.thePlayer.inventory.setItemStack(stack);
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack));
+		}
 	}
 	
 	@Override

@@ -301,15 +301,15 @@ public class BitInventoryHelper
 	
 	public static void setHeldDesignStack(EntityPlayer player, ItemStack stackChiseledBlock)
 	{
-		ItemType itemType = ChiselsAndBitsAPIAccess.apiInstance.getItemType(player.getCurrentEquippedItem());
+		ItemStack stack = player.getCurrentEquippedItem();
+		ItemType itemType = ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack);
 		if (itemType == null || !ItemStackHelper.isDesignItemType(itemType))
 			return;
 		
 		IBitAccess bitAccess = ChiselsAndBitsAPIAccess.apiInstance.createBitItem(stackChiseledBlock);
 		if (bitAccess != null)
 		{
-			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(player.getCurrentEquippedItem()
-					.getTagCompound().getInteger("side")),itemType, false);
+			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack).getInteger("side")), itemType, false);
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, stackDesign != null ? stackDesign
 					: new ItemStack(Item.getByNameOrId("chiselsandbits:" + (itemType == ItemType.POSITIVE_DESIGN ? "positiveprint"
 							: (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint")))));
