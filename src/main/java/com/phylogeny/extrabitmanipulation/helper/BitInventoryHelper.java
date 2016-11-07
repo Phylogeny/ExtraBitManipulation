@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
@@ -312,18 +312,19 @@ public class BitInventoryHelper
 		if (bitAccess != null)
 		{
 			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack)
-					.getInteger(NBTKeys.CHISELS_AND_BITS_DESIGN_SIDE)), itemType, false);
+					.getInteger(ChiselsAndBitsReferences.NBT_KEY_DESIGN_SIDE)), itemType, false);
 			if (stackDesign == null)
-				stackDesign = new ItemStack(Item.getByNameOrId("chiselsandbits:" + (itemType == ItemType.POSITIVE_DESIGN
-				? "positiveprint" : (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint"))));
+				stackDesign = new ItemStack(Item.getByNameOrId(ChiselsAndBitsReferences.MOD_ID + ":" + (itemType == ItemType.POSITIVE_DESIGN
+				? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_POSITIVE : (itemType == ItemType.NEGATIVE_DESIGN
+				? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_NEGATIVE : ChiselsAndBitsReferences.ITEM_PATH_DESIGN_MIRROR))));
 			
 			if (stack != null && stack.hasTagCompound())
 			{
-				String mode = ItemStackHelper.getNBT(stack).getString(NBTKeys.CHISELS_AND_BITS_DESIGN_MODE);
+				String mode = ItemStackHelper.getNBT(stack).getString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE);
 				if (!stackDesign.hasTagCompound())
 					stackDesign.setTagCompound(new NBTTagCompound());
 				
-				ItemStackHelper.getNBT(stackDesign).setString(NBTKeys.CHISELS_AND_BITS_DESIGN_MODE, mode);
+				ItemStackHelper.getNBT(stackDesign).setString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE, mode);
 			}
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, stackDesign);
 		}
