@@ -26,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -311,8 +312,19 @@ public class BitInventoryHelper
 		if (bitAccess != null)
 		{
 			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack).getInteger("side")), itemType, false);
-			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign != null ? stackDesign : new ItemStack(Item.getByNameOrId("chiselsandbits:"
-					+ (itemType == ItemType.POSITIVE_DESIGN ? "positiveprint" : (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint")))));
+			if (stackDesign == null)
+				stackDesign = new ItemStack(Item.getByNameOrId("chiselsandbits:" + (itemType == ItemType.POSITIVE_DESIGN
+				? "positiveprint" : (itemType == ItemType.NEGATIVE_DESIGN ? "negativeprint" : "mirrorprint"))));
+			
+			if (stack != null && stack.hasTagCompound())
+			{
+				String mode = ItemStackHelper.getNBT(stack).getString("mode");
+				if (!stackDesign.hasTagCompound())
+					stackDesign.setTagCompound(new NBTTagCompound());
+				
+				ItemStackHelper.getNBT(stackDesign).setString("mode", mode);
+			}
+			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign);
 		}
 	}
 	
