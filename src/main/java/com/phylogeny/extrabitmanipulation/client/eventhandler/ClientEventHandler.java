@@ -111,7 +111,7 @@ public class ClientEventHandler
 			{
 				ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
 				if ((ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
-						|| ItemStackHelper.isDesignStack(stack))
+						|| (stack != null && stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack)))
 					openBitMappingGui();
 			}
 			else
