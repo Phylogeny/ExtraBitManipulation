@@ -8,12 +8,13 @@ import com.phylogeny.extrabitmanipulation.packet.PacketClearStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
-import com.phylogeny.extrabitmanipulation.packet.PacketModelingTool;
-import com.phylogeny.extrabitmanipulation.packet.PacketOpenModelingGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketAddBitMapping;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetDesign;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelAreaMode;
@@ -49,7 +50,7 @@ public class PacketRegistration
 		registerPacket(PacketSetModelAreaMode.Handler.class, PacketSetModelAreaMode.class, Side.SERVER);
 		registerPacket(PacketSetModelSnapMode.Handler.class, PacketSetModelSnapMode.class, Side.SERVER);
 		registerPacket(PacketSetModelGuiOpen.Handler.class, PacketSetModelGuiOpen.class, Side.SERVER);
-		registerPacket(PacketModelingTool.Handler.class, PacketModelingTool.class, Side.SERVER);
+		registerPacket(PacketAddBitMapping.Handler.class, PacketAddBitMapping.class, Side.SERVER);
 		registerPacket(PacketCursorStack.Handler.class, PacketCursorStack.class, Side.SERVER);
 		registerPacket(PacketSetTabAndStateBlockButton.Handler.class, PacketSetTabAndStateBlockButton.class, Side.SERVER);
 		registerPacket(PacketReadBlockStates.Handler.class, PacketReadBlockStates.class, Side.SERVER);
@@ -58,8 +59,9 @@ public class PacketRegistration
 		registerPacket(PacketBitMappingsPerTool.Handler.class, PacketBitMappingsPerTool.class, Side.SERVER);
 		registerPacket(PacketClearStackBitMappings.Handler.class, PacketClearStackBitMappings.class, Side.SERVER);
 		registerPacket(PacketOverwriteStackBitMappings.Handler.class, PacketOverwriteStackBitMappings.class, Side.SERVER);
-		registerPacket(PacketOpenModelingGui.Handler.class, PacketOpenModelingGui.class, Side.SERVER);
+		registerPacket(PacketOpenBitMappingGui.Handler.class, PacketOpenBitMappingGui.class, Side.SERVER);
 		registerPacket(PacketSetWrechMode.Handler.class, PacketSetWrechMode.class, Side.SERVER);
+		registerPacket(PacketSetDesign.Handler.class, PacketSetDesign.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.init;
 
+import org.lwjgl.input.Keyboard;
+
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
@@ -13,7 +15,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 {
-	OPEN_MODEING_TOOL_GUI("modeling.gui", true, false, false)
+	OPEN_BIT_MAPPING_GUI("bitmapping.gui", Keyboard.KEY_R, true, false, false)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -22,7 +24,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
-	SHIFT("Shift", false, true, true)
+	SHIFT("Shift", 0, false, true, true)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -31,7 +33,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
-	CONTROL("Control", false, false, true)
+	CONTROL("Control", 0, false, false, true)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -40,7 +42,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
-	ALT("Alt", false, false, false)
+	ALT("Alt", 0, false, false, false)
 	{
 		@Override
 		public boolean isKeyDown()
@@ -51,11 +53,14 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	private KeyBinding keyBinding;
 	private String description;
+	private int defaultKeyCode;
 	private boolean checkForOnlyModelingTool, checkForWrench, anyConflicts;
 	
-	private KeyBindingsExtraBitManipulation(String description, boolean checkForOnlyModelingTool, boolean checkForWrench, boolean anyConflicts)
+	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode,
+			boolean checkForOnlyModelingTool, boolean checkForWrench, boolean anyConflicts)
 	{
 		this.description = description;
+		this.defaultKeyCode = defaultKeyCode;
 		this.checkForOnlyModelingTool = checkForOnlyModelingTool;
 		this.checkForWrench = checkForWrench;
 		this.anyConflicts = anyConflicts;
@@ -73,7 +78,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	public void register()
 	{
-		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), this, 0, "itemGroup." + Reference.MOD_ID);
+		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), this, defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
 	}
 	
@@ -91,7 +96,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	public boolean isActive()
 	{
 		ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
-		return ItemStackHelper.isModelingToolStack(stack) || (!checkForOnlyModelingTool
+		return ItemStackHelper.isModelingToolStack(stack) || (checkForOnlyModelingTool && ItemStackHelper.isDesignStack(stack)) || (!checkForOnlyModelingTool
 				&& (ItemStackHelper.isSculptingToolStack(stack) || (checkForWrench && ItemStackHelper.isBitWrenchStack(stack))));
 	}
 	
@@ -99,7 +104,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	public boolean conflicts(IKeyConflictContext other)
 	{
 		return other == this || other == KeyConflictContext.IN_GAME || other == SHIFT || other == CONTROL
-				|| (anyConflicts && (other == ALT || other == OPEN_MODEING_TOOL_GUI));
+				|| (anyConflicts && (other == ALT || other == OPEN_BIT_MAPPING_GUI));
 	}
 	
 }

@@ -19,16 +19,18 @@ import net.minecraft.util.math.MathHelper;
 
 public class GuiListBitMapping extends GuiListExtended
 {
-	private final GuiModelingTool guiModelingTool;
+	private final GuiBitMapping guiBitMapping;
 	private final List<GuiListBitMappingEntry> entries = Lists.<GuiListBitMappingEntry>newArrayList();
+	private boolean designMode;
 	
-	public GuiListBitMapping(GuiModelingTool guiModelingTool, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
+	public GuiListBitMapping(GuiBitMapping guiModelingTool, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, boolean designMode)
 	{
 		super(guiModelingTool.mc, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
-		this.guiModelingTool = guiModelingTool;
+		this.guiBitMapping = guiModelingTool;
 		headerPadding += 1;
 		left = guiModelingTool.getGuiLeft() + 18;
 		right = guiModelingTool.getGuiLeft() + 93;
+		this.designMode = designMode;
 	}
 	
 	@Override
@@ -45,7 +47,7 @@ public class GuiListBitMapping extends GuiListExtended
 			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray, String searchText, boolean stateMode)
 	{
 		entries.clear();
-		if (stateToBitCountArray != null)
+		if (!designMode && stateToBitCountArray != null)
 		{
 			for (Map.Entry<IBlockState, ArrayList<BitCount>> entry : stateToBitCountArray.entrySet())
 			{
@@ -67,7 +69,7 @@ public class GuiListBitMapping extends GuiListExtended
 					continue;
 				
 				ArrayList<BitCount> bitCountArray = new ArrayList<BitCount>();
-				bitCountArray.add(new BitCount(entry.getValue(), 0));
+				bitCountArray.add(new BitCount(entry.getValue(), designMode ? stateToBitCountArray.get(state).get(0).getCount() : 0));
 				entries.add(new GuiListBitMappingEntry(this, state, bitCountArray, stateToBitMapPermanent.containsKey(state), true));
 			}
 		}
@@ -138,13 +140,20 @@ public class GuiListBitMapping extends GuiListExtended
 	
 	protected void drawOverlays()
 	{
-		mc.getTextureManager().bindTexture(guiModelingTool.GUI_TEXTURE);
+		mc.getTextureManager().bindTexture(guiBitMapping.GUI_TEXTURE);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		int left = guiModelingTool.getGuiLeft() - 24;
-		int top = guiModelingTool.getGuiTop();
-		guiModelingTool.drawTexturedModalRect(left, top, 0, 0, 254, 21);
+		int left = guiBitMapping.getGuiLeft() - 24;
+		int top = guiBitMapping.getGuiTop();
+		guiBitMapping.drawTexturedModalRect(left, top, 0, 0, 254, 21);
 		int offsetY = 121;
-		guiModelingTool.drawTexturedModalRect(left, top + offsetY, 0, offsetY, 254, 219 - offsetY);
+		if (designMode)
+		{
+			guiBitMapping.drawTexturedModalRect(left + 24, top + offsetY, 24, offsetY, 254 - 24, 219 - offsetY);
+		}
+		else
+		{
+			guiBitMapping.drawTexturedModalRect(left, top + offsetY, 0, offsetY, 254, 219 - offsetY);
+		}
 	}
 	
 	@Override
@@ -162,7 +171,7 @@ public class GuiListBitMapping extends GuiListExtended
 	@Override
 	protected int getScrollBarX()
 	{
-		return guiModelingTool.getGuiLeft() + 85;
+		return guiBitMapping.getGuiLeft() + 85;
 	}
 	
 	@Override
@@ -183,9 +192,9 @@ public class GuiListBitMapping extends GuiListExtended
 		return false;
 	}
 	
-	public GuiModelingTool getGuiModelingTool()
+	public GuiBitMapping getGuiModelingTool()
 	{
-		return guiModelingTool;
+		return guiBitMapping;
 	}
 	
 }
