@@ -528,59 +528,7 @@ public class GuiBitMapping extends GuiContainer
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
-		GlStateManager.disableLighting();
-		searchField.drawTextBox();
-		if (!searchField.isFocused() && searchField.getText().isEmpty())
-			fontRendererObj.drawString("search", searchField.xPosition, searchField.yPosition, -10197916);
-		
-		GlStateManager.enableLighting();
-		if (designMode)
-		{
-			fontRendererObj.drawString("Design", getGuiLeft() + 103, guiTop + 8, -12566464);
-			fontRendererObj.drawString(mc.thePlayer.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, -12566464);
-		}
-		else
-		{
-			for (int i = 0; i < tabButtons.length; i++)
-			{
-				GuiButtonTab tab = tabButtons[i];
-				tab.renderIconStack();
-				if (tab.selected)
-					fontRendererObj.drawString(tabButtonHoverText[i], getGuiLeft() + 103, guiTop + 7, -12566464);
-			}
-		}
-		if (!designMode && showSettings)
-		{
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0, 0.5, 0);
-			fontRendererObj.drawString("Map Per Tool", getGuiLeft() + 133, guiTop + 29, -12566464);
-			GlStateManager.popMatrix();
-		}
-		else
-		{
-			ItemStack previewStack = !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
-			if (previewStack != null)
-			{
-				RenderHelper.enableGUIStandardItemLighting();
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(getGuiLeft() + 108, guiTop + 21.5, 0);
-				GlStateManager.scale(6.2, 6.2, 1);
-				mc.getRenderItem().renderItemIntoGUI(previewStack, 0, 0);
-				GlStateManager.popMatrix();
-				RenderHelper.disableStandardItemLighting();
-			}
-			else
-			{
-				fontRendererObj.drawSplitString("No Preview   Available", getGuiLeft() + 131, guiTop + 63, 60, 0);
-			}
-		}
-		int entryCount = bitMappingList.getSize();
-		if (entryCount == 0)
-			fontRendererObj.drawSplitString("No " + (designMode || buttonStates.selected ? "States" : "Blocks") 
-					+ "      Found", getGuiLeft() + 31, guiTop + 63, 60, 0);
-		
-		for (int i = 0; i < entryCount; i++)
+		for (int i = 0; i < bitMappingList.getSize(); i++)
 		{
 			GuiListBitMappingEntry entry = bitMappingList.getListEntry(i);
 			entry.drawEntry(i, 0, 0, bitMappingList.width, bitMappingList.slotHeight, mouseX, mouseY, true);
@@ -684,6 +632,64 @@ public class GuiBitMapping extends GuiContainer
 			drawTexturedModalRect(i - 12, j, 0, 0, xSize, ySize);
 		}
 		bitMappingList.drawScreen(mouseX, mouseY, partialTicks);
+	}
+	
+	@Override
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+	{
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(-guiLeft, -guiTop, 0);
+		GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+		GlStateManager.disableLighting();
+		searchField.drawTextBox();
+		if (!searchField.isFocused() && searchField.getText().isEmpty())
+			fontRendererObj.drawString("search", searchField.xPosition, searchField.yPosition, -10197916);
+		
+		if (designMode)
+		{
+			fontRendererObj.drawString("Design", getGuiLeft() + 103, guiTop + 8, 4210752);
+			fontRendererObj.drawString(mc.thePlayer.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, 4210752);
+		}
+		else
+		{
+			for (int i = 0; i < tabButtons.length; i++)
+			{
+				GuiButtonTab tab = tabButtons[i];
+				tab.renderIconStack();
+				if (tab.selected)
+					fontRendererObj.drawString(tabButtonHoverText[i], getGuiLeft() + 103, guiTop + 7, 4210752);
+			}
+		}
+		if (!designMode && showSettings)
+		{
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0, 0.5, 0);
+			fontRendererObj.drawString("Map Per Tool", getGuiLeft() + 133, guiTop + 29, 4210752);
+			GlStateManager.popMatrix();
+		}
+		else
+		{
+			ItemStack previewStack = !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
+			if (previewStack != null)
+			{
+				RenderHelper.enableGUIStandardItemLighting();
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(getGuiLeft() + 108, guiTop + 21.5, 0);
+				GlStateManager.scale(6.2, 6.2, 1);
+				mc.getRenderItem().renderItemIntoGUI(previewStack, 0, 0);
+				GlStateManager.popMatrix();
+				RenderHelper.disableStandardItemLighting();
+			}
+			else
+			{
+				fontRendererObj.drawSplitString("No Preview   Available", getGuiLeft() + 131, guiTop + 63, 60, 4210752);
+			}
+		}
+		if (bitMappingList.getSize() == 0)
+			fontRendererObj.drawSplitString("No " + (designMode || buttonStates.selected ? "States" : "Blocks") 
+					+ "      Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
+		
+		GlStateManager.popMatrix();
 	}
 	
 	@Override
