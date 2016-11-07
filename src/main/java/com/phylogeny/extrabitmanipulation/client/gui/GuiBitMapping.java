@@ -29,6 +29,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDesign;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
+import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -113,7 +114,7 @@ public class GuiBitMapping extends GuiContainer
 				if (regName == null)
 					continue;
 				
-				if (regName.getResourceDomain().equals("chiselsandbits"))
+				if (regName.getResourceDomain().equals(ChiselsAndBitsReferences.MOD_ID))
 				{
 					Item item = Item.getItemFromBlock(block);
 					if (item != null)
