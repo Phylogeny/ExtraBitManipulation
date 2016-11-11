@@ -46,14 +46,15 @@ public class GuiListBitMapping extends GuiListExtended
 	public void refreshList(Map<IBlockState, IBitBrush> stateToBitMap, Map<IBlockState, IBitBrush> stateToBitMapPermanent,
 			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArray, String searchText, boolean stateMode)
 	{
+		searchText = searchText.toLowerCase();
 		entries.clear();
 		if (!designMode && stateToBitCountArray != null)
 		{
 			for (Map.Entry<IBlockState, ArrayList<BitCount>> entry : stateToBitCountArray.entrySet())
 			{
 				IBlockState state = entry.getKey();
-				if (!searchText.isEmpty() && (stateMode ? state.toString()
-						: Block.REGISTRY.getNameForObject(state.getBlock())).toString().indexOf(searchText) < 0)
+				if (!searchText.isEmpty() && (stateMode ? state
+						: Block.REGISTRY.getNameForObject(state.getBlock())).toString().toLowerCase().indexOf(searchText) < 0)
 					continue;
 				
 				entries.add(new GuiListBitMappingEntry(this, state, entry.getValue(), stateToBitMapPermanent.containsKey(state), false));
@@ -64,8 +65,8 @@ public class GuiListBitMapping extends GuiListExtended
 			for (Map.Entry<IBlockState, IBitBrush> entry : stateToBitMap.entrySet())
 			{
 				IBlockState state = entry.getKey();
-				if (!searchText.isEmpty() && (stateMode ? state.toString()
-						: Block.REGISTRY.getNameForObject(state.getBlock())).toString().indexOf(searchText) < 0)
+				if (!searchText.isEmpty() && (stateMode ? state
+						: Block.REGISTRY.getNameForObject(state.getBlock())).toString().toLowerCase().indexOf(searchText) < 0)
 					continue;
 				
 				ArrayList<BitCount> bitCountArray = new ArrayList<BitCount>();

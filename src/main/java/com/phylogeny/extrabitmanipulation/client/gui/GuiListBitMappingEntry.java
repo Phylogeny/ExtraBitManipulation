@@ -119,7 +119,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 			{
 				drawCross(x, y);
 			}
-			RenderState.renderStateModelIntoGUI(state, x, y);
+			RenderState.renderStateIntoGUI(state, x, y);
 			RenderHelper.disableStandardItemLighting();
 		}
 	}
