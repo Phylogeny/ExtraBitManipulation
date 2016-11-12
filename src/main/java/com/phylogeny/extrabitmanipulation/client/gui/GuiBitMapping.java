@@ -80,6 +80,7 @@ public class GuiBitMapping extends GuiContainer
 	private static final String[] tabButtonHoverText = new String[]{"Current Model", "All Saved Mappings", "All Minecraft Blocks", "Model Result"};
 	private int savedTab;
 	private boolean stateMauallySelected, showSettings, bitMapPerTool, designMode;
+	private String searchText = "";
 	private GuiTextField searchField;
 	
 	public GuiBitMapping(InventoryPlayer playerInventory, boolean designMode)
@@ -347,6 +348,7 @@ public class GuiBitMapping extends GuiContainer
 		searchField = new GuiTextField(6, fontRendererObj, guiLeft + 44, guiTop + 8, 65, 9);
 		searchField.setEnableBackgroundDrawing(false);
 		searchField.setTextColor(-1);
+		searchField.setText(searchText);
 		int slotHeight = 24;
 		if (designMode)
 		{
@@ -501,6 +503,7 @@ public class GuiBitMapping extends GuiContainer
 		if (searchField.textboxKeyTyped(typedChar, keyCode))
 		{
 			refreshList();
+			searchText = searchField.getText();
 		}
 		else
 		{
@@ -529,7 +532,6 @@ public class GuiBitMapping extends GuiContainer
 		for (int i = 0; i < bitMappingList.getSize(); i++)
 		{
 			GuiListBitMappingEntry entry = bitMappingList.getListEntry(i);
-			entry.drawEntry(i, 0, 0, bitMappingList.width, bitMappingList.slotHeight, mouseX, mouseY, true);
 			if (mouseY >= bitMappingList.top && mouseY <= bitMappingList.bottom)
 			{
 				RenderHelper.enableGUIStandardItemLighting();
