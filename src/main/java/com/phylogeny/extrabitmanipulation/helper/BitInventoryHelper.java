@@ -64,7 +64,7 @@ public class BitInventoryHelper
 			}
 		});
 	}
-
+	
 	public static LinkedHashMap getSortedLinkedHashMap(Map bitCounts, Comparator<Object> comparator)
 	{
 		List<Map.Entry> bitCountsList = new LinkedList(bitCounts.entrySet());

@@ -107,7 +107,7 @@ public class GuiBitMapping extends GuiContainer
 		savedTab = nbt.getInteger(NBTKeys.TAB_SETTING);
 		bitMapPerTool = nbt.getBoolean(NBTKeys.BIT_MAPS_PER_TOOL);
 	}
-
+	
 	private void constructManualMaps()
 	{
 		stateToBitMapManual = new LinkedHashMap<IBlockState, IBitBrush>();
@@ -231,7 +231,7 @@ public class GuiBitMapping extends GuiContainer
 		if (!designMode)
 			tabButtons[0].setIconStack(previewStack);
 	}
-
+	
 	private void constructStateToBitCountArray()
 	{
 		stateToBitCountArray = new LinkedHashMap<IBlockState, ArrayList<BitCount>>();
@@ -276,7 +276,7 @@ public class GuiBitMapping extends GuiContainer
 			previewResultStack = null;
 		}
 	}
-
+	
 	private Map<IBlockState, IBitBrush> getBitMapManual()
 	{
 		if (designMode)
