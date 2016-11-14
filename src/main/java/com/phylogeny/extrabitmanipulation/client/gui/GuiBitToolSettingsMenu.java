@@ -83,7 +83,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	{
 		int x = getX();
 		int y = getY();
-		creatLabel(title, x, y);
+		createLabel(title, x, y);
 		GuiSliderSetting slider = new GuiSliderSetting(buttonCount++, x + 13, y - 1, 100, 14, "", " Bits", 0,
 				sliderSetting.getMaxValue(), sliderSetting.getValue(), false, true, this);
 		sliderSetting.createElements(slider);
@@ -96,7 +96,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	{
 		int x = getX();
 		int y = getY();
-		creatLabel(title, x, y);
+		createLabel(title, x, y);
 		for (int i = 0; i < buttonTexts.length; i++)
 		{
 			int buttonWidth = fontRendererObj.getStringWidth(buttonTexts[i]) + 6;
@@ -107,8 +107,8 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 		buttonList.addAll(buttons.getButtons());
 		buttonsSettingList.add(buttons);
 	}
-
-	protected void creatLabel(String title, int x, int y)
+	
+	protected void createLabel(String title, int x, int y)
 	{
 		GuiLabel label = new GuiLabel(fontRendererObj, buttonCount, x - fontRendererObj.getStringWidth(title) - 10, y + 1, width, 13, -1);
 		label.func_175202_a(title + "");

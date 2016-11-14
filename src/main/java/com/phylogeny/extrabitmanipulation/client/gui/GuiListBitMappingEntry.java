@@ -71,7 +71,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 	{
 		return bitCountArray;
 	}
-
+	
 	private IBitBrush getBit()
 	{
 		BitCount bitCount = getBitCountObject();
