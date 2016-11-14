@@ -9,10 +9,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.renderer.RenderState;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
@@ -79,11 +82,15 @@ public class GuiBitMapping extends GuiContainer
 	private GuiButtonTextured buttonSettings, buttonBitMapPerTool;
 	private GuiButtonGradient buttonOverwriteStackMapsWithConfig, buttonOverwriteConfigMapsWithStack, buttonRestoreConfigMaps, buttonClearStackMaps;
 	private GuiButtonTab[] tabButtons = new GuiButtonTab[4];
-	private static final String[] tabButtonHoverText = new String[]{"Current Model", "All Saved Mappings", "All Minecraft Blocks", "Model Result"};
-	private int savedTab;
-	private boolean stateMauallySelected, showSettings, bitMapPerTool, designMode;
+	private static final String[] TAB_HOVER_TEXT = new String[]{"Current Model", "All Saved Mappings", "All Minecraft Blocks", "Model Result"};
+	private int savedTab, mouseInitialX, mouseInitialY;
+	private boolean stateMauallySelected, showSettings, bitMapPerTool, designMode, previewStackBoxClicked;
 	private String searchText = "";
 	private GuiTextField searchField;
+	private float previewStackScale, previewStackInitialOffsetX, previewStackInitialOffsetY, previewStackOffsetX, previewStackOffsetY;
+	private Vec3 previewStackAngles;
+	private static final int OFFSET_MAX = 400;
+	private AxisAlignedBB previewStackBox;
 	
 	public GuiBitMapping(InventoryPlayer playerInventory, boolean designMode)
 	{
@@ -92,6 +99,8 @@ public class GuiBitMapping extends GuiContainer
 		api = ChiselsAndBitsAPIAccess.apiInstance;
 		xSize = 254;
 		ySize = 219;
+		previewStackScale = 3.8F;
+		previewStackAngles = new Vec3(30, 225, 0);
 		if (designMode)
 			return;
 		
@@ -348,6 +357,9 @@ public class GuiBitMapping extends GuiContainer
 	{
 		super.initGui();
 		guiLeft -= 12;
+		int l = guiLeft + 128;
+		int t = guiTop + 21;
+		previewStackBox = new AxisAlignedBB(l, t, -1, l + 107, t + 100, 1);
 		searchField = new GuiTextField(6, fontRendererObj, guiLeft + 44, guiTop + 8, 65, 9);
 		searchField.setEnableBackgroundDrawing(false);
 		searchField.setTextColor(-1);
@@ -422,7 +434,7 @@ public class GuiBitMapping extends GuiContainer
 					uWidth = 36;
 					vHeight = 36;
 				}
-				GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25, tabButtonHoverText[i], iconStack, u, v, uWidth, vHeight);
+				GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25, TAB_HOVER_TEXT[i], iconStack, u, v, uWidth, vHeight);
 				if (i == savedTab)
 					tab.selected = true;
 				
@@ -508,6 +520,10 @@ public class GuiBitMapping extends GuiContainer
 			refreshList();
 			searchText = searchField.getText();
 		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_C))
+		{
+			previewStackOffsetX = previewStackOffsetY = 0;
+		}
 		else
 		{
 			super.keyTyped(typedChar, keyCode);
@@ -518,7 +534,83 @@ public class GuiBitMapping extends GuiContainer
 	public void handleMouseInput() throws IOException
 	{
 		super.handleMouseInput();
-		bitMappingList.handleMouseInput();
+		if (!previewStackBoxClicked)
+			bitMappingList.handleMouseInput();
+		
+		if (Mouse.getEventDWheel() != 0)
+		{
+			int mouseX = Mouse.getEventX() * width / mc.displayWidth;
+			int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
+			if (!isCursorInsidePreviewStackBox(mouseX, mouseY))
+				return;
+			
+			float remainder = scalePreviewStack(Mouse.getEventDWheel() * 0.005F);
+			if (remainder == 0)
+				return;
+			
+			int x = (int) (previewStackOffsetX + previewStackBox.maxX / 2.0F + previewStackBox.minX / 2.0F);
+			int y = (int) (previewStackOffsetY + previewStackBox.maxY / 2.0F + previewStackBox.minY / 2.0F);
+			int sign = Mouse.getEventDWheel() > 0 ? 1 : -1;
+			previewStackOffsetX += (mouseX - x) * 0.15F * -sign * remainder;
+			previewStackOffsetY += (mouseY - y) * 0.15F * -sign * remainder;
+		}
+	}
+	
+	@Override
+	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick)
+	{
+		super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+		if (!previewStackBoxClicked)
+			return;
+		
+		float deltaX = mouseInitialX - mouseX;
+		float deltaY = mouseInitialY - mouseY;
+		if (clickedMouseButton == 0)
+		{
+			if (isShiftKeyDown() || isCtrlKeyDown())
+			{
+				scalePreviewStack(deltaY * 0.05F);
+			}
+			else
+			{
+				double angleX = previewStackAngles.xCoord - (deltaY / previewStackScale) * 4.5F;
+				double angleY = previewStackAngles.yCoord - (deltaX / previewStackScale) * 4.5F;
+				if (angleX < -90 || angleX > 90)
+					angleX = 90 * (angleX > 0 ? 1 : -1);
+				
+				previewStackAngles = new Vec3(angleX, angleY, 0);
+			}
+			mouseInitialX = mouseX;
+			mouseInitialY = mouseY;
+		}
+		else if (clickedMouseButton == 1)
+		{
+			previewStackOffsetX = previewStackInitialOffsetX - deltaX;
+			if (previewStackOffsetX < -OFFSET_MAX || previewStackOffsetX > OFFSET_MAX)
+				previewStackOffsetX = OFFSET_MAX * (previewStackOffsetX > 0 ? 1 : -1);
+			
+			previewStackOffsetY = previewStackInitialOffsetY - deltaY;
+			if (previewStackOffsetY < -OFFSET_MAX || previewStackOffsetY > OFFSET_MAX)
+				previewStackOffsetY = OFFSET_MAX * (previewStackOffsetY > 0 ? 1 : -1);
+		}
+	}
+	
+	private float scalePreviewStack(float amount)
+	{
+		amount *= previewStackScale;
+		float previewStackInitialScale = previewStackScale;
+		previewStackScale += amount;
+		if (previewStackScale < 0.1)
+		{
+			previewStackScale = 0.1F;
+			return (previewStackInitialScale - previewStackScale) / amount;
+		}
+		if (previewStackScale > 30)
+		{
+			previewStackScale = 30;
+			return (previewStackScale - previewStackInitialScale) / amount;
+		}
+		return 1;
 	}
 	
 	@Override
@@ -529,11 +621,53 @@ public class GuiBitMapping extends GuiContainer
 	}
 	
 	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+	{
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		searchField.mouseClicked(mouseX, mouseY, mouseButton);
+		bitMappingList.mouseClicked(mouseX, mouseY, mouseButton);
+		previewStackBoxClicked = isCursorInsidePreviewStackBox(mouseX, mouseY);
+		mouseInitialX = mouseX;
+		mouseInitialY = mouseY;
+		previewStackInitialOffsetX = previewStackOffsetX;
+		previewStackInitialOffsetY = previewStackOffsetY;
+		if (mc.thePlayer.inventory.getItemStack() == null && mouseButton == 2 && mc.thePlayer.capabilities.isCreativeMode && previewStackBoxClicked)
+		{
+			ItemStack previewStack = getPreviewStack();
+			if (previewStack == null)
+				return;
+			
+			ItemStack stack = previewStack.copy();
+			mc.thePlayer.inventory.setItemStack(stack);
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack));
+		}
+	}
+	
+	private boolean isCursorInsidePreviewStackBox(int mouseX, int mouseY)
+	{
+		return previewStackBox.isVecInside(new Vec3(mouseX, mouseY, 0));
+	}
+	
+	@Override
+	protected void mouseReleased(int mouseX, int mouseY, int state)
+	{
+		super.mouseReleased(mouseX, mouseY, state);
+		bitMappingList.mouseReleased(mouseX, mouseY, state);
+		updateButtons();
+		mouseInitialX = 0;
+		mouseInitialY = 0;
+		previewStackBoxClicked = false;
+	}
+	
+	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		for (int i = 0; i < bitMappingList.getSize(); i++)
 		{
+			if (previewStackBoxClicked)
+				continue;
+			
 			GuiListBitMappingEntry entry = bitMappingList.getListEntry(i);
 			if (mouseY >= bitMappingList.top && mouseY <= bitMappingList.bottom)
 			{
@@ -599,6 +733,9 @@ public class GuiBitMapping extends GuiContainer
 				RenderHelper.disableStandardItemLighting();
 			}
 		}
+		if (previewStackBoxClicked)
+			return;
+		
 		for (GuiButton button : buttonList)
 		{
 			if (!(button instanceof GuiButtonBase))
@@ -660,7 +797,7 @@ public class GuiBitMapping extends GuiContainer
 				GuiButtonTab tab = tabButtons[i];
 				tab.renderIconStack();
 				if (tab.selected)
-					fontRendererObj.drawString(tabButtonHoverText[i], getGuiLeft() + 103, guiTop + 7, 4210752);
+					fontRendererObj.drawString(TAB_HOVER_TEXT[i], getGuiLeft() + 103, guiTop + 7, 4210752);
 			}
 		}
 		if (!designMode && showSettings)
@@ -672,16 +809,27 @@ public class GuiBitMapping extends GuiContainer
 		}
 		else
 		{
-			ItemStack previewStack = !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
+			ItemStack previewStack = getPreviewStack();
 			if (previewStack != null)
 			{
+				GL11.glEnable(GL11.GL_STENCIL_TEST);
+				GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+				GL11.glStencilMask(0xFF);
+				GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
+				GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+				GlStateManager.disableAlpha();
+				drawRect((int) previewStackBox.minX, (int) previewStackBox.minY, (int) previewStackBox.maxX, (int) previewStackBox.maxY, 0);
+				GL11.glStencilMask(0x00);
+				GL11.glStencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
 				RenderHelper.enableGUIStandardItemLighting();
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(getGuiLeft() + 108, guiTop + 21.5, 0);
-				GlStateManager.scale(6.2, 6.2, 1);
-				mc.getRenderItem().renderItemIntoGUI(previewStack, 0, 0);
+				GlStateManager.translate(0.5F + previewStackOffsetX, previewStackOffsetY, 0);
+				RenderState.renderStateModelIntoGUI(RenderState.getItemModelWithOverrides(previewStack), previewStack, false,
+						guiLeft + 167, guiTop + 61, (float) previewStackAngles.xCoord,
+						(float) previewStackAngles.yCoord, previewStackScale);
 				GlStateManager.popMatrix();
 				RenderHelper.disableStandardItemLighting();
+				GL11.glDisable(GL11.GL_STENCIL_TEST);
 			}
 			else
 			{
@@ -690,9 +838,32 @@ public class GuiBitMapping extends GuiContainer
 		}
 		if (bitMappingList.getSize() == 0)
 			fontRendererObj.drawSplitString("No " + (designMode || buttonStates.selected ? "States" : "Blocks") 
-					+ "      Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
+					+ "	  Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
 		
+		RenderHelper.enableGUIStandardItemLighting();
+		ItemStack stack = mc.thePlayer.inventory.getItemStack();
+		GlStateManager.translate(0.0F, 0.0F, 32.0F);
+		zLevel = 800.0F;
+		itemRender.zLevel = 800.0F;
+		net.minecraft.client.gui.FontRenderer font = null;
+		if (stack != null)
+			font = stack.getItem().getFontRenderer(stack);
+		
+		if (font == null)
+			font = fontRendererObj;
+		
+		int x = mouseX - 8;
+		int y = mouseY - 8;
+		itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+		itemRender.renderItemOverlayIntoGUI(font, stack, x, y, null);
+		zLevel = 0.0F;
+		itemRender.zLevel = 0.0F;
 		GlStateManager.popMatrix();
+	}
+	
+	private ItemStack getPreviewStack()
+	{
+		return !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
 	}
 	
 	@Override
@@ -858,34 +1029,6 @@ public class GuiBitMapping extends GuiContainer
 	{
 		buttonStates.selected = selectStates;
 		buttonBlocks.selected = !selectStates;
-	}
-	
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-		searchField.mouseClicked(mouseX, mouseY, mouseButton);
-		bitMappingList.mouseClicked(mouseX, mouseY, mouseButton);
-		
-		if (mc.thePlayer.inventory.getItemStack() == null && mouseButton == 2 && mc.thePlayer.capabilities.isCreativeMode
-				&& mouseX > guiLeft + 127 && mouseX < guiLeft + 235 && mouseY > guiTop + 20 && mouseY < guiTop + 121)
-		{
-			ItemStack previewStack = !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
-			if (previewStack == null)
-				return;
-			
-			ItemStack stack = previewStack.copy();
-			mc.thePlayer.inventory.setItemStack(stack);
-			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack));
-		}
-	}
-	
-	@Override
-	protected void mouseReleased(int mouseX, int mouseY, int state)
-	{
-		super.mouseReleased(mouseX, mouseY, state);
-		bitMappingList.mouseReleased(mouseX, mouseY, state);
-		updateButtons();
 	}
 	
 }

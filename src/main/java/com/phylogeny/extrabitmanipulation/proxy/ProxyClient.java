@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -23,6 +24,9 @@ public class ProxyClient extends ProxyCommon
 	{
 		super.preinit(event);
 		SoundsExtraBitManipulation.registerSounds();
+		Framebuffer frameBuffer = Minecraft.getMinecraft().getFramebuffer();
+		if (!frameBuffer.isStencilEnabled())
+			frameBuffer.enableStencil();
 	}
 	
 	@Override

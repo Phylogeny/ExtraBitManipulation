@@ -53,8 +53,7 @@ public class GuiListBitMapping extends GuiListExtended
 			for (Map.Entry<IBlockState, ArrayList<BitCount>> entry : stateToBitCountArray.entrySet())
 			{
 				IBlockState state = entry.getKey();
-				if (!searchText.isEmpty() && (stateMode ? state
-						: Block.blockRegistry.getNameForObject(state.getBlock())).toString().toLowerCase().indexOf(searchText) < 0)
+				if (searchTextMismatch(searchText, stateMode, state))
 					continue;
 				
 				entries.add(new GuiListBitMappingEntry(this, state, entry.getValue(), stateToBitMapPermanent.containsKey(state), false));
@@ -65,8 +64,7 @@ public class GuiListBitMapping extends GuiListExtended
 			for (Map.Entry<IBlockState, IBitBrush> entry : stateToBitMap.entrySet())
 			{
 				IBlockState state = entry.getKey();
-				if (!searchText.isEmpty() && (stateMode ? state
-						: Block.blockRegistry.getNameForObject(state.getBlock())).toString().toLowerCase().indexOf(searchText) < 0)
+				if (searchTextMismatch(searchText, stateMode, state))
 					continue;
 				
 				ArrayList<BitCount> bitCountArray = new ArrayList<BitCount>();
@@ -74,6 +72,11 @@ public class GuiListBitMapping extends GuiListExtended
 				entries.add(new GuiListBitMappingEntry(this, state, bitCountArray, stateToBitMapPermanent.containsKey(state), true));
 			}
 		}
+	}
+	
+	private boolean searchTextMismatch(String text, boolean stateMode, IBlockState state)
+	{
+		return !text.isEmpty() && (stateMode ? state : Block.blockRegistry.getNameForObject(state.getBlock())).toString().toLowerCase().indexOf(text) < 0;
 	}
 	
 	@Override
