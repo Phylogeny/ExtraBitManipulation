@@ -102,7 +102,7 @@ public class Shape
 	{
 		return null;
 	}
-
+	
 	private AxisAlignedBB getIntersectingBox(AxisAlignedBB box1, AxisAlignedBB box2)
 	{
 		if (box1.minX > box2.maxX || box2.minX > box1.maxX || box1.minY > box2.maxY 

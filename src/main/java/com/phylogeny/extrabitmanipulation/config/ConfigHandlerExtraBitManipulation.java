@@ -656,7 +656,7 @@ public class ConfigHandlerExtraBitManipulation
 		IBlockState valueDefault = BitIOHelper.getStateFromString(dataConfigFile.getString(name, catagoryEnding, defaultValue, ""));
 		return new ConfigBitStack(name, perTool, displayInChat, defaultState, BitIOHelper.getStateFromString(defaultValue), defaultValue, valueDefault);
 	}
-
+	
 	private static String getToolTipBitToolSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)
 	{
 		return "Players and sculpting tools will initialize with this " + toolTipDefaultValue + " (default = " + toolTipDefaultValueDefault + ")";

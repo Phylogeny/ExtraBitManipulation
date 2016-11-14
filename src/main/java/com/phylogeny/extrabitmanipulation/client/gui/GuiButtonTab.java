@@ -57,7 +57,7 @@ public class GuiButtonTab extends GuiButtonBase
 	{
 		this.iconStack = iconStack;
 	}
-
+	
 	public void renderIconStack()
 	{
 		if (iconStack != null)
