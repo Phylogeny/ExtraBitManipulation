@@ -80,7 +80,7 @@ public class RenderState
 		boolean renderAsTileEntity = stack != null && (model.isBuiltInRenderer() || isVanillaChest);
 		try
 		{
-			renderStateModelIntoGUI(state, model, stack, renderAsTileEntity, x, y);
+			renderStateModelIntoGUI(state, model, stack, renderAsTileEntity, x, y, 0, 0, -1);
 		}
 		catch (Throwable throwable)
 		{
@@ -134,7 +134,7 @@ public class RenderState
 		}
 	}
 	
-	private static IBakedModel getItemModelWithOverrides(ItemStack stack)
+	public static IBakedModel getItemModelWithOverrides(ItemStack stack)
 	{
 		return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, Minecraft.getMinecraft().thePlayer);
 	}
@@ -149,7 +149,8 @@ public class RenderState
 		return model.equals(blockModelShapes.getModelManager().getMissingModel());
 	}
 	
-	private static void renderStateModelIntoGUI(IBlockState state, IBakedModel model, ItemStack stack, boolean renderAsTileEntity, int x, int y)
+	public static void renderStateModelIntoGUI(IBlockState state, IBakedModel model, ItemStack stack,
+			boolean renderAsTileEntity, int x, int y, float angleX, float angleY, float scale)
 	{
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		GlStateManager.pushMatrix();
@@ -162,7 +163,7 @@ public class RenderState
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		setupGuiTransform(x, y, model);
-		renderState(state, model, stack, renderAsTileEntity);
+		renderState(state, model, stack, renderAsTileEntity, angleX, angleY, scale);
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
 		GlStateManager.popMatrix();
@@ -170,53 +171,28 @@ public class RenderState
 		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 	}
 	
-	private static void renderState(IBlockState state, IBakedModel model, ItemStack stack, boolean renderAsTileEntity)
+	private static void renderState(IBlockState state, IBakedModel model, ItemStack stack,
+			boolean renderAsTileEntity, float angleX, float angleY, float scale)
 	{
+		boolean autoScale = scale < 0;
+		if (autoScale)
+			scale = 1;
+		
 		GlStateManager.pushMatrix();
-		float scale = 1;
-		try
+		if (autoScale)
 		{
-			int size;
-			int[] data;
-			float x, y, z;
-			float minX = Float.POSITIVE_INFINITY;
-			float minY = Float.POSITIVE_INFINITY;
-			float minZ = Float.POSITIVE_INFINITY;
-			float maxX = Float.NEGATIVE_INFINITY;
-			float maxY = Float.NEGATIVE_INFINITY;
-			float maxZ = Float.NEGATIVE_INFINITY;
-			for (BakedQuad quad : model.getQuads(state, null, 0L))
+			try
 			{
-				size = quad.getFormat().getIntegerSize();
-				data = quad.getVertexData();
-				for(int i = 0; i < 4; i++)
-				{
-					int index = size * i;
-					x = Float.intBitsToFloat(data[index]);
-					if (x < minX)
-						minX = x;
-					
-					if (x > maxX)
-						maxX = x;
-					
-					y = Float.intBitsToFloat(data[index + 1]);
-					if (y < minY)
-						minY = y;
-					
-					if (y > maxY)
-						maxY = y;
-					
-					z = Float.intBitsToFloat(data[index + 2]);
-					if (z < minZ)
-						minZ = z;
-					
-					if (z > maxZ)
-						maxZ = z;
-				}
-			}
-			for (EnumFacing enumfacing : EnumFacing.values())
-			{
-				for (BakedQuad quad : model.getQuads(state, enumfacing, 0L))
+				int size;
+				int[] data;
+				float x, y, z;
+				float minX = Float.POSITIVE_INFINITY;
+				float minY = Float.POSITIVE_INFINITY;
+				float minZ = Float.POSITIVE_INFINITY;
+				float maxX = Float.NEGATIVE_INFINITY;
+				float maxY = Float.NEGATIVE_INFINITY;
+				float maxZ = Float.NEGATIVE_INFINITY;
+				for (BakedQuad quad : model.getQuads(state, null, 0L))
 				{
 					size = quad.getFormat().getIntegerSize();
 					data = quad.getVertexData();
@@ -245,16 +221,54 @@ public class RenderState
 							maxZ = z;
 					}
 				}
+				for (EnumFacing enumfacing : EnumFacing.values())
+				{
+					for (BakedQuad quad : model.getQuads(state, enumfacing, 0L))
+					{
+						size = quad.getFormat().getIntegerSize();
+						data = quad.getVertexData();
+						for(int i = 0; i < 4; i++)
+						{
+							int index = size * i;
+							x = Float.intBitsToFloat(data[index]);
+							if (x < minX)
+								minX = x;
+							
+							if (x > maxX)
+								maxX = x;
+							
+							y = Float.intBitsToFloat(data[index + 1]);
+							if (y < minY)
+								minY = y;
+							
+							if (y > maxY)
+								maxY = y;
+							
+							z = Float.intBitsToFloat(data[index + 2]);
+							if (z < minZ)
+								minZ = z;
+							
+							if (z > maxZ)
+								maxZ = z;
+						}
+					}
+				}
+				scale = 1 / Math.max(1.0F, Math.max(maxX - minX, Math.max(maxY - minY, maxZ - minZ)));
 			}
-			scale = 1 / Math.max(1.0F, Math.max(maxX - minX, Math.max(maxY - minY, maxZ - minZ)));
+			catch (Exception e) {}
+			scale *= 0.65F;
 		}
-		catch (Exception e) {}
-		scale *= 0.65F;
 		GlStateManager.scale(scale, scale, scale);
+		GlStateManager.rotate(angleX, 1, 0, 0);
+		GlStateManager.rotate(angleY, 0, 1, 0);
+		
 		if (renderAsTileEntity)
 		{
-			GlStateManager.rotate(45, 0, 1, 0);
-			GlStateManager.rotate(30, 1, 0, 1);
+			if (autoScale)
+			{
+				GlStateManager.rotate(45, 0, 1, 0);
+				GlStateManager.rotate(30, 1, 0, 1);
+			}
 			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableRescaleNormal();
@@ -262,8 +276,11 @@ public class RenderState
 		}
 		else
 		{
-			GlStateManager.rotate(225, 0, 1, 0);
-			GlStateManager.rotate(30, -1, 0, -1);
+			if (autoScale)
+			{
+				GlStateManager.rotate(225, 0, 1, 0);
+				GlStateManager.rotate(30, -1, 0, -1);
+			}
 			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 			renderModel(state, model, -1, stack);
 			if (stack != null && stack.hasEffect())
@@ -274,7 +291,7 @@ public class RenderState
 	
 	private static void setupGuiTransform(int x, int y, IBakedModel model)
 	{
-		GlStateManager.translate(x + 6, y + 2, 100.0F + Minecraft.getMinecraft().getRenderItem().zLevel + 50);
+		GlStateManager.translate(x + 6, y + 2, 100.0F + Minecraft.getMinecraft().getRenderItem().zLevel + 400);
 		GlStateManager.translate(8.0F, 8.0F, 0.0F);
 		GlStateManager.scale(1.0F, -1.0F, 1.0F);
 		GlStateManager.scale(16.0F, 16.0F, 16.0F);
