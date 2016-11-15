@@ -834,7 +834,7 @@ public class GuiBitMapping extends GuiContainer
 		}
 		if (bitMappingList.getSize() == 0)
 			fontRendererObj.drawSplitString("No " + (designMode || buttonStates.selected ? "States" : "Blocks") 
-					+ "	  Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
+					+ "      Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
 		
 		RenderHelper.enableGUIStandardItemLighting();
 		ItemStack stack = mc.thePlayer.inventory.getItemStack();
