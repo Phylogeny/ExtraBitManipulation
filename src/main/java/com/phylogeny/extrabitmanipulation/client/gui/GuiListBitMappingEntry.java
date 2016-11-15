@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
@@ -164,9 +165,12 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 		if (cursorStack == null && mouseEvent == 2 && mc.thePlayer.capabilities.isCreativeMode && (stateSlotClicked || bitSlotClicked))
 		{
 			ItemStack stack = null;
-			if (stateSlotClicked && Item.getItemFromBlock(state.getBlock()) != null)
-				stack = new ItemStack(state.getBlock(), 64, state.getBlock().getMetaFromState(state));
-			
+			if (stateSlotClicked)
+			{
+				Item item = Item.getItemFromBlock(state.getBlock());
+				if (item != null && item instanceof ItemBlock)
+					stack = new ItemStack(item, 64, item.getHasSubtypes() ? state.getBlock().getMetaFromState(state) : 0);
+			}
 			if (bitSlotClicked && getBitStack() != null)
 			{
 				stack = getBitStack().copy();
