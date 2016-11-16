@@ -521,6 +521,14 @@ public class GuiBitMapping extends GuiContainer
 		{
 			previewStackOffsetX = previewStackOffsetY = 0;
 		}
+		else if (showSettings)
+		{
+			if (keyCode == Keyboard.KEY_ESCAPE || mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode))
+			{
+				showSettings = buttonSettings.selected = false;
+				updateButtons();
+			}
+		}
 		else
 		{
 			super.keyTyped(typedChar, keyCode);
@@ -750,6 +758,9 @@ public class GuiBitMapping extends GuiContainer
 					drawHoveringText(Arrays.<String>asList(new String[] {tabButtons[i].getHoverText()}), mouseX, mouseY, mc.fontRendererObj);
 			}
 		}
+		GlStateManager.enableLighting();
+		GlStateManager.enableDepth();
+		RenderHelper.enableStandardItemLighting();
 	}
 	
 	@Override
