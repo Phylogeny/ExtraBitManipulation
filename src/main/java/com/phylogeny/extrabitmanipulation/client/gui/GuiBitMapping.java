@@ -526,7 +526,7 @@ public class GuiBitMapping extends GuiContainer
 		}
 		else if (showSettings)
 		{
-			if (keyCode == Keyboard.KEY_ESCAPE || mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode))
+			if (keyCode == Keyboard.KEY_ESCAPE || keyCode == mc.gameSettings.keyBindInventory.getKeyCode())
 			{
 				showSettings = buttonSettings.selected = false;
 				updateButtons();
