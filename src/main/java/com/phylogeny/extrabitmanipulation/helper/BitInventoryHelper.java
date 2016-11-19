@@ -29,7 +29,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
@@ -301,6 +300,23 @@ public class BitInventoryHelper
 		}
 	}
 	
+	private static boolean isBitAccessEmpty(IBitAccess bitAccess)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 16; j++)
+			{
+				for (int k = 0; k < 16; k++)
+				{
+					if (!bitAccess.getBitAt(i, j, k).isAir())
+						return false;
+					
+				}
+			}
+		}
+		return true;
+	}
+	
 	public static void setHeldDesignStack(EntityPlayer player, ItemStack stackChiseledBlock)
 	{
 		ItemStack stack = player.getCurrentEquippedItem();
@@ -313,19 +329,11 @@ public class BitInventoryHelper
 		{
 			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack)
 					.getInteger(ChiselsAndBitsReferences.NBT_KEY_DESIGN_SIDE)), itemType, false);
-			if (stackDesign == null)
+			if (stackDesign == null || isBitAccessEmpty(bitAccess))
 				stackDesign = new ItemStack(Item.getByNameOrId(ChiselsAndBitsReferences.MOD_ID + ":" + (itemType == ItemType.POSITIVE_DESIGN
 				? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_POSITIVE : (itemType == ItemType.NEGATIVE_DESIGN
 				? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_NEGATIVE : ChiselsAndBitsReferences.ITEM_PATH_DESIGN_MIRROR))));
 			
-			if (stack != null && stack.hasTagCompound())
-			{
-				String mode = ItemStackHelper.getNBT(stack).getString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE);
-				if (!stackDesign.hasTagCompound())
-					stackDesign.setTagCompound(new NBTTagCompound());
-				
-				ItemStackHelper.getNBT(stackDesign).setString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE, mode);
-			}
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, stackDesign);
 		}
 	}
