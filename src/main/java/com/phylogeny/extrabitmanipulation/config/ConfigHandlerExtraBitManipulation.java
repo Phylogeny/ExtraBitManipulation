@@ -385,7 +385,7 @@ public class ConfigHandlerExtraBitManipulation
 					modelingMapConfigFile, false, true, 1, 0,
 					"chunk-snap mode",
 					"chunk-snap mode (either the area does not snap at all (off), it snaps in the X and Z axes (Y axis is unaffected) to whichever " +
-					"chunk the block the player is looking at is in (snap-to-chunk XZ), or is additionally snaps in the Y axis to the 'vertical chunk' " +
+					"chunk the block the player is looking at is in (snap-to-chunk XZ), or it additionally snaps in the Y axis to the 'vertical chunk' " +
 					"(as visualized by pressing F3 + G) the block the player is looking at is in (snap-to-chunk XYZ)).",
 					ItemModelingTool.SNAP_MODE_TITLES);
 			
