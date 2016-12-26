@@ -169,12 +169,15 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 			{
 				Item item = Item.getItemFromBlock(state.getBlock());
 				if (item != null && item instanceof ItemBlock)
+				{
 					stack = new ItemStack(item, 64, item.getHasSubtypes() ? state.getBlock().getMetaFromState(state) : 0);
+					stack.stackSize = stack.getMaxStackSize();
+				}
 			}
 			if (bitSlotClicked && getBitStack() != null)
 			{
 				stack = getBitStack().copy();
-				stack.stackSize = 64;
+				stack.stackSize = stack.getMaxStackSize();
 			}
 			if (stack != null)
 			{

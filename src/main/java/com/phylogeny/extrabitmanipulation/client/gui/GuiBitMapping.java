@@ -45,6 +45,7 @@ import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -856,7 +857,7 @@ public class GuiBitMapping extends GuiContainer
 		GlStateManager.translate(0.0F, 0.0F, 32.0F);
 		zLevel = 800.0F;
 		itemRender.zLevel = 800.0F;
-		net.minecraft.client.gui.FontRenderer font = null;
+		FontRenderer font = null;
 		if (stack != null)
 			font = stack.getItem().getFontRenderer(stack);
 		
