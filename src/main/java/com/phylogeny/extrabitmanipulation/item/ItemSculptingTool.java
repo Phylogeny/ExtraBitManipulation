@@ -159,12 +159,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 				float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
 				float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
 				float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
-				if (!removeBits)
-				{
-					x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
-					y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
-					z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
-				}
 				Shape shape;
 				AxisAlignedBB box;
 				if (shapeType != 4 && shapeType != 5)
