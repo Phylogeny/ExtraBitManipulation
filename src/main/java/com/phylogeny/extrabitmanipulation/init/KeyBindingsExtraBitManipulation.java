@@ -78,7 +78,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	public void register()
 	{
-		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), this, defaultKeyCode, "itemGroup." + Reference.MOD_ID);
+		keyBinding = new KeyBinding("keybinding." + Reference.MOD_ID + "." + description.toLowerCase(), this, defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
 	}
 	
@@ -95,7 +95,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	@Override
 	public boolean isActive()
 	{
-		ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
+		ItemStack stack = Minecraft.getMinecraft().player.getHeldItemMainhand();
 		return ItemStackHelper.isModelingToolStack(stack) || (checkForOnlyModelingTool && ItemStackHelper.isDesignStack(stack)) || (!checkForOnlyModelingTool
 				&& (ItemStackHelper.isSculptingToolStack(stack) || (checkForWrench && ItemStackHelper.isBitWrenchStack(stack))));
 	}

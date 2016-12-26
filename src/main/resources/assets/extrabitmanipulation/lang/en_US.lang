@@ -1,20 +1,20 @@
-itemGroup.ExtraBitManipulation=Extra Bit Manipulation
+itemGroup.extrabitmanipulation=Extra Bit Manipulation
 
 keybinding.extrabitmanipulation.bitmapping.gui=Open Modeling Tool or Design Gui
 keybinding.extrabitmanipulation.shift=Bit Tool SHIFT Replacement
 keybinding.extrabitmanipulation.control=Bit Tool CONTROL Replacement
 keybinding.extrabitmanipulation.alt=Bit Tool ALT Replacement
 
-item.extrabitmanipulation:DiamondNugget.name=Diamond Nugget
-item.extrabitmanipulation:BitWrench.name=Bit Wrench
-item.extrabitmanipulation:SculptingLoop.name=Curved Sculpting Wire
-item.extrabitmanipulation:SculptingSquare.name=Straight Sculpting Wire
-item.extrabitmanipulation:SculptingSpadeCurved.name=Curved Sculpting Spade
-item.extrabitmanipulation:SculptingSpadeSquared.name=Flat Sculpting Spade
-item.extrabitmanipulation:ModelingTool.name=Modeling Tool
-item.extrabitmanipulation:ModelingToolHead.name=Modeling Tool Head
-item.extrabitmanipulation:BitWrenchHead.name=Bit Wrench Head
-item.extrabitmanipulation:SculptingLoopHead.name=Curved Sculpting Wire Head
-item.extrabitmanipulation:SculptingSquareHead.name=Straight Sculpting Wire Head
-item.extrabitmanipulation:SculptingSpadeCurvedHead.name=Curved Sculpting Spade Head
-item.extrabitmanipulation:SculptingSpadeSquaredHead.name=Flat Sculpting Spade Head
+item.extrabitmanipulation:diamond_nugget.name=Diamond Nugget
+item.extrabitmanipulation:bit_wrench.name=Bit Wrench
+item.extrabitmanipulation:sculpting_loop.name=Curved Sculpting Wire
+item.extrabitmanipulation:sculpting_square.name=Straight Sculpting Wire
+item.extrabitmanipulation:sculpting_spade_curved.name=Curved Sculpting Spade
+item.extrabitmanipulation:sculpting_spade_squared.name=Flat Sculpting Spade
+item.extrabitmanipulation:modeling_tool.name=Modeling Tool
+item.extrabitmanipulation:modeling_tool_head.name=Modeling Tool Head
+item.extrabitmanipulation:bit_wrench_head.name=Bit Wrench Head
+item.extrabitmanipulation:sculpting_loop_head.name=Curved Sculpting Wire Head
+item.extrabitmanipulation:sculpting_square_head.name=Straight Sculpting Wire Head
+item.extrabitmanipulation:sculpting_spade_curved_head.name=Curved Sculpting Spade Head
+item.extrabitmanipulation:sculpting_spade_squared_head.name=Flat Sculpting Spade Head

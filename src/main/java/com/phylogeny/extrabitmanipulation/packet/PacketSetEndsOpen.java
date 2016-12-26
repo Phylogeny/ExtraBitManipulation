@@ -38,7 +38,7 @@ public class PacketSetEndsOpen implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetEndsOpen message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override

@@ -1,12 +1,13 @@
-itemGroup.ExtraBitManipulation=Zusätzliche Stückchenmanipulation
-item.DiamondNugget.name=Diamantnugget
-item.BitWrench.name=Stückchenschraubenschlüssel
-item.SculptingLoop.name=Gebogener Skulpturdraht
-item.SculptingSquare.name=Gerader Skulpturdraht
-item.SculptingSpadeCurved.name=Gebogener Skulpturspaten
-item.SculptingSpadeSquared.name=Flacher Skulpturspaten
-item.BitWrenchHead.name=Stückchenschraubenschlüssel-Kopf
-item.SculptingLoopHead.name=Gebogener Skulpturdrahtkopf
-item.SculptingSquareHead.name=Gerader Skulpturdrahtkopf
-item.SculptingSpadeCurvedHead.name=Gebogener Skulpturspatenkopf
-item.SculptingSpadeSquaredHead.name=Flacher Skulpturspatenkopf
+itemGroup.extrabitmanipulation=Zusätzliche Stückchenmanipulation
+
+item.diamond_nugget.name=Diamantnugget
+item.bit_wrench.name=Stückchenschraubenschlüssel
+item.sculpting_loop.name=Gebogener Skulpturdraht
+item.sculpting_square.name=Gerader Skulpturdraht
+item.sculpting_spade_curved.name=Gebogener Skulpturspaten
+item.sculpting_spade_squared.name=Flacher Skulpturspaten
+item.bit_wrench_head.name=Stückchenschraubenschlüssel-Kopf
+item.sculpting_loop_head.name=Gebogener Skulpturdrahtkopf
+item.sculpting_square_head.name=Gerader Skulpturdrahtkopf
+item.sculpting_spade_curved_head.name=Gebogener Skulpturspatenkopf
+item.sculpting_spade_squared_head.name=Flacher Skulpturspatenkopf

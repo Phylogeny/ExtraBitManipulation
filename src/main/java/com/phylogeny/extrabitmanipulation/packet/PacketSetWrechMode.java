@@ -41,10 +41,9 @@ public class PacketSetWrechMode implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetWrechMode message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
-				@SuppressWarnings("null")
 				@Override
 				public void run()
 				{

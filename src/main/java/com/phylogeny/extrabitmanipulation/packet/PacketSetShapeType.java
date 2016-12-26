@@ -42,7 +42,7 @@ public class PacketSetShapeType implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetShapeType message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override

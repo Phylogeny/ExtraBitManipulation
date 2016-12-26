@@ -60,7 +60,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 		@Override
 		public IMessage onMessage(final PacketReadBlockStates message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
@@ -69,7 +69,7 @@ public class PacketReadBlockStates extends PacketBlockInteraction implements IMe
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isModelingToolStack(stack))
-						BitAreaHelper.readBlockStates(stack, player, player.worldObj, message.pos, message.hit, message.drawnStartPoint, message.modelingData);
+						BitAreaHelper.readBlockStates(stack, player, player.world, message.pos, message.hit, message.drawnStartPoint, message.modelingData);
 				}
 			});
 			return null;

@@ -28,7 +28,7 @@ public class PacketOpenBitMappingGui implements IMessage
 		@Override
 		public IMessage onMessage(final PacketOpenBitMappingGui message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
@@ -38,7 +38,7 @@ public class PacketOpenBitMappingGui implements IMessage
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack))
 					{
-						player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
+						player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.world, 0, 0, 0);
 					}
 				}
 			});

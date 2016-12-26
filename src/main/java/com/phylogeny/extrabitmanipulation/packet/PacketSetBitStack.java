@@ -1,7 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
@@ -10,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -32,14 +32,14 @@ public class PacketSetBitStack implements IMessage
 	public void toBytes(ByteBuf buffer)
 	{
 		buffer.writeBoolean(isWire);
-		ItemStackHelper.stackToBytes(buffer, bitStack);
+		ByteBufUtils.writeItemStack(buffer, bitStack);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
 		isWire = buffer.readBoolean();
-		bitStack = ItemStackHelper.stackFromBytes(buffer);
+		bitStack = ByteBufUtils.readItemStack(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetBitStack, IMessage>
@@ -47,7 +47,7 @@ public class PacketSetBitStack implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetBitStack message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override

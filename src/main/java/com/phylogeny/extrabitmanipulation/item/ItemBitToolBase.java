@@ -41,7 +41,7 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 			if (stack.getItemDamage() > config.maxDamage)
 			{
 				player.renderBrokenItemStack(stack);
-				player.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
+				player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
 				ForgeEventFactory.onPlayerDestroyItem(player, stack, EnumHand.MAIN_HAND);
 			}
 		}

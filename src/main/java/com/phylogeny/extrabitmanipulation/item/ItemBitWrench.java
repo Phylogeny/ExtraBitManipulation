@@ -53,9 +53,10 @@ public class ItemBitWrench extends ItemBitToolBase
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos,
 			EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
+		ItemStack stack = player.getHeldItem(hand);
 		if (world.isRemote)
 		{
 			useWrench(stack, player, world, pos, side, Configs.oneBitTypeInversionRequirement, KeyBindingsExtraBitManipulation.SHIFT.isKeyDown());
@@ -92,7 +93,7 @@ public class ItemBitWrench extends ItemBitToolBase
 			int bitCountEmpty = 0;
 			int bitCountTake = 0;
 			IBitBrush invertBit = null;
-			ItemStack invertBitStack = null;
+			ItemStack invertBitStack = ItemStack.EMPTY;
 			int removalLayer = s % 2 == 1 ? -1 : 16;
 			boolean creativeMode = player.capabilities.isCreativeMode;
 			Map<IBlockState, Integer> inversionBitTypes = new HashMap<IBlockState, Integer>();

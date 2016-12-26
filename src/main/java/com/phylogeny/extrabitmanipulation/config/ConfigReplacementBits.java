@@ -1,8 +1,7 @@
 package com.phylogeny.extrabitmanipulation.config;
 
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 public class ConfigReplacementBits
 {
@@ -22,7 +21,7 @@ public class ConfigReplacementBits
 	
 	public void toBytes(ByteBuf buffer)
 	{
-		ItemStackHelper.stackToBytes(buffer, defaultReplacementBit.getDefaultValue());
+		ByteBufUtils.writeItemStack(buffer, defaultReplacementBit.getDefaultValue());
 		buffer.writeBoolean(useDefaultReplacementBit);
 		buffer.writeBoolean(useAnyBitsAsReplacements);
 		buffer.writeBoolean(useAirAsReplacement);
@@ -30,7 +29,7 @@ public class ConfigReplacementBits
 	
 	public void fromBytes(ByteBuf buffer)
 	{
-		defaultReplacementBit = new ConfigBitStack(ItemStackHelper.stackFromBytes(buffer));
+		defaultReplacementBit = new ConfigBitStack(ByteBufUtils.readItemStack(buffer));
 		useDefaultReplacementBit = buffer.readBoolean();
 		useAnyBitsAsReplacements = buffer.readBoolean();
 		useAirAsReplacement = buffer.readBoolean();

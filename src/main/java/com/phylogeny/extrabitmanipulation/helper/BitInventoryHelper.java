@@ -27,7 +27,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -83,17 +84,20 @@ public class BitInventoryHelper
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++)
 		{
 			ItemStack stack = player.inventory.getStackInSlot(i);
-			if (stack != null)
+			if (stack.isEmpty())
+				continue;
+			
+			count += BitInventoryHelper.getBitCountFromStack(api, setBitStack, stack);
+			if (api.getItemType(stack) == ItemType.BIT_BAG)
 			{
-				count += BitInventoryHelper.getBitCountFromStack(api, setBitStack, stack);
-				if (api.getItemType(stack) == ItemType.BIT_BAG)
+				IBitBag bitBag = api.getBitbag(stack);
+				if (bitBag == null)
+					continue;
+				
+				for (int j = 0; j < bitBag.getSlots(); j++)
 				{
-					IBitBag bitBag = api.getBitbag(stack);
-					for (int j = 0; j < bitBag.getSlots(); j++)
-					{
-						ItemStack bagStack = bitBag.getStackInSlot(j);
-						count += BitInventoryHelper.getBitCountFromStack(api, setBitStack, bagStack);
-					}
+					ItemStack bagStack = bitBag.getStackInSlot(j);
+					count += BitInventoryHelper.getBitCountFromStack(api, setBitStack, bagStack);
 				}
 			}
 		}
@@ -102,7 +106,7 @@ public class BitInventoryHelper
 	
 	private static int getBitCountFromStack(IChiselAndBitsAPI api, ItemStack setBitStack, ItemStack stack)
 	{
-		return BitInventoryHelper.areBitStacksEqual(api, setBitStack, stack) ? stack.stackSize : 0;
+		return BitInventoryHelper.areBitStacksEqual(api, setBitStack, stack) ? stack.getCount() : 0;
 	}
 	
 	private static boolean areBitStacksEqual(IChiselAndBitsAPI api, ItemStack bitStack, ItemStack putativeBitStack)
@@ -112,7 +116,7 @@ public class BitInventoryHelper
 	
 	public static boolean isBitStack(IChiselAndBitsAPI api, ItemStack putativeBitStack)
 	{
-		return putativeBitStack != null && api.getItemType(putativeBitStack) == ItemType.CHISLED_BIT;
+		return !putativeBitStack.isEmpty() && api.getItemType(putativeBitStack) == ItemType.CHISLED_BIT;
 	}
 	
 	public static void removeOrAddInventoryBits(IChiselAndBitsAPI api, EntityPlayer player, ItemStack setBitStack, int quota, boolean addBits)
@@ -130,6 +134,9 @@ public class BitInventoryHelper
 			if (api.getItemType(stack) == ItemType.BIT_BAG)
 			{
 				IBitBag bitBag = api.getBitbag(stack);
+				if (bitBag == null)
+					continue;
+				
 				for (int j = 0; j < bitBag.getSlots(); j++)
 				{
 					ItemStack bagStack = bitBag.getStackInSlot(j);
@@ -145,13 +152,13 @@ public class BitInventoryHelper
 	
 	private static int addBitsToBag(int quota, IBitBag bitBag, int index, ItemStack stack)
 	{
-		if (stack != null)
+		if (!stack.isEmpty())
 		{
-			int size = stack.stackSize;
+			int size = stack.getCount();
 			ItemStack remainingStack = bitBag.insertItem(index, stack, false);
-			int reduction = size - (remainingStack != null ? remainingStack.stackSize : 0);
+			int reduction = size - (!remainingStack.isEmpty() ? remainingStack.getCount() : 0);
 			quota -= reduction;
-			stack.stackSize -= reduction;
+			stack.shrink(reduction);
 		}
 		return quota;
 	}
@@ -161,7 +168,7 @@ public class BitInventoryHelper
 	{
 		if (areBitStacksEqual(api, setBitStack, stack))
 		{
-			int size = stack.stackSize;
+			int size = stack.getCount();
 			if (size > quota)
 			{
 				if (bitBag != null)
@@ -170,7 +177,7 @@ public class BitInventoryHelper
 				}
 				else
 				{
-					stack.stackSize = size - quota;
+					stack.shrink(quota);
 				}
 				quota = 0;
 			}
@@ -182,7 +189,7 @@ public class BitInventoryHelper
 				}
 				else if (inventoy != null)
 				{
-					inventoy.setInventorySlotContents(index, null);
+					inventoy.setInventorySlotContents(index, ItemStack.EMPTY);
 				}
 				quota -= size;
 			}
@@ -221,17 +228,18 @@ public class BitInventoryHelper
 					int totalBits = bitTypes.get(state);
 					if (Configs.dropBitsAsFullChiseledBlocks && totalBits >= 4096)
 					{
-						IBitAccess bitAccess = api.createBitItem(null);
+						IBitAccess bitAccess = api.createBitItem(ItemStack.EMPTY);
 						BitInventoryHelper.setAllBits(bitAccess, bit);
 						int blockCount = totalBits / 4096;
 						totalBits -= blockCount * 4096;
 						while (blockCount > 0)
 						{
 							int stackSize = blockCount > 64 ? 64 : blockCount;
+							@SuppressWarnings("null")
 							ItemStack stack2 = bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false);
-							if (stack2 != null)
+							if (!stack2.isEmpty())
 							{
-								stack2.stackSize = stackSize;
+								stack2.setCount(stackSize);
 								BitInventoryHelper.givePlayerStackOrDropOnGround(player, world, api, pos, shape, stack2);
 							}
 							blockCount -= stackSize;
@@ -256,11 +264,11 @@ public class BitInventoryHelper
 	{
 		if (Configs.placeBitsInInventory)
 		{
-			removeOrAddInventoryBits(api, player, stack, stack.stackSize, true);
-			if (stack.stackSize > 0)
+			removeOrAddInventoryBits(api, player, stack, stack.getCount(), true);
+			if (stack.getCount() > 0)
 				player.inventory.addItemStackToInventory(stack);
 		}
-		if (stack.stackSize > 0)
+		if (stack.getCount() > 0)
 		{
 			if (Configs.dropBitsInBlockspace)
 			{
@@ -280,7 +288,7 @@ public class BitInventoryHelper
 			Vec3d spawnPoint = shape.getRandomInternalPoint(world, pos);
 			EntityItem entityitem = new EntityItem(world, spawnPoint.xCoord, spawnPoint.yCoord - 0.25, spawnPoint.zCoord, stack);
 			entityitem.setDefaultPickupDelay();
-			world.spawnEntityInWorld(entityitem);
+			world.spawnEntity(entityitem);
 		}
 	}
 	
@@ -310,25 +318,22 @@ public class BitInventoryHelper
 			return;
 		
 		IBitAccess bitAccess = ChiselsAndBitsAPIAccess.apiInstance.createBitItem(stackChiseledBlock);
-		if (bitAccess != null)
+		if (bitAccess == null)
+			return;
+		
+		ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack)
+				.getInteger(ChiselsAndBitsReferences.NBT_KEY_DESIGN_SIDE)), itemType, false);
+		if (stackDesign.isEmpty())
+			stackDesign = new ItemStack(Item.getByNameOrId(ChiselsAndBitsReferences.MOD_ID + ":" + (itemType == ItemType.POSITIVE_DESIGN
+			? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_POSITIVE : (itemType == ItemType.NEGATIVE_DESIGN
+			? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_NEGATIVE : ChiselsAndBitsReferences.ITEM_PATH_DESIGN_MIRROR))));
+		
+		if (!stack.isEmpty() && stack.hasTagCompound())
 		{
-			ItemStack stackDesign = bitAccess.getBitsAsItem(EnumFacing.getFront(ItemStackHelper.getNBTOrNew(stack)
-					.getInteger(ChiselsAndBitsReferences.NBT_KEY_DESIGN_SIDE)), itemType, false);
-			if (stackDesign == null)
-				stackDesign = new ItemStack(Item.getByNameOrId(ChiselsAndBitsReferences.MOD_ID + ":" + (itemType == ItemType.POSITIVE_DESIGN
-				? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_POSITIVE : (itemType == ItemType.NEGATIVE_DESIGN
-				? ChiselsAndBitsReferences.ITEM_PATH_DESIGN_NEGATIVE : ChiselsAndBitsReferences.ITEM_PATH_DESIGN_MIRROR))));
-			
-			if (stack != null && stack.hasTagCompound())
-			{
-				String mode = ItemStackHelper.getNBT(stack).getString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE);
-				if (!stackDesign.hasTagCompound())
-					stackDesign.setTagCompound(new NBTTagCompound());
-				
-				ItemStackHelper.getNBT(stackDesign).setString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE, mode);
-			}
-			player.setHeldItem(EnumHand.MAIN_HAND, stackDesign);
+			stackDesign.setTagInfo(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE,
+					new NBTTagString(ItemStackHelper.getNBT(stack).getString(ChiselsAndBitsReferences.NBT_KEY_DESIGN_MODE)));
 		}
+		player.setHeldItem(EnumHand.MAIN_HAND, stackDesign);
 	}
 	
 }

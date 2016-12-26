@@ -1,10 +1,7 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
@@ -12,30 +9,39 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.10.2-2.2.0"
-group= "com.phylogeny.ExtraBitManipulation"
-archivesBaseName = "ExtraBitManipulation"
+version = minecraft_version + "-" + version
+group = "com.phylogeny.extrabitmanipulation"
+archivesBaseName = "extrabitmanipulation"
+
+sourceCompatibility = targetCompatibility = "1.6"
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.6"
+}
 
 minecraft {
-    version = "1.10.2-12.18.1.2017"
+    version = minecraft_version + "-" + forge_version
     runDir = "run"
-    mappings = "snapshot_20160518"
+    mappings = "snapshot_20161216"
+    replaceIn "Reference.java"
+    replace "@VERSION@", project.version
+	replace "@UPDATE@", update_json
 }
 
 dependencies {
-    compile files ("lib/chiselsandbits-11.7-api.jar")
+    compile files ("libs/" + c&b_api)
 }
 
 processResources
 {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-
+    inputs.property "updatejson", update_json
+	
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'updatejson':update_json
     }
-        
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }

@@ -76,12 +76,12 @@ public class SliderSetting
 	{
 		int value = slider.getValueInt();
 		if (value != getValue())
-			setValue(Minecraft.getMinecraft().thePlayer, value);
+			setValue(Minecraft.getMinecraft().player, value);
 	}
 	
 	protected NBTTagCompound getHeldStackNBT()
 	{
-		return ItemStackHelper.getNBTOrNew(Minecraft.getMinecraft().thePlayer.getHeldItemMainhand());
+		return ItemStackHelper.getNBTOrNew(Minecraft.getMinecraft().player.getHeldItemMainhand());
 	}
 	
 	public static class SemiDiameter extends SliderSetting

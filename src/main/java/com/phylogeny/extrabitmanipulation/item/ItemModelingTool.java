@@ -31,6 +31,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -69,10 +70,11 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world,
+	public EnumActionResult onItemUse(EntityPlayer player, World world,
 			BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
-		if (world.isRemote && stack.hasTagCompound())
+		ItemStack stack = player.getHeldItem(hand);
+		if (world.isRemote && stack .hasTagCompound())
 		{
 			@SuppressWarnings("null")
 			ModelWriteData modelingData = new ModelWriteData(stack.getTagCompound().getBoolean(NBTKeys.BIT_MAPS_PER_TOOL));
@@ -116,11 +118,11 @@ public class ItemModelingTool extends ItemBitToolBase
 				{
 					missingBitCount += missingBitMap.get(state);
 				}
-				addChatMessage(player, "Missing " + missingBitCount + " bits to represent the following blocks:");
+				sendMessage(player, "Missing " + missingBitCount + " bits to represent the following blocks:");
 				for (IBlockState state : missingBitMap.keySet())
 				{
 					String name = getBlockName(state, new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state)));
-					addChatMessage(player, "  " + missingBitMap.get(state) + " - " + name);
+					sendMessage(player, "  " + missingBitMap.get(state) + " - " + name);
 				}
 			}
 			return EnumActionResult.FAIL;
@@ -198,7 +200,7 @@ public class ItemModelingTool extends ItemBitToolBase
 					catch (SpaceOccupied e)
 					{
 						if (world != null && world.isRemote)
-							addChatMessage(player, "Multipart(s) are in the way.");
+							sendMessage(player, "Multipart(s) are in the way.");
 						
 						return false;
 					}
@@ -327,9 +329,9 @@ public class ItemModelingTool extends ItemBitToolBase
 		return bitCount;
 	}
 	
-	private void addChatMessage(EntityPlayer player, String message)
+	private void sendMessage(EntityPlayer player, String message)
 	{
-		player.addChatMessage(new TextComponentString(message));
+		player.sendMessage(new TextComponentString(message));
 	}
 	
 	private String getBlockName(IBlockState state, ItemStack blockStack)
@@ -348,7 +350,7 @@ public class ItemModelingTool extends ItemBitToolBase
 		else
 		{
 			Item item = Item.getItemFromBlock(state.getBlock());
-			if (item != null)
+			if (item != Items.AIR)
 				name = item.toString();
 		}
 		return name;

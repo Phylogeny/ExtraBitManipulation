@@ -32,7 +32,7 @@ public class ContainerBitMapping extends Container
 	@Nullable
 	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player)
 	{
-		return slotId - 27 == player.inventory.currentItem ? null : super.slotClick(slotId, dragType, clickTypeIn, player);
+		return slotId - 27 == player.inventory.currentItem ? ItemStack.EMPTY : super.slotClick(slotId, dragType, clickTypeIn, player);
 	}
 	
 	@Override
@@ -41,12 +41,11 @@ public class ContainerBitMapping extends Container
 		return true;
 	}
 	
-	@SuppressWarnings("null")
 	@Override
 	@Nullable
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
 	{
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 		Slot slot = inventorySlots.get(index);
 		if (slot != null && slot.getHasStack())
 		{
@@ -55,15 +54,15 @@ public class ContainerBitMapping extends Container
 			if (index < inventorySlots.size() - 9)
 			{
 				if (!mergeItemStack(stack2, inventorySlots.size() - 9, inventorySlots.size(), true))
-					return null;
+					return ItemStack.EMPTY;
 			}
 			else if (!mergeItemStack(stack2, 0, inventorySlots.size() - 9, false))
 			{
-				return null;
+				return ItemStack.EMPTY;
 			}
-			if (stack2.stackSize == 0)
+			if (stack2.isEmpty())
 			{
-				slot.putStack(null);
+				slot.putStack(ItemStack.EMPTY);
 			}
 			else
 			{

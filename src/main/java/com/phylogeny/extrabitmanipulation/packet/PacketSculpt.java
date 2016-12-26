@@ -59,17 +59,16 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSculpt message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
-				@SuppressWarnings("null")
 				@Override
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isSculptingToolStack(stack))
-						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.pos,
+						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.world, message.pos,
 								message.side, message.hit, message.drawnStartPoint, message.sculptingData);
 				}
 			});

@@ -111,7 +111,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		initBoolean(nbt, NBTKeys.SCULPT_HOLLOW_SHAPE, sculptingData.isHollowShape());
 		initBoolean(nbt, NBTKeys.OPEN_ENDS, sculptingData.areEndsOpen());
 		initInt(nbt, NBTKeys.WALL_THICKNESS, sculptingData.getWallThickness());
-		if (!nbt.hasKey(NBTKeys.SET_BIT) && sculptingData.getBitStack() != null)
+		if (!nbt.hasKey(NBTKeys.SET_BIT) && !sculptingData.getBitStack().isEmpty())
 		{
 			NBTTagCompound nbt2 = new NBTTagCompound();
 			sculptingData.getBitStack().writeToNBT(nbt2);
@@ -124,7 +124,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 			EnumFacing side, Vec3d hit, Vec3d drawnStartPoint, SculptingData sculptingData)
 	{
 		ItemStack setBitStack = sculptingData.getBitStack();
-		if (setBitStack == null && !removeBits)
+		if (setBitStack.isEmpty() && !removeBits)
 			return false;
 		
 		if (!world.isRemote)
@@ -285,7 +285,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 						
 						if (newRemainingUses <= 0)
 						{
-							player.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
+							player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
 							ForgeEventFactory.onPlayerDestroyItem(player, stack, player.getActiveHand());
 						}
 						player.inventoryContainer.detectAndSendChanges();
@@ -296,6 +296,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 					changed = possibleUses < initialpossibleUses;
 					if (changed)
 					{
+						@SuppressWarnings("deprecation")
 						SoundType sound = Blocks.STONE.getSoundType();
 						world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume()) / 8.0F, sound.getPitch() * 0.8F);
 					}
@@ -338,6 +339,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		return false;
 	}
 	
+	@SuppressWarnings("null")
 	private int sculptBlock(IChiselAndBitsAPI api, EntityPlayer player, World world, BlockPos pos, Shape shape,
 			Map<IBlockState, Integer> bitTypes, int remainingUses, IBitBrush setBit)
 	{
@@ -422,7 +424,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 		{
 			String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
 			String unspecifiedBit = removeBits ? "any" : "none";
-			if (setBitStack != null)
+			if (!setBitStack.isEmpty())
 			{
 				String stackName = setBitStack.getDisplayName();
 				bitType += (stackName.length() == 12 ? unspecifiedBit : stackName.substring(15));

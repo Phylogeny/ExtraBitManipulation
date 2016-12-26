@@ -144,6 +144,7 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:nether_wart-minecraft:wool:14",
 		"minecraft:noteblock-minecraft:hardened_clay",
 		"minecraft:oak_stairs-minecraft:planks",
+		"minecraft:observer-minecraft:wool:7",
 		"minecraft:piston_extension-minecraft:planks",
 		"minecraft:piston_head-minecraft:planks",
 		"minecraft:piston-minecraft:wool:7",
@@ -211,7 +212,24 @@ public class ConfigHandlerExtraBitManipulation
 		"minecraft:wooden_door-minecraft:planks",
 		"minecraft:wooden_pressure_plate-minecraft:air",
 		"minecraft:wooden_slab-minecraft:planks",
-		"minecraft:yellow_flower-minecraft:wool:4"
+		"minecraft:yellow_flower-minecraft:wool:4",
+		"minecraft:cyan_shulker_box-minecraft:wool:9",
+		"minecraft:end_rod-minecraft:quartz_block",
+		//Shulker Boxes
+		"minecraft:black_shulker_box-minecraft:wool:15",
+		"minecraft:blue_shulker_box-minecraft:wool:11",
+		"minecraft:silver_shulker_box-minecraft:wool:8",
+		"minecraft:brown_shulker_box-minecraft:wool:12",
+		"minecraft:green_shulker_box-minecraft:wool:13",
+		"minecraft:yellow_shulker_box-minecraft:wool:4",
+		"minecraft:white_shulker_box-minecraft:wool",
+		"minecraft:gray_shulker_box-minecraft:wool:7",
+		"minecraft:orange_shulker_box-minecraft:wool:1",
+		"minecraft:lime_shulker_box-minecraft:wool:5",
+		"minecraft:light_blue_shulker_box-minecraft:wool:3",
+		"minecraft:red_shulker_box-minecraft:wool:14",
+		"minecraft:pink_shulker_box-minecraft:wool:6",
+		"minecraft:magenta_shulker_box-minecraft:wool:2"
 	};
 	public static final String[] STATE_TO_BIT_MAP_DEFAULT_VALUES = new String[]
 	{

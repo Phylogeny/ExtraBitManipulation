@@ -57,7 +57,7 @@ public class ButtonsSetting
 	{
 		int value = buttons.indexOf(getTargetButton());
 		if (value != getValue())
-			setValue(Minecraft.getMinecraft().thePlayer, value);
+			setValue(Minecraft.getMinecraft().player, value);
 	}
 	
 	protected GuiButtonSetting getTargetButton()
@@ -81,13 +81,13 @@ public class ButtonsSetting
 	
 	protected NBTTagCompound getHeldStackNBT()
 	{
-		return ItemStackHelper.getNBTOrNew(Minecraft.getMinecraft().thePlayer.getHeldItemMainhand());
+		return ItemStackHelper.getNBTOrNew(Minecraft.getMinecraft().player.getHeldItemMainhand());
 	}
 	
 	private static ItemSculptingTool getSculptingTool()
 	{
-		ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
-		return stack == null ? null : (ItemSculptingTool) stack.getItem();
+		ItemStack stack = Minecraft.getMinecraft().player.getHeldItemMainhand();
+		return stack.isEmpty() ? null : (ItemSculptingTool) stack.getItem();
 	}
 	
 	public static class WrenchMode extends ButtonsSetting
@@ -207,7 +207,7 @@ public class ButtonsSetting
 				value = value * 3 + 3;
 			
 			if (value != getValue())
-				setValue(Minecraft.getMinecraft().thePlayer, value);
+				setValue(Minecraft.getMinecraft().player, value);
 		}
 		
 		@Override

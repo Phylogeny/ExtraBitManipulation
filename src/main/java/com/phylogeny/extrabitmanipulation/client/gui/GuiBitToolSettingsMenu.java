@@ -40,8 +40,8 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	@Override
 	public void initGui()
 	{
-		ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
-		if (stack == null)
+		ItemStack stack = Minecraft.getMinecraft().player.getHeldItemMainhand();
+		if (stack.isEmpty())
 			return;
 		
 		if (ItemStackHelper.isBitWrenchStack(stack))
@@ -140,7 +140,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 				sliderSetting.getSlider().mousePressed(mc, mouseX, mouseY);
 			}
 			setToolValuesIfDiffrent();
-			mc.thePlayer.closeScreen();
+			mc.player.closeScreen();
 		}
 	}
 	

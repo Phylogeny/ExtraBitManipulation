@@ -22,19 +22,19 @@ public class ItemsExtraBitManipulation
 	
 	public static void itemsInit()
 	{
-		diamondNugget = new ItemExtraBitManipulationBase("DiamondNugget"); 
-		bitWrench = new ItemBitWrench("BitWrench"); 
-		sculptingLoop = new ItemSculptingTool(true, true, "SculptingLoop");
-		sculptingSquare = new ItemSculptingTool(false, true, "SculptingSquare");
-		sculptingSpadeCurved = new ItemSculptingTool(true, false, "SculptingSpadeCurved");
-		sculptingSpadeSquared = new ItemSculptingTool(false, false, "SculptingSpadeSquared");
-		modelingTool = new ItemModelingTool("ModelingTool");
-		modelingToolHead = new ItemExtraBitManipulationBase("ModelingToolHead"); 
-		bitWrenchHead = new ItemExtraBitManipulationBase("BitWrenchHead"); 
-		sculptingLoopHead = new ItemExtraBitManipulationBase("SculptingLoopHead");
-		sculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
-		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("SculptingSpadeCurvedHead");
-		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("SculptingSpadeSquaredHead");
+		diamondNugget = new ItemExtraBitManipulationBase("diamond_nugget"); 
+		bitWrench = new ItemBitWrench("bit_wrench"); 
+		sculptingLoop = new ItemSculptingTool(true, true, "sculpting_loop");
+		sculptingSquare = new ItemSculptingTool(false, true, "sculpting_square");
+		sculptingSpadeCurved = new ItemSculptingTool(true, false, "sculpting_spade_curved");
+		sculptingSpadeSquared = new ItemSculptingTool(false, false, "sculpting_spade_squared");
+		modelingTool = new ItemModelingTool("modeling_tool");
+		modelingToolHead = new ItemExtraBitManipulationBase("modeling_tool_head"); 
+		bitWrenchHead = new ItemExtraBitManipulationBase("bit_wrench_head"); 
+		sculptingLoopHead = new ItemExtraBitManipulationBase("sculpting_loop_head");
+		sculptingSquareHead = new ItemExtraBitManipulationBase("sculpting_square_head");
+		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("sculpting_spade_curved_head");
+		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("sculpting_spade_squared_head");
 		registerItemAndDefaultRecipe(bitWrench, "Bit Wrench", true, false);
 		registerItemAndDefaultRecipe(sculptingLoop, "Curved Sculpting Wire", true, false);
 		registerItemAndDefaultRecipe(sculptingSquare, "Straight Sculpting Wire", true, false);
@@ -61,7 +61,7 @@ public class ItemsExtraBitManipulation
 	{
 		String itemName = ((ItemExtraBitManipulationBase) item).getName();
 		if (recipeDefault.length == 0)
-			recipeDefault = new String[]{"", Reference.MOD_ID + ":" + itemName + "Head", "minecraft:iron_ingot", ""};
+			recipeDefault = new String[]{"", Reference.MOD_ID + ":" + itemName + "_head", "minecraft:iron_ingot", ""};
 		
 		GameRegistry.register(item);
 		Configs.itemRecipeMap.put(item, new ConfigRecipe(itemTitle, true, isShapedDefault, oreDictionaryDefault, recipeDefault));

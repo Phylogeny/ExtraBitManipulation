@@ -39,6 +39,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class BitToolSettingsHelper
 {
@@ -91,12 +92,12 @@ public class BitToolSettingsHelper
 		player.inventoryContainer.detectAndSendChanges();
 	}
 	
-	private static ItemStack getStack(NBTTagCompound nbt, ItemStack stackToGet, String key)
+	private static ItemStack getStack(NBTTagCompound nbt, ItemStack stack, String key)
 	{
 		if (nbt != null && nbt.hasKey(key))
-			stackToGet = ItemStackHelper.loadStackFromNBT(nbt, key);
+			stack = ItemStackHelper.loadStackFromNBT(nbt, key);
 		
-		return stackToGet;
+		return stack;
 	}
 	
 	private static void setStack(EntityPlayer player, ItemStack stack, ItemStack stackToSet, String key)
@@ -182,7 +183,7 @@ public class BitToolSettingsHelper
 	
 	public static void setModelAreaMode(EntityPlayer player, ItemStack stack, int mode, ConfigBitToolSettingInt modelAreaMode)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (modelAreaMode == null || modelAreaMode.isPerTool())
 		{
 			if (world.isRemote)
@@ -208,7 +209,7 @@ public class BitToolSettingsHelper
 	
 	public static void setModelSnapMode(EntityPlayer player, ItemStack stack, int mode, ConfigBitToolSettingInt modelSnapMode)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (modelSnapMode == null || modelSnapMode.isPerTool())
 		{
 			if (world.isRemote)
@@ -234,7 +235,7 @@ public class BitToolSettingsHelper
 	
 	public static void setModelGuiOpen(EntityPlayer player, ItemStack stack, boolean isOpen, ConfigBitToolSettingBoolean modelGuiOpen)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (modelGuiOpen == null || modelGuiOpen.isPerTool())
 		{
 			if (world.isRemote)
@@ -260,7 +261,7 @@ public class BitToolSettingsHelper
 	
 	public static void setSculptMode(EntityPlayer player, ItemStack stack, int mode, ConfigBitToolSettingInt sculptMode)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptMode == null || sculptMode.isPerTool())
 		{
 			if (world.isRemote)
@@ -286,7 +287,7 @@ public class BitToolSettingsHelper
 	
 	public static void setDirection(EntityPlayer player, ItemStack stack, int direction, ConfigBitToolSettingInt sculptDirection)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptDirection == null || sculptDirection.isPerTool())
 		{
 			if (world.isRemote)
@@ -314,7 +315,7 @@ public class BitToolSettingsHelper
 	
 	public static void setShapeType(EntityPlayer player, ItemStack stack, boolean isCurved, int shapeType, ConfigBitToolSettingInt sculptShapeType)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptShapeType == null || sculptShapeType.isPerTool())
 		{
 			if (world.isRemote)
@@ -340,7 +341,7 @@ public class BitToolSettingsHelper
 	
 	public static void setBitGridTargeted(EntityPlayer player, ItemStack stack, boolean isTargeted, ConfigBitToolSettingBoolean sculptTargetBitGridVertexes)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptTargetBitGridVertexes == null || sculptTargetBitGridVertexes.isPerTool())
 		{
 			if (world.isRemote)
@@ -366,7 +367,7 @@ public class BitToolSettingsHelper
 	
 	public static void setSemiDiameter(EntityPlayer player, ItemStack stack, int semiDiameter, ConfigBitToolSettingInt sculptSemiDiameter)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptSemiDiameter == null || sculptSemiDiameter.isPerTool())
 		{
 			if (world.isRemote)
@@ -392,7 +393,7 @@ public class BitToolSettingsHelper
 	
 	public static void setHollowShape(EntityPlayer player, ItemStack stack, boolean isWire, boolean hollowShape, ConfigBitToolSettingBoolean sculptHollowShape)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptHollowShape == null || sculptHollowShape.isPerTool())
 		{
 			if (world.isRemote)
@@ -418,7 +419,7 @@ public class BitToolSettingsHelper
 	
 	public static void setEndsOpen(EntityPlayer player, ItemStack stack, boolean openEnds, ConfigBitToolSettingBoolean sculptOpenEnds)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptOpenEnds == null || sculptOpenEnds.isPerTool())
 		{
 			if (world.isRemote)
@@ -444,7 +445,7 @@ public class BitToolSettingsHelper
 	
 	public static void setWallThickness(EntityPlayer player, ItemStack stack, int wallThickness, ConfigBitToolSettingInt sculptWallThickness)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptWallThickness == null || sculptWallThickness.isPerTool())
 		{
 			if (world.isRemote)
@@ -470,7 +471,7 @@ public class BitToolSettingsHelper
 	
 	public static void setBitStack(EntityPlayer player, ItemStack stack, boolean isWire, IBitBrush bit, ConfigBitStack sculptSetBit)
 	{
-		World world = player.worldObj;
+		World world = player.world;
 		if (sculptSetBit == null || sculptSetBit.isPerTool())
 		{
 			if (world.isRemote)
@@ -812,7 +813,7 @@ public class BitToolSettingsHelper
 			buffer.writeBoolean(hollowShape);
 			buffer.writeBoolean(openEnds);
 			buffer.writeInt(wallThickness);
-			ItemStackHelper.stackToBytes(buffer, setBitStack);
+			ByteBufUtils.writeItemStack(buffer, setBitStack);
 			buffer.writeFloat(semiDiameterPadding);
 		}
 		
@@ -826,7 +827,7 @@ public class BitToolSettingsHelper
 			hollowShape = buffer.readBoolean();
 			openEnds = buffer.readBoolean();
 			wallThickness = buffer.readInt();
-			setBitStack = ItemStackHelper.stackFromBytes(buffer);
+			setBitStack = ByteBufUtils.readItemStack(buffer);
 			semiDiameterPadding = buffer.readFloat();
 		}
 		

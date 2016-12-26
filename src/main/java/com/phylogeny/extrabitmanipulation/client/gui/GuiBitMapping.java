@@ -54,6 +54,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -65,11 +66,11 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class GuiBitMapping extends GuiContainer
 {
-	public static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.GROUP_ID, "textures/guis/modeling_tool.png");
-	public static final ResourceLocation BOX_CHECKED = new ResourceLocation(Reference.GROUP_ID, "textures/guis/box_checked.png");
-	public static final ResourceLocation BOX_UNCHECKED = new ResourceLocation(Reference.GROUP_ID, "textures/guis/box_unchecked.png");
-	public static final ResourceLocation SETTINGS_MAIN = new ResourceLocation(Reference.GROUP_ID, "textures/guis/settings_main.png");
-	public static final ResourceLocation SETTINGS_BACK = new ResourceLocation(Reference.GROUP_ID, "textures/guis/settings_back.png");
+	public static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/guis/modeling_tool.png");
+	public static final ResourceLocation BOX_CHECKED = new ResourceLocation(Reference.MOD_ID, "textures/guis/box_checked.png");
+	public static final ResourceLocation BOX_UNCHECKED = new ResourceLocation(Reference.MOD_ID, "textures/guis/box_unchecked.png");
+	public static final ResourceLocation SETTINGS_MAIN = new ResourceLocation(Reference.MOD_ID, "textures/guis/settings_main.png");
+	public static final ResourceLocation SETTINGS_BACK = new ResourceLocation(Reference.MOD_ID, "textures/guis/settings_back.png");
 	private IChiselAndBitsAPI api;
 	private GuiListBitMapping bitMappingList;
 	private ItemStack previewStack, previewResultStack;
@@ -107,6 +108,7 @@ public class GuiBitMapping extends GuiContainer
 		stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
 		savedTab = nbt.getInteger(NBTKeys.TAB_SETTING);
 		bitMapPerTool = nbt.getBoolean(NBTKeys.BIT_MAPS_PER_TOOL);
+		previewStack = previewResultStack = ItemStack.EMPTY;
 	}
 	
 	private void constructManualMaps()
@@ -128,7 +130,7 @@ public class GuiBitMapping extends GuiContainer
 				if (regName.getResourceDomain().equals(ChiselsAndBitsReferences.MOD_ID))
 				{
 					Item item = Item.getItemFromBlock(block);
-					if (item != null)
+					if (item != Items.AIR)
 					{
 						ItemType itemType = api.getItemType(new ItemStack(item));
 						if (itemType != null && itemType == ItemType.CHISLED_BLOCK)
@@ -233,6 +235,7 @@ public class GuiBitMapping extends GuiContainer
 			tabButtons[0].setIconStack(previewStack);
 	}
 	
+	@SuppressWarnings("null")
 	private void constructStateToBitCountArray()
 	{
 		stateToBitCountArray = new LinkedHashMap<IBlockState, ArrayList<BitCount>>();
@@ -251,14 +254,14 @@ public class GuiBitMapping extends GuiContainer
 			return;
 		}
 		Map<IBitBrush, Integer> bitMap = new HashMap<IBitBrush, Integer>();
-		EntityPlayer player = mc.thePlayer;
+		EntityPlayer player = mc.player;
 		ItemModelingTool itemModelingTool = (ItemModelingTool) getHeldStack().getItem();
 		if (itemModelingTool.mapBitsToStates(api, Configs.replacementBitsUnchiselable, Configs.replacementBitsInsufficient,
 				BitInventoryHelper.getInventoryBitCounts(api, player), stateMap, stateToBitCountArray,
 				stateToBitMapPermanent, blockToBitMapPermanent, bitMap, player.capabilities.isCreativeMode).isEmpty())
 		{
 			stateToBitCountArray = getSortedLinkedBitMap(stateToBitCountArray);
-			IBitAccess bitAccess = api.createBitItem(null);
+			IBitAccess bitAccess = api.createBitItem(ItemStack.EMPTY);
 			Map<IBlockState, ArrayList<BitCount>> stateToBitCountArrayCopy = new HashMap<IBlockState, ArrayList<BitCount>>();
 			for (Entry<IBlockState, ArrayList<BitCount>> entry : stateToBitCountArray.entrySet())
 			{
@@ -270,11 +273,11 @@ public class GuiBitMapping extends GuiContainer
 				stateToBitCountArrayCopy.put(entry.getKey(), bitCountArray);
 			}
 			previewResultStack = itemModelingTool.createModel(null, null, getHeldStack(), stateArray, stateToBitCountArrayCopy, bitAccess)
-					? bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false) : null;
+					? bitAccess.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false) : ItemStack.EMPTY;
 		}
 		else
 		{
-			previewResultStack = null;
+			previewResultStack = ItemStack.EMPTY;
 		}
 	}
 	
@@ -291,9 +294,10 @@ public class GuiBitMapping extends GuiContainer
 		return designMode || buttonStates.selected ? stateToBitMapPermanent : blockToBitMapPermanent;
 	}
 	
+	@SuppressWarnings("null")
 	public void setPreviewStack()
 	{
-		IBitAccess bitAccess = api.createBitItem(null);
+		IBitAccess bitAccess = api.createBitItem(ItemStack.EMPTY);
 		IBitBrush defaultBit = null;
 		try
 		{
@@ -337,14 +341,10 @@ public class GuiBitMapping extends GuiContainer
 	
 	public ItemStack getHeldStack()
 	{
-		return mc.thePlayer.getHeldItemMainhand();
+		return mc.player.getHeldItemMainhand();
 	}
 	
-	public int getGuiTop()
-	{
-		return guiTop;
-	}
-	
+	@Override
 	public int getGuiLeft()
 	{
 		return guiLeft + 24;
@@ -420,7 +420,7 @@ public class GuiBitMapping extends GuiContainer
 			constructStateToBitCountArray();
 			for (int i = 0; i < tabButtons.length; i++)
 			{
-				ItemStack iconStack = i == 0 ? previewStack : (i == 1 ? null : (i == 2 ? new ItemStack(Blocks.GRASS) : null));
+				ItemStack iconStack = i == 0 ? previewStack : (i == 1 ? ItemStack.EMPTY : (i == 2 ? new ItemStack(Blocks.GRASS) : ItemStack.EMPTY));
 				float u = 0;
 				float v = 0;
 				int uWidth = 0;
@@ -637,14 +637,14 @@ public class GuiBitMapping extends GuiContainer
 		mouseInitialY = mouseY;
 		previewStackInitialOffsetX = previewStackOffsetX;
 		previewStackInitialOffsetY = previewStackOffsetY;
-		if (mc.thePlayer.inventory.getItemStack() == null && mouseButton == 2 && mc.thePlayer.capabilities.isCreativeMode && previewStackBoxClicked)
+		if (mc.player.inventory.getItemStack().isEmpty() && mouseButton == 2 && mc.player.capabilities.isCreativeMode && previewStackBoxClicked)
 		{
 			ItemStack previewStack = getPreviewStack();
-			if (previewStack == null)
+			if (previewStack.isEmpty())
 				return;
 			
 			ItemStack stack = previewStack.copy();
-			mc.thePlayer.inventory.setItemStack(stack);
+			mc.player.inventory.setItemStack(stack);
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack));
 		}
 	}
@@ -692,10 +692,10 @@ public class GuiBitMapping extends GuiContainer
 					{
 						BitCount bitCount = bitCountArray.get(j);
 						IBitBrush bit = bitCount.getBit();
-						ItemStack bitStack = bit != null ? bit.getItemStack(1) : null;
+						ItemStack bitStack = bit != null ? bit.getItemStack(1) : ItemStack.EMPTY;
 						boolean isAir = bit != null && bit.isAir();
-						String text = bitStack != null ? BitToolSettingsHelper.getBitName(bitStack) : (isAir ? "Empty / Air" : unmappedText);
-						if (bitStack != null || entry.isAir())
+						String text = !bitStack.isEmpty() ? BitToolSettingsHelper.getBitName(bitStack) : (isAir ? "Empty / Air" : unmappedText);
+						if (!bitStack.isEmpty() || entry.isAir())
 						{
 							String text2 = TextFormatting.DARK_RED + (j == 0 ? "Bit:" : "	") + " " + TextFormatting.RESET;
 							if (bitCountArray.size() > 1)
@@ -796,7 +796,7 @@ public class GuiBitMapping extends GuiContainer
 		if (designMode)
 		{
 			fontRendererObj.drawString("Design", getGuiLeft() + 103, guiTop + 8, 4210752);
-			fontRendererObj.drawString(mc.thePlayer.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, 4210752);
+			fontRendererObj.drawString(mc.player.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, 4210752);
 		}
 		else
 		{
@@ -818,7 +818,7 @@ public class GuiBitMapping extends GuiContainer
 		else
 		{
 			ItemStack previewStack = getPreviewStack();
-			if (previewStack != null)
+			if (!previewStack.isEmpty())
 			{
 				GL11.glEnable(GL11.GL_STENCIL_TEST);
 				GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
@@ -849,12 +849,12 @@ public class GuiBitMapping extends GuiContainer
 					+ "      Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
 		
 		RenderHelper.enableGUIStandardItemLighting();
-		ItemStack stack = mc.thePlayer.inventory.getItemStack();
+		ItemStack stack = mc.player.inventory.getItemStack();
 		GlStateManager.translate(0.0F, 0.0F, 32.0F);
 		zLevel = 800.0F;
 		itemRender.zLevel = 800.0F;
 		FontRenderer font = null;
-		if (stack != null)
+		if (!stack.isEmpty())
 			font = stack.getItem().getFontRenderer(stack);
 		
 		if (font == null)
@@ -871,7 +871,7 @@ public class GuiBitMapping extends GuiContainer
 	
 	private ItemStack getPreviewStack()
 	{
-		return !designMode && isResultsTabSelected() ? previewResultStack : this.previewStack;
+		return !designMode && isResultsTabSelected() ? previewResultStack : previewStack;
 	}
 	
 	@Override
@@ -881,7 +881,7 @@ public class GuiBitMapping extends GuiContainer
 		{
 			if (button.id == 0)
 			{
-				BitInventoryHelper.setHeldDesignStack(mc.thePlayer, previewStack);
+				BitInventoryHelper.setHeldDesignStack(mc.player, previewStack);
 				stateToBitMapPermanent.clear();
 				initDesignMode();
 				constructManualMaps();
@@ -993,12 +993,16 @@ public class GuiBitMapping extends GuiContainer
 		stateMap = new HashMap<IBlockState, Integer>();
 		stateArray = new IBlockState[16][16][16];
 		IBitAccess pattern = api.createBitItem(getHeldStack());
+		if (pattern == null)
+			pattern = api.createBitItem(ItemStack.EMPTY);
+		
 		for (int i = 0; i < 16; i++)
 		{
 			for (int j = 0; j < 16; j++)
 			{
 				for (int k = 0; k < 16; k++)
 				{
+					@SuppressWarnings("null")
 					IBitBrush bit = pattern.getBitAt(i, j, k);
 					IBlockState state = bit.getState();
 					stateArray[i][j][k] = state;

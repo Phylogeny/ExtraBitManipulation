@@ -60,15 +60,15 @@ public class GuiButtonTab extends GuiButtonBase
 	
 	public void renderIconStack()
 	{
-		if (iconStack != null)
-		{
-			RenderHelper.enableGUIStandardItemLighting();
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0.5, 0, 0);
-			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(iconStack, xPosition + 5 + getOffsetX(), yPosition + 5);
-			GlStateManager.popMatrix();
-			RenderHelper.disableStandardItemLighting();
-		}
+		if (iconStack.isEmpty())
+			return;
+		
+		RenderHelper.enableGUIStandardItemLighting();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(0.5, 0, 0);
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(iconStack, xPosition + 5 + getOffsetX(), yPosition + 5);
+		GlStateManager.popMatrix();
+		RenderHelper.disableStandardItemLighting();
 	}
 	
 }

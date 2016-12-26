@@ -1,11 +1,11 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -25,13 +25,13 @@ public class PacketSetDesign implements IMessage
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		ItemStackHelper.stackToBytes(buffer, stack);
+		ByteBufUtils.writeItemStack(buffer, stack);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		stack = ItemStackHelper.stackFromBytes(buffer);
+		stack = ByteBufUtils.readItemStack(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetDesign, IMessage>
@@ -39,7 +39,7 @@ public class PacketSetDesign implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetDesign message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override

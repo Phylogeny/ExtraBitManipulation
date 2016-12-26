@@ -61,23 +61,23 @@ public class RenderState
 		Block block = state.getBlock();
 		ItemStack stack = new ItemStack(block, 1, block.getMetaFromState(state));
 		if (isNullItem(block, stack))
-			stack = null;
+			stack = ItemStack.EMPTY;
 		
 		boolean isVanillaChest = block == Blocks.CHEST || block == Blocks.ENDER_CHEST || block == Blocks.TRAPPED_CHEST;
-		if (stack != null && emptyModel)
+		if (!stack.isEmpty() && emptyModel)
 		{
 			model = getItemModelWithOverrides(stack);
 			if (!isVanillaChest && isMissingModel(blockModelShapes, model))
 			{
 				stack = new ItemStack(block);
 				if (isNullItem(block, stack))
-					stack = null;
+					stack = ItemStack.EMPTY;
 				
-				if (stack != null)
+				if (!stack.isEmpty())
 					model = getItemModelWithOverrides(stack);
 			}
 		}
-		boolean renderAsTileEntity = stack != null && (model.isBuiltInRenderer() || isVanillaChest);
+		boolean renderAsTileEntity = !stack.isEmpty() && (model.isBuiltInRenderer() || isVanillaChest);
 		try
 		{
 			renderStateModelIntoGUI(state, model, stack, renderAsTileEntity, x, y, 0, 0, -1);
@@ -94,7 +94,7 @@ public class RenderState
 					return String.valueOf(state);
 				}
 			});
-			if (stack != null)
+			if (!stack.isEmpty())
 			{
 				final ItemStack stack2 = stack.copy();
 				crashreportcategory.setDetail("State's Item Type", new ICrashReportDetail<String>()
@@ -136,7 +136,7 @@ public class RenderState
 	
 	public static IBakedModel getItemModelWithOverrides(ItemStack stack)
 	{
-		return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, Minecraft.getMinecraft().thePlayer);
+		return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, Minecraft.getMinecraft().player);
 	}
 	
 	private static boolean isNullItem(final Block block, ItemStack stack)
@@ -283,7 +283,7 @@ public class RenderState
 			}
 			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 			renderModel(state, model, -1, stack);
-			if (stack != null && stack.hasEffect())
+			if (stack.hasEffect())
 				renderEffect(state, model);
 		}
 		GlStateManager.popMatrix();
@@ -357,7 +357,7 @@ public class RenderState
 	
 	private static void renderQuads(VertexBuffer vertexbuffer, List<BakedQuad> quads, int color, ItemStack stack)
 	{
-		boolean flag = color == -1 && stack != null;
+		boolean flag = color == -1 && !stack.isEmpty();
 		int i = 0;
 		for (int j = quads.size(); i < j; ++i)
 		{

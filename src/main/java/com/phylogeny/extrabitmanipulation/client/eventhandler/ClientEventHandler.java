@@ -73,11 +73,11 @@ public class ClientEventHandler
 	private int frameCounter;
 	private Vec3d drawnStartPoint = null;
 	private Vec3i drawnStartPointModelingTool = null;
-	private static final ResourceLocation ARROW_HEAD = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowHead.png");
-	private static final ResourceLocation ARROW_BIDIRECTIONAL = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowBidirectional.png");
-	private static final ResourceLocation ARROW_CYCLICAL = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/ArrowCyclical.png");
-	private static final ResourceLocation CIRCLE = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Circle.png");
-	private static final ResourceLocation INVERSION = new ResourceLocation(Reference.GROUP_ID, "textures/overlays/Inversion.png");
+	private static final ResourceLocation ARROW_HEAD = new ResourceLocation(Reference.MOD_ID, "textures/overlays/arrow_head.png");
+	private static final ResourceLocation ARROW_BIDIRECTIONAL = new ResourceLocation(Reference.MOD_ID, "textures/overlays/arrow_bidirectional.png");
+	private static final ResourceLocation ARROW_CYCLICAL = new ResourceLocation(Reference.MOD_ID, "textures/overlays/arrow_cyclical.png");
+	private static final ResourceLocation CIRCLE = new ResourceLocation(Reference.MOD_ID, "textures/overlays/circle.png");
+	private static final ResourceLocation INVERSION = new ResourceLocation(Reference.MOD_ID, "textures/overlays/inversion.png");
 	private static final int[] DIRECTION_FORWARD = new int[]{2, 0, 5, 4, 1, 3};
 	private static final int[] DIRECTION_BACKWARD = new int[]{1, 4, 0, 5, 3, 2};
 	private static final int[] AXIS_FORWARD = new int[]{2, 3, 4, 5, 0, 1};
@@ -109,14 +109,14 @@ public class ClientEventHandler
 		{
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
-				ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItemMainhand();
+				ItemStack stack = Minecraft.getMinecraft().player.getHeldItemMainhand();
 				if ((ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
-						|| (stack != null && stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack)))
+						|| (stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack)))
 					openBitMappingGui();
 			}
 			else
 			{
-				if (ItemStackHelper.isBitToolStack(Minecraft.getMinecraft().thePlayer.getHeldItemMainhand()))
+				if (ItemStackHelper.isBitToolStack(Minecraft.getMinecraft().player.getHeldItemMainhand()))
 						Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
 			}
 		}
@@ -124,8 +124,8 @@ public class ClientEventHandler
 	
 	private void openBitMappingGui()
 	{
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.world, 0, 0, 0);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenBitMappingGui());
 	}
 	
@@ -139,11 +139,10 @@ public class ClientEventHandler
 		return false;
 	}
 	
-	@SuppressWarnings("null")
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
 	{
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (event.getDwheel() != 0)
 		{
 			ItemStack stack = player.getHeldItemMainhand();
@@ -185,29 +184,26 @@ public class ClientEventHandler
 		else if ((KeyBindingsExtraBitManipulation.CONTROL.isKeyDown() || KeyBindingsExtraBitManipulation.ALT.isKeyDown()) && event.isButtonstate())
 		{
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null)
+			Item item = stack.getItem();
+			if (ItemStackHelper.isSculptingToolItem(item))
 			{
-				Item item = stack.getItem();
-				if (ItemStackHelper.isSculptingToolItem(item))
+				if (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown())
 				{
-					if (KeyBindingsExtraBitManipulation.CONTROL.isKeyDown())
-					{
-						if (event.getButton() == 1)
-							cycleShapeType(player, stack, item);
-						
-						if (event.getButton() == 0)
-							toggleBitGridTargeted(player, stack);
-					}
-					else
-					{
-						if (event.getButton() == 1)
-							toggleHollowShape(player, stack, item);
-						
-						if (event.getButton() == 0)
-							toggleOpenEnds(player, stack);
-					}
-					event.setCanceled(true);
+					if (event.getButton() == 1)
+						cycleShapeType(player, stack, item);
+					
+					if (event.getButton() == 0)
+						toggleBitGridTargeted(player, stack);
 				}
+				else
+				{
+					if (event.getButton() == 1)
+						toggleHollowShape(player, stack, item);
+					
+					if (event.getButton() == 0)
+						toggleOpenEnds(player, stack);
+				}
+				event.setCanceled(true);
 			}
 		}
 		else if (event.getButton() == 0)
@@ -216,117 +212,114 @@ public class ClientEventHandler
 				return;
 			
 			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null)
+			Item item = stack.getItem();
+			if (event.isButtonstate() && ItemStackHelper.isBitWrenchItem(item))
 			{
-				Item item = stack.getItem();
-				if (event.isButtonstate() && ItemStackHelper.isBitWrenchItem(item))
+				event.setCanceled(true);
+			}
+			else if (ItemStackHelper.isSculptingToolItem(item))
+			{
+				boolean drawnMode = BitToolSettingsHelper.getSculptMode(stack.getTagCompound()) == 2;
+				if (!drawnMode)
+					drawnStartPoint = null;
+				
+				if (event.isButtonstate() || (drawnMode && drawnStartPoint != null))
 				{
-					event.setCanceled(true);
-				}
-				else if (ItemStackHelper.isSculptingToolItem(item))
-				{
-					boolean drawnMode = BitToolSettingsHelper.getSculptMode(stack.getTagCompound()) == 2;
-					if (!drawnMode)
-						drawnStartPoint = null;
-					
-					if (event.isButtonstate() || (drawnMode && drawnStartPoint != null))
+					ItemSculptingTool toolItem = (ItemSculptingTool) item;
+					boolean removeBits = toolItem.removeBits();
+					RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
+					boolean shiftDown = KeyBindingsExtraBitManipulation.SHIFT.isKeyDown();
+					if (target != null && target.typeOfHit != RayTraceResult.Type.MISS)
 					{
-						ItemSculptingTool toolItem = (ItemSculptingTool) item;
-						boolean removeBits = toolItem.removeBits();
-						RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
-						boolean shiftDown = KeyBindingsExtraBitManipulation.SHIFT.isKeyDown();
-						if (target != null && target.typeOfHit != RayTraceResult.Type.MISS)
+						if (target.typeOfHit == RayTraceResult.Type.BLOCK)
 						{
-							if (target.typeOfHit == RayTraceResult.Type.BLOCK)
+							BlockPos pos = target.getBlockPos();
+							EnumFacing side = target.sideHit;
+							Vec3d hit = target.hitVec;
+							boolean swingTool = true;
+							if (drawnMode && event.isButtonstate() && drawnStartPoint != null)
 							{
-								BlockPos pos = target.getBlockPos();
-								EnumFacing side = target.sideHit;
-								Vec3d hit = target.hitVec;
-								boolean swingTool = true;
-								if (drawnMode && event.isButtonstate() && drawnStartPoint != null)
+								event.setCanceled(true);
+								return;
+							}
+							if (!shiftDown && drawnMode && event.isButtonstate())
+							{
+								IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
+										(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
+								if (bitLoc != null)
 								{
-									event.setCanceled(true);
-									return;
-								}
-								if (!shiftDown && drawnMode && event.isButtonstate())
-								{
-									IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
-											(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
-									if (bitLoc != null)
+									int x = pos.getX();
+									int y = pos.getY();
+									int z = pos.getZ();
+									float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
+									float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
+									float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
+									if (!removeBits)
 									{
-										int x = pos.getX();
-										int y = pos.getY();
-										int z = pos.getZ();
-										float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
-										float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
-										float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
-										if (!removeBits)
-										{
-											x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
-											y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
-											z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
-										}
-										drawnStartPoint = new Vec3d(x2, y2, z2);
+										x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
+										y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
+										z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
 									}
-									else
-									{
-										drawnStartPoint = null;
-										swingTool = false;
-									}
+									drawnStartPoint = new Vec3d(x2, y2, z2);
 								}
 								else
 								{
-									if (shiftDown)
+									drawnStartPoint = null;
+									swingTool = false;
+								}
+							}
+							else
+							{
+								if (shiftDown)
+								{
+									IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+									IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
+											(float) hit.zCoord - pos.getZ(), side, pos, false);
+									if (bitLoc != null)
 									{
-										IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-										IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-												(float) hit.zCoord - pos.getZ(), side, pos, false);
-										if (bitLoc != null)
+										try
 										{
-											try
+											IBitAccess bitAccess = api.getBitAccess(player.world, pos);
+											IBitBrush bit = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ());
+											BitToolSettingsHelper.setBitStack(player, stack, removeBits, bit,
+													removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade);
+											if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
 											{
-												IBitAccess bitAccess = api.getBitAccess(player.worldObj, pos);
-												IBitBrush bit = bitAccess.getBitAt(bitLoc.getBitX(), bitLoc.getBitY(), bitLoc.getBitZ());
-												BitToolSettingsHelper.setBitStack(player, stack, removeBits, bit,
-														removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade);
-												if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
-												{
-													printChatMessageWithDeletion((removeBits ? "Removing only " : "Sculpting with ")
-															+ BitToolSettingsHelper.getBitName(bit.getItemStack(1)));
-												}
-											}
-											catch (CannotBeChiseled e)
-											{
-												event.setCanceled(true);
-												return;
+												printChatMessageWithDeletion((removeBits ? "Removing only " : "Sculpting with ")
+														+ BitToolSettingsHelper.getBitName(bit.getItemStack(1)));
 											}
 										}
+										catch (CannotBeChiseled e)
+										{
+											event.setCanceled(true);
+											return;
+										}
 									}
-									else if (!shiftDown || removeBits || drawnMode)
-									{
-										SculptingData sculptingData = new SculptingData(stack.getTagCompound(), toolItem);
-										swingTool = toolItem.sculptBlocks(stack, player, player.worldObj, pos, side, hit, drawnStartPoint, sculptingData);
-										ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint, sculptingData));
-									}
-									if (drawnMode && !event.isButtonstate())
-										drawnStartPoint = null;
 								}
-								if (swingTool)
-									player.swingArm(EnumHand.MAIN_HAND);
-								
-								event.setCanceled(true);
+								else if (!shiftDown || removeBits || drawnMode)
+								{
+									SculptingData sculptingData = new SculptingData(stack.getTagCompound(), toolItem);
+									swingTool = toolItem.sculptBlocks(stack, player, player.world, pos, side, hit, drawnStartPoint, sculptingData);
+									ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint, sculptingData));
+								}
+								if (drawnMode && !event.isButtonstate())
+									drawnStartPoint = null;
 							}
+							if (swingTool)
+								player.swingArm(EnumHand.MAIN_HAND);
+							
+							event.setCanceled(true);
 						}
-						else if (shiftDown && event.isButtonstate() && removeBits)
-						{
-							BitToolSettingsHelper.setBitStack(player, stack, true, null, Configs.sculptSetBitWire);
-							if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
-								printChatMessageWithDeletion("Removing any/all bits");
-						}
-						else if (drawnMode)
-						{
-							drawnStartPoint = null;
-						}
+					}
+					else if (shiftDown && event.isButtonstate() && removeBits)
+					{
+						BitToolSettingsHelper.setBitStack(player, stack, true, null, Configs.sculptSetBitWire);
+						if ((removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade).shouldDisplayInChat())
+							printChatMessageWithDeletion("Removing any/all bits");
+					}
+					else if (drawnMode)
+					{
+						drawnStartPoint = null;
 					}
 				}
 			}
@@ -418,7 +411,7 @@ public class ClientEventHandler
 									if (!KeyBindingsExtraBitManipulation.SHIFT.isKeyDown() || drawnMode)
 									{
 										ModelReadData modelingData = new ModelReadData(stack.getTagCompound());
-										swingTool = BitAreaHelper.readBlockStates(stack, player, player.worldObj, pos, hit,
+										swingTool = BitAreaHelper.readBlockStates(stack, player, player.world, pos, hit,
 												drawnStartPointModelingTool, modelingData);
 										ExtraBitManipulation.packetNetwork.sendToServer(new PacketReadBlockStates(pos, hit,
 												drawnStartPointModelingTool, modelingData));
@@ -559,7 +552,6 @@ public class ClientEventHandler
 		chatGUI.printChatMessageWithOptionalDeletion(new TextComponentString(text), 627250);
 	}
 	
-	@SuppressWarnings("null")
 	@SubscribeEvent
 	public void cancelBoundingBoxDraw(DrawBlockHighlightEvent event)
 	{
@@ -571,432 +563,432 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void renderBoxesSpheresAndOverlays(RenderWorldLastEvent event)
 	{
-		if (!Configs.disableOverlays)
+		if (Configs.disableOverlays)
+			return;
+		
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		World world = player.world;
+		ItemStack stack = player.getHeldItemMainhand();
+		if (stack.isEmpty())
+			return;
+		
+		RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
+		if (target == null || !target.typeOfHit.equals(RayTraceResult.Type.BLOCK) || !ItemStackHelper.isBitToolItem(stack.getItem()))
+			return;
+		
+		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
+		float ticks = event.getPartialTicks();
+		double playerX = player.lastTickPosX + (player.posX - player.lastTickPosX) * ticks;
+		double playerY = player.lastTickPosY + (player.posY - player.lastTickPosY) * ticks;
+		double playerZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * ticks;
+		EnumFacing dir = target.sideHit;
+		Tessellator t = Tessellator.getInstance();
+		VertexBuffer vb = t.getBuffer();
+		BlockPos pos = target.getBlockPos();
+		int x = pos.getX();
+		int y = pos.getY();
+		int z = pos.getZ();
+		double diffX = playerX - x;
+		double diffY = playerY - y;
+		double diffZ = playerZ - z;
+		Vec3d hit = target.hitVec;
+		if (ItemStackHelper.isBitWrenchItem(stack.getItem()) && api.isBlockChiseled(world, target.getBlockPos()))
 		{
-			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-			World world = player.worldObj;
-			ItemStack stack = player.getHeldItemMainhand();
-			if (stack != null)
+			int mode = ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.WRENCH_MODE);
+			frameCounter++;
+			int side = dir.ordinal();
+			boolean upDown = side <= 1;
+			boolean eastWest = side >= 4;
+			boolean northSouth = !upDown && !eastWest;
+			AxisAlignedBB box = new AxisAlignedBB(eastWest ? hit.xCoord : x, upDown ? hit.yCoord : y, northSouth ? hit.zCoord : z,
+					eastWest ? hit.xCoord : x + 1, upDown ? hit.yCoord : y + 1, northSouth ? hit.zCoord : z + 1);
+			
+			int offsetX = Math.abs(dir.getFrontOffsetX());
+			int offsetY = Math.abs(dir.getFrontOffsetY());
+			int offsetZ = Math.abs(dir.getFrontOffsetZ());
+			double invOffsetX = offsetX ^ 1;
+			double invOffsetY = offsetY ^ 1;
+			double invOffsetZ = offsetZ ^ 1;
+			
+			boolean invertDirection = KeyBindingsExtraBitManipulation.SHIFT.isKeyDown();
+			GlStateManager.pushMatrix();
+			GlStateManager.disableLighting();
+			GlStateManager.enableAlpha();
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GlStateManager.enableTexture2D();
+			GlStateManager.pushMatrix();
+			double angle = getInitialAngle(mode);
+			if (mode == 3)
 			{
-				RayTraceResult target = Minecraft.getMinecraft().objectMouseOver;
-				if (target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK) && ItemStackHelper.isBitToolItem(stack.getItem()))
+				if (side % 2 == 1)
+					angle += 180;
+				
+				if (side >= 4)
+					angle -= 90;
+			}
+			else
+			{
+				if (mode == 0)
 				{
-					IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-					float ticks = event.getPartialTicks();
-					double playerX = player.lastTickPosX + (player.posX - player.lastTickPosX) * ticks;
-					double playerY = player.lastTickPosY + (player.posY - player.lastTickPosY) * ticks;
-					double playerZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * ticks;
-					EnumFacing dir = target.sideHit;
-					Tessellator t = Tessellator.getInstance();
-					VertexBuffer vb = t.getBuffer();
-					BlockPos pos = target.getBlockPos();
-					int x = pos.getX();
-					int y = pos.getY();
-					int z = pos.getZ();
-					double diffX = playerX - x;
-					double diffY = playerY - y;
-					double diffZ = playerZ - z;
-					Vec3d hit = target.hitVec;
-					if (ItemStackHelper.isBitWrenchItem(stack.getItem()) && api.isBlockChiseled(world, target.getBlockPos()))
+					if (side % 2 == (invertDirection ? 0 : 1))
+						angle *= -1;
+				}
+				else
+				{
+					if (side < 2 || side > 3)
+						angle *= -1;
+				}
+				if (eastWest)
+					angle += 90;
+				
+				if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4)
+					angle += 180;
+			}
+			double offsetX2 = 0.5 * invOffsetX;
+			double offsetY2 = 0.5 * invOffsetY;
+			double offsetZ2 = 0.5 * invOffsetZ;
+			
+			double mirTravel = mode == 1 ? Configs.mirrorAmplitude * Math.cos(Math.PI * 2 * frameCounter / Configs.mirrorPeriod) : 0;
+			double mirTravel1 = mirTravel;
+			double mirTravel2 = 0;
+			boolean mirrorInversion = invertDirection && mode == 1;
+			if (mirrorInversion && side <= 1 && player.getHorizontalFacing().ordinal() > 3)
+			{
+				angle += 90;
+				mirTravel1 = 0;
+				mirTravel2 = mirTravel;
+			}
+			translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
+					offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
+			
+			Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? ARROW_CYCLICAL
+					: (mode == 1 ? ARROW_BIDIRECTIONAL : (mode == 2 ? CIRCLE : INVERSION)));
+			float minU = 0;
+			float maxU = 1;
+			float minV = 0;
+			float maxV = 1;
+			if (mode == 0)
+			{
+				if (invertDirection)
+				{
+					float minU2 = minU;
+					minU = maxU;
+					maxU = minU2;
+				}
+			}
+			else if (mode == 2)
+			{
+				EnumFacing dir2 = side <= 1 ? EnumFacing.WEST : (side <= 3 ? EnumFacing.WEST : EnumFacing.DOWN);
+				box = contractBoxOrRenderArrows(true, t, vb, side, northSouth, dir2, box, invOffsetX,
+						invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
+			}
+			
+			renderTexturedSide(t, vb, side, northSouth, box, minU, maxU, minV, maxV, 1);
+			GlStateManager.popMatrix();
+			
+			AxisAlignedBB box3 = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
+			for (int s = 0; s < 6; s++)
+			{
+				if (s != side)
+				{
+					GlStateManager.pushMatrix();
+					upDown = s <= 1;
+					eastWest = s >= 4;
+					northSouth = !upDown && !eastWest;
+					dir = EnumFacing.getFront(s);
+					box = new AxisAlignedBB(eastWest ? (s == 5 ? box3.maxX : box3.minX) : x,
+														upDown ? (s == 1 ? box3.maxY : box3.minY) : y,
+														northSouth ? (s == 3 ? box3.maxZ : box3.minZ) : z,
+														eastWest ? (s == 4 ? box3.minX : box3.maxX) : x + 1,
+														upDown ? (s == 0 ? box3.minY : box3.maxY) : y + 1,
+														northSouth ? (s == 2 ? box3.minZ : box3.maxZ) : z + 1);
+					angle = getInitialAngle(mode);
+					
+					boolean oppRotation = false;
+					int mode2 = mode;
+					if (mode != 3)
 					{
-						int mode = ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.WRENCH_MODE);
-						frameCounter++;
-						int side = dir.ordinal();
-						boolean upDown = side <= 1;
-						boolean eastWest = side >= 4;
-						boolean northSouth = !upDown && !eastWest;
-						AxisAlignedBB box = new AxisAlignedBB(eastWest ? hit.xCoord : x, upDown ? hit.yCoord : y, northSouth ? hit.zCoord : z,
-								eastWest ? hit.xCoord : x + 1, upDown ? hit.yCoord : y + 1, northSouth ? hit.zCoord : z + 1);
-						
-						int offsetX = Math.abs(dir.getFrontOffsetX());
-						int offsetY = Math.abs(dir.getFrontOffsetY());
-						int offsetZ = Math.abs(dir.getFrontOffsetZ());
-						double invOffsetX = offsetX ^ 1;
-						double invOffsetY = offsetY ^ 1;
-						double invOffsetZ = offsetZ ^ 1;
-						
-						boolean invertDirection = KeyBindingsExtraBitManipulation.SHIFT.isKeyDown();
-						GlStateManager.pushMatrix();
-						GlStateManager.disableLighting();
-						GlStateManager.enableAlpha();
-						GlStateManager.enableBlend();
-						GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-						GlStateManager.enableTexture2D();
-						GlStateManager.pushMatrix();
-						double angle = getInitialAngle(mode);
-						if (mode == 3)
+						oppRotation = dir == EnumFacing.getFront(side).getOpposite();
+						if (mode == 0)
 						{
-							if (side % 2 == 1)
-								angle += 180;
-							
-							if (side >= 4)
-								angle -= 90;
-						}
-						else
-						{
-							if (mode == 0)
+							if (!oppRotation)
 							{
-								if (side % 2 == (invertDirection ? 0 : 1))
-									angle *= -1;
+								Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
+								angle = 90;
+								if (side % 2 == 0)
+									angle += 180;
+								
+								if (invertDirection)
+									angle += 180;
+								
+								mode2 = 2;
 							}
 							else
 							{
-								if (side < 2 || side > 3)
-									angle *= -1;
-							}
-							if (eastWest)
-								angle += 90;
-							
-							if (side == (mode == 1 ? 1 : 0) || side == 3 || side == 4)
-								angle += 180;
-						}
-						double offsetX2 = 0.5 * invOffsetX;
-						double offsetY2 = 0.5 * invOffsetY;
-						double offsetZ2 = 0.5 * invOffsetZ;
-						
-						double mirTravel = mode == 1 ? Configs.mirrorAmplitude * Math.cos(Math.PI * 2 * frameCounter / Configs.mirrorPeriod) : 0;
-						double mirTravel1 = mirTravel;
-						double mirTravel2 = 0;
-						boolean mirrorInversion = invertDirection && mode == 1;
-						if (mirrorInversion && side <= 1 && player.getHorizontalFacing().ordinal() > 3)
-						{
-							angle += 90;
-							mirTravel1 = 0;
-							mirTravel2 = mirTravel;
-						}
-						translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
-								offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
-						
-						Minecraft.getMinecraft().renderEngine.bindTexture(mode == 0 ? ARROW_CYCLICAL
-								: (mode == 1 ? ARROW_BIDIRECTIONAL : (mode == 2 ? CIRCLE : INVERSION)));
-						float minU = 0;
-						float maxU = 1;
-						float minV = 0;
-						float maxV = 1;
-						if (mode == 0)
-						{
-							if (invertDirection)
-							{
-								float minU2 = minU;
-								minU = maxU;
-								maxU = minU2;
+								Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_CYCLICAL);
+								mode2 = 0;
 							}
 						}
 						else if (mode == 2)
 						{
-							EnumFacing dir2 = side <= 1 ? EnumFacing.WEST : (side <= 3 ? EnumFacing.WEST : EnumFacing.DOWN);
-							box = contractBoxOrRenderArrows(true, t, vb, side, northSouth, dir2, box, invOffsetX,
-									invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
-						}
-						
-						renderTexturedSide(t, vb, side, northSouth, box, minU, maxU, minV, maxV, 1);
-						GlStateManager.popMatrix();
-						
-						AxisAlignedBB box3 = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
-						for (int s = 0; s < 6; s++)
-						{
-							if (s != side)
+							if (!oppRotation)
 							{
-								GlStateManager.pushMatrix();
-								upDown = s <= 1;
-								eastWest = s >= 4;
-								northSouth = !upDown && !eastWest;
-								dir = EnumFacing.getFront(s);
-								box = new AxisAlignedBB(eastWest ? (s == 5 ? box3.maxX : box3.minX) : x,
-																	upDown ? (s == 1 ? box3.maxY : box3.minY) : y,
-																	northSouth ? (s == 3 ? box3.maxZ : box3.minZ) : z,
-																	eastWest ? (s == 4 ? box3.minX : box3.maxX) : x + 1,
-																	upDown ? (s == 0 ? box3.minY : box3.maxY) : y + 1,
-																	northSouth ? (s == 2 ? box3.minZ : box3.maxZ) : z + 1);
-								angle = getInitialAngle(mode);
+								Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
+								if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5
+										: (side == 3 ? s == 0 || s == 4 : (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3)))))
+									angle += 180;
 								
-								boolean oppRotation = false;
-								int mode2 = mode;
-								if (mode != 3)
-								{
-									oppRotation = dir == EnumFacing.getFront(side).getOpposite();
-									if (mode == 0)
-									{
-										if (!oppRotation)
-										{
-											Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
-											angle = 90;
-											if (side % 2 == 0)
-												angle += 180;
-											
-											if (invertDirection)
-												angle += 180;
-											
-											mode2 = 2;
-										}
-										else
-										{
-											Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_CYCLICAL);
-											mode2 = 0;
-										}
-									}
-									else if (mode == 2)
-									{
-										if (!oppRotation)
-										{
-											Minecraft.getMinecraft().renderEngine.bindTexture(ARROW_HEAD);
-											if (side == 0 ? s == 2 || s == 5 : (side == 1 ? s == 3 || s == 4 : (side == 2 ? s == 1 || s == 5
-													: (side == 3 ? s == 0 || s == 4 : (side == 4 ? s == 1 || s == 2 : s == 0 || s == 3)))))
-												angle += 180;
-											
-											if (invertDirection)
-												angle += 180;
-										}
-										else
-										{
-											Minecraft.getMinecraft().renderEngine.bindTexture(CIRCLE);
-										}
-									}
-								}
-								mirTravel1 = mirTravel;
-								mirTravel2 = 0;
-								if (mode != 3 && (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
-										|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3)
-												: (side == 2 || side == 3)) && s <= 1)))
-								{
-									angle += 90;
-									mirTravel1 = 0;
-									mirTravel2 = mirTravel;
-								}
-								if (mode == 3)
-								{
-									if (s % 2 == 1)
-										angle += 180;
-									
-									if (s >= 4)
-										angle -= 90;
-								}
-								else
-								{
-									if (mode2 == 0)
-									{
-										if (s % 2 == (invertDirection ? 0 : 1))
-											angle *= -1;
-										
-										if (oppRotation)
-											angle *= -1;
-									}
-									else
-									{
-										if (s < 2 || s > 3)
-											angle *= -1;
-									}
-									if (eastWest)
-										angle -= 90;
-									
-									if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5)
-										angle += 180;
-								}
-								offsetX = Math.abs(dir.getFrontOffsetX());
-								offsetY = Math.abs(dir.getFrontOffsetY());
-								offsetZ = Math.abs(dir.getFrontOffsetZ());
-								invOffsetX = offsetX ^ 1;
-								invOffsetY = offsetY ^ 1;
-								invOffsetZ = offsetZ ^ 1;
-								offsetX2 = 0.5 * invOffsetX;
-								offsetY2 = 0.5 * invOffsetY;
-								offsetZ2 = 0.5 * invOffsetZ;
-								translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
-										offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
-								minU = 0;
-								maxU = 1;
-								minV = 0;
-								maxV = 1;
-								if (mode2 == 0)
-								{
-									if (oppRotation)
-									{
-										minU = 1;
-										maxU = 0;
-									}
-									if (invertDirection)
-									{
-										float minU2 = minU;
-										minU = maxU;
-										maxU = minU2;
-									}
-								}
-								else if (mode2 == 2)
-								{
-									EnumFacing dir2 = side <= 1 ? (s == 2 || s == 3 ? EnumFacing.WEST : EnumFacing.DOWN)
-											: (side >= 4 ? EnumFacing.WEST : (s <= 1 ? EnumFacing.WEST : EnumFacing.DOWN));
-									box = contractBoxOrRenderArrows(oppRotation, t, vb, side, northSouth, dir2, box, invOffsetX,
-											invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
-								}
-								if (mode2 != 2 || oppRotation)
-									renderTexturedSide(t, vb, s, northSouth, box, minU, maxU, minV, maxV, 1);
-								
-								GlStateManager.popMatrix();
+								if (invertDirection)
+									angle += 180;
 							}
-						}
-						
-						GlStateManager.enableLighting();
-						GlStateManager.disableBlend();
-						GlStateManager.enableTexture2D();
-						GlStateManager.popMatrix();
-					}
-					else if (ItemStackHelper.isSculptingToolItem(stack.getItem()))
-					{
-						ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
-						boolean removeBits = toolItem.removeBits();
-						int mode = BitToolSettingsHelper.getSculptMode(stack.getTagCompound());
-						if (!removeBits || mode > 0 || api.canBeChiseled(world, target.getBlockPos()))
-						{
-							float hitX = (float) hit.xCoord - pos.getX();
-							float hitY = (float) hit.yCoord - pos.getY();
-							float hitZ = (float) hit.zCoord - pos.getZ();
-							IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, dir, pos, false);
-							if (bitLoc != null)
+							else
 							{
-								NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
-								int x2 = bitLoc.getBitX();
-								int y2 = bitLoc.getBitY();
-								int z2 = bitLoc.getBitZ();
-								if (!toolItem.removeBits())
-								{
-									x2 += dir.getFrontOffsetX();
-									y2 += dir.getFrontOffsetY();
-									z2 += dir.getFrontOffsetZ();
-								}
-								boolean isDrawn = drawnStartPoint != null;
-								boolean drawnBox = mode == 2 && isDrawn;
-								int shapeType = BitToolSettingsHelper.getShapeType(nbt, toolItem.isCurved());
-								boolean fixedNotSym = !drawnBox && shapeType == 2 || shapeType > 4;
-								glStart();
-								double r = BitToolSettingsHelper.getSemiDiameter(nbt) * Utility.PIXEL_D;
-								ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
-								ConfigShapeRender configBox = configPair.boundingBox;
-								AxisAlignedBB box = null, shapeBox = null;
-								double x3 = x + x2 * Utility.PIXEL_D;
-								double y3 = y + y2 * Utility.PIXEL_D;
-								double z3 = z + z2 * Utility.PIXEL_D;
-								if (configBox.renderInnerShape || configBox.renderOuterShape)
-								{
-									GlStateManager.pushMatrix();
-									GL11.glLineWidth(configBox.lineWidth);
-									boolean inside = ItemSculptingTool.wasInsideClicked(dir, hit, pos);
-									if (drawnBox)
-									{
-										double x4 = drawnStartPoint.xCoord;
-										double y4 = drawnStartPoint.yCoord;
-										double z4 = drawnStartPoint.zCoord;
-										if (Math.max(x3, x4) == x3)
-										{
-											x3 += Utility.PIXEL_D;
-										}
-										else
-										{
-											x4 += Utility.PIXEL_D;
-										}
-										if (Math.max(y3, y4) == y3)
-										{
-											y3 += Utility.PIXEL_D;
-										}
-										else
-										{
-											y4 += Utility.PIXEL_D;
-										}
-										if (Math.max(z3, z4) == z3)
-										{
-											z3 += Utility.PIXEL_D;
-										}
-										else
-										{
-											z4 += Utility.PIXEL_D;
-										}
-										box = new AxisAlignedBB(x4, y4, z4, x3, y3, z3);
-									}
-									else
-									{
-										double f = 0;
-										Vec3d vecOffset = new Vec3d(0, 0, 0);
-										boolean targetBitGrid = BitToolSettingsHelper.isBitGridTargeted(nbt);
-										if (mode == 2)
-										{
-											r = 0;
-										}
-										else if (targetBitGrid)
-										{
-											f = Utility.PIXEL_D * 0.5;
-											vecOffset = BitAreaHelper.getBitGridOffset(dir, inside, hitX, hitY, hitZ, removeBits);
-											r -= f;
-										}
-										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.PIXEL_D, y + r + Utility.PIXEL_D, z + r + Utility.PIXEL_D)
-										.offset(x2 * Utility.PIXEL_D + f * vecOffset.xCoord,
-												y2 * Utility.PIXEL_D + f * vecOffset.yCoord,
-												z2 * Utility.PIXEL_D + f * vecOffset.zCoord);
-										if (targetBitGrid && mode != 2)
-										{
-											x3 = (box.maxX + box.minX) * 0.5 - f;
-											y3 = (box.maxY + box.minY) * 0.5 - f;
-											z3 = (box.maxZ + box.minZ) * 0.5 - f;
-										}
-									}
-									if (fixedNotSym)
-										shapeBox = box.expandXyz(0);
-									
-									if (mode == 0)
-									{
-										BlockPos pos2 = !removeBits && !inside ? pos.offset(dir) : pos;
-										AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2) :
-											world.getBlockState(pos2).getSelectedBoundingBox(world, pos2);
-										if ((int) Math.round(box2.minX) != pos2.getX() || (int) Math.round(box2.minY) != pos2.getY()
-												|| (int) Math.round(box2.minZ) != pos2.getZ())
-											box2 = box2.offset(pos2);
-										
-										box = limitBox(box, box2);
-									}
-									double f = 0.0020000000949949026;
-									if (configBox.renderOuterShape)
-										RenderGlobal.func_189697_a(box.expandXyz(f).offset(-playerX, -playerY, -playerZ),
-												configBox.red, configBox.green, configBox.blue, configBox.outerShapeAlpha);
-									
-									if (configBox.renderInnerShape)
-									{
-										GlStateManager.depthFunc(GL11.GL_GREATER);
-										RenderGlobal.func_189697_a(box.expandXyz(f).offset(-playerX, -playerY, -playerZ),
-												configBox.red, configBox.green, configBox.blue, configBox.innerShapeAlpha);
-										GlStateManager.depthFunc(GL11.GL_LEQUAL);
-									}
-									GlStateManager.popMatrix();
-								}
-								if (!fixedNotSym && box != null)
-									shapeBox = box.expandXyz(0);
-								
-								boolean isHollow = BitToolSettingsHelper.isHollowShape(nbt, removeBits);
-								boolean isOpen = isHollow && BitToolSettingsHelper.areEndsOpen(nbt);
-								renderEnvelopedShapes(shapeType, nbt, playerX, playerY, playerZ, isDrawn,
-										drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);
-								float wallThickness = BitToolSettingsHelper.getWallThickness(nbt) * Utility.PIXEL_F;
-								if (wallThickness > 0 && isHollow && !(mode == 2 && !drawnBox))
-									renderEnvelopedShapes(shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
-											x3, y3, z3, wallThickness, isOpen);
-								
-								glEnd();
+								Minecraft.getMinecraft().renderEngine.bindTexture(CIRCLE);
 							}
 						}
 					}
-					else if (ItemStackHelper.isModelingToolItem(stack.getItem()))
+					mirTravel1 = mirTravel;
+					mirTravel2 = 0;
+					if (mode != 3 && (((side <= 1 && mirrorInversion ? side > 1 : side <= 1) && s > 1)
+							|| ((mirrorInversion ? (oppRotation ? player.getHorizontalFacing().ordinal() > 3 : side > 3)
+									: (side == 2 || side == 3)) && s <= 1)))
 					{
-						glStart();
-						ModelingBoxSet boxSet = BitAreaHelper.getModelingToolBoxSet(player, x, y, z, hit,
-								drawnStartPointModelingTool, true, BitToolSettingsHelper.getModelAreaMode(stack.getTagCompound()),
-								BitToolSettingsHelper.getModelSnapMode(stack.getTagCompound()));
-						if (!boxSet.isEmpty())
-						{
-							renderModelingToolBoundingBox(boxSet.getBoundingBox().offset(-playerX, -playerY, -playerZ), 115);
-							if (boxSet.hasPoint())
-								renderModelingToolBoundingBox(boxSet.getPoint().offset(-playerX, -playerY, -playerZ), 155);
-						}
-						glEnd();
+						angle += 90;
+						mirTravel1 = 0;
+						mirTravel2 = mirTravel;
 					}
+					if (mode == 3)
+					{
+						if (s % 2 == 1)
+							angle += 180;
+						
+						if (s >= 4)
+							angle -= 90;
+					}
+					else
+					{
+						if (mode2 == 0)
+						{
+							if (s % 2 == (invertDirection ? 0 : 1))
+								angle *= -1;
+							
+							if (oppRotation)
+								angle *= -1;
+						}
+						else
+						{
+							if (s < 2 || s > 3)
+								angle *= -1;
+						}
+						if (eastWest)
+							angle -= 90;
+						
+						if (s == (mode2 == 1 ? 1 : 0) || s == 3 || s == 5)
+							angle += 180;
+					}
+					offsetX = Math.abs(dir.getFrontOffsetX());
+					offsetY = Math.abs(dir.getFrontOffsetY());
+					offsetZ = Math.abs(dir.getFrontOffsetZ());
+					invOffsetX = offsetX ^ 1;
+					invOffsetY = offsetY ^ 1;
+					invOffsetZ = offsetZ ^ 1;
+					offsetX2 = 0.5 * invOffsetX;
+					offsetY2 = 0.5 * invOffsetY;
+					offsetZ2 = 0.5 * invOffsetZ;
+					translateAndRotateTexture(playerX, playerY, playerZ, dir, upDown, eastWest, offsetX, offsetY,
+							offsetZ, angle, diffX, diffY, diffZ, offsetX2, offsetY2, offsetZ2, mirTravel1, mirTravel2);
+					minU = 0;
+					maxU = 1;
+					minV = 0;
+					maxV = 1;
+					if (mode2 == 0)
+					{
+						if (oppRotation)
+						{
+							minU = 1;
+							maxU = 0;
+						}
+						if (invertDirection)
+						{
+							float minU2 = minU;
+							minU = maxU;
+							maxU = minU2;
+						}
+					}
+					else if (mode2 == 2)
+					{
+						EnumFacing dir2 = side <= 1 ? (s == 2 || s == 3 ? EnumFacing.WEST : EnumFacing.DOWN)
+								: (side >= 4 ? EnumFacing.WEST : (s <= 1 ? EnumFacing.WEST : EnumFacing.DOWN));
+						box = contractBoxOrRenderArrows(oppRotation, t, vb, side, northSouth, dir2, box, invOffsetX,
+								invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
+					}
+					if (mode2 != 2 || oppRotation)
+						renderTexturedSide(t, vb, s, northSouth, box, minU, maxU, minV, maxV, 1);
+					
+					GlStateManager.popMatrix();
 				}
 			}
+			
+			GlStateManager.enableLighting();
+			GlStateManager.disableBlend();
+			GlStateManager.enableTexture2D();
+			GlStateManager.popMatrix();
+		}
+		else if (ItemStackHelper.isSculptingToolItem(stack.getItem()))
+		{
+			ItemSculptingTool toolItem = (ItemSculptingTool) stack.getItem();
+			boolean removeBits = toolItem.removeBits();
+			int mode = BitToolSettingsHelper.getSculptMode(stack.getTagCompound());
+			if (!removeBits || mode > 0 || api.canBeChiseled(world, target.getBlockPos()))
+			{
+				float hitX = (float) hit.xCoord - pos.getX();
+				float hitY = (float) hit.yCoord - pos.getY();
+				float hitZ = (float) hit.zCoord - pos.getZ();
+				IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, dir, pos, false);
+				if (bitLoc != null)
+				{
+					NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+					int x2 = bitLoc.getBitX();
+					int y2 = bitLoc.getBitY();
+					int z2 = bitLoc.getBitZ();
+					if (!toolItem.removeBits())
+					{
+						x2 += dir.getFrontOffsetX();
+						y2 += dir.getFrontOffsetY();
+						z2 += dir.getFrontOffsetZ();
+					}
+					boolean isDrawn = drawnStartPoint != null;
+					boolean drawnBox = mode == 2 && isDrawn;
+					int shapeType = BitToolSettingsHelper.getShapeType(nbt, toolItem.isCurved());
+					boolean fixedNotSym = !drawnBox && shapeType == 2 || shapeType > 4;
+					glStart();
+					double r = BitToolSettingsHelper.getSemiDiameter(nbt) * Utility.PIXEL_D;
+					ConfigShapeRenderPair configPair = Configs.itemShapeMap.get(toolItem);
+					ConfigShapeRender configBox = configPair.boundingBox;
+					AxisAlignedBB box = null, shapeBox = null;
+					double x3 = x + x2 * Utility.PIXEL_D;
+					double y3 = y + y2 * Utility.PIXEL_D;
+					double z3 = z + z2 * Utility.PIXEL_D;
+					if (configBox.renderInnerShape || configBox.renderOuterShape)
+					{
+						GlStateManager.pushMatrix();
+						GL11.glLineWidth(configBox.lineWidth);
+						boolean inside = ItemSculptingTool.wasInsideClicked(dir, hit, pos);
+						if (drawnBox)
+						{
+							double x4 = drawnStartPoint.xCoord;
+							double y4 = drawnStartPoint.yCoord;
+							double z4 = drawnStartPoint.zCoord;
+							if (Math.max(x3, x4) == x3)
+							{
+								x3 += Utility.PIXEL_D;
+							}
+							else
+							{
+								x4 += Utility.PIXEL_D;
+							}
+							if (Math.max(y3, y4) == y3)
+							{
+								y3 += Utility.PIXEL_D;
+							}
+							else
+							{
+								y4 += Utility.PIXEL_D;
+							}
+							if (Math.max(z3, z4) == z3)
+							{
+								z3 += Utility.PIXEL_D;
+							}
+							else
+							{
+								z4 += Utility.PIXEL_D;
+							}
+							box = new AxisAlignedBB(x4, y4, z4, x3, y3, z3);
+						}
+						else
+						{
+							double f = 0;
+							Vec3d vecOffset = new Vec3d(0, 0, 0);
+							boolean targetBitGrid = BitToolSettingsHelper.isBitGridTargeted(nbt);
+							if (mode == 2)
+							{
+								r = 0;
+							}
+							else if (targetBitGrid)
+							{
+								f = Utility.PIXEL_D * 0.5;
+								vecOffset = BitAreaHelper.getBitGridOffset(dir, inside, hitX, hitY, hitZ, removeBits);
+								r -= f;
+							}
+							box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.PIXEL_D, y + r + Utility.PIXEL_D, z + r + Utility.PIXEL_D)
+							.offset(x2 * Utility.PIXEL_D + f * vecOffset.xCoord,
+									y2 * Utility.PIXEL_D + f * vecOffset.yCoord,
+									z2 * Utility.PIXEL_D + f * vecOffset.zCoord);
+							if (targetBitGrid && mode != 2)
+							{
+								x3 = (box.maxX + box.minX) * 0.5 - f;
+								y3 = (box.maxY + box.minY) * 0.5 - f;
+								z3 = (box.maxZ + box.minZ) * 0.5 - f;
+							}
+						}
+						if (fixedNotSym)
+							shapeBox = box.expandXyz(0);
+						
+						if (mode == 0)
+						{
+							BlockPos pos2 = !removeBits && !inside ? pos.offset(dir) : pos;
+							AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2) :
+								world.getBlockState(pos2).getSelectedBoundingBox(world, pos2);
+							if ((int) Math.round(box2.minX) != pos2.getX() || (int) Math.round(box2.minY) != pos2.getY()
+									|| (int) Math.round(box2.minZ) != pos2.getZ())
+								box2 = box2.offset(pos2);
+							
+							box = limitBox(box, box2);
+						}
+						double f = 0.0020000000949949026;
+						if (configBox.renderOuterShape)
+							RenderGlobal.drawSelectionBoundingBox(box.expandXyz(f).offset(-playerX, -playerY, -playerZ),
+									configBox.red, configBox.green, configBox.blue, configBox.outerShapeAlpha);
+						
+						if (configBox.renderInnerShape)
+						{
+							GlStateManager.depthFunc(GL11.GL_GREATER);
+							RenderGlobal.drawSelectionBoundingBox(box.expandXyz(f).offset(-playerX, -playerY, -playerZ),
+									configBox.red, configBox.green, configBox.blue, configBox.innerShapeAlpha);
+							GlStateManager.depthFunc(GL11.GL_LEQUAL);
+						}
+						GlStateManager.popMatrix();
+					}
+					if (!fixedNotSym && box != null)
+						shapeBox = box.expandXyz(0);
+					
+					boolean isHollow = BitToolSettingsHelper.isHollowShape(nbt, removeBits);
+					boolean isOpen = isHollow && BitToolSettingsHelper.areEndsOpen(nbt);
+					renderEnvelopedShapes(shapeType, nbt, playerX, playerY, playerZ, isDrawn,
+							drawnBox, r, configPair, shapeBox, x3, y3, z3, 0, isOpen);
+					float wallThickness = BitToolSettingsHelper.getWallThickness(nbt) * Utility.PIXEL_F;
+					if (wallThickness > 0 && isHollow && !(mode == 2 && !drawnBox))
+						renderEnvelopedShapes(shapeType, nbt, playerX, playerY, playerZ, isDrawn, drawnBox, r, configPair, shapeBox,
+								x3, y3, z3, wallThickness, isOpen);
+					
+					glEnd();
+				}
+			}
+		}
+		else if (ItemStackHelper.isModelingToolItem(stack.getItem()))
+		{
+			glStart();
+			ModelingBoxSet boxSet = BitAreaHelper.getModelingToolBoxSet(player, x, y, z, hit,
+					drawnStartPointModelingTool, true, BitToolSettingsHelper.getModelAreaMode(stack.getTagCompound()),
+					BitToolSettingsHelper.getModelSnapMode(stack.getTagCompound()));
+			if (!boxSet.isEmpty())
+			{
+				renderModelingToolBoundingBox(boxSet.getBoundingBox().offset(-playerX, -playerY, -playerZ), 115);
+				if (boxSet.hasPoint())
+					renderModelingToolBoundingBox(boxSet.getPoint().offset(-playerX, -playerY, -playerZ), 155);
+			}
+			glEnd();
 		}
 	}
 	
@@ -1017,9 +1009,9 @@ public class ClientEventHandler
 	
 	private void renderModelingToolBoundingBox(AxisAlignedBB boxBounding, int outerAlpha)
 	{
-		RenderGlobal.func_189697_a(boxBounding, 1, 1, 1, outerAlpha / 255.0F);
+		RenderGlobal.drawSelectionBoundingBox(boxBounding, 1, 1, 1, outerAlpha / 255.0F);
 		GlStateManager.depthFunc(GL11.GL_GREATER);
-		RenderGlobal.func_189697_a(boxBounding, 1, 1, 1, 28 / 255.0F);
+		RenderGlobal.drawSelectionBoundingBox(boxBounding, 1, 1, 1, 28 / 255.0F);
 		GlStateManager.depthFunc(GL11.GL_LEQUAL);
 	}
 	

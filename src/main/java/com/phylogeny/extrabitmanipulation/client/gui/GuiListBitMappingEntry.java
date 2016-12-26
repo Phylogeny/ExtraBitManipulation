@@ -26,6 +26,8 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -85,7 +87,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 	public ItemStack getBitStack()
 	{
 		IBitBrush bit = getBit();
-		return bit == null ? null : bit.getItemStack(1);
+		return bit == null ? ItemStack.EMPTY : bit.getItemStack(1);
 	}
 	
 	public boolean isAir()
@@ -112,7 +114,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 			mc.getTextureManager().bindTexture(bitMappingScreen.GUI_TEXTURE);
 			bitMappingScreen.drawTexturedModalRect(x, y, 0, 219, listWidth, slotHeight);
 			RenderHelper.enableGUIStandardItemLighting();
-			if (getBitStack() != null)
+			if (!getBitStack().isEmpty())
 			{
 				mc.getRenderItem().renderItemIntoGUI(getBitStack(), x + 44, y + 2);
 			}
@@ -158,30 +160,30 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 	@Override
 	public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
 	{
-		ItemStack cursorStack = mc.thePlayer.inventory.getItemStack();
+		ItemStack cursorStack = mc.player.inventory.getItemStack();
 		boolean inSlotVerticalRange = relativeY >= 0 && relativeY < 18;
 		boolean stateSlotClicked = relativeX > -39 && relativeX < -20 && inSlotVerticalRange;
 		boolean bitSlotClicked = relativeX >= 0 && relativeX < 18 && inSlotVerticalRange;
-		if (cursorStack == null && mouseEvent == 2 && mc.thePlayer.capabilities.isCreativeMode && (stateSlotClicked || bitSlotClicked))
+		if (cursorStack.isEmpty() && mouseEvent == 2 && mc.player.capabilities.isCreativeMode && (stateSlotClicked || bitSlotClicked))
 		{
-			ItemStack stack = null;
+			ItemStack stack = ItemStack.EMPTY;
 			if (stateSlotClicked)
 			{
 				Item item = Item.getItemFromBlock(state.getBlock());
-				if (item != null && item instanceof ItemBlock)
+				if (item != Items.AIR && item instanceof ItemBlock)
 				{
 					stack = new ItemStack(item, 64, item.getHasSubtypes() ? state.getBlock().getMetaFromState(state) : 0);
-					stack.stackSize = stack.getMaxStackSize();
+					stack.setCount(stack.getMaxStackSize());
 				}
 			}
-			if (bitSlotClicked && getBitStack() != null)
+			if (bitSlotClicked && !getBitStack().isEmpty())
 			{
 				stack = getBitStack().copy();
-				stack.stackSize = stack.getMaxStackSize();
+				stack.setCount(stack.getMaxStackSize());
 			}
-			if (stack != null)
+			if (!stack.isEmpty())
 			{
-				mc.thePlayer.inventory.setItemStack(stack);
+				mc.player.inventory.setItemStack(stack);
 				ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack));
 			}
 		}
@@ -192,7 +194,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 		IBitBrush bit = bitCountArray.get(0).getBit();
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		boolean changed = false;
-		if (cursorStack != null)
+		if (!cursorStack.isEmpty())
 		{
 			if (BitInventoryHelper.isBitStack(api, cursorStack))
 			{
@@ -206,7 +208,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 			else if (cursorStack.getItem() != null)
 			{
 				Block block = Block.getBlockFromItem(cursorStack.getItem());
-				if (block != null)
+				if (block != Blocks.AIR)
 				{
 					try
 					{

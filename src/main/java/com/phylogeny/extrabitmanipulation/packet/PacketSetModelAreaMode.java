@@ -38,7 +38,7 @@ public class PacketSetModelAreaMode implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetModelAreaMode message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
