@@ -61,22 +61,8 @@ public class ItemsExtraBitManipulation
 	{
 		String itemName = ((ItemExtraBitManipulationBase) item).getName();
 		if (recipeDefault.length == 0)
-		{
-			recipeDefault = new String[9];
-			for (int i = 0; i < recipeDefault.length; i++)
-			{
-				String entry = "";
-				if (i == 2)
-				{
-					entry = Reference.MOD_ID + ":" + itemName + "Head";
-				}
-				else if (i == 4)
-				{
-					entry = "minecraft:iron_ingot";
-				}
-				recipeDefault[i] = entry;
-			}
-		}
+			recipeDefault = new String[]{"", Reference.MOD_ID + ":" + itemName + "Head", "minecraft:iron_ingot", ""};
+		
 		GameRegistry.register(item);
 		Configs.itemRecipeMap.put(item, new ConfigRecipe(itemTitle, true, isShapedDefault, oreDictionaryDefault, recipeDefault));
 		if (item instanceof ItemBitToolBase)
