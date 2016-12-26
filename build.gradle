@@ -28,7 +28,7 @@ minecraft {
 }
 
 dependencies {
-    compile files ("libs/" + c&b_api)
+    compile files ("libs/" + chisels_and_bits_api)
 }
 
 processResources
