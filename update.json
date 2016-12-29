@@ -4,22 +4,22 @@
     "1.11-2.2.0": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.11-2.2.0"
   },
   "1.10.2": {
-    "1.10.2-2.2.0": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.10.2-2.2.0"
+    "1.10.2-2.2.1": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.10.2-2.2.1"
   },
   "1.9.4": {
-    "1.9.4-2.2.0": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.9.4-2.2.0"
+    "1.9.4-2.2.1": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.9.4-2.2.1"
   },
   "1.8.9": {
-    "1.8.9-2.2.0": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.8.9-2.2.0"
+    "1.8.9-2.2.1": "Open and click 'Changelog': https://github.com/Phylogeny/ExtraBitManipulation/releases/v1.8.9-2.2.1"
   },
   "promos": {
     "1.11-latest": "1.11-2.2.0",
     "1.11-recommended": "1.11-2.2.0",
-    "1.10.2-latest": "1.10.2-2.2.0",
-    "1.10.2-recommended": "1.10.2-2.2.0",
-    "1.9.4-latest": "1.9.4-2.2.0",
-    "1.9.4-recommended": "1.9.4-2.2.0",
-    "1.8.9-latest": "1.8.9-2.2.0",
-    "1.8.9-recommended": "1.8.9-2.2.0"
+    "1.10.2-latest": "1.10.2-2.2.1",
+    "1.10.2-recommended": "1.10.2-2.2.1",
+    "1.9.4-latest": "1.9.4-2.2.1",
+    "1.9.4-recommended": "1.9.4-2.2.1",
+    "1.8.9-latest": "1.8.9-2.2.1",
+    "1.8.9-recommended": "1.8.9-2.2.1"
   }
 }
