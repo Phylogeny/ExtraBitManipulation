@@ -13,29 +13,34 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.8.9-2.2.0"
-group= "com.phylogeny.ExtraBitManipulation"
+group= "com.phylogeny.extrabitmanipulation"
 archivesBaseName = "ExtraBitManipulation"
+def updateJson = "https://github.com/Phylogeny/ExtraBitManipulation/raw/1.11/update.json"
 
 minecraft {
     version = "1.8.9-11.15.1.1755"
     runDir = "run"
     mappings = "stable_20"
+    replaceIn "Reference.java"
+    replace "@VERSION@", project.version
+    replace "@UPDATE@", updateJson
 }
 
 dependencies {
-	compile files ("lib/chiselsandbits-8.9-api.jar")
+	compile files ("libs/chiselsandbits-8.9-api.jar")
 }
 
 processResources
 {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
+    inputs.property "updatejson", updateJson
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'updatejson':updateJson
     }
-        
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
