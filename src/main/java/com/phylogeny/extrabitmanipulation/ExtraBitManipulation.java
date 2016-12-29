@@ -1,7 +1,6 @@
 package com.phylogeny.extrabitmanipulation;
 
 import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
-import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraftforge.fml.common.Mod;
@@ -13,8 +12,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
-@Mod(modid = Reference.MOD_ID, version = Reference.VERSION, guiFactory = Reference.GUI_FACTORY_CLASSPATH,
-		dependencies = "required-after:" + ChiselsAndBitsReferences.MOD_ID + "@[10.0,)")
+@Mod(modid = Reference.MOD_ID,
+	 version = Reference.VERSION,
+	 guiFactory = Reference.GUI_FACTORY_CLASSPATH,
+	 updateJSON = Reference.UPDATE_JSON,
+	 dependencies = Reference.DEPENDENCIES)
 public class ExtraBitManipulation
 {
 	@Mod.Instance(Reference.MOD_ID)
