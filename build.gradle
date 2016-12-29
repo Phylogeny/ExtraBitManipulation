@@ -29,8 +29,7 @@ dependencies {
     compile files ("libs/chiselsandbits-11.7-api.jar")
 }
 
-processResources
-{
+processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
     inputs.property "updatejson", update_json
