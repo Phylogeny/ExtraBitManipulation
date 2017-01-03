@@ -133,7 +133,7 @@ public class ClientEventHandler
 		for (KeyBinding keyBind : Minecraft.getMinecraft().gameSettings.keyBindings)
 		{
 			if (keyBind.getKeyDescription().equals("mod.chiselsandbits.other.mode"))
-				return keyBind.getKeyModifier().isActive() && KeyBindingsExtraBitManipulation.isKeyDown(keyBind);
+				return KeyBindingsExtraBitManipulation.isKeyDown(keyBind);
 		}
 		return false;
 	}
