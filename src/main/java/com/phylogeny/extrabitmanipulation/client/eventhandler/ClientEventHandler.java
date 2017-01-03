@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.client.eventhandler;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.Disk;
@@ -133,8 +132,8 @@ public class ClientEventHandler
 	{
 		for (KeyBinding keyBind : Minecraft.getMinecraft().gameSettings.keyBindings)
 		{
-			if (keyBind.getKeyDescription().equals("mod.chiselsandbits.other.mode") && Keyboard.isKeyDown(keyBind.getKeyCode()))
-				return true;
+			if (keyBind.getKeyDescription().equals("mod.chiselsandbits.other.mode"))
+				return KeyBindingsExtraBitManipulation.isKeyDown(keyBind);
 		}
 		return false;
 	}
