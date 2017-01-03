@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
 import com.google.common.collect.Lists;
-import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
@@ -30,6 +31,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	private List<ButtonsSetting> buttonsSettingList = Lists.<ButtonsSetting>newArrayList();
 	private List<SliderSetting> sliderSettingList = Lists.<SliderSetting>newArrayList();
 	private int renderCounter, buttonCount, lineCount;
+	private boolean closing;
 	
 	@Override
 	public boolean doesGuiPauseGame()
@@ -132,7 +134,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 		drawGradientRect(0, 0, width, height, (int) (visibility * 98) << 24, (int) (visibility * 128) << 24);
 		MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent(this));
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		renderCounter = Math.min(renderCounter + (ClientEventHandler.isChiselsAndBitsMenuKeyBindPressed() ? 1 : -1), 6);
+		renderCounter = Math.min(renderCounter + (closing ? -1 : 1), 6);
 		if (renderCounter < 0)
 		{
 			for (SliderSetting sliderSetting : sliderSettingList)
@@ -142,6 +144,17 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 			setToolValuesIfDiffrent();
 			mc.thePlayer.closeScreen();
 		}
+	}
+	
+	@Override
+	public void handleKeyboardInput() throws IOException
+	{
+		if (!Keyboard.getEventKeyState())
+		{
+			closing = true;
+			return;
+		}
+		super.handleKeyboardInput();
 	}
 	
 	@Override

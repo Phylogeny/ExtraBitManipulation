@@ -73,7 +73,15 @@ public enum KeyBindingsExtraBitManipulation
 		return keyBinding.getKeyCode() == keyBinding.getKeyCodeDefault();
 	}
 	
-	public void register()
+	public static void init()
+	{
+		for (KeyBindingsExtraBitManipulation keyBinding : values())
+		{
+			keyBinding.registerKeyBinding();
+		}
+	}
+	
+	public void registerKeyBinding()
 	{
 		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(), defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);

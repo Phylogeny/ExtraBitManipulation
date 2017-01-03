@@ -47,10 +47,7 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.sculptingSquareHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
-		for (KeyBindingsExtraBitManipulation keyBinding : KeyBindingsExtraBitManipulation.values())
-		{
-			keyBinding.register();
-		}
+		KeyBindingsExtraBitManipulation.init();
 	}
 	
 	@Override
