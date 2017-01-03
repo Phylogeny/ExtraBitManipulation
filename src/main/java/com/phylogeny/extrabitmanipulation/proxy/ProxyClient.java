@@ -48,10 +48,7 @@ public class ProxyClient extends ProxyCommon
 	public void init()
 	{
 		super.init();
-		for (KeyBindingsExtraBitManipulation keyBinding : KeyBindingsExtraBitManipulation.values())
-		{
-			keyBinding.register();
-		}
+		KeyBindingsExtraBitManipulation.init();
 	}
 	
 	@Override
