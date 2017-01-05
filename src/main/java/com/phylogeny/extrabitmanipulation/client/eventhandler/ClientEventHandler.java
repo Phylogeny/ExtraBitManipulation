@@ -37,6 +37,7 @@ import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import mod.chiselsandbits.api.ModKeyBinding;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
@@ -45,7 +46,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -104,7 +104,8 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void onKeyInput(@SuppressWarnings("unused") InputEvent.KeyInputEvent event)
 	{
-		if (isChiselsAndBitsMenuKeyBindPressed() || KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
+		if (ChiselsAndBitsAPIAccess.apiInstance.getKeyBinding(ModKeyBinding.MODE_MENU).isKeyDown()
+				|| KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 		{
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
@@ -126,16 +127,6 @@ public class ClientEventHandler
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenBitMappingGui());
-	}
-	
-	public static boolean isChiselsAndBitsMenuKeyBindPressed()
-	{
-		for (KeyBinding keyBind : Minecraft.getMinecraft().gameSettings.keyBindings)
-		{
-			if (keyBind.getKeyDescription().equals("mod.chiselsandbits.other.mode"))
-				return KeyBindingsExtraBitManipulation.isKeyDown(keyBind);
-		}
-		return false;
 	}
 	
 	@SuppressWarnings("null")

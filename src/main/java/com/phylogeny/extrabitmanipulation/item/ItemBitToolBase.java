@@ -7,6 +7,7 @@ import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBase;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
+import mod.chiselsandbits.api.KeyBindingContext;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,6 +15,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.ForgeEventFactory;
 
+@KeyBindingContext(value = {"menuitem"}, applyToSubClasses = true)
 public class ItemBitToolBase extends ItemExtraBitManipulationBase
 {
 	

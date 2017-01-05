@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
@@ -49,6 +50,7 @@ public class ProxyClient extends ProxyCommon
 	{
 		super.init();
 		KeyBindingsExtraBitManipulation.init();
+		FMLInterModComms.sendMessage("chiselsandbits", "initkeybindingannotations", "");
 	}
 	
 	@Override
