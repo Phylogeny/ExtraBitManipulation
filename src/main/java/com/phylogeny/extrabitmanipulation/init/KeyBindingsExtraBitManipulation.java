@@ -1,7 +1,5 @@
 package com.phylogeny.extrabitmanipulation.init;
 
-import java.lang.reflect.Field;
-
 import org.lwjgl.input.Keyboard;
 
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
@@ -14,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 {
@@ -58,7 +55,6 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	private String description;
 	private int defaultKeyCode;
 	private boolean checkForOnlyModelingTool, checkForWrench, anyConflicts;
-	private static Field pressed;
 	
 	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode,
 			boolean checkForOnlyModelingTool, boolean checkForWrench, boolean anyConflicts)
@@ -86,24 +82,12 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		{
 			keyBinding.registerKeyBinding();
 		}
-		pressed = ReflectionHelper.findField(KeyBinding.class, "field_74513_e", "pressed");
 	}
 	
 	private void registerKeyBinding()
 	{
 		keyBinding = new KeyBinding("keybinding." + Reference.MOD_ID + "." + description.toLowerCase(), this, defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
-	}
-	
-	public static boolean isKeyDown(KeyBinding keyBinding)
-	{
-		try
-		{
-			return pressed.getBoolean(keyBinding);
-		}
-		catch (IllegalArgumentException e) {}
-		catch (IllegalAccessException e) {}
-		return false;
 	}
 	
 	public String getText()
