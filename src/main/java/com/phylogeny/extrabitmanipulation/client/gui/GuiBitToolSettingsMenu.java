@@ -149,12 +149,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	@Override
 	public void handleKeyboardInput() throws IOException
 	{
-		if (!Keyboard.getEventKeyState())
-		{
-			closing = true;
-			return;
-		}
-		super.handleKeyboardInput();
+		closing = !Keyboard.getEventKeyState();
 	}
 	
 	@Override

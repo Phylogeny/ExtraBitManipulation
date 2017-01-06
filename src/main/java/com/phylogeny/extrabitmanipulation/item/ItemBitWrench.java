@@ -286,9 +286,9 @@ public class ItemBitWrench extends ItemBitToolBase
 			tooltip.add("Right click blocks to " + text + (mode == 0 ? " CW." : (mode == 1 ? " front-to-back."
 					: (mode == 2 ? " front-to-back." : " their bits."))));
 			if (mode != 3)
-				tooltip.add(shiftText + "right click blocks to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
+				tooltip.add(shiftText + " right click blocks to " + text + (mode == 0 ? " CCW." : (mode == 1 ? " left-to-right." : " towards you.")));
 			
-			tooltip.add(shiftText + "mouse wheel to cycle modes.");
+			tooltip.add(shiftText + " mouse wheel to cycle modes.");
 			addKeybindReminders(tooltip, KeyBindingsExtraBitManipulation.SHIFT);
 		}
 		else
