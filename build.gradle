@@ -27,8 +27,18 @@ minecraft {
     replace "@UPDATE@", update_json
 }
 
+repositories {
+    maven {
+        url "http://dvs1.progwml6.com/files/maven"
+    }
+    flatDir { 
+        dirs 'libs'
+    }
+}
+
 dependencies {
     compile files ("libs/" + chisels_and_bits_api)
+	deobfCompile "mezz.jei:${jei_version}"
 }
 
 processResources {
