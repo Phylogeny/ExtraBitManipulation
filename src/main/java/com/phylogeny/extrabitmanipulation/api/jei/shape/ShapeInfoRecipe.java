@@ -36,7 +36,7 @@ public class ShapeInfoRecipe extends InfoRecipeBase
 	public ShapeInfoRecipe(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String tooltipName, int imageIndex, boolean isNarrow)
 	{
 		super(guiHelper, sculptingStacks, imageWidth, imageHeight, GRAPHIC_NAMES[imageIndex * 2 + 1], GRAPHIC_NAMES[imageIndex * 2 + 1].toLowerCase().replace(" ", "_"),
-				tooltipName, isNarrow ? 19 : 2, 22, isNarrow ? 142 : 158, 123, ShapeInfoRecipeCategory.NAME);
+				tooltipName, isNarrow ? 19 : 2, 22, isNarrow ? 142 : 158, 124, ShapeInfoRecipeCategory.NAME);
 		this.imageIndex = imageIndex;
 		graphicImageSymetrical = new ResourceLocation(Reference.MOD_ID, "textures/jei/graphics/" + GRAPHIC_NAMES[imageIndex * 2] + ".png");
 		graphicImageAsymetrical = new ResourceLocation(Reference.MOD_ID, "textures/jei/graphics/" + GRAPHIC_NAMES[imageIndex * 2 + 1] + ".png");

@@ -27,7 +27,7 @@ public class ModelInfoRecipe extends InfoRecipeBase
 	public ModelInfoRecipe(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String tooltipName, String imageName)
 	{
 		super(guiHelper, sculptingStacks, imageWidth, imageHeight, imageName,
-				imageName.toLowerCase().replace(" ", "_"), tooltipName, 0, 22, ModelInfoRecipeCategory.recipeWidth, 123, ModelInfoRecipeCategory.NAME);
+				imageName.toLowerCase().replace(" ", "_"), tooltipName, 0, 22, 178, 123, ModelInfoRecipeCategory.NAME);
 	}
 	
 	@Override
