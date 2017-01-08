@@ -48,6 +48,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -820,15 +821,11 @@ public class GuiBitMapping extends GuiContainer
 			ItemStack previewStack = getPreviewStack();
 			if (previewStack != null)
 			{
-				GL11.glEnable(GL11.GL_STENCIL_TEST);
-				GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-				GL11.glStencilMask(0xFF);
-				GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
-				GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-				GlStateManager.disableAlpha();
-				drawRect((int) previewStackBox.minX, (int) previewStackBox.minY, (int) previewStackBox.maxX, (int) previewStackBox.maxY, 0);
-				GL11.glStencilMask(0x00);
-				GL11.glStencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
+				GL11.glEnable(GL11.GL_SCISSOR_TEST);
+				int scaleFactor = (new ScaledResolution(mc)).getScaleFactor();
+				int height = (int) (previewStackBox.maxY - previewStackBox.minY);
+				GL11.glScissor((int) previewStackBox.minX * scaleFactor, mc.displayHeight - ((int) previewStackBox.minY + height) * scaleFactor,
+						(int) (previewStackBox.maxX - previewStackBox.minX) * scaleFactor, height * scaleFactor);
 				RenderHelper.enableGUIStandardItemLighting();
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.5F + previewStackOffsetX, previewStackOffsetY, 0);
@@ -837,7 +834,7 @@ public class GuiBitMapping extends GuiContainer
 						(float) previewStackAngles.yCoord, previewStackScale);
 				GlStateManager.popMatrix();
 				RenderHelper.disableStandardItemLighting();
-				GL11.glDisable(GL11.GL_STENCIL_TEST);
+				GL11.glDisable(GL11.GL_SCISSOR_TEST);
 			}
 			else
 			{
