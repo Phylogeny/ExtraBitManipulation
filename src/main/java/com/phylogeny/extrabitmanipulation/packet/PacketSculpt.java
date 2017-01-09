@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
@@ -7,6 +9,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -16,6 +19,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketSculpt extends PacketBlockInteraction implements IMessage
 {
@@ -59,18 +63,23 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSculpt message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = ctx.side == Side.SERVER ? (WorldServer) ctx.getServerHandler().playerEntity.worldObj : ClientHelper.getThreadListener();
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@SuppressWarnings("null")
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.side == Side.SERVER ? ctx.getServerHandler().playerEntity : ClientHelper.getPlayer();
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isSculptingToolStack(stack))
+					{
 						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.worldObj, message.pos,
 								message.side, message.hit, message.drawnStartPoint, message.sculptingData);
+						if (ctx.side == Side.SERVER)
+							ExtraBitManipulation.packetNetwork.sendTo(new PacketSculpt(message.pos, message.side,
+									message.hit, message.drawnStartPoint, message.sculptingData), (EntityPlayerMP) player);
+					}
 				}
 			});
 			return null;
