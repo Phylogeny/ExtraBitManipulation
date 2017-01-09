@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.eventhandler;
+package com.phylogeny.extrabitmanipulation.client;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
@@ -10,7 +10,6 @@ import org.lwjgl.util.glu.Sphere;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu;
-import com.phylogeny.extrabitmanipulation.client.shape.Prism;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
@@ -109,14 +108,14 @@ public class ClientEventHandler
 		{
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
-				ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+				ItemStack stack = ClientHelper.getHeldItemMainhand();
 				if ((ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
 						|| (stack != null && stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack)))
 					openBitMappingGui();
 			}
 			else
 			{
-				if (ItemStackHelper.isBitToolStack(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem()))
+				if (ItemStackHelper.isBitToolStack(ClientHelper.getHeldItemMainhand()))
 						Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
 			}
 		}
@@ -124,7 +123,7 @@ public class ClientEventHandler
 	
 	private void openBitMappingGui()
 	{
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer player = ClientHelper.getPlayer();
 		player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenBitMappingGui());
 	}
@@ -142,7 +141,7 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void interceptMouseInput(MouseEvent event)
 	{
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer player = ClientHelper.getPlayer();
 		if (event.dwheel != 0)
 		{
 			ItemStack stack = player.getCurrentEquippedItem();
@@ -570,7 +569,7 @@ public class ClientEventHandler
 	{
 		if (!Configs.disableOverlays)
 		{
-			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+			EntityPlayer player = ClientHelper.getPlayer();
 			World world = player.worldObj;
 			ItemStack stack = player.getCurrentEquippedItem();
 			if (stack != null)

@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.extendedproperties.BitToolSettingsPlayerProperties;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
@@ -92,7 +93,7 @@ public class PacketSyncAllBitToolData implements IMessage
 				@Override
 				public void run()
 				{
-					EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+					EntityPlayer player = ClientHelper.getPlayer();
 					BitToolSettingsPlayerProperties sculptProp = BitToolSettingsPlayerProperties.get(player);
 					if (sculptProp != null)
 					{

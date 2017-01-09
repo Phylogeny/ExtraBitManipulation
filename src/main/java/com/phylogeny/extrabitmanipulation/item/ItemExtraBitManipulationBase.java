@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.item;
 
-import com.phylogeny.extrabitmanipulation.client.creativetab.CreativeTabExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.client.CreativeTabExtraBitManipulation;
 
 import net.minecraft.item.Item;
 

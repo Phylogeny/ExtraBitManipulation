@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import com.phylogeny.extrabitmanipulation.client.eventhandler.ClientEventHandler;
+import com.phylogeny.extrabitmanipulation.client.ClientEventHandler;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;

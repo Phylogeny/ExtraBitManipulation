@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.renderer;
+package com.phylogeny.extrabitmanipulation.client;
 
 import java.util.List;
 import java.util.concurrent.Callable;

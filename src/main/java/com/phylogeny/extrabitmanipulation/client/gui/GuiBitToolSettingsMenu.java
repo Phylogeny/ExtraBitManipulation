@@ -7,6 +7,7 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 
 import com.google.common.collect.Lists;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
@@ -42,7 +43,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	@Override
 	public void initGui()
 	{
-		ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
 		if (stack == null)
 			return;
 		
