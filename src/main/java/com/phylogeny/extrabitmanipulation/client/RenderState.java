@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.renderer;
+package com.phylogeny.extrabitmanipulation.client;
 
 import java.util.List;
 
@@ -136,7 +136,7 @@ public class RenderState
 	
 	public static IBakedModel getItemModelWithOverrides(ItemStack stack)
 	{
-		return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, Minecraft.getMinecraft().thePlayer);
+		return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, ClientHelper.getPlayer());
 	}
 	
 	private static boolean isNullItem(final Block block, ItemStack stack)
