@@ -17,20 +17,17 @@ public class RecipesExtraBitManipulation
 {
 	public static void recipeInit()
 	{
-		if (!OreDictionary.doesOreNameExist("nuggetDiamond"))
-		{
-			OreDictionary.registerOre("nuggetDiamond", ItemsExtraBitManipulation.diamondNugget);
-			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.diamond),
-					new Object[]{
-						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
-						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
-						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond"
-			}));
-			GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.diamondNugget, 9),
-					new Object[]{
-						Items.diamond
-			});
-		}
+		OreDictionary.registerOre("nuggetDiamond", ItemsExtraBitManipulation.diamondNugget);
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.diamond),
+				new Object[]{
+					"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
+					"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
+					"nuggetDiamond", "nuggetDiamond", "nuggetDiamond"
+		}));
+		GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.diamondNugget, 9),
+				new Object[]{
+					Items.diamond
+		});
 		for (Item item : Configs.itemRecipeMap.keySet())
 		{
 			ConfigRecipe configRecipe = (ConfigRecipe) Configs.itemRecipeMap.get(item);
