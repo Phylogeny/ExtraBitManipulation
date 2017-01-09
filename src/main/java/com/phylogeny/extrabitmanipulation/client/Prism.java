@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.shape;
+package com.phylogeny.extrabitmanipulation.client;
 
 import net.minecraft.client.renderer.GlStateManager;
 
