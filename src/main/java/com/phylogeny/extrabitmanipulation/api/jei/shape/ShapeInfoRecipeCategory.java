@@ -42,6 +42,6 @@ public class ShapeInfoRecipeCategory extends BlankRecipeCategory<ShapeInfoRecipe
 	}
 	
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, ShapeInfoRecipe recipeWrapper) {} //TODO remove
+	public void setRecipe(IRecipeLayout recipeLayout, ShapeInfoRecipe recipeWrapper) {}
 	
 }

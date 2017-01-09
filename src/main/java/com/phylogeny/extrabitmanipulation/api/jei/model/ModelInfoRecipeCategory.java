@@ -42,6 +42,6 @@ public class ModelInfoRecipeCategory extends BlankRecipeCategory<ModelInfoRecipe
 	}
 	
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, ModelInfoRecipe recipeWrapper) {} //TODO remove
+	public void setRecipe(IRecipeLayout recipeLayout, ModelInfoRecipe recipeWrapper) {}
 	
 }
