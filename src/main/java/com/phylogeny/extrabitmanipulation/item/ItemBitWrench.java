@@ -253,7 +253,9 @@ public class ItemBitWrench extends ItemBitToolBase
 						}
 					}
 				}
-				bitAccess.commitChanges(true);
+				if (!world.isRemote)
+					bitAccess.commitChanges(true);
+				
 				damageTool(stack, player);
 				if (!creativeMode && !world.isRemote && canInvert)
 				{
