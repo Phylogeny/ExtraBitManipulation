@@ -36,37 +36,46 @@ public class PacketRegistration
 	
 	public static void registerPackets()
 	{
-		registerPacket(PacketCycleBitWrenchMode.Handler.class, PacketCycleBitWrenchMode.class, Side.SERVER);
-		registerPacket(PacketSculpt.Handler.class, PacketSculpt.class, Side.SERVER);
-		registerPacket(PacketSetDirection.Handler.class, PacketSetDirection.class, Side.SERVER);
-		registerPacket(PacketSetShapeType.Handler.class, PacketSetShapeType.class, Side.SERVER);
-		registerPacket(PacketSetTargetBitGridVertexes.Handler.class, PacketSetTargetBitGridVertexes.class, Side.SERVER);
-		registerPacket(PacketSetSemiDiameter.Handler.class, PacketSetSemiDiameter.class, Side.SERVER);
-		registerPacket(PacketSetHollowShape.Handler.class, PacketSetHollowShape.class, Side.SERVER);
-		registerPacket(PacketSetEndsOpen.Handler.class, PacketSetEndsOpen.class, Side.SERVER);
-		registerPacket(PacketSetWallThickness.Handler.class, PacketSetWallThickness.class, Side.SERVER);
-		registerPacket(PacketSetBitStack.Handler.class, PacketSetBitStack.class, Side.SERVER);
-		registerPacket(PacketSetSculptMode.Handler.class, PacketSetSculptMode.class, Side.SERVER);
-		registerPacket(PacketSetModelAreaMode.Handler.class, PacketSetModelAreaMode.class, Side.SERVER);
-		registerPacket(PacketSetModelSnapMode.Handler.class, PacketSetModelSnapMode.class, Side.SERVER);
-		registerPacket(PacketSetModelGuiOpen.Handler.class, PacketSetModelGuiOpen.class, Side.SERVER);
-		registerPacket(PacketAddBitMapping.Handler.class, PacketAddBitMapping.class, Side.SERVER);
-		registerPacket(PacketCursorStack.Handler.class, PacketCursorStack.class, Side.SERVER);
-		registerPacket(PacketSetTabAndStateBlockButton.Handler.class, PacketSetTabAndStateBlockButton.class, Side.SERVER);
-		registerPacket(PacketReadBlockStates.Handler.class, PacketReadBlockStates.class, Side.SERVER);
-		registerPacket(PacketCreateModel.Handler.class, PacketCreateModel.class, Side.SERVER);
-		registerPacket(PacketUseWrench.Handler.class, PacketUseWrench.class, Side.SERVER);
-		registerPacket(PacketBitMappingsPerTool.Handler.class, PacketBitMappingsPerTool.class, Side.SERVER);
-		registerPacket(PacketClearStackBitMappings.Handler.class, PacketClearStackBitMappings.class, Side.SERVER);
-		registerPacket(PacketOverwriteStackBitMappings.Handler.class, PacketOverwriteStackBitMappings.class, Side.SERVER);
-		registerPacket(PacketOpenBitMappingGui.Handler.class, PacketOpenBitMappingGui.class, Side.SERVER);
-		registerPacket(PacketSetWrechMode.Handler.class, PacketSetWrechMode.class, Side.SERVER);
-		registerPacket(PacketSetDesign.Handler.class, PacketSetDesign.class, Side.SERVER);
+		registerPacket(PacketCycleBitWrenchMode.Handler.class, PacketCycleBitWrenchMode.class, PacketSide.SERVER);
+		registerPacket(PacketSculpt.Handler.class, PacketSculpt.class, PacketSide.BOTH);
+		registerPacket(PacketSetDirection.Handler.class, PacketSetDirection.class, PacketSide.SERVER);
+		registerPacket(PacketSetShapeType.Handler.class, PacketSetShapeType.class, PacketSide.SERVER);
+		registerPacket(PacketSetTargetBitGridVertexes.Handler.class, PacketSetTargetBitGridVertexes.class, PacketSide.SERVER);
+		registerPacket(PacketSetSemiDiameter.Handler.class, PacketSetSemiDiameter.class, PacketSide.SERVER);
+		registerPacket(PacketSetHollowShape.Handler.class, PacketSetHollowShape.class, PacketSide.SERVER);
+		registerPacket(PacketSetEndsOpen.Handler.class, PacketSetEndsOpen.class, PacketSide.SERVER);
+		registerPacket(PacketSetWallThickness.Handler.class, PacketSetWallThickness.class, PacketSide.SERVER);
+		registerPacket(PacketSetBitStack.Handler.class, PacketSetBitStack.class, PacketSide.SERVER);
+		registerPacket(PacketSetSculptMode.Handler.class, PacketSetSculptMode.class, PacketSide.SERVER);
+		registerPacket(PacketSetModelAreaMode.Handler.class, PacketSetModelAreaMode.class, PacketSide.SERVER);
+		registerPacket(PacketSetModelSnapMode.Handler.class, PacketSetModelSnapMode.class, PacketSide.SERVER);
+		registerPacket(PacketSetModelGuiOpen.Handler.class, PacketSetModelGuiOpen.class, PacketSide.SERVER);
+		registerPacket(PacketAddBitMapping.Handler.class, PacketAddBitMapping.class, PacketSide.SERVER);
+		registerPacket(PacketCursorStack.Handler.class, PacketCursorStack.class, PacketSide.SERVER);
+		registerPacket(PacketSetTabAndStateBlockButton.Handler.class, PacketSetTabAndStateBlockButton.class, PacketSide.SERVER);
+		registerPacket(PacketReadBlockStates.Handler.class, PacketReadBlockStates.class, PacketSide.SERVER);
+		registerPacket(PacketCreateModel.Handler.class, PacketCreateModel.class, PacketSide.SERVER);
+		registerPacket(PacketUseWrench.Handler.class, PacketUseWrench.class, PacketSide.CLIENT);
+		registerPacket(PacketBitMappingsPerTool.Handler.class, PacketBitMappingsPerTool.class, PacketSide.SERVER);
+		registerPacket(PacketClearStackBitMappings.Handler.class, PacketClearStackBitMappings.class, PacketSide.SERVER);
+		registerPacket(PacketOverwriteStackBitMappings.Handler.class, PacketOverwriteStackBitMappings.class, PacketSide.SERVER);
+		registerPacket(PacketOpenBitMappingGui.Handler.class, PacketOpenBitMappingGui.class, PacketSide.SERVER);
+		registerPacket(PacketSetWrechMode.Handler.class, PacketSetWrechMode.class, PacketSide.SERVER);
+		registerPacket(PacketSetDesign.Handler.class, PacketSetDesign.class, PacketSide.SERVER);
 	}
 	
-	private static void registerPacket(Class handler, Class packet, Side side)
+	private static void registerPacket(Class handler, Class packet, PacketSide side)
 	{
-		ExtraBitManipulation.packetNetwork.registerMessage(handler, packet, packetId++, side);
+		if (side != PacketSide.CLIENT)
+			ExtraBitManipulation.packetNetwork.registerMessage(handler, packet, packetId++, Side.SERVER);
+		
+		if (side != PacketSide.SERVER)
+			ExtraBitManipulation.packetNetwork.registerMessage(handler, packet, packetId++, Side.CLIENT);
+	}
+	
+	private static enum PacketSide
+	{
+		SERVER, CLIENT, BOTH;
 	}
 	
 }

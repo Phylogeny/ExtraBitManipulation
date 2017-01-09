@@ -376,23 +376,18 @@ public class ItemSculptingTool extends ItemBitToolBase
 							catch (SpaceOccupied e) {}
 							if (remainingUses == 0)
 							{
-								if (!world.isRemote)
-									bitAccess.commitChanges(true);
-								
+								bitAccess.commitChanges(false);
 								return remainingUses;
 							}
 						}
 					}
 				}
 			}
-			if (!world.isRemote)
-			{
-				if (Configs.dropBitsPerBlock)
+			if (!world.isRemote && Configs.dropBitsPerBlock)
 					BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
-				
-				if (remainingUses < initialRemainingUses)
-					bitAccess.commitChanges(true);
-			}
+			
+			if (remainingUses < initialRemainingUses)
+				bitAccess.commitChanges(false);
 		}
 		return remainingUses;
 	}

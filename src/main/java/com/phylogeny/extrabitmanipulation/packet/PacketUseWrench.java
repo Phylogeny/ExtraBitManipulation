@@ -4,13 +4,12 @@ import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -49,13 +48,12 @@ public class PacketUseWrench extends PacketBlockInteraction implements IMessage
 		@Override
 		public IMessage onMessage(final PacketUseWrench message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
-			mainThread.addScheduledTask(new Runnable()
+			Minecraft.getMinecraft().addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 					ItemStack stack = player.getCurrentEquippedItem();
 					if (ItemStackHelper.isBitWrenchStack(stack))
 						((ItemBitWrench) stack.getItem()).useWrench(stack, player, player.worldObj, message.pos,
