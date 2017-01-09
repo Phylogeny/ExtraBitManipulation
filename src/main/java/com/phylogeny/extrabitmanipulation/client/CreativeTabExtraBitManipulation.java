@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.creativetab;
+package com.phylogeny.extrabitmanipulation.client;
 
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.Reference;

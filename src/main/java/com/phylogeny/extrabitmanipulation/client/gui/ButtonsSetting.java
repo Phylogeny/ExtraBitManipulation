@@ -3,12 +3,12 @@ package com.phylogeny.extrabitmanipulation.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu.GuiButtonSetting;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
@@ -57,7 +57,7 @@ public class ButtonsSetting
 	{
 		int value = buttons.indexOf(getTargetButton());
 		if (value != getValue())
-			setValue(Minecraft.getMinecraft().player, value);
+			setValue(ClientHelper.getPlayer(), value);
 	}
 	
 	protected GuiButtonSetting getTargetButton()
@@ -81,12 +81,12 @@ public class ButtonsSetting
 	
 	protected NBTTagCompound getHeldStackNBT()
 	{
-		return ItemStackHelper.getNBTOrNew(Minecraft.getMinecraft().player.getHeldItemMainhand());
+		return ItemStackHelper.getNBTOrNew(ClientHelper.getHeldItemMainhand());
 	}
 	
 	private static ItemSculptingTool getSculptingTool()
 	{
-		ItemStack stack = Minecraft.getMinecraft().player.getHeldItemMainhand();
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
 		return stack.isEmpty() ? null : (ItemSculptingTool) stack.getItem();
 	}
 	
@@ -207,7 +207,7 @@ public class ButtonsSetting
 				value = value * 3 + 3;
 			
 			if (value != getValue())
-				setValue(Minecraft.getMinecraft().player, value);
+				setValue(ClientHelper.getPlayer(), value);
 		}
 		
 		@Override

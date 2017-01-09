@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 
@@ -53,7 +54,7 @@ public class PacketUseWrench extends PacketBlockInteraction implements IMessage
 				@Override
 				public void run()
 				{
-					EntityPlayer player = Minecraft.getMinecraft().player;
+					EntityPlayer player = ClientHelper.getPlayer();
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isBitWrenchStack(stack))
 						((ItemBitWrench) stack.getItem()).useWrench(stack, player, player.world, message.pos,

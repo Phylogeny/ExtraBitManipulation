@@ -2,12 +2,12 @@ package com.phylogeny.extrabitmanipulation.client.gui;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu.GuiSliderSetting;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
@@ -76,12 +76,12 @@ public class SliderSetting
 	{
 		int value = slider.getValueInt();
 		if (value != getValue())
-			setValue(Minecraft.getMinecraft().player, value);
+			setValue(ClientHelper.getPlayer(), value);
 	}
 	
 	protected NBTTagCompound getHeldStackNBT()
 	{
-		return ItemStackHelper.getNBTOrNew(Minecraft.getMinecraft().player.getHeldItemMainhand());
+		return ItemStackHelper.getNBTOrNew(ClientHelper.getHeldItemMainhand());
 	}
 	
 	public static class SemiDiameter extends SliderSetting

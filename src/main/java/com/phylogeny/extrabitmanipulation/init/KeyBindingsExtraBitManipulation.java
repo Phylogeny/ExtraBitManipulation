@@ -2,10 +2,10 @@ package com.phylogeny.extrabitmanipulation.init;
 
 import org.lwjgl.input.Keyboard;
 
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
@@ -103,7 +103,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	@Override
 	public boolean isActive()
 	{
-		ItemStack stack = Minecraft.getMinecraft().player.getHeldItemMainhand();
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
 		return ItemStackHelper.isModelingToolStack(stack) || (checkForOnlyModelingTool && ItemStackHelper.isDesignStack(stack)) || (!checkForOnlyModelingTool
 				&& (ItemStackHelper.isSculptingToolStack(stack) || (checkForWrench && ItemStackHelper.isBitWrenchStack(stack))));
 	}
