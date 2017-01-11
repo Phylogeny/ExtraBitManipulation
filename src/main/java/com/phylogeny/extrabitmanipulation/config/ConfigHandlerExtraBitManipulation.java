@@ -484,6 +484,11 @@ public class ConfigHandlerExtraBitManipulation
 					"before the spade can be used)).", "None");
 			Configs.sculptSetBitSpade.init();
 			
+			Configs.sculptOffsetShape = getBitToolSettingBoolean("Offset Shape for Placement", DATA_CATAGORY_SCULPT,
+					sculptingMapConfigFile, false, true, true,
+					"whether or not sculpting shapes added with spades will be offset for placement",
+					"shape placement property value (shapes added with spades can be centered around the bit clicked, of offset opposite the side clicked).");
+			
 			//ITEM PROPERTIES
 			for (Item item : Configs.itemPropertyMap.keySet())
 			{
