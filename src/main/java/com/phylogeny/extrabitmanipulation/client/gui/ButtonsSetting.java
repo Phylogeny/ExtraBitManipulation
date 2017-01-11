@@ -288,4 +288,22 @@ public class ButtonsSetting
 		}
 		
 	}
+	
+	public static class OffsetShape extends ButtonsSetting
+	{
+		
+		@Override
+		protected int getValue()
+		{
+			return BitToolSettingsHelper.isShapeOffset(getHeldStackNBT()) ? 0 : 1;
+		}
+		
+		@Override
+		protected void setValue(EntityPlayer player, int value)
+		{
+			BitToolSettingsHelper.setShapeOffset(player, player.getCurrentEquippedItem(), value == 0, Configs.sculptOffsetShape);
+		}
+		
+	}
+	
 }

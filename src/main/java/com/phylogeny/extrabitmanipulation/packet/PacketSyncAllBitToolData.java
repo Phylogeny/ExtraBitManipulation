@@ -16,14 +16,14 @@ import io.netty.buffer.ByteBuf;
 public class PacketSyncAllBitToolData implements IMessage
 {
 	private int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	private boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
+	private boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds, offsetShape;
 	private ItemStack setBitWire, setBitSpade;
 	
 	public PacketSyncAllBitToolData() {}
 	
 	public PacketSyncAllBitToolData(int modelAreaMode, int modelSnapMode, boolean modelGuiOpen, int sculptMode, int direction, int shapeTypeCurved,
 			int shapeTypeFlat, boolean targetBitGridVertexes, int sculptSemiDiameter, boolean sculptHollowShapeWire,
-			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade)
+			boolean sculptHollowShapeSpade, boolean openEnds, int wallThickness, ItemStack setBitWire, ItemStack setBitSpade, boolean offsetShape)
 	{
 		this.modelAreaMode = modelAreaMode;
 		this.modelSnapMode = modelSnapMode;
@@ -40,6 +40,7 @@ public class PacketSyncAllBitToolData implements IMessage
 		this.wallThickness = wallThickness;
 		this.setBitWire = setBitWire;
 		this.setBitSpade = setBitSpade;
+		this.offsetShape = offsetShape;
 	}
 	
 	@Override
@@ -60,6 +61,7 @@ public class PacketSyncAllBitToolData implements IMessage
 		buffer.writeInt(wallThickness);
 		ItemStackHelper.stackToBytes(buffer, setBitWire);
 		ItemStackHelper.stackToBytes(buffer, setBitSpade);
+		buffer.writeBoolean(offsetShape);
 	}
 	
 	@Override
@@ -80,6 +82,7 @@ public class PacketSyncAllBitToolData implements IMessage
 		wallThickness = buffer.readInt();
 		setBitWire = ItemStackHelper.stackFromBytes(buffer);
 		setBitSpade = ItemStackHelper.stackFromBytes(buffer);
+		offsetShape = buffer.readBoolean();
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSyncAllBitToolData, IMessage>
@@ -110,6 +113,7 @@ public class PacketSyncAllBitToolData implements IMessage
 						sculptProp.openEnds = message.openEnds;
 						sculptProp.setBitWire = message.setBitWire;
 						sculptProp.setBitSpade = message.setBitSpade;
+						sculptProp.offsetShape = message.offsetShape;
 					}
 				}
 			});

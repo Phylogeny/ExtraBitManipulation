@@ -17,14 +17,14 @@ public class BitToolSettingsPlayerProperties implements IExtendedEntityPropertie
 {
 	private static final String ID = "BitToolPlayerProperties";
 	public int modelAreaMode, modelSnapMode, sculptMode, direction, shapeTypeCurved, shapeTypeFlat, sculptSemiDiameter, wallThickness;
-	public boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds;
+	public boolean modelGuiOpen, targetBitGridVertexes, sculptHollowShapeWire, sculptHollowShapeSpade, openEnds, offsetShape;
 	public ItemStack setBitWire, setBitSpade;
 	
 	public void syncAllData(EntityPlayerMP player)
 	{
 		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllBitToolData(modelAreaMode, modelSnapMode, modelGuiOpen, sculptMode,
 				direction, shapeTypeCurved, shapeTypeFlat, targetBitGridVertexes, sculptSemiDiameter, sculptHollowShapeWire,
-				sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade), player);
+				sculptHollowShapeSpade, openEnds, wallThickness, setBitWire, setBitSpade, offsetShape), player);
 	}
 	
 	@Override
@@ -45,6 +45,7 @@ public class BitToolSettingsPlayerProperties implements IExtendedEntityPropertie
 		nbt.setInteger(NBTKeys.WALL_THICKNESS, wallThickness);
 		ItemStackHelper.saveStackToNBT(nbt, setBitWire, NBTKeys.SET_BIT_WIRE);
 		ItemStackHelper.saveStackToNBT(nbt, setBitSpade, NBTKeys.SET_BIT_SPADE);
+		nbt.setBoolean(NBTKeys.OFFSET_SHAPE, offsetShape);
 		compound.setTag(ID, nbt);
 	}
 	
@@ -66,6 +67,7 @@ public class BitToolSettingsPlayerProperties implements IExtendedEntityPropertie
 		wallThickness = nbt.getInteger(NBTKeys.WALL_THICKNESS);
 		setBitWire = ItemStackHelper.loadStackFromNBT(nbt, NBTKeys.SET_BIT_WIRE);
 		setBitSpade = ItemStackHelper.loadStackFromNBT(nbt, NBTKeys.SET_BIT_SPADE);
+		offsetShape = nbt.getBoolean(NBTKeys.OFFSET_SHAPE);
 	}
 	
 	@Override
@@ -85,6 +87,7 @@ public class BitToolSettingsPlayerProperties implements IExtendedEntityPropertie
 		wallThickness = Configs.sculptWallThickness.getDefaultValue();
 		setBitWire = Configs.sculptSetBitWire.getDefaultValue();
 		setBitSpade = Configs.sculptSetBitSpade.getDefaultValue();
+		offsetShape = Configs.sculptOffsetShape.getDefaultValue();
 	}
 	
 	public static BitToolSettingsPlayerProperties get(Entity entity)
