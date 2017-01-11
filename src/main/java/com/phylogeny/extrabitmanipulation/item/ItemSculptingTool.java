@@ -387,7 +387,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 							catch (SpaceOccupied e) {}
 							if (remainingUses == 0)
 							{
-								bitAccess.commitChanges(false);
+								bitAccess.commitChanges(true);
 								return remainingUses;
 							}
 						}
@@ -395,10 +395,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 			}
 			if (!world.isRemote && Configs.dropBitsPerBlock)
-					BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
+				BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 			
 			if (remainingUses < initialRemainingUses)
-				bitAccess.commitChanges(false);
+				bitAccess.commitChanges(true);
 		}
 		return remainingUses;
 	}
