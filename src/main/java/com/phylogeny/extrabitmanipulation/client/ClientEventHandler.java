@@ -535,14 +535,6 @@ public class ClientEventHandler
 			printChatMessageWithDeletion(BitToolSettingsHelper.getWallThicknessText(wallThickness));
 	}
 	
-	private void toggleShapeOffset(EntityPlayer player, ItemStack stack)//TODO! Implement
-	{
-		boolean offsetShape = !BitToolSettingsHelper.isShapeOffset(stack.getTagCompound());
-		BitToolSettingsHelper.setShapeOffset(player, stack, offsetShape, Configs.sculptOffsetShape);
-		if (Configs.sculptOffsetShape.shouldDisplayInChat())
-			printChatMessageWithDeletion(BitToolSettingsHelper.getOffsetShapeText(offsetShape));
-	}
-	
 	private void printChatMessageWithDeletion(String text)
 	{
 		GuiNewChat chatGUI = Minecraft.getMinecraft().ingameGUI.getChatGUI();
