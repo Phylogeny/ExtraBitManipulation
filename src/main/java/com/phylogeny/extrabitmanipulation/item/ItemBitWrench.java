@@ -53,7 +53,7 @@ public class ItemBitWrench extends ItemBitToolBase
 	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		if (!world.isRemote)
+		if (world.isRemote)
 		{
 			useWrench(stack, player, world, pos, side, Configs.oneBitTypeInversionRequirement, KeyBindingsExtraBitManipulation.SHIFT.isKeyDown());
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketUseWrench(pos, side,
@@ -250,7 +250,7 @@ public class ItemBitWrench extends ItemBitToolBase
 						}
 					}
 				}
-				bitAccess.commitChanges(false);
+				bitAccess.commitChanges(true);
 				
 				damageTool(stack, player);
 				if (!creativeMode && !world.isRemote && canInvert)
