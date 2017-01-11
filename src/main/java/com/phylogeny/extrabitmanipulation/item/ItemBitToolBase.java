@@ -2,12 +2,14 @@ package com.phylogeny.extrabitmanipulation.item;
 
 import java.util.List;
 
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBase;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import mod.chiselsandbits.api.KeyBindingContext;
+import mod.chiselsandbits.api.ModKeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -82,6 +84,11 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 			tooltip.add("Hold SHIFT for settings.");
 		
 		tooltip.add("Hold CONTROL for controls.");
+		tooltip.add(TextFormatting.AQUA + "Use the Chisels & Bits radial");
+		tooltip.add(TextFormatting.AQUA + "    menu key ["
+				+ ChiselsAndBitsAPIAccess.apiInstance.getKeyBinding(ModKeyBinding.MODE_MENU).getDisplayName() + "] or the");
+		tooltip.add(TextFormatting.AQUA + "    controls listed above");
+		tooltip.add(TextFormatting.AQUA + "    to change tool settings.");
 	}
 	
 	protected void addKeybindReminders(List<String> tooltip, KeyBindingsExtraBitManipulation... keyBinds)

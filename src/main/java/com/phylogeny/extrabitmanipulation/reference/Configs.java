@@ -47,6 +47,7 @@ public class Configs
 		public static ConfigBitToolSettingInt sculptWallThickness;
 		public static ConfigBitStack sculptSetBitWire;
 		public static ConfigBitStack sculptSetBitSpade;
+		public static ConfigBitToolSettingBoolean sculptOffsetShape;
 		public static ConfigBitToolSettingInt modelAreaMode;
 		public static ConfigBitToolSettingInt modelSnapMode;
 		public static ConfigBitToolSettingBoolean modelGuiOpen;

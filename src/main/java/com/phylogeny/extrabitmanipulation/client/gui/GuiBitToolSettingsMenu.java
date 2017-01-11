@@ -67,9 +67,13 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 		}
 		else if (ItemStackHelper.isSculptingToolStack(stack))
 		{
-			lineCount = 8; // TODO set to 9 when triangular shapes are implemented
+			lineCount = 8; // TODO increment when triangular shapes are implemented
+			ItemSculptingTool sculptingTool = (ItemSculptingTool) stack.getItem();
+			if (!sculptingTool.removeBits())
+				lineCount++;
+			
 			addButtonsSettings(new ButtonsSetting.SculptMode(), ItemSculptingTool.MODE_TITLES, "Mode");
-			String[] texts = ((ItemSculptingTool) stack.getItem()).isCurved() ? Arrays.copyOfRange(Shape.SHAPE_NAMES, 0, 3)
+			String[] texts = sculptingTool.isCurved() ? Arrays.copyOfRange(Shape.SHAPE_NAMES, 0, 3)
 					: new String[]{Shape.SHAPE_NAMES[3], Shape.SHAPE_NAMES[6]};
 			//Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7) TODO
 			addButtonsSettings(new ButtonsSetting.ShapeType(), texts, "Shape");
@@ -77,6 +81,9 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 			addButtonsSettings(new ButtonsSetting.BitGridTargeted(), new String[]{"Bits", "Bit Grid"}, "Target");
 			addButtonsSettings(new ButtonsSetting.HollowShape(), new String[]{"Hollow", "Solid"}, "Interior");
 			addButtonsSettings(new ButtonsSetting.OpenEnds(), new String[]{"Open", "Closed"}, "Ends");
+			if (!sculptingTool.removeBits())
+				addButtonsSettings(new ButtonsSetting.OffsetShape(), new String[]{"Offset", "Centered"}, "Shape Placement");
+			
 			addSliderSetting(new SliderSetting.SemiDiameter(), "Semi Diameter");
 			addSliderSetting(new SliderSetting.WallThickness(), "Wall Thickness");
 		}

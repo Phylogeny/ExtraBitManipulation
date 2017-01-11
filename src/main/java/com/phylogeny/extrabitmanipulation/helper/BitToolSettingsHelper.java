@@ -21,6 +21,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetModelSnapMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSculptMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeOffset;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
@@ -490,6 +491,32 @@ public class BitToolSettingsHelper
 		}
 	}
 	
+	public static boolean isShapeOffset(NBTTagCompound nbt)
+	{
+		return getBoolean(Configs.sculptOffsetShape, nbt, NBTKeys.OFFSET_SHAPE);
+	}
+	
+	public static void setShapeOffset(EntityPlayer player, ItemStack stack, boolean offsetShape, ConfigBitToolSettingBoolean sculptOffsetShape)
+	{
+		World world = player.world;
+		if (sculptOffsetShape == null || sculptOffsetShape.isPerTool())
+		{
+			if (world.isRemote)
+			{
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetShapeOffset(offsetShape));
+			}
+			else
+			{
+				setBoolean(player, stack, offsetShape, NBTKeys.OFFSET_SHAPE);
+			}
+		}
+		else if (world.isRemote)
+		{
+			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+					sculptOffsetShape, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, offsetShape);
+		}
+	}
+	
 	public static String getModeText(String[] titles, String pefaceText, int mode)
 	{
 		return pefaceText + " Mode: " + titles[mode].toLowerCase();
@@ -634,6 +661,16 @@ public class BitToolSettingsHelper
 	public static String getWallThicknessText(int wallThickness)
 	{
 		return addBitLengthString(wallThickness, "Wall Thickness: ");
+	}
+	
+	public static String getOffsetShapeText(NBTTagCompound nbt)
+	{
+		return getOffsetShapeText(isShapeOffset(nbt));
+	}
+	
+	public static String getOffsetShapeText(boolean offsetShape)
+	{
+		return "Shape Placement: " + (offsetShape ? "offset" : "centered");
 	}
 	
 	public static int cycleData(int intValue, boolean forward, int max)
@@ -783,7 +820,7 @@ public class BitToolSettingsHelper
 	public static class SculptingData
 	{
 		private int sculptMode, direction, shapeType, semiDiameter, wallThickness;
-		private boolean targetBitGridVertexes, hollowShape, openEnds;
+		private boolean targetBitGridVertexes, hollowShape, openEnds, offsetShape;
 		private ItemStack setBitStack;
 		private float semiDiameterPadding;
 		
@@ -801,6 +838,7 @@ public class BitToolSettingsHelper
 			wallThickness = BitToolSettingsHelper.getWallThickness(nbt);
 			setBitStack = BitToolSettingsHelper.getBitStack(nbt, toolItem.removeBits());
 			semiDiameterPadding = Configs.semiDiameterPadding;
+			offsetShape = BitToolSettingsHelper.isShapeOffset(nbt);
 		}
 		
 		public void toBytes(ByteBuf buffer)
@@ -815,6 +853,7 @@ public class BitToolSettingsHelper
 			buffer.writeInt(wallThickness);
 			ByteBufUtils.writeItemStack(buffer, setBitStack);
 			buffer.writeFloat(semiDiameterPadding);
+			buffer.writeBoolean(offsetShape);
 		}
 		
 		public void fromBytes(ByteBuf buffer)
@@ -829,6 +868,7 @@ public class BitToolSettingsHelper
 			wallThickness = buffer.readInt();
 			setBitStack = ByteBufUtils.readItemStack(buffer);
 			semiDiameterPadding = buffer.readFloat();
+			offsetShape = buffer.readBoolean();
 		}
 		
 		public int getSculptMode()
@@ -879,6 +919,11 @@ public class BitToolSettingsHelper
 		public float getSemiDiameterPadding()
 		{
 			return semiDiameterPadding;
+		}
+		
+		public boolean isShapeOffset()
+		{
+			return offsetShape;
 		}
 		
 	}
