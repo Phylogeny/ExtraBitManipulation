@@ -303,6 +303,7 @@ public class ClientEventHandler
 									else if (!shiftDown || removeBits || drawnMode)
 									{
 										SculptingData sculptingData = new SculptingData(stack.getTagCompound(), toolItem);
+										swingTool = toolItem.sculptBlocks(stack, player, player.worldObj, pos, side, hit, drawnStartPoint, sculptingData);
 										ExtraBitManipulation.packetNetwork.sendToServer(new PacketSculpt(pos, side, hit, drawnStartPoint, sculptingData));
 									}
 									if (drawnMode && !event.isButtonstate())
