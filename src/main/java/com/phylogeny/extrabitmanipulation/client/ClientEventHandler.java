@@ -44,7 +44,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -103,7 +102,7 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void onKeyInput(@SuppressWarnings("unused") InputEvent.KeyInputEvent event)
 	{
-		if (isChiselsAndBitsMenuKeyBindPressed() || KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
+		if (ClientHelper.isChiselsAndBitsMenuKeyBindPressed() || KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 		{
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
@@ -125,16 +124,6 @@ public class ClientEventHandler
 		EntityPlayer player = ClientHelper.getPlayer();
 		player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.worldObj, 0, 0, 0);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenBitMappingGui());
-	}
-	
-	public static boolean isChiselsAndBitsMenuKeyBindPressed()
-	{
-		for (KeyBinding keyBind : Minecraft.getMinecraft().gameSettings.keyBindings)
-		{
-			if (keyBind.getKeyDescription().equals("mod.chiselsandbits.other.mode"))
-				return KeyBindingsExtraBitManipulation.isKeyDown(keyBind);
-		}
-		return false;
 	}
 	
 	@SuppressWarnings("null")
@@ -925,14 +914,25 @@ public class ClientEventHandler
 											r -= f;
 										}
 										box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.PIXEL_D, y + r + Utility.PIXEL_D, z + r + Utility.PIXEL_D)
-										.offset(x2 * Utility.PIXEL_D + f * vecOffset.xCoord,
-												y2 * Utility.PIXEL_D + f * vecOffset.yCoord,
-												z2 * Utility.PIXEL_D + f * vecOffset.zCoord);
+													.offset(x2 * Utility.PIXEL_D + f * vecOffset.xCoord,
+															y2 * Utility.PIXEL_D + f * vecOffset.yCoord,
+															z2 * Utility.PIXEL_D + f * vecOffset.zCoord);
+										boolean placementOffset = BitToolSettingsHelper.isShapeOffset(nbt) && !removeBits && mode != 2;
+										double r2 = r + (targetBitGrid ? Utility.PIXEL_D * 0.5 : 0);
+										if (placementOffset)
+											box = box.offset(dir.getFrontOffsetX() * r2, dir.getFrontOffsetY() * r2, dir.getFrontOffsetZ() * r2);
+										
 										if (targetBitGrid && mode != 2)
 										{
 											x3 = (box.maxX + box.minX) * 0.5 - f;
 											y3 = (box.maxY + box.minY) * 0.5 - f;
 											z3 = (box.maxZ + box.minZ) * 0.5 - f;
+										}
+										if (!targetBitGrid && placementOffset)
+										{
+											x3 += dir.getFrontOffsetX() * r2;
+											y3 += dir.getFrontOffsetY() * r2;
+											z3 += dir.getFrontOffsetZ() * r2;
 										}
 									}
 									if (fixedNotSym)

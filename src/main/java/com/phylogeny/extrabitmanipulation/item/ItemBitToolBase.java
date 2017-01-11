@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.item;
 
 import java.util.List;
 
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBase;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
@@ -80,6 +81,10 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 			tooltip.add("Hold SHIFT for settings.");
 		
 		tooltip.add("Hold CONTROL for controls.");
+		tooltip.add(TextFormatting.AQUA + "Use the Chisels & Bits radial");
+		tooltip.add(TextFormatting.AQUA + "    menu key [" + ClientHelper.getChiselsAndBitsMenuKeyBind().getDisplayName() + "] or the");
+		tooltip.add(TextFormatting.AQUA + "    controls listed above");
+		tooltip.add(TextFormatting.AQUA + "    to change tool settings.");
 	}
 	
 	protected void addKeybindReminders(List<String> tooltip, KeyBindingsExtraBitManipulation... keyBinds)

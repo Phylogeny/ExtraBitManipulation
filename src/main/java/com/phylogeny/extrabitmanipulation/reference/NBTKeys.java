@@ -21,6 +21,7 @@ public class NBTKeys
 	public static final String SCULPT_HOLLOW_SHAPE_SPADE = "sculptHollowShapeSpade";
 	public static final String OPEN_ENDS = "openEnds";
 	public static final String WALL_THICKNESS = "wallThickness";
+	public static final String OFFSET_SHAPE = "offsetShape";
 	public static final String REMAINING_USES = "remainingUses";
 	public static final String SAVED_STATES = "savedStates";
 	public static final String STATE_TO_BIT_MAP_PERMANENT = "stateToBitMapPermanent";
