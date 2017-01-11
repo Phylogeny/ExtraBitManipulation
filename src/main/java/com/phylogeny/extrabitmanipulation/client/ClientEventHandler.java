@@ -867,7 +867,6 @@ public class ClientEventHandler
 					double x3 = x + x2 * Utility.PIXEL_D;
 					double y3 = y + y2 * Utility.PIXEL_D;
 					double z3 = z + z2 * Utility.PIXEL_D;
-					boolean placementOffset = BitToolSettingsHelper.isShapeOffset(nbt) && !removeBits && mode != 2;
 					if (configBox.renderInnerShape || configBox.renderOuterShape)
 					{
 						GlStateManager.pushMatrix();
@@ -923,6 +922,7 @@ public class ClientEventHandler
 										.offset(x2 * Utility.PIXEL_D + f * vecOffset.xCoord,
 												y2 * Utility.PIXEL_D + f * vecOffset.yCoord,
 												z2 * Utility.PIXEL_D + f * vecOffset.zCoord);
+							boolean placementOffset = BitToolSettingsHelper.isShapeOffset(nbt) && !removeBits && mode != 2;
 							double r2 = r + (targetBitGrid ? Utility.PIXEL_D * 0.5 : 0);
 							if (placementOffset)
 								box = box.offset(dir.getFrontOffsetX() * r2, dir.getFrontOffsetY() * r2, dir.getFrontOffsetZ() * r2);
