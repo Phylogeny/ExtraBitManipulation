@@ -53,16 +53,16 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 				ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, hoverText);
 		addElementsToDummyElement("Tool Data Settings", hoverText.replace("@@@", ConfigHandlerExtraBitManipulation.DATA_CATAGORY_MODEL.toLowerCase() +
 				" and " + ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT.toLowerCase()),
-				configElementsClient, configElementsToolData, EntryClient.class);
+				configElementsClient, configElementsToolData, ClientEntry.class);
 		
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemPropertyMap, "Item Properties",
-				"Configures the damage characteristics and default data of the Bit Wrench, Modeling Tool, and Sculpting Tools", EntryCommon.class);
+				"Configures the damage characteristics and default data of the Bit Wrench, Modeling Tool, and Sculpting Tools", CommonEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemRecipeMap,
 				"Recipes", "Configures the recipe for the Bit Wrench", RecipeEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, configElementsClient, Configs.itemShapes,
-				EntryClient.class, ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
+				ClientEntry.class, ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
 				"Rendering", "Configures the rendering of the Bit Wrench's overlays and the Sculpting Tools' bit removal/addition shapes/boxes");
 		
@@ -80,7 +80,6 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		boolean isClient = configFile.equals(ConfigHandlerExtraBitManipulation.configFileClient);
 		if (isClient)
 		{
-			configElementsToolSettings.addAll(getChildElements(configFile, ConfigHandlerExtraBitManipulation.DISABLE_UNDO_REDO));//TODO
 			List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
 			String textStorage = "the the way block states are stored, and ";
 			String textReplacementBits = "Configures" + textStorage + "the procedures for finding replacement bits ";
@@ -89,13 +88,13 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 			configElementsModelingTool.addAll(getChildElements(ConfigHandlerExtraBitManipulation.configFileClient,
 					ConfigHandlerExtraBitManipulation.MODELING_TOOL_SETTINGS));
 			addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, ConfigHandlerExtraBitManipulation.UNCHISELABLE_BLOCK_STATES,
-					textReplacementBits.replace(textStorage, " ") + textUnchiselable, configElementsModelingTool, EntryClient.class);
+					textReplacementBits.replace(textStorage, " ") + textUnchiselable, configElementsModelingTool, ClientEntry.class);
 			addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, ConfigHandlerExtraBitManipulation.INSUFFICIENT_BITS,
-					textReplacementBits.replace(textStorage, " ") + textInsufficient, configElementsModelingTool, EntryClient.class);
+					textReplacementBits.replace(textStorage, " ") + textInsufficient, configElementsModelingTool, ClientEntry.class);
 			addElementsToDummyElement("Modeling Tool Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
-					configElementsToolSettings, configElementsModelingTool, EntryClient.class);
+					configElementsToolSettings, configElementsModelingTool, ClientEntry.class);
 		}
-		Class configClass = isClient ? EntryClient.class : EntryServer.class;
+		Class configClass = isClient ? ClientEntry.class : ServerEntry.class;
 		addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.SCULPTING_WRENCH_SETTINGS,
 				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, and the way bit " +
 				"removal/addition areas are displayed. (applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)",
@@ -114,13 +113,13 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		String storageLoc = ConfigHandlerExtraBitManipulation.BIT_TOOL_PER_TOOL_OR_PER_CLIENT;
 		String inChat = ConfigHandlerExtraBitManipulation.BIT_TOOL_DISPLAY_IN_CHAT;
 		addChildElementsToDummyElement(configFile, defaults, defaults + " " + dataCatagory,
-				"Configures " + dataCatagoryLower + " data default values.", childElements, EntryClient.class);
+				"Configures " + dataCatagoryLower + " data default values.", childElements, ClientEntry.class);
 		addChildElementsToDummyElement(configFile, storageLoc, storageLoc + " " + dataCatagory, "Configures whether " + dataCatagoryLower +
-				" data is stored/assessed on/from individual tools or on/from the modeling data client config file.", childElements, EntryClient.class);
+				" data is stored/assessed on/from individual tools or on/from the modeling data client config file.", childElements, ClientEntry.class);
 		addChildElementsToDummyElement(configFile, inChat, inChat + " " + dataCatagory, "Configures whether changes to " +
-				dataCatagoryLower + " data are displayed in chat.", childElements, EntryClient.class);
+				dataCatagoryLower + " data are displayed in chat.", childElements, ClientEntry.class);
 		addElementsToDummyElement(dataCatagory + " Data Settings", hoverText.replace("@@@", dataCatagoryLower),
-				configElementsToolData, childElements, EntryClient.class);
+				configElementsToolData, childElements, ClientEntry.class);
 	}
 	
 	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(Configuration configFile, List<IConfigElement> configElements,
@@ -195,7 +194,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 		boolean isRecipe = configClass == RecipeEntry.class;
 		if (isRecipe)
-			childElements.addAll(getChildElements(configFile, ConfigHandlerExtraBitManipulation.DISABLE_RECIPE));
+			childElements.addAll(getChildElements(configFile, ConfigHandlerExtraBitManipulation.RECIPES_DISABLE));
 		
 		int inc = isRecipe ? 1 : 2;
 		for (int i = 0; i < names.length - 2; i += inc)
@@ -252,10 +251,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		return new ConfigElement(configFile.getCategory(key.toLowerCase())).getChildElements();
 	}
 	
-	public static class EntryFile extends CategoryEntry
+	public static class FileEntry extends CategoryEntry
 	{
 		
-		public EntryFile(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
+		public FileEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
 		{
 			super(owningScreen, owningEntryList, prop);
 		}
@@ -276,10 +275,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 	}
 	
-	public static class EntryClient extends EntryFile
+	public static class ClientEntry extends FileEntry
 	{
 		
-		public EntryClient(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
+		public ClientEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
 		{
 			super(owningScreen, owningEntryList, prop);
 		}
@@ -292,10 +291,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 	}
 	
-	public static class EntryServer extends EntryFile
+	public static class ServerEntry extends FileEntry
 	{
 		
-		public EntryServer(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
+		public ServerEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
 		{
 			super(owningScreen, owningEntryList, prop);
 		}
@@ -308,10 +307,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 	}
 	
-	public static class EntryCommon extends EntryFile
+	public static class CommonEntry extends FileEntry
 	{
 		
-		public EntryCommon(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
+		public CommonEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
 		{
 			super(owningScreen, owningEntryList, prop);
 		}
@@ -324,7 +323,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 	}
 	
-	public static class RecipeEntry extends EntryCommon
+	public static class RecipeEntry extends CommonEntry
 	{
 		
 		public RecipeEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)

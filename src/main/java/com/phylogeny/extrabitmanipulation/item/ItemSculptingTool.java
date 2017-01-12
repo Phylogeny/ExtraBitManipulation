@@ -268,12 +268,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 				
 				int possibleUses = initialpossibleUses;
 				boolean changed = false;
-				boolean undoRedo = !Configs.disableUndoRedoScuptingTools;
 				try
 				{
-					if (undoRedo)
-						api.beginUndoGroup(player);
-					
+					api.beginUndoGroup(player);
 					for (int i = (int) box.minX; i <= box.maxX; i++)
 					{
 						for (int j = (int) box.minY; j <= box.maxY; j++)
@@ -288,9 +285,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 				}
 				finally
 				{
-					if (undoRedo)
-						api.endUndoGroup(player);
-					
+					api.endUndoGroup(player);
 					if (!world.isRemote && !Configs.dropBitsPerBlock)
 						BitInventoryHelper.giveOrDropStacks(player, world, pos, shape, api, bitTypes);
 					
