@@ -35,6 +35,9 @@ public class Configs
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
 		public static boolean oneBitTypeInversionRequirement;
+		public static boolean disableUndoRedoScuptingTools;
+		public static boolean disableUndoRedoWrench;
+		public static boolean disableUndoRedoModelingTool;
 		public static ConfigBitToolSettingInt sculptMode;
 		public static ConfigBitToolSettingInt sculptDirection;
 		public static ConfigBitToolSettingInt sculptShapeTypeCurved;
