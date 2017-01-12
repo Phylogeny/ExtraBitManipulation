@@ -139,12 +139,9 @@ public class ItemModelingTool extends ItemBitToolBase
 			e.printStackTrace();
 			return false;
 		}
-		boolean undoRedo = !Configs.disableUndoRedoModelingTool;
 		try
 		{
-			if (undoRedo)
-				api.beginUndoGroup(player);
-			
+			api.beginUndoGroup(player);
 			if (!createModel(player, world, stack, stateArray, stateToBitCountArray, bitAccess))
 				return false;
 			
@@ -152,8 +149,7 @@ public class ItemModelingTool extends ItemBitToolBase
 		}
 		finally
 		{
-			if (undoRedo)
-				api.endUndoGroup(player);
+			api.endUndoGroup(player);
 		}
 		if (!world.isRemote && !player.capabilities.isCreativeMode)
 		{
