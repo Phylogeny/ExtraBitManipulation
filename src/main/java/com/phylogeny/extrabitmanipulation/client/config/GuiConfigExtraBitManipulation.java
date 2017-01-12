@@ -57,10 +57,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemPropertyMap, "Item Properties",
-				"Configures the damage characteristics and default data of the Bit Wrench, Modeling Tool, and Sculpting Tools", false, CommonEntry.class);
+				"Configures the damage characteristics and default data of the Bit Wrench, Modeling Tool, and Sculpting Tools", CommonEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemRecipeMap,
-				"Recipes", "Configures the recipe for the Bit Wrench", true, CommonEntry.class);
+				"Recipes", "Configures the recipe for the Bit Wrench", RecipeEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, configElementsClient, Configs.itemShapes,
 				ClientEntry.class, ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
@@ -149,7 +149,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		}
 		processedNames[endLen - 2] = names[startLen - 4];
 		processedNames[endLen - 1] = names[startLen - 3];
-		addDummyElementsOfChildElementSetsToDummyElement(configFile, childElements, false, configClass, processedNames);
+		addDummyElementsOfChildElementSetsToDummyElement(configFile, childElements, configClass, processedNames);
 		addElementsToDummyElement(names[startLen - 2], names[startLen - 1], configElements, childElements, configClass);
 	}
 	
@@ -161,9 +161,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	}
 	
 	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(Configuration configFile, List<IConfigElement> configElements,
-			Map<Item, ConfigNamed> configs, String name, String toolTip, boolean isRecipe, Class configClass)
+			Map<Item, ConfigNamed> configs, String name, String toolTip, Class configClass)
 	{
 		int len = configs.size();
+		boolean isRecipe = configClass == RecipeEntry.class;
 		if (!isRecipe)
 			len *= 2;
 		
@@ -180,30 +181,34 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		}
 		processedNames[len - 2] = name;
 		processedNames[len - 1] = toolTip;
-		addDummyElementsOfChildElementSetsToDummyElement(configFile, configElements, isRecipe, configClass, processedNames);
+		addDummyElementsOfChildElementSetsToDummyElement(configFile, configElements, configClass, processedNames);
 	}
 	
 	private static void addDummyElementsOfChildElementSetsToDummyElement(Configuration configFile,
-			List<IConfigElement> configElements, boolean isRecipe, Class configClass, String... names)
+			List<IConfigElement> configElements, Class configClass, String... names)
 	{
 		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
 		int len = names.length;
-		if (len >= 2)
+		if (len < 2)
+			return;
+		
+		boolean isRecipe = configClass == RecipeEntry.class;
+		if (isRecipe)
+			childElements.addAll(getChildElements(configFile, ConfigHandlerExtraBitManipulation.RECIPES_DISABLE));
+		
+		int inc = isRecipe ? 1 : 2;
+		for (int i = 0; i < names.length - 2; i += inc)
 		{
-			int inc = isRecipe ? 1 : 2;
-			for (int i = 0; i < names.length - 2; i += inc)
+			if (isRecipe)
 			{
-				if (isRecipe)
-				{
-					addRecipeChildElementsToDummyElement(names[i], childElements, RecipeEntry.class);
-				}
-				else
-				{
-					addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
-				}
+				addRecipeChildElementsToDummyElement(names[i], childElements, configClass);
 			}
-			addElementsToDummyElement(names[len - 2], names[len - 1], configElements, childElements, configClass);
+			else
+			{
+				addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
+			}
 		}
+		addElementsToDummyElement(names[len - 2], names[len - 1], configElements, childElements, configClass);
 	}
 	
 	private static void addRecipeChildElementsToDummyElement(String name, List<IConfigElement> configElements, Class configClass)
@@ -223,7 +228,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		else
 		{
 			dummyElement = new DummyCategoryElement(text, toolTip, childElements, configClass);
-			if (configClass.equals(RecipeEntry.class))
+			if (configClass == RecipeEntry.class)
 				dummyElement.setRequiresMcRestart(true);
 		}
 		configElements.add(dummyElement);

@@ -61,6 +61,9 @@ public class Configs
 		
 	//ITEM RECIPES
 		public static Map<Item, ConfigNamed> itemRecipeMap = new HashMap<Item, ConfigNamed>();
+		public static boolean disableDiamondNuggetOreDict;
+		public static boolean disableDiamondToNuggets;
+		public static boolean disableNuggetsToDiamond;
 		
 	//RENDER WRENCH OVERLAYS
 		public static boolean disableOverlays;
