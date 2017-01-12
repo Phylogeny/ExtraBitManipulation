@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
+import javax.annotation.Nonnull;
+
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
@@ -71,46 +73,40 @@ public class Shape
 	
 	public Vec3 getRandomInternalPoint(World world, BlockPos pos)
 	{
-		AxisAlignedBB bounds = getBoundingBox();
-		if (bounds != null)
-		{
-			int x = pos.getX();
-			int y = pos.getY();
-			int z = pos.getZ();
-			Block block = world.getBlockState(pos).getBlock();
-			AxisAlignedBB blockBounds = new AxisAlignedBB(pos.getX() + block.getBlockBoundsMinX(),
-					pos.getY() + block.getBlockBoundsMinY(), pos.getZ() + block.getBlockBoundsMinZ(),
-					pos.getX() + block.getBlockBoundsMaxX(), pos.getY() + block.getBlockBoundsMaxY(),
-					pos.getZ() + block.getBlockBoundsMaxZ());
-			if (blockBounds.getAverageEdgeLength() == 0)
-				blockBounds = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+		int x = pos.getX();
+		int y = pos.getY();
+		int z = pos.getZ();
+		Block block = world.getBlockState(pos).getBlock();
+		AxisAlignedBB blockBounds = new AxisAlignedBB(pos.getX() + block.getBlockBoundsMinX(),
+				pos.getY() + block.getBlockBoundsMinY(), pos.getZ() + block.getBlockBoundsMinZ(),
+				pos.getX() + block.getBlockBoundsMaxX(), pos.getY() + block.getBlockBoundsMaxY(),
+				pos.getZ() + block.getBlockBoundsMaxZ());
+		if (blockBounds.getAverageEdgeLength() == 0)
+			blockBounds = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+		
+		AxisAlignedBB box = getIntersectingBox(blockBounds, getBoundingBox());
+		float s = Configs.bitSpawnBoxContraction;
+		if (s > 0)
+			box = box.contract((box.maxX - box.minX) * s, (box.maxY - box.minY) * s, (box.maxZ - box.minZ) * s);
 			
-			AxisAlignedBB box = getIntersectingBox(blockBounds, bounds);
-			if (box != null)
-			{
-				float s = Configs.bitSpawnBoxContraction;
-				if (s > 0)
-					box = box.contract((box.maxX - box.minX) * s, (box.maxY - box.minY) * s, (box.maxZ - box.minZ) * s);
-					
-				double d0 = world.rand.nextFloat() * (box.maxX - box.minX) + box.minX;
-				double d1 = world.rand.nextFloat() * (box.maxY - box.minY) + box.minY;
-				double d2 = world.rand.nextFloat() * (box.maxZ - box.minZ) + box.minZ;
-				return new Vec3(d0, d1, d2);
-			}
-		}
-		return null;
+		double d0 = world.rand.nextFloat() * (box.maxX - box.minX) + box.minX;
+		double d1 = world.rand.nextFloat() * (box.maxY - box.minY) + box.minY;
+		double d2 = world.rand.nextFloat() * (box.maxZ - box.minZ) + box.minZ;
+		return new Vec3(d0, d1, d2);
 	}
 	
+	@Nonnull
 	protected AxisAlignedBB getBoundingBox()
 	{
-		return null;
+		return new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 	}
 	
+	@Nonnull
 	private AxisAlignedBB getIntersectingBox(AxisAlignedBB box1, AxisAlignedBB box2)
 	{
 		if (box1.minX > box2.maxX || box2.minX > box1.maxX || box1.minY > box2.maxY 
 				|| box2.minY > box1.maxY || box1.minZ > box2.maxZ || box2.minZ > box1.maxZ)
-			return null;
+			return box1;
 		
 		double minX = Math.max(box1.minX, box2.minX);
 		double minY = Math.max(box1.minY, box2.minY);
