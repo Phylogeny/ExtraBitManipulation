@@ -38,6 +38,7 @@ public class ConfigHandlerExtraBitManipulation
 	public static final String BIT_TOOL_PER_TOOL_OR_PER_CLIENT = "Per Tool or Per Client";
 	public static final String BIT_TOOL_DISPLAY_IN_CHAT = "Display In Chat";
 	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
+	public static final String RECIPES_DISABLE = "Recipe Disable";
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	public static final String[] BLOCK_TO_BIT_MAP_DEFAULT_VALUES = new String[]
 	{
@@ -513,6 +514,16 @@ public class ConfigHandlerExtraBitManipulation
 				configRecipe.useOreDictionary = getRecipeOreDictionary(itemTitle, category, configRecipe.getUseOreDictionaryDefault());
 				configRecipe.recipe = getRecipeList(itemTitle, category, configRecipe.getRecipeDefault());
 			}
+			
+			Configs.disableDiamondNuggetOreDict = configFileCommon.getBoolean("Disable Diamond Nugget Ore Dict", RECIPES_DISABLE, false,
+					"Disables the registration of the diamond nugget with the Ore Dictionary. (This will effectively disable the 9 nuggets " +
+					"to 1 diamond recipe, since it is uses the Ore Dictionary)");
+			
+			Configs.disableDiamondToNuggets = configFileCommon.getBoolean("Disable Diamond to Nuggets Recipe", RECIPES_DISABLE, false,
+					"Disables the recipe of 1 diamond to 9 diamond nuggets (i.e. 9 instances of 'nuggetDiamond' Ore Dictionary entries).");
+			
+			Configs.disableNuggetsToDiamond = configFileCommon.getBoolean("Disable Nuggets to Diamond Recipe", RECIPES_DISABLE, false,
+					"Disables the recipe of 9 diamond nuggets to 1 diamond.");
 			
 			//RENDER OVERLAYS
 			Configs.disableOverlays = configFileClient.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
