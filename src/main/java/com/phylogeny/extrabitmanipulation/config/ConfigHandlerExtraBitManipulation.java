@@ -529,21 +529,21 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.disableOverlays = configFileClient.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
 					"Prevents overlays from rendering. (default = false)");
 			
-			Configs.rotationPeriod = getDouble(configFileClient, "Rotation Period", RENDER_OVERLAYS, 180, 1, Double.MAX_VALUE,
-					"Number of frames over which the cyclical arrow overlay used in block/texture rotation will complete one rotation. If this is " +
-					"set to the minimum value of 1, no rotation will occur. (default = 3 seconds at 60 fps)");
+			Configs.rotationPeriod = configFileClient.getInt("Rotation Period", RENDER_OVERLAYS, 3000, 1, Integer.MAX_VALUE,
+					"Number of milliseconds over which the cyclic arrow overlay used in block/texture rotation will complete one rotation. " +
+					"(default = 3 seconds)");
 			
-			Configs.mirrorPeriod = getDouble(configFileClient, "Mirror Oscillation Period", RENDER_OVERLAYS, 50, 1, Double.MAX_VALUE,
-					"Number of frames over which the bidirectional arrow overlay used in block/texture mirroring will complete one oscillation. If this is " +
-					"set to the minimum value of 1, no oscillation will occur. (default = 0.83 seconds at 60 fps)");
+			Configs.mirrorPeriod = configFileClient.getInt("Mirror Oscillation Period", RENDER_OVERLAYS, 830, 1, Integer.MAX_VALUE,
+					"Number of milliseconds over which the bidirectional arrow overlay used in block/texture mirroring will complete one oscillation. " +
+					"(default = 0.83 seconds)");
 			
 			Configs.mirrorAmplitude = getDouble(configFileClient, "Mirror Oscillation Amplitude", RENDER_OVERLAYS, 0.1, 0, Double.MAX_VALUE,
 					"Half the total travel distance of the bidirectional arrow overlay used in block/texture mirroring as measured from the center of " +
 					"the block face the player is looking at. If this is set to the minimum value of 0, no oscillation will occur. (default = 0.1 meters)");
 			
-			Configs.translationScalePeriod = getDouble(configFileClient, "Translation Scale Period", RENDER_OVERLAYS, 80, 1, Double.MAX_VALUE,
-					"Number of frames over which the circle overlay used in block translation will complete one cycle of scaling from a point to " +
-					"full-sized or vice versa. If this is set to the minimum value of 1, no scaling will occur. (default = 1.33 seconds at 60 fps)");
+			Configs.translationScalePeriod = configFileClient.getInt("Translation Scale Period", RENDER_OVERLAYS, 1300, 1, Integer.MAX_VALUE,
+					"Number of milliseconds over which the circle overlay used in block translation will complete one cycle of scaling from a point to " +
+					"full-sized or vice versa. (default = 1.3 seconds)");
 			
 			Configs.translationDistance = getDouble(configFileClient, "Arrow Movement Distance", RENDER_OVERLAYS, 0.75, 0, Double.MAX_VALUE,
 					"Total travel distance of the arrowhead overlay used in block/texture translation/rotation as measured from the center of " +
@@ -558,10 +558,9 @@ public class ConfigHandlerExtraBitManipulation
 					"Distance over which the arrowhead overlay used in block/texture translation/rotation will fade in (as well as out) as it moves. " +
 					"If this is set to the minimum value of 0, no fading will occur. (default = 0.3 meters)");
 			
-			Configs.translationMovementPeriod = getDouble(configFileClient, "Arrow Movement Period", RENDER_OVERLAYS, 120, 1, Double.MAX_VALUE,
-					"Number of frames over which the arrowhead overlay used in block/texture translation/rotation will travel from one end to the " +
-					"other of the distance specified by 'Arrow Movement Distance'. If this is set to the minimum value of 1, no movement will occur. " +
-					"(default = 2 seconds at 60 fps)");
+			Configs.translationMovementPeriod = configFileClient.getInt("Arrow Movement Period", RENDER_OVERLAYS, 2000, 1, Integer.MAX_VALUE,
+					"Number of milliseconds over which the arrowhead overlay used in block/texture translation/rotation will travel from one end to the " +
+					"other of the distance specified by 'Arrow Movement Distance'. (default = 2 seconds)");
 			
 			//RENDER SCULPTING TOOL SHAPES
 			for (int i = 0; i < Configs.itemShapes.length; i++)

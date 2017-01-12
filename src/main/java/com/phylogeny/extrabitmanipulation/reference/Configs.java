@@ -67,14 +67,14 @@ public class Configs
 		
 	//RENDER WRENCH OVERLAYS
 		public static boolean disableOverlays;
-		public static double rotationPeriod;
-		public static double mirrorPeriod;
+		public static int rotationPeriod;
+		public static int mirrorPeriod;
 		public static double mirrorAmplitude;
-		public static double translationScalePeriod;
+		public static int translationScalePeriod;
 		public static double translationDistance;
 		public static double translationOffsetDistance;
 		public static double translationFadeDistance;
-		public static double translationMovementPeriod;
+		public static int translationMovementPeriod;
 		
 	//RENDER SCULPTING TOOL SHAPES
 		public static Map<Item, ConfigShapeRenderPair> itemShapeMap = new HashMap<Item, ConfigShapeRenderPair>();
