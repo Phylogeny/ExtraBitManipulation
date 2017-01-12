@@ -185,73 +185,24 @@ public class ItemBitWrench extends ItemBitToolBase
 						canInvert = false;
 				}
 			}
-			int increment2 = invertDirection ? -increment : increment;
 			if (!(mode == 2 && !canTranslate) && !(mode == 3 && !canInvert))
 			{
-				int x, y, z;
-				for (int i = 0; i < 16; i++)
+				boolean undoRedo = !Configs.disableUndoRedoWrench;
+				try
 				{
-					for (int j = 0; j < 16; j++)
-					{
-						for (int k = 0; k < 16; k++)
-						{
-							IBitBrush bit = bitArray[i][j][k];
-							x = i;
-							y = j;
-							z = k;
-							switch (mode)
-							{
-								case 0:	switch (s)
-										{
-											case 0: x = k; y = j; z = 16 - 1 - i; break;
-											case 1: x = 16 - 1 - k; y =  j; z = i; break;
-											case 2: x = 16 - 1 - j; y = i; z = k; break;
-											case 3: x = j; y = 16 - 1 - i; z = k; break;
-											case 4: x = i; y = 16 - 1 - k; z = j; break;
-											case 5: x = i; y = k; z = 16 - 1 - j;
-										}
-										break;
-								case 1: if (s <= 1)
-										{
-											y = 16 - 1 - j;
-										}
-										else if (s <= 3)
-										{
-											z = 16 - 1 - k;
-										}
-										else
-										{
-											x = 16 - 1 - i;
-										}
-										break;
-								case 2: int i2 = i + side.getFrontOffsetX() * increment2;
-										int j2 = j + side.getFrontOffsetY() * increment2;
-										int k2 = k + side.getFrontOffsetZ() * increment2;
-										if (!(i2 < 0 || j2 < 0 || k2 < 0 || i2 >= 16 || j2 >= 16 || k2 >= 16))
-											bit = bitArray[i2][j2][k2];
-										
-										if ((s == 4 && i < removalLayer + increment) || (s == 5 && i > removalLayer - increment)
-												|| (s == 0 && j < removalLayer + increment) || (s == 1 && j > removalLayer - increment)
-												|| (s == 2 && k < removalLayer + increment) || (s == 3 && k > removalLayer - increment))
-											bit = null;
-										
-										break;
-								case 3: bit = bit.isAir() ? invertBit : null;
-							}
-							try
-							{
-								bitAccess.setBitAt(x, y, z, bit);
-							}
-							catch (SpaceOccupied e)
-							{
-								if (bit != null && !bit.isAir() && bitAccess.getBitAt(x, y, z).isAir())
-									return false;
-							}
-						}
-					}
+					if (undoRedo)
+						api.beginUndoGroup(player);
+					
+					if (applyTransformation(side, mode, bitAccess, bitArray, increment, s, invertBit, removalLayer, invertDirection ? -increment : increment))
+						return false;
+					
+					bitAccess.commitChanges(true);
 				}
-				bitAccess.commitChanges(true);
-				
+				finally
+				{
+					if (undoRedo)
+						api.endUndoGroup(player);
+				}
 				damageTool(stack, player);
 				if (!creativeMode && !world.isRemote && canInvert)
 				{
@@ -268,6 +219,74 @@ public class ItemBitWrench extends ItemBitToolBase
 					player.inventoryContainer.detectAndSendChanges();
 				}
 				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean applyTransformation(EnumFacing side, int mode, IBitAccess bitAccess, IBitBrush[][][] bitArray,
+			int increment, int s, IBitBrush invertBit, int removalLayer, int increment2)
+	{
+		int x, y, z;
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 16; j++)
+			{
+				for (int k = 0; k < 16; k++)
+				{
+					IBitBrush bit = bitArray[i][j][k];
+					x = i;
+					y = j;
+					z = k;
+					switch (mode)
+					{
+						case 0:	switch (s)
+								{
+									case 0: x = k; y = j; z = 16 - 1 - i; break;
+									case 1: x = 16 - 1 - k; y =  j; z = i; break;
+									case 2: x = 16 - 1 - j; y = i; z = k; break;
+									case 3: x = j; y = 16 - 1 - i; z = k; break;
+									case 4: x = i; y = 16 - 1 - k; z = j; break;
+									case 5: x = i; y = k; z = 16 - 1 - j;
+								}
+								break;
+						case 1: if (s <= 1)
+								{
+									y = 16 - 1 - j;
+								}
+								else if (s <= 3)
+								{
+									z = 16 - 1 - k;
+								}
+								else
+								{
+									x = 16 - 1 - i;
+								}
+								break;
+						case 2: int i2 = i + side.getFrontOffsetX() * increment2;
+								int j2 = j + side.getFrontOffsetY() * increment2;
+								int k2 = k + side.getFrontOffsetZ() * increment2;
+								if (!(i2 < 0 || j2 < 0 || k2 < 0 || i2 >= 16 || j2 >= 16 || k2 >= 16))
+									bit = bitArray[i2][j2][k2];
+								
+								if ((s == 4 && i < removalLayer + increment) || (s == 5 && i > removalLayer - increment)
+										|| (s == 0 && j < removalLayer + increment) || (s == 1 && j > removalLayer - increment)
+										|| (s == 2 && k < removalLayer + increment) || (s == 3 && k > removalLayer - increment))
+									bit = null;
+								
+								break;
+						case 3: bit = bit.isAir() ? invertBit : null;
+					}
+					try
+					{
+						bitAccess.setBitAt(x, y, z, bit);
+					}
+					catch (SpaceOccupied e)
+					{
+						if (bit != null && !bit.isAir() && bitAccess.getBitAt(x, y, z).isAir())
+							return true;
+					}
+				}
 			}
 		}
 		return false;
