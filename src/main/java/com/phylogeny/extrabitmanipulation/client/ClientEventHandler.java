@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.client;
 
+import java.util.concurrent.TimeUnit;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.Disk;
@@ -7,6 +9,7 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Quadric;
 import org.lwjgl.util.glu.Sphere;
 
+import com.google.common.base.Stopwatch;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu;
@@ -68,7 +71,8 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 public class ClientEventHandler
 {
-	private int frameCounter;
+	private float millisecondsElapsed;
+	private static Stopwatch timer;
 	private Vec3d drawnStartPoint = null;
 	private Vec3i drawnStartPointModelingTool = null;
 	private static final ResourceLocation ARROW_HEAD = new ResourceLocation(Reference.MOD_ID, "textures/overlays/arrow_head.png");
@@ -584,7 +588,10 @@ public class ClientEventHandler
 		if (ItemStackHelper.isBitWrenchItem(stack.getItem()) && api.isBlockChiseled(world, target.getBlockPos()))
 		{
 			int mode = ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.WRENCH_MODE);
-			frameCounter++;
+			if (timer == null)
+				timer = Stopwatch.createStarted();
+			
+			millisecondsElapsed = timer.elapsed(TimeUnit.MILLISECONDS);
 			int side = dir.ordinal();
 			boolean upDown = side <= 1;
 			boolean eastWest = side >= 4;
@@ -638,7 +645,7 @@ public class ClientEventHandler
 			double offsetY2 = 0.5 * invOffsetY;
 			double offsetZ2 = 0.5 * invOffsetZ;
 			
-			double mirTravel = mode == 1 ? Configs.mirrorAmplitude * Math.cos(Math.PI * 2 * frameCounter / Configs.mirrorPeriod) : 0;
+			double mirTravel = mode == 1 ? Configs.mirrorAmplitude * Math.cos(Math.PI * 2 * millisecondsElapsed / Configs.mirrorPeriod) : 0;
 			double mirTravel1 = mirTravel;
 			double mirTravel2 = 0;
 			boolean mirrorInversion = invertDirection && mode == 1;
@@ -1327,7 +1334,7 @@ public class ClientEventHandler
 	
 	private double getInitialAngle(int mode)
 	{
-		return mode == 0 ? (frameCounter * (360 / Configs.rotationPeriod)) % 360 : 0;
+		return mode == 0 ? (millisecondsElapsed * (360.0 / Configs.rotationPeriod)) % 360 : 0;
 	}
 	
 	private void translateAndRotateTexture(double playerX, double playerY, double playerZ, EnumFacing dir, boolean upDown,
@@ -1359,7 +1366,7 @@ public class ClientEventHandler
 	{
 		if (contractBox)
 		{
-			double amount = (frameCounter % Configs.translationScalePeriod) / Configs.translationScalePeriod;
+			double amount = (millisecondsElapsed % Configs.translationScalePeriod) / Configs.translationScalePeriod;
 			amount /= invertDirection ? -2 : 2;
 			if (invertDirection && Configs.translationScalePeriod > 1)
 				amount += 0.5;
@@ -1382,7 +1389,7 @@ public class ClientEventHandler
 			int n = offsetDistance == 0 || period == 1 ? 1 : 3;
 			for (int i = 0; i < n; i++)
 			{
-				double amount = ((frameCounter + timeOffset * i) % period) / (period / (distance * 100.0) * 100.0);
+				double amount = ((millisecondsElapsed + timeOffset * i) % period) / (period / (distance * 100.0) * 100.0);
 				double alpha = 1;
 				if (period > 1)
 				{
