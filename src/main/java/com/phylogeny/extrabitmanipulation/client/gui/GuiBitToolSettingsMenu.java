@@ -3,9 +3,11 @@ package com.phylogeny.extrabitmanipulation.client.gui;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.lwjgl.input.Keyboard;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
@@ -31,8 +33,10 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 {
 	private List<ButtonsSetting> buttonsSettingList = Lists.<ButtonsSetting>newArrayList();
 	private List<SliderSetting> sliderSettingList = Lists.<SliderSetting>newArrayList();
-	private int renderCounter, buttonCount, lineCount;
+	private int buttonCount, lineCount;
 	private boolean closing;
+	private float visibility;
+	private Stopwatch timer = Stopwatch.createStarted();
 	
 	@Override
 	public boolean doesGuiPauseGame()
@@ -138,12 +142,17 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
-		float visibility = renderCounter / 6F;
+		if (timer == null)
+			timer = Stopwatch.createStarted();
+		
 		drawGradientRect(0, 0, width, height, (int) (visibility * 98) << 24, (int) (visibility * 128) << 24);
 		MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent(this));
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		renderCounter = Math.min(renderCounter + (closing ? -1 : 1), 6);
-		if (renderCounter < 0)
+		visibility = Math.min(timer.elapsed(TimeUnit.MILLISECONDS) * 0.01F, 1.0F);
+		if (closing)
+			visibility = 1 - visibility;
+		
+		if (visibility == 0)
 		{
 			for (SliderSetting sliderSetting : sliderSettingList)
 			{
@@ -158,6 +167,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	public void handleKeyboardInput() throws IOException
 	{
 		closing = !Keyboard.getEventKeyState();
+		timer = Stopwatch.createStarted();
 	}
 	
 	@Override
