@@ -305,7 +305,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static Configuration getConfigFile(File configDir, String suffix)
 	{
-		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.MOD_ID, suffix + ".cfg"));
+		return new Configuration(new File(configDir.getAbsolutePath() + "/" + Reference.MOD_NAME.replace(" ", ""), suffix + ".cfg"));
 	}
 	
 	@SubscribeEvent
