@@ -28,6 +28,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
+import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -39,6 +40,7 @@ import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import mod.chiselsandbits.api.ItemType;
 import mod.chiselsandbits.api.ModKeyBinding;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
@@ -68,6 +70,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ClientEventHandler
 {
@@ -87,6 +90,7 @@ public class ClientEventHandler
 	private static final int[] SHAPE_CURVED = new int[]{1, 2, 0, 0, 0, 0, 0};
 //	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 4, 5, 6, 3}; TODO
 	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 6, 3, 3, 3};
+	private boolean keyThrowBitIsDown;
 	
 	@SubscribeEvent
 	public void registerTextures(@SuppressWarnings("unused") TextureStitchEvent.Pre event)
@@ -107,20 +111,42 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void onKeyInput(@SuppressWarnings("unused") InputEvent.KeyInputEvent event)
 	{
+		if (timer == null)
+			timer = Stopwatch.createStarted();
+		
+		keyThrowBitIsDown = KeyBindingsExtraBitManipulation.THROW_BIT.isKeyDown();
 		if (ChiselsAndBitsAPIAccess.apiInstance.getKeyBinding(ModKeyBinding.MODE_MENU).isKeyDown()
-				|| KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
+				|| KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown()
+				|| KeyBindingsExtraBitManipulation.EDIT_DESIGN.isKeyDown())
 		{
+			ItemStack stack = ClientHelper.getHeldItemMainhand();
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
-				ItemStack stack = ClientHelper.getHeldItemMainhand();
-				if ((ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
-						|| (stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack)))
+				if (ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
 					openBitMappingGui();
 			}
-			else
+			else if (KeyBindingsExtraBitManipulation.EDIT_DESIGN.isKeyDown())
 			{
-				if (ItemStackHelper.isBitToolStack(ClientHelper.getHeldItemMainhand()))
-						Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
+				if (stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack))
+					openBitMappingGui();
+			}
+			else if (ItemStackHelper.isBitToolStack(stack))
+			{
+				Minecraft.getMinecraft().displayGuiScreen(new GuiBitToolSettingsMenu());
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void throwBit(@SuppressWarnings("unused") TickEvent.PlayerTickEvent event)
+	{
+		if (keyThrowBitIsDown && timer.elapsed(TimeUnit.MILLISECONDS) > 150)
+		{
+			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			if (!stack.isEmpty() && ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT)
+			{
+				timer = Stopwatch.createStarted();
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketThrowBit());
 			}
 		}
 	}

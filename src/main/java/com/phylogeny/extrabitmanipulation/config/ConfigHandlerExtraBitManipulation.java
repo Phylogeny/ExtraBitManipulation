@@ -39,6 +39,7 @@ public class ConfigHandlerExtraBitManipulation
 	public static final String BIT_TOOL_DISPLAY_IN_CHAT = "Display In Chat";
 	public static final String RENDER_OVERLAYS = "Bit Wrench Overlays";
 	public static final String RECIPES_DISABLE = "Recipe Disable";
+	public static final String THROWN_BIT_PROPERTIES = "Thrown Bit Properties";
 	private static final String[] COLOR_NAMES = new String[]{"Red", "Green", "Blue"};
 	public static final String[] BLOCK_TO_BIT_MAP_DEFAULT_VALUES = new String[]
 	{
@@ -543,6 +544,12 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.disableNuggetsToDiamond = configFileCommon.getBoolean("Disable Nuggets to Diamond Recipe", RECIPES_DISABLE, false,
 					"Disables the recipe of 9 diamond nuggets to 1 diamond.");
 			
+			//THROWN BIT PROPERTIES
+			Configs.disableIgniteEntities = disableThrownLiquidBitProperty("Ignite Entities", true, true);
+			Configs.disableIgniteBlocks = disableThrownLiquidBitProperty("Ignite Blocks", true, false);
+			Configs.disableExtinguishEntities = disableThrownLiquidBitProperty("Extinguish Entities", false, true);
+			Configs.disableExtinguishBlocks = disableThrownLiquidBitProperty("Extinguish Blocks", false, false);
+			
 			//RENDER OVERLAYS
 			Configs.disableOverlays = configFileClient.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
 					"Prevents overlays from rendering. (default = false)");
@@ -608,6 +615,14 @@ public class ConfigHandlerExtraBitManipulation
 			saveConfigFile(modelingMapConfigFile);
 			saveConfigFile(sculptingMapConfigFile);
 		}
+	}
+	
+	private static boolean disableThrownLiquidBitProperty(String name, boolean ignite, boolean entities)
+	{
+		return configFileCommon.getBoolean("Disable " + name, THROWN_BIT_PROPERTIES, false, "Disables the " + (ignite ? "igniting" : "extinguishing") +
+				" of " + (entities ? "entities" : "blocks") + " when bits with " + (ignite ? "lava" : "water") + " as their material are thrown at them. " +
+				"If disabled, the default behavior of " + (entities ? "striking without damaging and doping as items" : "placing, if possible, or dropping " +
+				"as items if not possible") + " will be used. (default = enabled)");
 	}
 	
 	private static void saveConfigFile(Configuration configFile)

@@ -55,12 +55,14 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 				" and " + ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT.toLowerCase()),
 				configElementsClient, configElementsToolData, ClientEntry.class);
 		
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon, ConfigHandlerExtraBitManipulation.THROWN_BIT_PROPERTIES,
+				"Configures the disabling of igniting/extinguishing entities/blocks when hit with thrown lava/water bits", configElementsCommon, CommonEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemPropertyMap, "Item Properties",
-				"Configures the damage characteristics and default data of the Bit Wrench, Modeling Tool, and Sculpting Tools", CommonEntry.class);
+				"Configures the damage characteristics and default data of the Bit Tools", CommonEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemRecipeMap,
-				"Recipes", "Configures the recipe for the Bit Wrench", RecipeEntry.class);
+				"Recipes", "Configures the recipe for the Bit Tools and the disabling of diamond nugget recipes / Ore Dictionary registration", RecipeEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, configElementsClient, Configs.itemShapes,
 				ClientEntry.class, ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",

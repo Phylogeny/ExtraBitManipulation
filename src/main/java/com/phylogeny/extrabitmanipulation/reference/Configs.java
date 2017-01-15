@@ -65,6 +65,12 @@ public class Configs
 		public static boolean disableDiamondToNuggets;
 		public static boolean disableNuggetsToDiamond;
 		
+	//THROWN BITS
+		public static boolean disableIgniteEntities;
+		public static boolean disableIgniteBlocks;
+		public static boolean disableExtinguishEntities;
+		public static boolean disableExtinguishBlocks;
+		
 	//RENDER WRENCH OVERLAYS
 		public static boolean disableOverlays;
 		public static int rotationPeriod;

@@ -1,14 +1,20 @@
 package com.phylogeny.extrabitmanipulation.proxy;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import com.phylogeny.extrabitmanipulation.client.ClientEventHandler;
+import com.phylogeny.extrabitmanipulation.client.render.RenderEntityBit;
+import com.phylogeny.extrabitmanipulation.entity.EntityBit;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
@@ -38,6 +44,13 @@ public class ProxyClient extends ProxyCommon
 		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
 		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
 		SoundsExtraBitManipulation.registerSounds();
+		RenderingRegistry.registerEntityRenderingHandler(EntityBit.class, new IRenderFactory<EntityBit>() {
+			@Override
+			public Render<EntityBit> createRenderFor(RenderManager manager)
+			{
+				return new RenderEntityBit(manager);
+			}
+		});
 	}
 	
 	@Override
