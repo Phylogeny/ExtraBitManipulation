@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
@@ -88,6 +89,13 @@ public class ItemSculptingTool extends ItemBitToolBase
 	{
 		return 1 - ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.REMAINING_USES)
 				/ ((double) ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
+	}
+	
+	@Override
+	public int getRGBDurabilityForDisplay(ItemStack stack)
+	{
+		return MathHelper.hsvToRGB(Math.max(0.0F, ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.REMAINING_USES)
+				/ (((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage)) / 3.0F, 1.0F, 1.0F);
 	}
 	
 	@Override
