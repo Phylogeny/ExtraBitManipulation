@@ -973,10 +973,6 @@ public class ClientEventHandler
 							BlockPos pos2 = !removeBits && !inside ? pos.offset(dir) : pos;
 							AxisAlignedBB box2 = !removeBits ? new AxisAlignedBB(pos2) :
 								world.getBlockState(pos2).getSelectedBoundingBox(world, pos2);
-							if ((int) Math.round(box2.minX) != pos2.getX() || (int) Math.round(box2.minY) != pos2.getY()
-									|| (int) Math.round(box2.minZ) != pos2.getZ())
-								box2 = box2.offset(pos2);
-							
 							box = limitBox(box, box2);
 						}
 						double f = 0.0020000000949949026;
