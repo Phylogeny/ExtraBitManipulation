@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.client.RenderState;
+import com.phylogeny.extrabitmanipulation.client.render.RenderState;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;

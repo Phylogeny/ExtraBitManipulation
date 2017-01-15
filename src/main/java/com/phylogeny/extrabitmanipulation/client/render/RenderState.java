@@ -1,7 +1,8 @@
-package com.phylogeny.extrabitmanipulation.client;
+package com.phylogeny.extrabitmanipulation.client.render;
 
 import java.util.List;
 
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraft.block.Block;

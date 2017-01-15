@@ -4,6 +4,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.packet.PacketBitMappingsPerTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketBitParticles;
 import com.phylogeny.extrabitmanipulation.packet.PacketClearStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketCreateModel;
 import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
@@ -28,6 +29,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWrechMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit;
 import com.phylogeny.extrabitmanipulation.packet.PacketUseWrench;
 
 public class PacketRegistration
@@ -62,6 +64,8 @@ public class PacketRegistration
 		registerPacket(PacketOpenBitMappingGui.Handler.class, PacketOpenBitMappingGui.class, Side.SERVER);
 		registerPacket(PacketSetWrechMode.Handler.class, PacketSetWrechMode.class, Side.SERVER);
 		registerPacket(PacketSetDesign.Handler.class, PacketSetDesign.class, Side.SERVER);
+		registerPacket(PacketThrowBit.Handler.class, PacketThrowBit.class, Side.SERVER);
+		registerPacket(PacketBitParticles.Handler.class, PacketBitParticles.class, Side.CLIENT);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

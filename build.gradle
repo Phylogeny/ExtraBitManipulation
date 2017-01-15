@@ -6,9 +6,7 @@ buildscript {
             url = "http://files.minecraftforge.net/maven"
         }
     }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-    }
+    dependencies { classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT' }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
@@ -26,16 +24,12 @@ minecraft {
 }
 
 repositories {
-    maven {
-        url "http://dvs1.progwml6.com/files/maven"
-    }
-    flatDir { 
-        dirs 'libs'
-    }
+    maven { url "http://dvs1.progwml6.com/files/maven" }
+    flatDir { dirs 'libs' }
 }
 
 dependencies {
-    compile files ("libs/chiselsandbits-12.10-api.jar")
+    compile files ("run/mods/" + chisels_and_bits)
 	deobfCompile "mezz.jei:${jei_version}"
 }
 
@@ -49,7 +43,5 @@ processResources {
         expand 'version':project.version, 'mcversion':project.minecraft.version, 'updatejson':update_json
     }
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+    from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
 }
