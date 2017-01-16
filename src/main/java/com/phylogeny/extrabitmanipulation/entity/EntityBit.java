@@ -115,7 +115,7 @@ public class EntityBit extends EntityThrowableFixed implements IEntityAdditional
 					{
 						if (isLava)
 						{
-							entity.setFire(1);
+							entity.setFire(Configs.thrownLavaBitBurnTime);
 						}
 						else
 						{
