@@ -21,7 +21,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -37,9 +36,9 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityBit extends EntityThrowable implements IEntityAdditionalSpawnData
+public class EntityBit extends EntityThrowableFixed implements IEntityAdditionalSpawnData
 {
-	private ItemStack bitStack;
+	private ItemStack bitStack = ItemStack.EMPTY;
 	
 	public EntityBit(World worldIn)
 	{
@@ -73,6 +72,9 @@ public class EntityBit extends EntityThrowable implements IEntityAdditionalSpawn
 	@Override
 	protected void onImpact(RayTraceResult result)
 	{
+		if (bitStack.isEmpty())
+			return;
+		
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
 		boolean drop = true;
 		boolean isLava = false;
@@ -89,47 +91,50 @@ public class EntityBit extends EntityThrowable implements IEntityAdditionalSpawn
 		Entity entity = result.entityHit;
 		if (entity != null)
 		{
-			if (getThrower() == null)
-				return;
-			
-			if ((isLava ? Configs.disableIgniteEntities : Configs.disableExtinguishEntities) || drop)
+			if (!world.isRemote)
 			{
-				entity.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), 0);
-				drop = true;
-			}
-			else 
-			{
-				if (isLava)
+				if ((isLava ? Configs.disableIgniteEntities : Configs.disableExtinguishEntities) || drop)
 				{
-					playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 1.0F, 3.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
+					if (!Configs.thrownBitDamageDisable)
+						entity.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), Configs.thrownBitDamage);
+					
+					drop = true;
 				}
-				else
-				{
-					playSound(getSwimSound(), 0.2F, 1.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
-				}
-				int flag = isLava ? 0 : 1;
-				if (entity.isBurning() != isLava)
+				else 
 				{
 					if (isLava)
 					{
-						entity.setFire(1);
+						playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 1.0F, 3.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
 					}
 					else
 					{
-						entity.extinguish();
-						playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.0F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
+						playSound(getSwimSound(), 0.2F, 1.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
+					}
+					int flag = isLava ? 0 : 1;
+					if (entity.isBurning() != isLava)
+					{
+						if (isLava)
+						{
+							entity.setFire(1);
+						}
+						else
+						{
+							entity.extinguish();
+							playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.0F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
+							flag = 2;
+						}
+					}
+					if (!isLava && entity instanceof EntityBlaze)
+					{
+						if (!Configs.thrownWaterBitBlazeDamageDisable)
+							entity.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), Configs.thrownWaterBitBlazeDamage);
+						
 						flag = 2;
 					}
-				}
-				if (!isLava && entity instanceof EntityBlaze)
-				{
-					entity.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), 1);
-					flag = 2;
-				}
-				if (!world.isRemote)
 					ExtraBitManipulation.packetNetwork.sendToAllAround(new PacketBitParticles(flag,
 							this, entity),
 						new TargetPoint(world.provider.getDimension(), posX, posY, posZ, 100));
+				}
 			}
 		}
 		else if (result.typeOfHit == RayTraceResult.Type.BLOCK)
@@ -137,51 +142,54 @@ public class EntityBit extends EntityThrowable implements IEntityAdditionalSpawn
 			BlockPos pos = result.getBlockPos();
 			if (!(isLava ? Configs.disableIgniteBlocks : Configs.disableExtinguishBlocks) && !drop)
 			{
-				pos = pos.offset(result.sideHit);
-				if (isLava)
+				if (!world.isRemote)
 				{
-					if (world.isAirBlock(pos))
+					pos = pos.offset(result.sideHit);
+					if (isLava)
 					{
-						playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 1.0F, 3.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
-						world.setBlockState(pos, Blocks.FIRE.getDefaultState(), 11);
+						if (world.isAirBlock(pos))
+						{
+							playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 1.0F, 3.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
+							world.setBlockState(pos, Blocks.FIRE.getDefaultState(), 11);
+						}
 					}
-				}
-				else
-				{
-					playSound(getSwimSound(), 0.2F, 1.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
-					int flag = 3;
-					if (world.getBlockState(pos).getBlock() == Blocks.FIRE)
+					else
 					{
-						playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
-						world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
-						flag = 4;
-					}
-					if (!world.isRemote)
-					{
+						playSound(getSwimSound(), 0.2F, 1.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
+						int flag = 3;
+						if (world.getBlockState(pos).getBlock() == Blocks.FIRE)
+						{
+							playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
+							world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+							flag = 4;
+						}
 						Vec3d hit = result.hitVec.addVector(Utility.PIXEL_D * result.sideHit.getFrontOffsetY() * 2,
 								Utility.PIXEL_D * result.sideHit.getFrontOffsetX() * 2,
 								Utility.PIXEL_D * result.sideHit.getFrontOffsetZ() * 2);
 						ExtraBitManipulation.packetNetwork.sendToAllAround(new PacketBitParticles(flag, hit, pos),
 							new TargetPoint(world.provider.getDimension(), posX, posY, posZ, 100));
 					}
+					setDead();
 				}
-				setDead();
 				return;
 			}
 			drop = true;
-			float volume = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ) * 0.2F;
-			if (volume > 1.0F)
-				volume = 1.0F;
-			
-			SoundEvent sound = SoundEvents.BLOCK_METAL_HIT;
-			IBlockState state = world.getBlockState(pos);
-			if (state != null)
+			if (!world.isRemote)
 			{
-				SoundType soundType = state.getBlock().getSoundType(state, world, pos, this);
-				if (soundType != null)
-					sound = soundType.getFallSound();
+				float volume = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ) * 0.2F;
+				if (volume > 1.0F)
+					volume = 1.0F;
+				
+				SoundEvent sound = SoundEvents.BLOCK_METAL_HIT;
+				IBlockState state = world.getBlockState(pos);
+				if (state != null)
+				{
+					SoundType soundType = state.getBlock().getSoundType(state, world, pos, this);
+					if (soundType != null)
+						sound = soundType.getFallSound();
+				}
+				playSound(sound, volume, 1.0F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
 			}
-			playSound(sound, volume, 1.0F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
 			try
 			{
 				IBitLocation bitLoc = api.getBitPos((float) result.hitVec.xCoord - pos.getX(),

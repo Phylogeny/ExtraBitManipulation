@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import com.phylogeny.extrabitmanipulation.entity.EntityBit;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -39,9 +40,9 @@ public class PacketThrowBit implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					EntityBit entityBit = new EntityBit(player.world, player, stack);
-					entityBit.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
+					entityBit.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0, Configs.thrownBitVelocity, Configs.thrownBitInaccuracy);
 					player.world.spawnEntity(entityBit);
-					player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ,
+					player.world.playSound(null, player.posX, player.posY, player.posZ,
 							SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (player.world.rand.nextFloat() * 0.4F + 0.8F));
 					if (!player.capabilities.isCreativeMode)
 					{
