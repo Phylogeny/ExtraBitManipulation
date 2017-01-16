@@ -532,9 +532,34 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.disableExtinguishEntities = disableThrownLiquidBitProperty("Extinguish Entities", false, true);
 			Configs.disableExtinguishBlocks = disableThrownLiquidBitProperty("Extinguish Blocks", false, false);
 			
+			Configs.thrownBitVelocity = configFileServer.getFloat("Initial Velocity", THROWN_BIT_PROPERTIES, 1.5F, 0, Float.MAX_VALUE, 
+					"The initial velocity in meters per tick that a thrown bit will initially have when thrown. (default = 1.5 meters per tick bits)");
+			
+			Configs.thrownBitInaccuracy = configFileServer.getFloat("Inaccuracy", THROWN_BIT_PROPERTIES, 1, 0, Float.MAX_VALUE, 
+					"A relative value that denote the amount of random deviation a thrown bit will have from the direction the " +
+					"player is looking. (default = 1)");
+			
+			Configs.thrownBitDamage = configFileServer.getFloat("Damage Inflicted", THROWN_BIT_PROPERTIES, Float.MIN_VALUE, 0, Float.MAX_VALUE, 
+					"The amount of damage (1 = half a heart) applied to entities when hit with bits. If this is set to 0, there will be no effect on " +
+					"players, but all non-player entities will still get all the effects of damage (knock-back, color change, etc.), despite not " +
+					"actually taking any damage. If this is set to a very small value, then those same effects will apply to all entities--including " +
+					"players--without doing any appreciable damage. (default = essentially none)");
+			
+			Configs.thrownWaterBitBlazeDamage = configFileServer.getFloat("Damage Inflicted On Blazes", THROWN_BIT_PROPERTIES, 1, 0, Float.MAX_VALUE, 
+					"The amount of damage (1 = half a heart) applied to Blazes when hit with water bits. If this is set to 0, they will still get all " +
+					"the effects of damage (knock-back, color change, etc.), despite not actually taking any damage. (default = half a heart)");
+			
+			Configs.thrownBitDamageDisable = configFileServer.getBoolean("Disable Inflicted Damage", THROWN_BIT_PROPERTIES, false,
+					"Disables the damaging of entities when hit with bits. See 'Damage Inflicted' for explanation of why it may be useful for this to be " +
+					"set to true, despite setting the amount to 0. (default = does damage)");
+			
+			Configs.thrownWaterBitBlazeDamageDisable = configFileServer.getBoolean("Disable Inflicted Blaze Damage", THROWN_BIT_PROPERTIES, false,
+					"Disables the damaging of Blazes when hit with water bits. See 'Damage Inflicted On Blazes' for explanation of why it may be useful " +
+					"for this to be set to true, despite setting the amount to 0. (default = does damage)");
+			
 			//RENDER OVERLAYS
 			Configs.disableOverlays = configFileClient.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
-					"Prevents overlays from rendering. (default = false)");
+					"Prevents overlays from rendering. (default = enabled)");
 			
 			Configs.rotationPeriod = configFileClient.getInt("Rotation Period", RENDER_OVERLAYS, 3000, 1, Integer.MAX_VALUE,
 					"Number of milliseconds over which the cyclic arrow overlay used in block/texture rotation will complete one rotation. " +

@@ -44,6 +44,9 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		addToolSettingsDummyElements(ConfigHandlerExtraBitManipulation.configFileClient, configElementsClient);
 		addToolSettingsDummyElements(ConfigHandlerExtraBitManipulation.configFileServer, configElementsServer);
 		
+		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileServer, ConfigHandlerExtraBitManipulation.THROWN_BIT_PROPERTIES,
+				"Configures the damage amount, disabling of damage, velocity, and inaccuracy of thrown bits", configElementsServer, ServerEntry.class);
+		
 		List<IConfigElement> configElementsToolData = new ArrayList<IConfigElement>();
 		String hoverText = "Configures @@@ data storage/access, default values, and " +
 				"chat notifications upon change. (applies to all tools -- see 'Item Properties' menu for item-specific settings)";

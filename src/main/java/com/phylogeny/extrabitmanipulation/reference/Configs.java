@@ -70,6 +70,12 @@ public class Configs
 		public static boolean disableIgniteBlocks;
 		public static boolean disableExtinguishEntities;
 		public static boolean disableExtinguishBlocks;
+		public static float thrownBitVelocity;
+		public static float thrownBitInaccuracy;
+		public static float thrownBitDamage;
+		public static float thrownWaterBitBlazeDamage;
+		public static boolean thrownBitDamageDisable;
+		public static boolean thrownWaterBitBlazeDamageDisable;
 		
 	//RENDER WRENCH OVERLAYS
 		public static boolean disableOverlays;
