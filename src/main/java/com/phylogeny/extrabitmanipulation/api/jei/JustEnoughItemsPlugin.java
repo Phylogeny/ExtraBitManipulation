@@ -14,9 +14,12 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.util.Translator;
+import mod.chiselsandbits.core.ChiselsAndBits;
+import mod.chiselsandbits.registry.ModItems;
 
 @mezz.jei.api.JEIPlugin
 public class JustEnoughItemsPlugin extends BlankModPlugin
@@ -34,6 +37,9 @@ public class JustEnoughItemsPlugin extends BlankModPlugin
 		List<ItemStack> modelingStacks = addDescription(registry, "modeling_tool", ItemsExtraBitManipulation.modelingTool);
 		List<ItemStack> sculptingStacks = addDescription(registry, "sculpting", ItemsExtraBitManipulation.sculptingLoop, ItemsExtraBitManipulation.sculptingSquare,
 				ItemsExtraBitManipulation.sculptingSpadeCurved, ItemsExtraBitManipulation.sculptingSpadeSquared);
+		ModItems items = ChiselsAndBits.getItems();
+		addDescription(registry, "block_bit", items.itemBlockBit);
+		addDescription(registry, "designs", items.itemMirrorprint, items.itemNegativeprint, items.itemPositiveprint);
 		registry.addRecipeCategories(new ShapeInfoRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
 		registry.addRecipeHandlers(new ShapeInfoRecipeHandler());
 		registry.addRecipes(ShapeInfoRecipe.create(sculptingStacks));
@@ -50,7 +56,7 @@ public class JustEnoughItemsPlugin extends BlankModPlugin
 	{
 		List<ItemStack> stacks = new ArrayList<ItemStack>();
 		for (Item item : items)
-			stacks.add(new ItemStack(item));
+			stacks.add(new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE));
 		
 		registry.addDescription(stacks, "jei.description." + Reference.GROUP_ID + ":" + langKeySuffix);
 		return stacks;
