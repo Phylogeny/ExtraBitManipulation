@@ -557,6 +557,10 @@ public class ConfigHandlerExtraBitManipulation
 					"Disables the damaging of Blazes when hit with water bits. See 'Damage Inflicted On Blazes' for explanation of why it may be useful " +
 					"for this to be set to true, despite setting the amount to 0. (default = does damage)");
 			
+			Configs.thrownLavaBitBurnTime = configFileServer.getInt("Entity Burn Time", THROWN_BIT_PROPERTIES, 1, 0, Integer.MAX_VALUE,
+					"Number of seconds that an entity will remain on fire for when ignited by a lava bit, if ignite entities is not disabled. " +
+					"(default = 1 second)");
+			
 			//RENDER OVERLAYS
 			Configs.disableOverlays = configFileClient.getBoolean("Disable Overlay Rendering", RENDER_OVERLAYS, false,
 					"Prevents overlays from rendering. (default = enabled)");

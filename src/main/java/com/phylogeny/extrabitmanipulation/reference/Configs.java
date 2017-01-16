@@ -76,6 +76,7 @@ public class Configs
 		public static float thrownWaterBitBlazeDamage;
 		public static boolean thrownBitDamageDisable;
 		public static boolean thrownWaterBitBlazeDamageDisable;
+		public static int thrownLavaBitBurnTime;
 		
 	//RENDER WRENCH OVERLAYS
 		public static boolean disableOverlays;
