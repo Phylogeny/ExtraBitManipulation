@@ -87,15 +87,19 @@ public class ItemSculptingTool extends ItemBitToolBase
 	@Override
 	public double getDurabilityForDisplay(ItemStack stack)
 	{
-		return 1 - ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.REMAINING_USES)
-				/ ((double) ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
+		return 1 - getDurability(stack);
 	}
 	
 	@Override
 	public int getRGBDurabilityForDisplay(ItemStack stack)
 	{
-		return MathHelper.hsvToRGB(Math.max(0.0F, ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.REMAINING_USES)
-				/ (((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage)) / 3.0F, 1.0F, 1.0F);
+		return MathHelper.hsvToRGB((float) (Math.max(0.0F, getDurability(stack)) / 3.0F), 1.0F, 1.0F);
+	}
+	
+	private double getDurability(ItemStack stack)
+	{
+		return ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.REMAINING_USES)
+				/ ((double) ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
 	}
 	
 	@Override
