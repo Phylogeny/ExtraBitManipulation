@@ -52,7 +52,6 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	private ItemStack bitStack = ItemStack.EMPTY;
 	protected boolean inGround;
 	public Entity shootingEntity;
-	private int ticksInAir;
 	
 	public EntityBit(World worldIn)
 	{
@@ -340,7 +339,6 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 			drop = !placeBit(world, bitStack, pos, result.hitVec, result.sideHit, world.isRemote);
 			if (!world.isRemote && !drop)
 				updateClients(new PacketPlaceEntityBit(bitStack, pos, result));
-			
 		}
 		if (!world.isRemote)
 		{
@@ -398,7 +396,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		for (int i = 0; i < list.size(); ++i)
 		{
 			Entity entity1 = list.get(i);
-			if (!entity1.canBeCollidedWith() || (entity1 == shootingEntity && ticksInAir < 5))
+			if (!entity1.canBeCollidedWith() || (entity1 == shootingEntity && ticksExisted < 5))
 				continue;
 			
 			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expandXyz(0.30000001192092896D);
