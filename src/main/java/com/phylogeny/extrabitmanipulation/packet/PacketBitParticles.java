@@ -1,9 +1,10 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import javax.annotation.Nullable;
+
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit;
 import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit.Factory;
-import com.sun.istack.internal.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
