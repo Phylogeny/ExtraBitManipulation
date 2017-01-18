@@ -37,7 +37,7 @@ public class ProxyCommon implements IGuiHandler
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		PacketRegistration.registerPackets();
 		ResourceLocation name = new ResourceLocation(Reference.MOD_ID, "entity_bit");
-		EntityRegistry.registerModEntity(name, EntityBit.class, name.toString(), 0, ExtraBitManipulation.instance, 64, 10, true);
+		EntityRegistry.registerModEntity(name, EntityBit.class, name.toString(), 0, ExtraBitManipulation.instance, 64, 3, true);
 		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ChiselsAndBits.getItems().itemBlockBit, new BehaviorProjectileDispense()
 		{
 			@Override

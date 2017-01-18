@@ -40,7 +40,7 @@ public class PacketThrowBit implements IMessage
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
 					ItemStack stack = player.getHeldItemMainhand();
 					EntityBit entityBit = new EntityBit(player.world, player, stack);
-					entityBit.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0, Configs.thrownBitVelocity, Configs.thrownBitInaccuracy);
+					entityBit.setAim(player, player.rotationPitch, player.rotationYaw, Configs.thrownBitVelocity, Configs.thrownBitInaccuracy);
 					player.world.spawnEntity(entityBit);
 					player.world.playSound(null, player.posX, player.posY, player.posZ,
 							SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (player.world.rand.nextFloat() * 0.4F + 0.8F));
