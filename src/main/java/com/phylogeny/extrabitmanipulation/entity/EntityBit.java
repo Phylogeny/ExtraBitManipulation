@@ -20,7 +20,6 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
-import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -28,7 +27,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -36,7 +34,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -46,6 +43,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -53,21 +51,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityBit extends Entity implements IProjectile, IEntityAdditionalSpawnData
 {
 	private ItemStack bitStack;
-	private int xTile;
-	private int yTile;
-	private int zTile;
-	private Block inTile;
-	private int inData;
 	protected boolean inGround;
 	public Entity shootingEntity;
-	private int ticksInAir;
 	
 	public EntityBit(World worldIn)
 	{
 		super(worldIn);
-		xTile = -1;
-		yTile = -1;
-		zTile = -1;
 		setSize(Utility.PIXEL_F, Utility.PIXEL_F);
 	}
 	
@@ -97,20 +86,20 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	@SideOnly(Side.CLIENT)
 	public boolean isInRangeToRenderDist(double distance)
 	{
-		double d0 = getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
-		if (Double.isNaN(d0))
-			d0 = 4.0D;
+		double range = getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
+		if (Double.isNaN(range))
+			range = 4.0D;
 		
-		d0 *= 64.0D;
-		return distance < d0 * d0;
+		range *= 64.0D;
+		return distance < range * range;
 	}
 	
 	public void setAim(Entity shooter, float pitch, float yaw, float velocity, float inaccuracy)
 	{
-		float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-		float f1 = -MathHelper.sin(pitch * 0.017453292F);
-		float f2 = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-		setThrowableHeading(f, f1, f2, velocity, inaccuracy);
+		float x = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+		float y = -MathHelper.sin(pitch * 0.017453292F);
+		float z = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+		setThrowableHeading(x, y, z, velocity, inaccuracy);
 		motionX += shooter.motionX;
 		motionZ += shooter.motionZ;
 		if (!shooter.onGround)
@@ -142,14 +131,6 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
-	{
-		setPosition(x, y, z);
-		setRotation(yaw, pitch);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
 	public void setVelocity(double x, double y, double z)
 	{
 		motionX = x;
@@ -157,121 +138,87 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		motionZ = z;
 		if (prevRotationPitch == 0.0F && prevRotationYaw == 0.0F)
 		{
-			float f = MathHelper.sqrt_double(x * x + z * z);
-			rotationPitch = (float)(MathHelper.atan2(y, f) * (180D / Math.PI));
-			rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-			prevRotationPitch = rotationPitch;
-			prevRotationYaw = rotationYaw;
+			setRotation(x, y, z);
 			setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
 		}
 	}
 	
-	@SuppressWarnings("null")
+	private void setRotation(double x, double y, double z)
+	{
+		float f = MathHelper.sqrt_double(x * x + z * z);
+		rotationPitch = (float)(MathHelper.atan2(y, f) * (180D / Math.PI));
+		rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+		prevRotationPitch = rotationPitch;
+		prevRotationYaw = rotationYaw;
+	}
+	
 	@Override
 	public void onUpdate()
 	{
+		if (inGround)
+			return;
+		
 		super.onUpdate();
 		if (prevRotationPitch == 0.0F && prevRotationYaw == 0.0F)
+			setRotation(motionX, motionY, motionZ);
+		
+		Vec3d start = new Vec3d(posX, posY, posZ);
+		Vec3d end = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
+		RayTraceResult result = worldObj.rayTraceBlocks(start, end, false, true, false);
+		start = new Vec3d(posX, posY, posZ);
+		end = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
+		if (result != null)
+			end = new Vec3d(result.hitVec.xCoord, result.hitVec.yCoord, result.hitVec.zCoord);
+		
+		Entity entity = findEntityOnPath(start, end);
+		if (entity != null)
+			result = new RayTraceResult(entity);
+		
+		if (result != null)
+			onHit(result);
+		
+		posX += motionX;
+		posY += motionY;
+		posZ += motionZ;
+		float f4 = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ);
+		rotationYaw = (float)(MathHelper.atan2(motionX, motionZ) * (180D / Math.PI));
+		for (rotationPitch = (float)(MathHelper.atan2(motionY, f4) * (180D / Math.PI));
+				rotationPitch - prevRotationPitch < -180.0F; prevRotationPitch -= 360.0F) {}
+		while (rotationPitch - prevRotationPitch >= 180.0F)
 		{
-			float f = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ);
-			rotationYaw = (float)(MathHelper.atan2(motionX, motionZ) * (180D / Math.PI));
-			rotationPitch = (float)(MathHelper.atan2(motionY, f) * (180D / Math.PI));
-			prevRotationYaw = rotationYaw;
-			prevRotationPitch = rotationPitch;
+			prevRotationPitch += 360.0F;
 		}
-		BlockPos blockpos = new BlockPos(xTile, yTile, zTile);
-		IBlockState iblockstate = worldObj.getBlockState(blockpos);
-		Block block = iblockstate.getBlock();
-		if (iblockstate.getMaterial() != Material.AIR)
+		while (rotationYaw - prevRotationYaw < -180.0F)
 		{
-			AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(worldObj, blockpos);
-
-			if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(blockpos).isVecInside(new Vec3d(posX, posY, posZ)))
-				inGround = true;
+			prevRotationYaw -= 360.0F;
 		}
-		if (inGround)
+		while (rotationYaw - prevRotationYaw >= 180.0F)
 		{
-			int j = block.getMetaFromState(iblockstate);
-			if ((block != inTile || j != inData) && !worldObj.collidesWithAnyBlock(getEntityBoundingBox().expandXyz(0.05D)))
-			{
-				inGround = false;
-				motionX *= rand.nextFloat() * 0.2F;
-				motionY *= rand.nextFloat() * 0.2F;
-				motionZ *= rand.nextFloat() * 0.2F;
-				ticksInAir = 0;
-			}
-			else
-			{
-				setDead();
-			}
+			prevRotationYaw += 360.0F;
 		}
-		else
+		rotationPitch = prevRotationPitch + (rotationPitch - prevRotationPitch) * 0.2F;
+		rotationYaw = prevRotationYaw + (rotationYaw - prevRotationYaw) * 0.2F;
+		float attenuation = 0.99F;
+		if (isInWater())
 		{
-			++ticksInAir;
-			Vec3d vec3d1 = new Vec3d(posX, posY, posZ);
-			Vec3d vec3d = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
-			RayTraceResult raytraceresult = worldObj.rayTraceBlocks(vec3d1, vec3d, false, true, false);
-			vec3d1 = new Vec3d(posX, posY, posZ);
-			vec3d = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
-			if (raytraceresult != null)
-				vec3d = new Vec3d(raytraceresult.hitVec.xCoord, raytraceresult.hitVec.yCoord, raytraceresult.hitVec.zCoord);
-			
-			Entity entity = findEntityOnPath(vec3d1, vec3d);
-			if (entity != null)
-				raytraceresult = new RayTraceResult(entity);
-			
-			if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer)
+			for (int i = 0; i < 4; ++i)
 			{
-				EntityPlayer entityplayer = (EntityPlayer)raytraceresult.entityHit;
-				if (shootingEntity instanceof EntityPlayer && !((EntityPlayer)shootingEntity).canAttackPlayer(entityplayer))
-					raytraceresult = null;
+				worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * 0.25D,
+						posY - motionY * 0.25D, posZ - motionZ * 0.25D, motionX, motionY, motionZ, new int[0]);
 			}
-			if (raytraceresult != null)
-				onHit(raytraceresult);
-			
-			posX += motionX;
-			posY += motionY;
-			posZ += motionZ;
-			float f4 = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ);
-			rotationYaw = (float)(MathHelper.atan2(motionX, motionZ) * (180D / Math.PI));
-			for (rotationPitch = (float)(MathHelper.atan2(motionY, f4) * (180D / Math.PI)); rotationPitch - prevRotationPitch < -180.0F; prevRotationPitch -= 360.0F)
-			{
-			}
-			while (rotationPitch - prevRotationPitch >= 180.0F)
-			{
-				prevRotationPitch += 360.0F;
-			}
-			while (rotationYaw - prevRotationYaw < -180.0F)
-			{
-				prevRotationYaw -= 360.0F;
-			}
-			while (rotationYaw - prevRotationYaw >= 180.0F)
-			{
-				prevRotationYaw += 360.0F;
-			}
-			rotationPitch = prevRotationPitch + (rotationPitch - prevRotationPitch) * 0.2F;
-			rotationYaw = prevRotationYaw + (rotationYaw - prevRotationYaw) * 0.2F;
-			float f1 = 0.99F;
-			if (isInWater())
-			{
-				for (int i = 0; i < 4; ++i)
-				{
-					worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * 0.25D, posY - motionY * 0.25D, posZ - motionZ * 0.25D, motionX, motionY, motionZ, new int[0]);
-				}
-				f1 = 0.6F;
-			}
-			if (isWet())
-				extinguish();
-			
-			motionX *= f1;
-			motionY *= f1;
-			motionZ *= f1;
-			if (!func_189652_ae())
-				motionY -= 0.05000000074505806D;
-			
-			setPosition(posX, posY, posZ);
-			doBlockCollisions();
+			attenuation = 0.6F;
 		}
+		if (isWet())
+			extinguish();
+		
+		motionX *= attenuation;
+		motionY *= attenuation;
+		motionZ *= attenuation;
+		if (!func_189652_ae())
+			motionY -= 0.05000000074505806D;
+		
+		setPosition(posX, posY, posZ);
+		doBlockCollisions();
 	}
 	
 	protected void onHit(RayTraceResult result)
@@ -335,29 +282,13 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 						
 						flag = 2;
 					}
-					ExtraBitManipulation.packetNetwork.sendToAllAround(new PacketBitParticles(flag,
-							this, entity),
-						new TargetPoint(worldObj.provider.getDimension(), posX, posY, posZ, 100));
+					updateClients(new PacketBitParticles(flag, this, entity));
 				}
 			}
 		}
 		else
 		{
 			BlockPos pos = result.getBlockPos();
-			xTile = pos.getX();
-			yTile = pos.getY();
-			zTile = pos.getZ();
-			IBlockState iblockstate = worldObj.getBlockState(pos);
-			inTile = iblockstate.getBlock();
-			inData = inTile.getMetaFromState(iblockstate);
-			motionX = ((float)(result.hitVec.xCoord - posX));
-			motionY = ((float)(result.hitVec.yCoord - posY));
-			motionZ = ((float)(result.hitVec.zCoord - posZ));
-			float f2 = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
-			posX -= motionX / f2 * 0.05000000074505806D;
-			posY -= motionY / f2 * 0.05000000074505806D;
-			posZ -= motionZ / f2 * 0.05000000074505806D;
-			inGround = true;
 			if (!(isLava ? Configs.disableIgniteBlocks : Configs.disableExtinguishBlocks) && !drop)
 			{
 				if (!worldObj.isRemote)
@@ -384,8 +315,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 						Vec3d hit = result.hitVec.addVector(Utility.PIXEL_D * result.sideHit.getFrontOffsetY() * 2,
 								Utility.PIXEL_D * result.sideHit.getFrontOffsetX() * 2,
 								Utility.PIXEL_D * result.sideHit.getFrontOffsetZ() * 2);
-						ExtraBitManipulation.packetNetwork.sendToAllAround(new PacketBitParticles(flag, hit, pos),
-							new TargetPoint(worldObj.provider.getDimension(), posX, posY, posZ, 100));
+						updateClients(new PacketBitParticles(flag, hit, pos));
 					}
 					setDead();
 				}
@@ -409,8 +339,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 			}
 			drop = !placeBit(worldObj, bitStack, pos, result.hitVec, result.sideHit, worldObj.isRemote);
 			if (!worldObj.isRemote && !drop)
-				ExtraBitManipulation.packetNetwork.sendToAllAround(new PacketPlaceEntityBit(bitStack, pos, result),
-						new TargetPoint(worldObj.provider.getDimension(), posX, posY, posZ, 100));
+				updateClients(new PacketPlaceEntityBit(bitStack, pos, result));
 		}
 		if (!worldObj.isRemote)
 		{
@@ -419,6 +348,11 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 			
 			setDead();
 		}
+	}
+	
+	private void updateClients(IMessage message)
+	{
+		ExtraBitManipulation.packetNetwork.sendToAllAround(message, new TargetPoint(worldObj.provider.getDimension(), posX, posY, posZ, 100));
 	}
 	
 	public static boolean placeBit(World world, ItemStack bitStack, BlockPos pos, Vec3d hitVec, EnumFacing sideHit, boolean simulate)
@@ -454,18 +388,6 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		return false;
 	}
 	
-	@Override
-	public void moveEntity(double x, double y, double z)
-	{
-		super.moveEntity(x, y, z);
-		if (inGround)
-		{
-			xTile = MathHelper.floor_double(posX);
-			yTile = MathHelper.floor_double(posY);
-			zTile = MathHelper.floor_double(posZ);
-		}
-	}
-	
 	@Nullable
 	protected Entity findEntityOnPath(Vec3d start, Vec3d end)
 	{
@@ -475,7 +397,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		for (int i = 0; i < list.size(); ++i)
 		{
 			Entity entity1 = list.get(i);
-			if (!entity1.canBeCollidedWith() || (entity1 == shootingEntity && ticksInAir < 5))
+			if (!entity1.canBeCollidedWith() || (entity1 == shootingEntity && ticksExisted < 5))
 				continue;
 			
 			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expandXyz(0.30000001192092896D);
@@ -496,12 +418,6 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	@Override
 	public void writeEntityToNBT(NBTTagCompound compound)
 	{
-		compound.setInteger("xTile", xTile);
-		compound.setInteger("yTile", yTile);
-		compound.setInteger("zTile", zTile);
-		ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(inTile);
-		compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-		compound.setByte("inData", (byte)inData);
 		compound.setByte("inGround", (byte)(inGround ? 1 : 0));
 		ItemStackHelper.saveStackToNBT(compound, bitStack, NBTKeys.ENTITY_BIT_STACK);
 	}
@@ -509,18 +425,6 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound)
 	{
-		xTile = compound.getInteger("xTile");
-		yTile = compound.getInteger("yTile");
-		zTile = compound.getInteger("zTile");
-		if (compound.hasKey("inTile", 8))
-		{
-			inTile = Block.getBlockFromName(compound.getString("inTile"));
-		}
-		else
-		{
-			inTile = Block.getBlockById(compound.getByte("inTile") & 255);
-		}
-		inData = compound.getByte("inData") & 255;
 		inGround = compound.getByte("inGround") == 1;
 		bitStack = ItemStackHelper.loadStackFromNBT(compound, NBTKeys.ENTITY_BIT_STACK);
 	}
@@ -529,12 +433,18 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	public void writeSpawnData(ByteBuf buffer)
 	{
 		ByteBufUtils.writeItemStack(buffer, bitStack);
+		buffer.writeDouble(motionX);
+		buffer.writeDouble(motionY);
+		buffer.writeDouble(motionZ);
 	}
 	
 	@Override
 	public void readSpawnData(ByteBuf buffer)
 	{
 		bitStack = ByteBufUtils.readItemStack(buffer);
+		motionX = buffer.readDouble();
+		motionY = buffer.readDouble();
+		motionZ = buffer.readDouble();
 	}
 	
 	@Override
@@ -547,6 +457,12 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	public float getEyeHeight()
 	{
 		return 0.0F;
+	}
+	
+	@Override
+	public boolean canPassengerSteer()
+	{
+		return true;
 	}
 	
 }
