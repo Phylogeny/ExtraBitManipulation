@@ -9,6 +9,7 @@ import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit.Factory;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -119,6 +120,14 @@ public class PacketBitParticles implements IMessage
 					{
 						Factory particleFactory = new ParticleSplashBit.Factory();
 						for (int i = 0; i < 8; i++)
+						{
+							ClientHelper.spawnParticle(world, message.locBit, particleFactory);
+						}
+						if (message.flag != 2)
+							return;
+						
+						int count = MathHelper.clamp_int((int) (width * width * height * 6.25), 1, 50);
+						for (int i = 0; i < count; i++)
 						{
 							ClientHelper.spawnParticle(world, message.locBit, particleFactory);
 							if (message.flag == 2)
