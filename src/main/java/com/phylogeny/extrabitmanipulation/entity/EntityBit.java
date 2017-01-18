@@ -455,9 +455,9 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	}
 	
 	@Override
-	public void move(MoverType x, double p_70091_2_, double y, double z)
+	public void move(MoverType moverType, double x, double y, double z)
 	{
-		super.move(x, p_70091_2_, y, z);
+		super.move(moverType, x, y, z);
 		if (inGround)
 		{
 			xTile = MathHelper.floor(posX);
