@@ -12,7 +12,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.8.9-2.3.0"
+version = "1.8.9-2.3.1"
 group = "com.phylogeny.extrabitmanipulation"
 archivesBaseName = "ExtraBitManipulation"
 def updateJson = "https://github.com/Phylogeny/ExtraBitManipulation/raw/1.11/update.json"
