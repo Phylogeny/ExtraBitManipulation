@@ -13,7 +13,7 @@ import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
-public class SliderSetting
+public abstract class SliderSetting
 {
 	private GuiSliderSetting slider;
 	private GuiButton plus, minus;
@@ -69,8 +69,7 @@ public class SliderSetting
 		return 0;
 	}
 	
-	@SuppressWarnings("unused")
-	protected void setValue(EntityPlayer player, int value) {}
+	protected abstract void setValue(EntityPlayer player, int value);
 	
 	public void setValueIfDiffrent()
 	{

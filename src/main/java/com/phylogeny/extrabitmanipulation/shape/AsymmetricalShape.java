@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.math.AxisAlignedBB;
 
-public class AsymmetricalShape extends Shape
+public abstract class AsymmetricalShape extends Shape
 {
 	protected float a, b, c, aInset, bInset, cInset;
 	protected boolean isEquilateral;

@@ -17,7 +17,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetWrechMode;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
-public class ButtonsSetting
+public abstract class ButtonsSetting
 {
 	protected List<GuiButtonSetting> buttons;
 	
@@ -50,8 +50,7 @@ public class ButtonsSetting
 		return 0;
 	}
 	
-	@SuppressWarnings("unused")
-	protected void setValue(EntityPlayer player, int value) {}
+	protected abstract void setValue(EntityPlayer player, int value);
 	
 	public void setValueIfDiffrent()
 	{
