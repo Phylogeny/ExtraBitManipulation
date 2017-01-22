@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class Shape
+public abstract class Shape
 {
 	public static final String[] SHAPE_NAMES = new String[]{"Sphere", "Cylinder", "Cone", "Cube", "Triangular Prism", "Triangular Pyramid", "Square Pyramid"};
 	protected int direction;
@@ -65,11 +65,7 @@ public class Shape
 		return true;
 	}
 	
-	@SuppressWarnings("unused")
-	public boolean isPointInsideShape(BlockPos pos, int i, int j, int k)
-	{
-		return false;
-	}
+	public abstract boolean isPointInsideShape(BlockPos pos, int i, int j, int k);
 	
 	public Vec3d getRandomInternalPoint(World world, BlockPos pos)
 	{

@@ -71,6 +71,7 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class ClientEventHandler
 {
@@ -138,9 +139,9 @@ public class ClientEventHandler
 	}
 	
 	@SubscribeEvent
-	public void throwBit(@SuppressWarnings("unused") TickEvent.PlayerTickEvent event)
+	public void throwBit(TickEvent.PlayerTickEvent event)
 	{
-		if (keyThrowBitIsDown && timer.elapsed(TimeUnit.MILLISECONDS) > 150)
+		if (event.phase == Phase.START && keyThrowBitIsDown && timer.elapsed(TimeUnit.MILLISECONDS) > 150)
 		{
 			ItemStack stack = ClientHelper.getHeldItemMainhand();
 			if (stack != null && ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT)
