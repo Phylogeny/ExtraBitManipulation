@@ -54,12 +54,6 @@ public class ItemModelingTool extends ItemBitToolBase
 		super(name);
 	}
 	
-	@Override
-	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
-	{
-		return slotChanged;
-	}
-	
 	public NBTTagCompound initialize(ItemStack stack, ModelReadData modelingData)
 	{
 		NBTTagCompound nbt = BitToolSettingsHelper.initNBT(stack);
