@@ -1,6 +1,6 @@
 package com.phylogeny.extrabitmanipulation.shape;
 
-public class SlopedSymmetricalShape extends SymmetricalShape
+public abstract class SlopedSymmetricalShape extends SymmetricalShape
 {
 	protected float height, semiDiameterInset2;
 	private float insetMin, insetMax, insetMin2, insetMax2;

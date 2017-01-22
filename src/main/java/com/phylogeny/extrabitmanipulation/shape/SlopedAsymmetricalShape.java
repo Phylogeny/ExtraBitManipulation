@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.math.BlockPos;
 
-public class SlopedAsymmetricalShape extends AsymmetricalShape
+public abstract class SlopedAsymmetricalShape extends AsymmetricalShape
 {
 	protected float height, aInset2, cInset2;
 	private float insetMin, insetMax, insetMin2, insetMax2;
@@ -41,10 +41,6 @@ public class SlopedAsymmetricalShape extends AsymmetricalShape
 		return inverted ? (!openEnds && val > insetMax) || val < insetMin2 : (!openEnds && val < insetMin) || val > insetMax2;
 	}
 	
-	@SuppressWarnings("unused")
-	protected boolean isPointIn2DShape(float val, float semiDiameter1, float semiDiameter2, float dv1, float dv2)
-	{
-		return false;
-	}
+	protected abstract boolean isPointIn2DShape(float val, float semiDiameter1, float semiDiameter2, float dv1, float dv2);
 	
 }

@@ -2,7 +2,7 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import net.minecraft.util.math.AxisAlignedBB;
 
-public class SymmetricalShape extends Shape
+public abstract class SymmetricalShape extends Shape
 {
 	protected float semiDiameter, semiDiameterInset;
 	

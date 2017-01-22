@@ -4,7 +4,7 @@ import mezz.jei.api.gui.IDrawableStatic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
-public class CategoryIconBase implements IDrawableStatic
+public abstract class CategoryIconBase implements IDrawableStatic
 {
 	private int textureWidth, textureHeight, u, v, width, height;
 	
@@ -42,7 +42,7 @@ public class CategoryIconBase implements IDrawableStatic
 		draw(minecraft, xOffset, yOffset, 0, 0, 0, 0);
 	}
 	
-	protected void bindTexture(@SuppressWarnings("unused") Minecraft minecraft) {}
+	protected abstract void bindTexture(Minecraft minecraft);
 	
 	@Override
 	public void draw(Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight)
