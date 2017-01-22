@@ -36,6 +36,12 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		return true;
 	}
 	
+	@Override
+	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
+	{
+		return slotChanged;
+	}
+	
 	protected void damageTool(ItemStack stack, EntityPlayer player)
 	{
 		ConfigProperty config = (ConfigProperty) Configs.itemPropertyMap.get(this);
