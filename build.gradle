@@ -21,7 +21,7 @@ compileJava {
 minecraft {
     version = minecraft_version + "-" + forge_version
     runDir = "run"
-    mappings = "snapshot_20161216"
+    mappings = "snapshot_20161220"
     replaceIn "Reference.java"
     replace "@VERSION@", project.version
     replace "@UPDATE@", update_json
