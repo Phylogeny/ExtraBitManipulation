@@ -223,7 +223,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 						default: shape = new Sphere(); break;
 					}
 					int semiDiameter = sculptingData.getSemiDiameter();
-					int semiDiameterMeters = (int) Math.ceil(semiDiameter / 16.0);
+					int blockSemiDiameter = globalMode ? (int) Math.ceil(semiDiameter / 16.0) : 0;
 					if (sculptingData.isShapeOffset() && !removeBits)
 					{
 						int offsetX = side.getFrontOffsetX();
@@ -232,11 +232,10 @@ public class ItemSculptingTool extends ItemBitToolBase
 						x2 += offsetX * Utility.PIXEL_F * semiDiameter;
 						y2 += offsetY * Utility.PIXEL_F * semiDiameter;
 						z2 += offsetZ * Utility.PIXEL_F * semiDiameter;
-						x += offsetX * semiDiameterMeters;
-						y += offsetY * semiDiameterMeters;
-						z += offsetZ * semiDiameterMeters;
+						x += offsetX * blockSemiDiameter;
+						y += offsetY * blockSemiDiameter;
+						z += offsetZ * blockSemiDiameter;
 					}
-					int blockSemiDiameter = globalMode ? semiDiameterMeters : 0;
 					box = new AxisAlignedBB(x - blockSemiDiameter, y - blockSemiDiameter, z - blockSemiDiameter,
 							x + blockSemiDiameter, y + blockSemiDiameter, z + blockSemiDiameter);
 					float f = 0;
