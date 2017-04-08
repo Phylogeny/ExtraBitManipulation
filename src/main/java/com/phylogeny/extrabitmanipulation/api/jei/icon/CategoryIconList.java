@@ -3,9 +3,9 @@ package com.phylogeny.extrabitmanipulation.api.jei.icon;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.phylogeny.extrabitmanipulation.api.jei.CycleTimer;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
-import mezz.jei.util.CycleTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 

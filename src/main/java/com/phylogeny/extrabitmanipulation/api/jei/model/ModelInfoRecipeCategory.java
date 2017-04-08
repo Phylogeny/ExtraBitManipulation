@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.api.jei.model;
 
 import javax.annotation.Nullable;
 
+import com.phylogeny.extrabitmanipulation.api.jei.Translator;
 import com.phylogeny.extrabitmanipulation.api.jei.icon.CategoryIcon;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
@@ -11,7 +12,6 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
-import mezz.jei.util.Translator;
 
 public class ModelInfoRecipeCategory extends BlankRecipeCategory<ModelInfoRecipe>
 {
