@@ -167,7 +167,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		start = new Vec3d(posX, posY, posZ);
 		end = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
 		if (result != null)
-			end = new Vec3d(result.hitVec.xCoord, result.hitVec.yCoord, result.hitVec.zCoord);
+			end = new Vec3d(result.hitVec.x, result.hitVec.y, result.hitVec.z);
 		
 		Entity entity = findEntityOnPath(start, end);
 		if (entity != null)
@@ -359,8 +359,8 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		try
 		{
 			IChiselAndBitsAPI api2 = ChiselsAndBitsAPIAccess.apiInstance;
-			IBitLocation bitLoc = api2.getBitPos((float) hitVec.xCoord - pos.getX(),
-					(float) hitVec.yCoord - pos.getY(), (float) hitVec.zCoord - pos.getZ(), sideHit, pos, false);
+			IBitLocation bitLoc = api2.getBitPos((float) hitVec.x - pos.getX(), (float) hitVec.y - pos.getY(),
+					(float) hitVec.z - pos.getZ(), sideHit, pos, false);
 			Vec3d center = new Vec3d(bitLoc.getBitX() * Utility.PIXEL_D + pos.getX() + Utility.PIXEL_D * sideHit.getFrontOffsetX(),
 					bitLoc.getBitY() * Utility.PIXEL_D + pos.getY() + Utility.PIXEL_D * sideHit.getFrontOffsetY(),
 					bitLoc.getBitZ() * Utility.PIXEL_D + pos.getZ() + Utility.PIXEL_D * sideHit.getFrontOffsetZ());
@@ -368,9 +368,9 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 			IBitAccess bitAccess = api2.getBitAccess(world, pos);
 			if (api2.canBeChiseled(world, pos))
 			{
-				int x = (int) (Math.ceil((int) ((center.xCoord - pos.getX()) / Utility.PIXEL_D)));
-				int y = (int) (Math.ceil((int) ((center.yCoord - pos.getY()) / Utility.PIXEL_D)));
-				int z = (int) (Math.ceil((int) ((center.zCoord - pos.getZ()) / Utility.PIXEL_D)));
+				int x = (int) (Math.ceil((int) ((center.x - pos.getX()) / Utility.PIXEL_D)));
+				int y = (int) (Math.ceil((int) ((center.y - pos.getY()) / Utility.PIXEL_D)));
+				int z = (int) (Math.ceil((int) ((center.z - pos.getZ()) / Utility.PIXEL_D)));
 				if (bitAccess.getBitAt(x, y, z).isAir())
 				{
 					bitAccess.setBitAt(x, y, z, api2.createBrush(bitStack));
@@ -391,7 +391,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	protected Entity findEntityOnPath(Vec3d start, Vec3d end)
 	{
 		Entity entity = null;
-		List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ).expandXyz(1.0D));
+		List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().expand(motionX, motionY, motionZ).grow(1.0D));
 		double d0 = 0.0D;
 		for (int i = 0; i < list.size(); ++i)
 		{
@@ -399,7 +399,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 			if (!entity1.canBeCollidedWith() || (entity1 == shootingEntity && ticksExisted < 5))
 				continue;
 			
-			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expandXyz(0.30000001192092896D);
+			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.30000001192092896D);
 			RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(start, end);
 			if (raytraceresult != null)
 			{

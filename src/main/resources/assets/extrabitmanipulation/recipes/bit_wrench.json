@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" H",
+		"I "
+	],
+	"key": {
+		"H": {
+			"item": "extrabitmanipulation:bit_wrench_head"
+		},
+		"I": {
+			"item": "minecraft:iron_ingot"
+		}
+	},
+	"result": {
+		"item": "extrabitmanipulation:bit_wrench"
+	}
+}

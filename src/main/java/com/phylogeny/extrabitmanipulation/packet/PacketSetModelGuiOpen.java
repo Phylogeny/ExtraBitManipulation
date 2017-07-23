@@ -38,13 +38,13 @@ public class PacketSetModelGuiOpen implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetModelGuiOpen message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					BitToolSettingsHelper.setModelGuiOpen(player, player.getHeldItemMainhand(), message.openGui, null);
 				}
 			});

@@ -69,13 +69,13 @@ public class PacketAddBitMapping extends PacketBitMapIO
 		@Override
 		public IMessage onMessage(final PacketAddBitMapping message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isModelingToolStack(stack))
 					{

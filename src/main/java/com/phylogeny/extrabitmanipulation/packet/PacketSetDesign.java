@@ -39,13 +39,13 @@ public class PacketSetDesign implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetDesign message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					BitInventoryHelper.setHeldDesignStack(ctx.getServerHandler().playerEntity, message.stack);
+					BitInventoryHelper.setHeldDesignStack(ctx.getServerHandler().player, message.stack);
 				}
 			});
 			return null;

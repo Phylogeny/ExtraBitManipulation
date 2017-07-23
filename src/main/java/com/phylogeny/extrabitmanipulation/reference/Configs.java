@@ -60,10 +60,7 @@ public class Configs
 		public static Map<Item, ConfigNamed> itemPropertyMap = new HashMap<Item, ConfigNamed>();
 		
 	//ITEM RECIPES
-		public static Map<Item, ConfigNamed> itemRecipeMap = new HashMap<Item, ConfigNamed>();
 		public static boolean disableDiamondNuggetOreDict;
-		public static boolean disableDiamondToNuggets;
-		public static boolean disableNuggetsToDiamond;
 		
 	//THROWN BITS
 		public static boolean disableIgniteEntities;

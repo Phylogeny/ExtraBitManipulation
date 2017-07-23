@@ -4,7 +4,7 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -13,15 +13,15 @@ version = minecraft_version + "-" + version
 group = "com.phylogeny.extrabitmanipulation"
 archivesBaseName = "ExtraBitManipulation"
 
-sourceCompatibility = targetCompatibility = "1.6"
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.6"
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 minecraft {
     version = minecraft_version + "-" + forge_version
     runDir = "run"
-    mappings = "snapshot_20161220"
+    mappings = "snapshot_20170624"
     replaceIn "Reference.java"
     replace "@VERSION@", project.version
     replace "@UPDATE@", update_json

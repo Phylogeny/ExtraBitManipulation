@@ -42,13 +42,13 @@ public class PacketSetShapeType implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetShapeType message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					BitToolSettingsHelper.setShapeType(player, player.getHeldItemMainhand(), message.isCurved, message.shapeType, null);
 				}
 			});

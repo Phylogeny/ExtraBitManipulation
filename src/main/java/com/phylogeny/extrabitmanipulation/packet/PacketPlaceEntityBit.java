@@ -37,9 +37,9 @@ public class PacketPlaceEntityBit implements IMessage
 	{
 		ByteBufUtils.writeItemStack(buffer, bitStack);
 		buffer.writeLong(pos.toLong());
-		buffer.writeDouble(hitVec.xCoord);
-		buffer.writeDouble(hitVec.yCoord);
-		buffer.writeDouble(hitVec.zCoord);
+		buffer.writeDouble(hitVec.x);
+		buffer.writeDouble(hitVec.y);
+		buffer.writeDouble(hitVec.z);
 		buffer.writeInt(sideHit.ordinal());
 	}
 	

@@ -15,7 +15,7 @@ public class GuiButtonSelect extends GuiButtonCustom
 	@Override
 	protected void drawCustomRect()
 	{
-		drawRect(xPosition, yPosition, xPosition + width, yPosition + height, selected ? colorFirst : colorSecond);
+		drawRect(x, y, x + width, y + height, selected ? colorFirst : colorSecond);
 	}
 	
 }

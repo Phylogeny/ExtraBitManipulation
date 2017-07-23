@@ -64,9 +64,6 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemPropertyMap, "Item Properties",
 				"Configures the damage characteristics and default data of the Bit Tools", CommonEntry.class);
-		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
-				configElementsCommon, Configs.itemRecipeMap,
-				"Recipes", "Configures the recipe for the Bit Tools and the disabling of diamond nugget recipes / Ore Dictionary registration", RecipeEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, configElementsClient, Configs.itemShapes,
 				ClientEntry.class, ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
@@ -169,21 +166,12 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	private static void addDummyElementsOfProcessedChildElementSetsToDummyElement(Configuration configFile, List<IConfigElement> configElements,
 			Map<Item, ConfigNamed> configs, String name, String toolTip, Class configClass)
 	{
-		int len = configs.size();
-		boolean isRecipe = configClass == RecipeEntry.class;
-		if (!isRecipe)
-			len *= 2;
-		
-		len += 2;
+		int len = configs.size() * 2 + 2;
 		String[] processedNames = new String[len];
 		int i = 0;
 		for (Item item : configs.keySet())
 		{
-			ConfigNamed config = configs.get(item);
-			String itemTitle = config.getTitle();
-			processedNames[i++] = itemTitle + (isRecipe ? " Recipe" : " Properties");
-			if (!isRecipe)
-				processedNames[i++] = "Configures the damage characteristics of the " + itemTitle;
+			processedNames[i++] = "Configures the damage characteristics of the " + configs.get(item).getTitle() + " Properties";
 		}
 		processedNames[len - 2] = name;
 		processedNames[len - 1] = toolTip;
@@ -198,29 +186,11 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		if (len < 2)
 			return;
 		
-		boolean isRecipe = configClass == RecipeEntry.class;
-		if (isRecipe)
-			childElements.addAll(getChildElements(configFile, ConfigHandlerExtraBitManipulation.RECIPES_DISABLE));
-		
-		int inc = isRecipe ? 1 : 2;
-		for (int i = 0; i < names.length - 2; i += inc)
+		for (int i = 0; i < names.length - 2; i += 2)
 		{
-			if (isRecipe)
-			{
-				addRecipeChildElementsToDummyElement(names[i], childElements, configClass);
-			}
-			else
-			{
-				addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
-			}
+			addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
 		}
 		addElementsToDummyElement(names[len - 2], names[len - 1], configElements, childElements, configClass);
-	}
-	
-	private static void addRecipeChildElementsToDummyElement(String name, List<IConfigElement> configElements, Class configClass)
-	{
-		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
-				name, "Configures the recipe type and configuration for the " + name, configElements, configClass);
 	}
 	
 	private static void addElementsToDummyElement(String text, String toolTip,
@@ -234,8 +204,6 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		else
 		{
 			dummyElement = new DummyCategoryElement(text, toolTip, childElements, configClass);
-			if (configClass == RecipeEntry.class)
-				dummyElement.setRequiresMcRestart(true);
 		}
 		configElements.add(dummyElement);
 	}
@@ -325,16 +293,6 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		protected String getFileName()
 		{
 			return "common";
-		}
-		
-	}
-	
-	public static class RecipeEntry extends CommonEntry
-	{
-		
-		public RecipeEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
-		{
-			super(owningScreen, owningEntryList, prop);
 		}
 		
 	}

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
@@ -30,6 +32,7 @@ import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -352,7 +355,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flag)
 	{
 		boolean shiftDown = GuiScreen.isShiftKeyDown();
 		boolean ctrlDown = GuiScreen.isCtrlKeyDown();

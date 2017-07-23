@@ -286,7 +286,7 @@ public class BitInventoryHelper
 		if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops") && !world.restoringBlockSnapshots)
 		{
 			Vec3d spawnPoint = shape.getRandomInternalPoint(world, pos);
-			EntityItem entityitem = new EntityItem(world, spawnPoint.xCoord, spawnPoint.yCoord - 0.25, spawnPoint.zCoord, stack);
+			EntityItem entityitem = new EntityItem(world, spawnPoint.x, spawnPoint.y - 0.25, spawnPoint.z, stack);
 			entityitem.setDefaultPickupDelay();
 			world.spawnEntity(entityitem);
 		}

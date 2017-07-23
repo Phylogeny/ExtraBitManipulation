@@ -47,13 +47,13 @@ public class PacketSetBitStack implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetBitStack message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					try
 					{
 						BitToolSettingsHelper.setBitStack(player, player.getHeldItemMainhand(), message.isWire,

@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" D ",
+		"D D",
+		" D "
+	],
+	"key": {
+		"D": {
+			"type": "forge:ore_dict",
+			"ore": "nuggetDiamond"
+		}
+	},
+	"result": {
+		"item": "extrabitmanipulation:sculpting_loop_head"
+	}
+}

@@ -14,12 +14,12 @@ public class GuiButtonCustom extends GuiButtonBase
 	protected void drawCustomRect() {}
 	
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY)
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
 	{
 		if (!visible)
 			return;
 		
-		super.drawButton(mc, mouseX, mouseY);
+		super.drawButton(mc, mouseX, mouseY, partialTicks);
 		GlStateManager.enableBlend();
 		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -37,8 +37,7 @@ public class GuiButtonCustom extends GuiButtonBase
 		{
 			colorText = 16777120;
 		}
-		mc.fontRendererObj.drawString(displayString, xPosition + width / 2 - mc.fontRendererObj.getStringWidth(displayString) / 2,
-				yPosition + (height - 8) / 2, colorText);
+		mc.fontRenderer.drawString(displayString, x + width / 2 - mc.fontRenderer.getStringWidth(displayString) / 2, y + (height - 8) / 2, colorText);
 	}
 	
 }

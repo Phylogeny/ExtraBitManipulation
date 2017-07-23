@@ -1,17 +1,5 @@
 package com.phylogeny.extrabitmanipulation.proxy;
 
-import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
-import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
-import com.phylogeny.extrabitmanipulation.entity.EntityBit;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
-import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import mod.chiselsandbits.core.ChiselsAndBits;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.BehaviorProjectileDispense;
@@ -27,14 +15,27 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
+import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
+import com.phylogeny.extrabitmanipulation.entity.EntityBit;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
+import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
 public class ProxyCommon implements IGuiHandler
 {
 	
 	public void preinit(FMLPreInitializationEvent event)
 	{
-		ItemsExtraBitManipulation.itemsInit();
+		ItemsExtraBitManipulation.itemsInit(event);
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
+		MinecraftForge.EVENT_BUS.register(new ItemsExtraBitManipulation());
 		PacketRegistration.registerPackets();
 		ResourceLocation name = new ResourceLocation(Reference.MOD_ID, "entity_bit");
 		EntityRegistry.registerModEntity(name, EntityBit.class, name.toString(), 0, ExtraBitManipulation.instance, 64, 3, false);

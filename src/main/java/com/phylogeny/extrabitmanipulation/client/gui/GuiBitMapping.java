@@ -359,7 +359,7 @@ public class GuiBitMapping extends GuiContainer
 		int l = guiLeft + 128;
 		int t = guiTop + 21;
 		previewStackBox = new AxisAlignedBB(l, t, -1, l + 107, t + 100, 1);
-		searchField = new GuiTextField(6, fontRendererObj, guiLeft + 44, guiTop + 8, 65, 9);
+		searchField = new GuiTextField(6, fontRenderer, guiLeft + 44, guiTop + 8, 65, 9);
 		searchField.setEnableBackgroundDrawing(false);
 		searchField.setTextColor(-1);
 		searchField.setText(searchText);
@@ -370,7 +370,7 @@ public class GuiBitMapping extends GuiContainer
 			blockToBitMapPermanent = new HashMap<IBlockState, IBitBrush>();
 			initDesignMode();
 			String buttonText = "Save Changes";
-			int buttonWidth = fontRendererObj.getStringWidth(buttonText) + 6;
+			int buttonWidth = fontRenderer.getStringWidth(buttonText) + 6;
 			buttonList.add(new GuiButtonExt(0, guiLeft + xSize - buttonWidth - 5, guiTop + 5, buttonWidth, 14, buttonText));
 		}
 		else
@@ -580,8 +580,8 @@ public class GuiBitMapping extends GuiContainer
 			}
 			else
 			{
-				double angleX = previewStackAngles.xCoord - (deltaY / previewStackScale) * 4.5F;
-				double angleY = previewStackAngles.yCoord - (deltaX / previewStackScale) * 4.5F;
+				double angleX = previewStackAngles.x - (deltaY / previewStackScale) * 4.5F;
+				double angleY = previewStackAngles.y - (deltaX / previewStackScale) * 4.5F;
 				if (angleX < -90 || angleX > 90)
 					angleX = 90 * (angleX > 0 ? 1 : -1);
 				
@@ -652,7 +652,7 @@ public class GuiBitMapping extends GuiContainer
 	
 	private boolean isCursorInsidePreviewStackBox(int mouseX, int mouseY)
 	{
-		return previewStackBox.isVecInside(new Vec3d(mouseX, mouseY, 0));
+		return previewStackBox.contains(new Vec3d(mouseX, mouseY, 0));
 	}
 	
 	@Override
@@ -669,12 +669,14 @@ public class GuiBitMapping extends GuiContainer
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
+		drawDefaultBackground();
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		if (previewStackBoxClicked)
+			return;
+		
+		renderHoveredToolTip(mouseX, mouseY);
 		for (int i = 0; i < bitMappingList.getSize(); i++)
 		{
-			if (previewStackBoxClicked)
-				continue;
-			
 			GuiListBitMappingEntry entry = bitMappingList.getListEntry(i);
 			if (mouseY >= bitMappingList.top && mouseY <= bitMappingList.bottom)
 			{
@@ -684,7 +686,7 @@ public class GuiBitMapping extends GuiContainer
 				int l = bitMappingList.top + 4 + i * (bitMappingList.slotHeight) - bitMappingList.getAmountScrolled();
 				AxisAlignedBB slot = new AxisAlignedBB(k, l, -1, k + slotWidth, l + bitMappingList.slotHeight - 5, 1);
 				Vec3d mousePos = new Vec3d(mouseX, mouseY, 0);
-				if (slot.offset(38, 0, 0).isVecInside(mousePos))
+				if (slot.offset(38, 0, 0).contains(mousePos))
 				{
 					ArrayList<String> hoverTextList = new ArrayList<String>();
 					final String unmappedText = "The blockstate is currently mapped to nothing, as it cannot be chiseled.";
@@ -727,20 +729,18 @@ public class GuiBitMapping extends GuiContainer
 							hoverTextList.add(TextFormatting.AQUA + "  - Midle mouse click blocks or bits in crative mode to get stack.");
 						}
 					}
-					drawHoveringText(hoverTextList, mouseX, mouseY, mc.fontRendererObj);
+					drawHoveringText(hoverTextList, mouseX, mouseY, mc.fontRenderer);
 				}
-				else if (slot.isVecInside(mousePos))
+				else if (slot.contains(mousePos))
 				{
 					boolean stateMode = designMode || buttonStates.selected;
 					drawHoveringText(Arrays.<String>asList(new String[] {TextFormatting.DARK_RED + (stateMode ? "State" : "Block")
 							+ ": " + TextFormatting.RESET + (stateMode ? entry.getState().toString()
-									: Block.REGISTRY.getNameForObject(entry.getState().getBlock()))}), mouseX, mouseY, mc.fontRendererObj);
+									: Block.REGISTRY.getNameForObject(entry.getState().getBlock()))}), mouseX, mouseY, mc.fontRenderer);
 				}
 				RenderHelper.disableStandardItemLighting();
 			}
 		}
-		if (previewStackBoxClicked)
-			return;
 		
 		for (GuiButton button : buttonList)
 		{
@@ -750,14 +750,14 @@ public class GuiBitMapping extends GuiContainer
 			GuiButtonBase buttonBase = (GuiButtonBase) button;
 			if (button.isMouseOver() && button.visible)
 				drawHoveringText(Arrays.<String>asList(new String[] {button instanceof GuiButtonTextured && buttonBase.selected
-						? ((GuiButtonTextured) button).getSelectedHoverText() : buttonBase.getHoverText()}), mouseX, mouseY, mc.fontRendererObj);
+						? ((GuiButtonTextured) button).getSelectedHoverText() : buttonBase.getHoverText()}), mouseX, mouseY, mc.fontRenderer);
 		}
 		if (!designMode)
 		{
 			for (int i = 0; i < tabButtons.length; i++)
 			{
 				if (tabButtons[i].isMouseOver())
-					drawHoveringText(Arrays.<String>asList(new String[] {tabButtons[i].getHoverText()}), mouseX, mouseY, mc.fontRendererObj);
+					drawHoveringText(Arrays.<String>asList(new String[] {tabButtons[i].getHoverText()}), mouseX, mouseY, mc.fontRenderer);
 			}
 		}
 		GlStateManager.enableLighting();
@@ -792,12 +792,12 @@ public class GuiBitMapping extends GuiContainer
 		GlStateManager.disableLighting();
 		searchField.drawTextBox();
 		if (!searchField.isFocused() && searchField.getText().isEmpty())
-			fontRendererObj.drawString("search", searchField.xPosition, searchField.yPosition, -10197916);
+			fontRenderer.drawString("search", searchField.x, searchField.y, -10197916);
 		
 		if (designMode)
 		{
-			fontRendererObj.drawString("Design", getGuiLeft() + 103, guiTop + 8, 4210752);
-			fontRendererObj.drawString(mc.player.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, 4210752);
+			fontRenderer.drawString("Design", getGuiLeft() + 103, guiTop + 8, 4210752);
+			fontRenderer.drawString(mc.player.inventory.getDisplayName().getUnformattedText(), guiLeft + 60, guiTop + ySize - 96 + 2, 4210752);
 		}
 		else
 		{
@@ -806,14 +806,14 @@ public class GuiBitMapping extends GuiContainer
 				GuiButtonTab tab = tabButtons[i];
 				tab.renderIconStack();
 				if (tab.selected)
-					fontRendererObj.drawString(TAB_HOVER_TEXT[i], getGuiLeft() + 103, guiTop + 7, 4210752);
+					fontRenderer.drawString(TAB_HOVER_TEXT[i], getGuiLeft() + 103, guiTop + 7, 4210752);
 			}
 		}
 		if (!designMode && showSettings)
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, 0.5, 0);
-			fontRendererObj.drawString("Map Per Tool", getGuiLeft() + 133, guiTop + 29, 4210752);
+			fontRenderer.drawString("Map Per Tool", getGuiLeft() + 133, guiTop + 29, 4210752);
 			GlStateManager.popMatrix();
 		}
 		else
@@ -830,19 +830,18 @@ public class GuiBitMapping extends GuiContainer
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.5F + previewStackOffsetX, previewStackOffsetY, 0);
 				RenderState.renderStateModelIntoGUI(null, RenderState.getItemModelWithOverrides(previewStack), previewStack, false,
-						guiLeft + 167, guiTop + 61, (float) previewStackAngles.xCoord,
-						(float) previewStackAngles.yCoord, previewStackScale);
+						guiLeft + 167, guiTop + 61, (float) previewStackAngles.x, (float) previewStackAngles.y, previewStackScale);
 				GlStateManager.popMatrix();
 				RenderHelper.disableStandardItemLighting();
 				GL11.glDisable(GL11.GL_SCISSOR_TEST);
 			}
 			else
 			{
-				fontRendererObj.drawSplitString("No Preview   Available", getGuiLeft() + 131, guiTop + 63, 60, 4210752);
+				fontRenderer.drawSplitString("No Preview   Available", getGuiLeft() + 131, guiTop + 63, 60, 4210752);
 			}
 		}
 		if (bitMappingList.getSize() == 0)
-			fontRendererObj.drawSplitString("No " + (designMode || buttonStates.selected ? "States" : "Blocks") 
+			fontRenderer.drawSplitString("No " + (designMode || buttonStates.selected ? "States" : "Blocks") 
 					+ "      Found", getGuiLeft() + 31, guiTop + 63, 60, 4210752);
 		
 		RenderHelper.enableGUIStandardItemLighting();
@@ -855,7 +854,7 @@ public class GuiBitMapping extends GuiContainer
 			font = stack.getItem().getFontRenderer(stack);
 		
 		if (font == null)
-			font = fontRendererObj;
+			font = fontRenderer;
 		
 		int x = mouseX - 8;
 		int y = mouseY - 8;

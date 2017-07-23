@@ -38,13 +38,13 @@ public class PacketSetShapeOffset implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetShapeOffset message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					BitToolSettingsHelper.setShapeOffset(player, player.getHeldItemMainhand(), message.offsetShape, null);
 				}
 			});

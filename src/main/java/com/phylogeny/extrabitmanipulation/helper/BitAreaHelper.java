@@ -125,12 +125,12 @@ public class BitAreaHelper
 		}
 		else
 		{
-			int hitX = (int) Math.round(hit.xCoord);
-			int hitY = (int) Math.round(hit.yCoord);
-			int hitZ = (int) Math.round(hit.zCoord);
+			int hitX = (int) Math.round(hit.x);
+			int hitY = (int) Math.round(hit.y);
+			int hitZ = (int) Math.round(hit.z);
 			boxBounding = new AxisAlignedBB(hitX, hitY, hitZ, hitX, hitY, hitZ);
-			boxPoint = boxBounding.expandXyz(0.005);
-			boxBounding = boxBounding.expandXyz(8);
+			boxPoint = boxBounding.grow(0.005);
+			boxBounding = boxBounding.grow(8);
 			if (modelAreaMode == 1)
 			{
 				float yaw = Math.abs(player.rotationYaw) % 360;

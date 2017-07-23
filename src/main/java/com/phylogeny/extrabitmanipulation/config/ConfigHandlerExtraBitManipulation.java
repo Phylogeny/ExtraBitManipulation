@@ -3,18 +3,16 @@ package com.phylogeny.extrabitmanipulation.config;
 import java.io.File;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.Level;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.LogHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
@@ -523,26 +521,9 @@ public class ConfigHandlerExtraBitManipulation
 			}
 			
 			//ITEM RECIPES
-			for (Item item : Configs.itemRecipeMap.keySet())
-			{
-				ConfigRecipe configRecipe = (ConfigRecipe) Configs.itemRecipeMap.get(item);
-				String itemTitle = configRecipe.getTitle();
-				String category = itemTitle + " Recipe";
-				configRecipe.isEnabled = getRecipeEnabled(itemTitle, category, configRecipe.getIsEnabledDefault());
-				configRecipe.isShaped = getRecipeShaped(itemTitle, category, configRecipe.getIsShapedDefault());
-				configRecipe.useOreDictionary = getRecipeOreDictionary(itemTitle, category, configRecipe.getUseOreDictionaryDefault());
-				configRecipe.recipe = getRecipeList(itemTitle, category, configRecipe.getRecipeDefault());
-			}
-			
 			Configs.disableDiamondNuggetOreDict = configFileCommon.getBoolean("Disable Diamond Nugget Ore Dict", RECIPES_DISABLE, false,
 					"Disables the registration of the diamond nugget with the Ore Dictionary. (This will effectively disable the 9 nuggets " +
 					"to 1 diamond recipe, since it is uses the Ore Dictionary)");
-			
-			Configs.disableDiamondToNuggets = configFileCommon.getBoolean("Disable Diamond to Nuggets Recipe", RECIPES_DISABLE, false,
-					"Disables the recipe of 1 diamond to 9 diamond nuggets (i.e. 9 instances of 'nuggetDiamond' Ore Dictionary entries).");
-			
-			Configs.disableNuggetsToDiamond = configFileCommon.getBoolean("Disable Nuggets to Diamond Recipe", RECIPES_DISABLE, false,
-					"Disables the recipe of 9 diamond nuggets to 1 diamond.");
 			
 			//THROWN BIT PROPERTIES
 			Configs.disableIgniteEntities = disableThrownLiquidBitProperty("Ignite Entities", true, true);
@@ -633,7 +614,7 @@ public class ConfigHandlerExtraBitManipulation
 		}
 		catch (Exception e)
 		{
-			FMLLog.log(Reference.MOD_NAME, Level.ERROR, " configurations failed to update.");
+			LogHelper.getLogger().error("configurations failed to update.");
 			e.printStackTrace();
 		}
 		finally
@@ -814,38 +795,6 @@ public class ConfigHandlerExtraBitManipulation
 				"when used. (default = " + defaultValue + ")");
 	}
 	
-	private static boolean getRecipeEnabled(String name, String category, boolean defaultValue)
-	{
-		return configFileCommon.getBoolean("Is Enabled", category, defaultValue,
-				"If set to true, the " + name + " will be craftable, otherwise it will not be. (default = " + defaultValue + ")");
-	}
-	
-	private static boolean getRecipeShaped(String name, String category, boolean defaultValue)
-	{
-		return configFileCommon.getBoolean("Is Shaped", category, defaultValue,
-				"If set to true, the recipe for the " + name + " will be shaped, and thus depend on the order/number of elements." +
-				". If set to false, it will be shapeless and will be order-independent. (default = " + defaultValue + ")");
-	}
-	
-	private static boolean getRecipeOreDictionary(String name, String category, boolean defaultValue)
-	{
-		return configFileCommon.getBoolean("Use Ore Dictionary", category, defaultValue,
-				"If set to true, the string names given for the " + name + " recipe will be used to look up entries in the Ore Dictionary. " +
-				"If set to false, they will be used to look up Items by name or ID. (default = " + defaultValue + ")");
-	}
-	
-	private static String[] getRecipeList(String name, String category, String[] defaultValue)
-	{
-		return configFileCommon.getStringList("Recipe", category, defaultValue,
-				"The Ore Dictionary names or Item names/IDs of components of the crafting recipe for the " + name + ". The elements of the list " +
-				"correspond to the slots of the crafting grid (left to right / top to bottom). If the recipe shaped, the list must have 4 " +
-				"elements to be a 2x2 recipe, 9 elements to be a 3x3 recipe, etc (i.e. must make a whole grid; root n elements for an n by n " +
-				"grid). Inputting an incorrect number of elements will result in use of the default recipe. Empty strings denote empty slots " +
-				"in the recipe. If the recipe shapeless, order is not important, and duplicates or empty strings will be ignored. Whether the " +
-				"recipe is shaped or shapeless, strings that are not found in the Ore Dictionary or are not valid item names/IDs will be replaced " +
-				"with empty spaces. The default recipe will be used if none of the provided strings are found.");
-	}
-	
 	private static double getDouble(Configuration configFile, String name, String category,
 			double defaultValue, double minValue, double maxValue, String comment)
 	{
@@ -861,8 +810,8 @@ public class ConfigHandlerExtraBitManipulation
 		}
 		catch (Exception e)
 		{
-			FMLLog.log(Reference.MOD_NAME, Level.ERROR, "Configuration '" +
-		name + "' could not be parsed to a double. Default value of " + defaultValue + " was restored and used instead.");
+			LogHelper.getLogger().error("Configuration '" + name + "' could not be parsed to a double. " +
+					"Default value of " + defaultValue + " was restored and used instead.");
 		}
 		return defaultValue;
 	}

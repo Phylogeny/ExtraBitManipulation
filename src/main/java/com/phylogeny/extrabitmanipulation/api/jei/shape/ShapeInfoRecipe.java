@@ -73,24 +73,24 @@ public class ShapeInfoRecipe extends InfoRecipeBase
 		yPos += slotDrawable.getHeight() + 4;
 		Gui.drawScaledCustomSizeModalRect(xPos, yPos, 0, 0, imageWidth, imageHeight, width, height, imageWidth, imageHeight);
 		xPos = 69;
-		int nameWidth = minecraft.fontRendererObj.getStringWidth(name);
+		int nameWidth = minecraft.fontRenderer.getStringWidth(name);
 		if (nameWidth < 103)
 			xPos += 52 - nameWidth * 0.5;
 		
-		yPos = slotDrawable.getHeight() / 2 - minecraft.fontRendererObj.FONT_HEIGHT / 2;
-		minecraft.fontRendererObj.drawString(name, xPos, yPos, Color.black.getRGB());
+		yPos = slotDrawable.getHeight() / 2 - minecraft.fontRenderer.FONT_HEIGHT / 2;
+		minecraft.fontRenderer.drawString(name, xPos, yPos, Color.black.getRGB());
 		boolean isSloped = imageIndex == 2 || imageIndex == 4;
 		xPos = isNarrow ? 51 : 33;
 		yPos = imageIndex == 3 ? 25 : (isSloped ? 30 : 28);
-		minecraft.fontRendererObj.drawString(textSolid, xPos - minecraft.fontRendererObj.getStringWidth(textSolid) / 2, yPos, Color.black.getRGB());
+		minecraft.fontRenderer.drawString(textSolid, xPos - minecraft.fontRenderer.getStringWidth(textSolid) / 2, yPos, Color.black.getRGB());
 		xPos = 109;
-		minecraft.fontRendererObj.drawString(textHollow, xPos - minecraft.fontRendererObj.getStringWidth(textHollow) / 2, yPos, Color.black.getRGB());
+		minecraft.fontRenderer.drawString(textHollow, xPos - minecraft.fontRenderer.getStringWidth(textHollow) / 2, yPos, Color.black.getRGB());
 		if (imageIndex % 3 != 0)
 		{
 			xPos = 79;
 			yPos = (isSloped ? 42 : 36);
-			minecraft.fontRendererObj.drawString(textClosed, xPos - minecraft.fontRendererObj.getStringWidth(textClosed) / 2, yPos, Color.black.getRGB());
-			minecraft.fontRendererObj.drawString(textOpen, xPos + 55 - minecraft.fontRendererObj.getStringWidth(textOpen) / 2, yPos, Color.black.getRGB());
+			minecraft.fontRenderer.drawString(textClosed, xPos - minecraft.fontRenderer.getStringWidth(textClosed) / 2, yPos, Color.black.getRGB());
+			minecraft.fontRenderer.drawString(textOpen, xPos + 55 - minecraft.fontRenderer.getStringWidth(textOpen) / 2, yPos, Color.black.getRGB());
 		}
 	}
 	

@@ -38,13 +38,13 @@ public class PacketSetEndsOpen implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetEndsOpen message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					BitToolSettingsHelper.setEndsOpen(player, player.getHeldItemMainhand(), message.openEnds, null);
 				}
 			});

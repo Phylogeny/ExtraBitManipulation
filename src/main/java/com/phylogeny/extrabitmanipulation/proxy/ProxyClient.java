@@ -30,20 +30,7 @@ public class ProxyClient extends ProxyCommon
 	{
 		super.preinit(event);
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-		register(ItemsExtraBitManipulation.diamondNugget);
-		register(ItemsExtraBitManipulation.bitWrench);
-		register(ItemsExtraBitManipulation.sculptingLoop);
-		register(ItemsExtraBitManipulation.sculptingSquare);
-		register(ItemsExtraBitManipulation.sculptingSpadeCurved);
-		register(ItemsExtraBitManipulation.sculptingSpadeSquared);
-		register(ItemsExtraBitManipulation.modelingTool);
-		register(ItemsExtraBitManipulation.modelingToolHead);
-		register(ItemsExtraBitManipulation.bitWrenchHead);
-		register(ItemsExtraBitManipulation.sculptingLoopHead);
-		register(ItemsExtraBitManipulation.sculptingSquareHead);
-		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
-		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
-		SoundsExtraBitManipulation.registerSounds();
+		MinecraftForge.EVENT_BUS.register(new SoundsExtraBitManipulation());
 		RenderingRegistry.registerEntityRenderingHandler(EntityBit.class, new IRenderFactory<EntityBit>() {
 			@Override
 			public Render<EntityBit> createRenderFor(RenderManager manager)
@@ -71,7 +58,24 @@ public class ProxyClient extends ProxyCommon
 		Configs.initModelingBitMaps();
 	}
 	
-	private void register(Item item)
+	public static void registerModels()
+	{
+		register(ItemsExtraBitManipulation.diamondNugget);
+		register(ItemsExtraBitManipulation.bitWrench);
+		register(ItemsExtraBitManipulation.sculptingLoop);
+		register(ItemsExtraBitManipulation.sculptingSquare);
+		register(ItemsExtraBitManipulation.sculptingSpadeCurved);
+		register(ItemsExtraBitManipulation.sculptingSpadeSquared);
+		register(ItemsExtraBitManipulation.modelingTool);
+		register(ItemsExtraBitManipulation.modelingToolHead);
+		register(ItemsExtraBitManipulation.bitWrenchHead);
+		register(ItemsExtraBitManipulation.sculptingLoopHead);
+		register(ItemsExtraBitManipulation.sculptingSquareHead);
+		register(ItemsExtraBitManipulation.sculptingSpadeCurvedHead);
+		register(ItemsExtraBitManipulation.sculptingSpadeSquaredHead);
+	}
+	
+	private static void register(Item item)
 	{
 		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(
 				new ResourceLocation(Reference.MOD_ID, (((ItemExtraBitManipulationBase) item).getName())), "inventory"));

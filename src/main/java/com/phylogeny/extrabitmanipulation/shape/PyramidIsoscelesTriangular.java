@@ -77,9 +77,9 @@ public class PyramidIsoscelesTriangular extends AsymmetricalShape
 			offsetCenter = c - (w * ((float) Math.sqrt(wsq + 4 * hsq) - w)) / (4 * h);
 		}
 		Vec3d offset = getInnerTriangularPyramidOffset(centerY, centerZ, offsetCenter, a, b, c, wallThickness);
-		float offsetZ = (float) (inverted ? -offset.zCoord : offset.zCoord);
+		float offsetZ = (float) (inverted ? -offset.z : offset.z);
 		center1Inset = centerZ - (isFlipped ? -offsetZ : offsetZ);
-		center2Inset = centerY - (float) (inverted ? -offset.yCoord : offset.yCoord);
+		center2Inset = centerY - (float) (inverted ? -offset.y : offset.y);
 		if (isFlipped)
 			offsetCenter *= -1;
 		

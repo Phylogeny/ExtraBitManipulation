@@ -37,13 +37,13 @@ public class PacketCursorStack implements IMessage
 		@Override
 		public IMessage onMessage(final PacketCursorStack message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					ctx.getServerHandler().playerEntity.inventory.setItemStack(message.stack);
+					ctx.getServerHandler().player.inventory.setItemStack(message.stack);
 				}
 			});
 			return null;

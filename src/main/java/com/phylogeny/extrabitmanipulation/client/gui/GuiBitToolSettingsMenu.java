@@ -113,7 +113,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 		createLabel(title, x, y);
 		for (int i = 0; i < buttonTexts.length; i++)
 		{
-			int buttonWidth = fontRendererObj.getStringWidth(buttonTexts[i]) + 6;
+			int buttonWidth = fontRenderer.getStringWidth(buttonTexts[i]) + 6;
 			buttons.addButton(new GuiButtonSetting(buttonCount++, x, y, buttonWidth, 12, buttonTexts[i], "", -16726016, -8882056));
 			x += buttonWidth + 4;
 		}
@@ -124,7 +124,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 	
 	protected void createLabel(String title, int x, int y)
 	{
-		GuiLabel label = new GuiLabel(fontRendererObj, buttonCount, x - fontRendererObj.getStringWidth(title) - 10, y + 1, width, 13, -1);
+		GuiLabel label = new GuiLabel(fontRenderer, buttonCount, x - fontRenderer.getStringWidth(title) - 10, y + 1, width, 13, -1);
 		label.addLine(title + "");
 		labelList.add(label);
 	}
@@ -244,7 +244,7 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 				}
 			}
 			boolean selected = (this.selected && noneElseHovered) || isMouseOver();
-			drawRect(xPosition, yPosition, xPosition + width, yPosition + height, selected ? colorFirst : colorSecond);
+			drawRect(x, y, x + width, y + height, selected ? colorFirst : colorSecond);
 		}
 		
 		public void setButtonList(List<GuiButtonSetting> buttons)
@@ -270,12 +270,11 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 			{
 				if (dragging)
 				{
-					sliderValue = (mouseX - (xPosition + 4)) / (float)(width - 8);
+					sliderValue = (mouseX - (x + 4)) / (float)(width - 8);
 					updateSlider();
 				}
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, xPosition + (int)(sliderValue * (width - 8)),
-						yPosition, 0, 66, 8, height, 200, 20, 2, 3, 2, 2, zLevel);
+				GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, x + (int)(sliderValue * (width - 8)), y, 0, 66, 8, height, 200, 20, 2, 3, 2, 2, zLevel);
 			}
 		}
 		

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
@@ -14,6 +16,7 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -154,9 +157,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 		boolean globalMode = sculptingData.getSculptMode() == 1;
 		if (drawnStartPoint != null || globalMode || isValidBlock(api, world, pos))
 		{
-			float hitX = (float) hit.xCoord - pos.getX();
-			float hitY = (float) hit.yCoord - pos.getY();
-			float hitZ = (float) hit.zCoord - pos.getZ();
+			float hitX = (float) hit.x - pos.getX();
+			float hitY = (float) hit.y - pos.getY();
+			float hitZ = (float) hit.z - pos.getZ();
 			IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, side, pos, false);
 			if (bitLoc != null)
 			{
@@ -189,9 +192,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 						case 6: shape = new PyramidRectangular(); break;
 						default: shape = new Ellipsoid(); break;
 					}
-					float x3 = (float) drawnStartPoint.xCoord;
-					float y3 = (float) drawnStartPoint.yCoord;
-					float z3 = (float) drawnStartPoint.zCoord;
+					float x3 = (float) drawnStartPoint.x;
+					float y3 = (float) drawnStartPoint.y;
+					float z3 = (float) drawnStartPoint.z;
 					float minX = addPaddingToMin(x2, x3, padding);
 					float minY = addPaddingToMin(y2, y3, padding);
 					float minZ = addPaddingToMin(z2, z3, padding);
@@ -250,12 +253,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 						AsymmetricalShape asymmetricalShape = (AsymmetricalShape) shape;
 						asymmetricalShape.setEquilateral(true);
 						float radius = addPadding(semiDiameter, padding) - f;
-						asymmetricalShape.init(x2 + f * (float) vecOffset.xCoord, y2 + f * (float) vecOffset.yCoord, z2 + f * (float) vecOffset.zCoord, radius,
+						asymmetricalShape.init(x2 + f * (float) vecOffset.x, y2 + f * (float) vecOffset.y, z2 + f * (float) vecOffset.z, radius,
 								radius, radius, direction, hollowShape, wallThickness, openEnds);
 					}
 					else
 					{
-						((SymmetricalShape) shape).init(x2 + f * (float) vecOffset.xCoord, y2 + f * (float) vecOffset.yCoord, z2 + f * (float) vecOffset.zCoord,
+						((SymmetricalShape) shape).init(x2 + f * (float) vecOffset.x, y2 + f * (float) vecOffset.y, z2 + f * (float) vecOffset.z,
 								addPadding(semiDiameter, padding) - f, direction, hollowShape, wallThickness, openEnds);
 					}
 				}
@@ -353,12 +356,12 @@ public class ItemSculptingTool extends ItemBitToolBase
 		{
 			switch (dir.ordinal())
 			{
-				case 0:	return hit.yCoord > pos.getY();
-				case 1:	return hit.yCoord < pos.getY() + 1;
-				case 2:	return hit.zCoord > pos.getZ();
-				case 3:	return hit.zCoord < pos.getZ() + 1;
-				case 4:	return hit.xCoord > pos.getX();
-				case 5:	return hit.xCoord < pos.getX() + 1;
+				case 0:	return hit.y > pos.getY();
+				case 1:	return hit.y < pos.getY() + 1;
+				case 2:	return hit.z > pos.getZ();
+				case 3:	return hit.z < pos.getZ() + 1;
+				case 4:	return hit.x > pos.getX();
+				case 5:	return hit.x < pos.getX() + 1;
 			}
 		}
 		return false;
@@ -434,7 +437,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flag)
 	{
 		boolean shiftDown = GuiScreen.isShiftKeyDown();
 		boolean ctrlDown = GuiScreen.isCtrlKeyDown();

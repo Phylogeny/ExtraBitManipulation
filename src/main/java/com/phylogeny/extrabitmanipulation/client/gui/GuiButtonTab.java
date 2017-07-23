@@ -23,23 +23,23 @@ public class GuiButtonTab extends GuiButtonBase
 	}
 	
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY)
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
 	{
 		if (!visible)
 			return;
 		
-		super.drawButton(mc, mouseX, mouseY);
+		super.drawButton(mc, mouseX, mouseY, partialTicks);
 		
 		if (uWidth > 0 && vHeight > 0)
 		{
 			mc.getTextureManager().bindTexture(GuiBitMapping.GUI_TEXTURE);
-			drawScaledCustomSizeModalRect(xPosition + 4 + getOffsetX(), yPosition + 4, u, v, uWidth, vHeight, 19, 18, 256, 256);
+			drawScaledCustomSizeModalRect(x + 4 + getOffsetX(), y + 4, u, v, uWidth, vHeight, 19, 18, 256, 256);
 		}
 		if (selected)
 		{
 			mc.getTextureManager().bindTexture(GuiBitMapping.GUI_TEXTURE);
 			GlStateManager.color(1, 1, 1);
-			drawTexturedModalRect(xPosition - 2, yPosition, 67, 219, 29, 26);
+			drawTexturedModalRect(x - 2, y, 67, 219, 29, 26);
 		}
 	}
 
@@ -66,7 +66,7 @@ public class GuiButtonTab extends GuiButtonBase
 		RenderHelper.enableGUIStandardItemLighting();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0.5, 0, 0);
-		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(iconStack, xPosition + 5 + getOffsetX(), yPosition + 5);
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(iconStack, x + 5 + getOffsetX(), y + 5);
 		GlStateManager.popMatrix();
 		RenderHelper.disableStandardItemLighting();
 	}

@@ -31,13 +31,13 @@ public class PacketThrowBit implements IMessage
 		@Override
 		public IMessage onMessage(final PacketThrowBit message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					ItemStack stack = player.getHeldItemMainhand();
 					EntityBit entityBit = new EntityBit(player.world, player, stack);
 					entityBit.setAim(player, player.rotationPitch, player.rotationYaw, Configs.thrownBitVelocity, Configs.thrownBitInaccuracy);

@@ -44,12 +44,12 @@ public class ModelInfoRecipe extends InfoRecipeBase
 		yPos += slotDrawable.getHeight() + 4;
 		Gui.drawScaledCustomSizeModalRect(xPos, yPos, 0, 0, imageWidth, imageHeight, width, height, imageWidth, imageHeight);
 		xPos = 69;
-		int nameWidth = minecraft.fontRendererObj.getStringWidth(name);
+		int nameWidth = minecraft.fontRenderer.getStringWidth(name);
 		if (nameWidth < 103)
 			xPos += 52 - nameWidth * 0.5;
 		
-		yPos = slotDrawable.getHeight() / 2 - minecraft.fontRendererObj.FONT_HEIGHT / 2;
-		minecraft.fontRendererObj.drawString(name, xPos, yPos, Color.black.getRGB());
+		yPos = slotDrawable.getHeight() / 2 - minecraft.fontRenderer.FONT_HEIGHT / 2;
+		minecraft.fontRenderer.drawString(name, xPos, yPos, Color.black.getRGB());
 	}
 	
 }

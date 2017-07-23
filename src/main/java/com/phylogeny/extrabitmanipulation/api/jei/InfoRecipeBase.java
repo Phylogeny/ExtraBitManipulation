@@ -6,16 +6,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
-public class InfoRecipeBase extends BlankRecipeWrapper
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
+public class InfoRecipeBase implements IRecipeWrapper
 {
 	protected List<ItemStack> itemStacks;
 	protected List<String> tooltipLines = new ArrayList<String>();

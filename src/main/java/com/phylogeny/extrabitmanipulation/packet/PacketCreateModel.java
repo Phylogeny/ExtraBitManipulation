@@ -47,13 +47,13 @@ public class PacketCreateModel extends PacketBlockInteraction implements IMessag
 		@Override
 		public IMessage onMessage(final PacketCreateModel message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isModelingToolStack(stack))
 						((ItemModelingTool) stack.getItem()).createModel(stack, player, player.world, message.pos, message.side, message.modelingData);

@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.client.config;
 
+import java.util.Collections;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
@@ -13,22 +14,21 @@ public class GuiFactoryExtraBitManipulation implements IModGuiFactory
 	public void initialize(Minecraft minecraftInstance) {}
 	
 	@Override
-	public Class<? extends GuiScreen> mainConfigGuiClass()
+	public boolean hasConfigGui()
 	{
-		return GuiConfigExtraBitManipulation.class;
+		return true;
+	}
+	
+	@Override
+	public GuiScreen createConfigGui(GuiScreen parentScreen)
+	{
+		return new GuiConfigExtraBitManipulation(parentScreen);
 	}
 	
 	@Override
 	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories()
 	{
-		return null;
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Override
-	public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element)
-	{
-		return null;
+		return Collections.emptySet();
 	}
 	
 }

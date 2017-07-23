@@ -13,7 +13,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
@@ -93,14 +93,14 @@ public class GuiListBitMapping extends GuiListExtended
 			GlStateManager.disableLighting();
 			GlStateManager.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexbuffer = tessellator.getBuffer();
+			BufferBuilder buffer = tessellator.getBuffer();
 			int k = left + width / 2 - getListWidth() / 2 + 2;
 			int l = top + 4 - (int)amountScrolled;
 			
 			if (hasListHeader)
 				drawListHeader(k, l, tessellator);
 			
-			drawSelectionBox(k, l, mouseXIn, mouseYIn);
+			drawSelectionBox(k, l, mouseXIn, mouseYIn, partialTicks);
 			GlStateManager.disableDepth();
 			drawOverlays();
 			GlStateManager.enableBlend();
@@ -120,17 +120,17 @@ public class GuiListBitMapping extends GuiListExtended
 				if (l1 < top)
 					l1 = top;
 				
-				vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-				vertexbuffer.pos(i, bottom + 1, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				vertexbuffer.pos(j, bottom + 1, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				vertexbuffer.pos(j, top - 1, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-				vertexbuffer.pos(i, top - 1, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+				buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+				buffer.pos(i, bottom + 1, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+				buffer.pos(j, bottom + 1, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+				buffer.pos(j, top - 1, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+				buffer.pos(i, top - 1, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				tessellator.draw();
-				vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-				vertexbuffer.pos(i + 1, (l1 + k1), 0.0D).tex(0.0D, 1.0D).color(139, 139, 139, 255).endVertex();
-				vertexbuffer.pos(j - 1, (l1 + k1), 0.0D).tex(1.0D, 1.0D).color(139, 139, 139, 255).endVertex();
-				vertexbuffer.pos(j - 1, l1, 0.0D).tex(1.0D, 0.0D).color(139, 139, 139, 255).endVertex();
-				vertexbuffer.pos(i + 1, l1, 0.0D).tex(0.0D, 0.0D).color(139, 139, 139, 255).endVertex();
+				buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+				buffer.pos(i + 1, (l1 + k1), 0.0D).tex(0.0D, 1.0D).color(139, 139, 139, 255).endVertex();
+				buffer.pos(j - 1, (l1 + k1), 0.0D).tex(1.0D, 1.0D).color(139, 139, 139, 255).endVertex();
+				buffer.pos(j - 1, l1, 0.0D).tex(1.0D, 0.0D).color(139, 139, 139, 255).endVertex();
+				buffer.pos(i + 1, l1, 0.0D).tex(0.0D, 0.0D).color(139, 139, 139, 255).endVertex();
 				tessellator.draw();
 			}
 			

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" H",
+		"I "
+	],
+	"key": {
+		"H": {
+			"item": "extrabitmanipulation:modeling_tool_head"
+		},
+		"I": {
+			"item": "minecraft:iron_ingot"
+		}
+	},
+	"result": {
+		"item": "extrabitmanipulation:modeling_tool"
+	}
+}

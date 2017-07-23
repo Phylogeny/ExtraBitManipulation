@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"   ",
+		"DDD",
+		"DD "
+	],
+	"key": {
+		"D": {
+			"type": "forge:ore_dict",
+			"ore": "nuggetDiamond"
+		}
+	},
+	"result": {
+		"item": "extrabitmanipulation:modeling_tool_head"
+	}
+}

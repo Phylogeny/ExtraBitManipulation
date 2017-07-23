@@ -24,7 +24,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -97,7 +97,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 	}
 	
 	@Override
-	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
+	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
 	{
 		frameCounter++;
 		x -= 43;
@@ -133,20 +133,20 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 		GlStateManager.disableTexture2D();
 		GlStateManager.color(1, 0, 0);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder buffer = tessellator.getBuffer();
 		ScaledResolution scaledresolution = new ScaledResolution(mc);
 		GL11.glLineWidth(scaledresolution.getScaleFactor() * 2);
-		vertexbuffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+		buffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
 		int x2 = x + 44;
 		int y2 = y + 2;
 		int x3 = x2 + 16;
 		int y3 = y2 + 16;
-		vertexbuffer.pos(x2, y2, 0).color(255, 0, 0, 255).endVertex();
-		vertexbuffer.pos(x3, y3, 0).color(255, 0, 0, 255).endVertex();
+		buffer.pos(x2, y2, 0).color(255, 0, 0, 255).endVertex();
+		buffer.pos(x3, y3, 0).color(255, 0, 0, 255).endVertex();
 		tessellator.draw();
-		vertexbuffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer.pos(x3, y2, 0).color(255, 0, 0, 255).endVertex();
-		vertexbuffer.pos(x2, y3, 0).color(255, 0, 0, 255).endVertex();
+		buffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+		buffer.pos(x3, y2, 0).color(255, 0, 0, 255).endVertex();
+		buffer.pos(x2, y3, 0).color(255, 0, 0, 255).endVertex();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
 		GlStateManager.popMatrix();
@@ -245,6 +245,6 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 	public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {}
 	
 	@Override
-	public void setSelected(int entryID, int insideLeft, int yPos) {}
+	public void updatePosition(int entryID, int insideLeft, int yPos, float partialTicks) {}
 	
 }

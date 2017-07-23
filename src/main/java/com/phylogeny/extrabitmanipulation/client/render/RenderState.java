@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -87,7 +87,7 @@ public class RenderState
 		{
 			CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering block state in " + Reference.MOD_ID + " bit mapping GUI");
 			CrashReportCategory crashreportcategory = crashreport.makeCategory("Block state being rendered");
-			crashreportcategory.setDetail("Block State", new ICrashReportDetail<String>()
+			crashreportcategory.addDetail("Block State", new ICrashReportDetail<String>()
 			{
 				@Override
 				public String call() throws Exception
@@ -98,7 +98,7 @@ public class RenderState
 			if (!stack.isEmpty())
 			{
 				final ItemStack stack2 = stack.copy();
-				crashreportcategory.setDetail("State's Item Type", new ICrashReportDetail<String>()
+				crashreportcategory.addDetail("State's Item Type", new ICrashReportDetail<String>()
 				{
 					@Override
 					public String call() throws Exception
@@ -106,7 +106,7 @@ public class RenderState
 						return String.valueOf(stack2.getItem());
 					}
 				});
-				crashreportcategory.setDetail("State's Item Aux", new ICrashReportDetail<String>()
+				crashreportcategory.addDetail("State's Item Aux", new ICrashReportDetail<String>()
 				{
 					@Override
 					public String call() throws Exception
@@ -114,7 +114,7 @@ public class RenderState
 						return String.valueOf(stack2.getMetadata());
 					}
 				});
-				crashreportcategory.setDetail("State's Item NBT", new ICrashReportDetail<String>()
+				crashreportcategory.addDetail("State's Item NBT", new ICrashReportDetail<String>()
 				{
 					@Override
 					public String call() throws Exception
@@ -122,7 +122,7 @@ public class RenderState
 						return String.valueOf(stack2.getTagCompound());
 					}
 				});
-				crashreportcategory.setDetail("State's Item Foil", new ICrashReportDetail<String>()
+				crashreportcategory.addDetail("State's Item Foil", new ICrashReportDetail<String>()
 				{
 					@Override
 					public String call() throws Exception
@@ -309,15 +309,15 @@ public class RenderState
 	private static void renderModel(IBlockState state, IBakedModel model, int color, ItemStack stack)
 	{
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.ITEM);
+		BufferBuilder buffer = tessellator.getBuffer();
+		buffer.begin(7, DefaultVertexFormats.ITEM);
 		try
 		{
 			for (EnumFacing enumfacing : EnumFacing.values())
 			{
-				renderQuads(vertexbuffer, model.getQuads(state, enumfacing, 0L), color, stack);
+				renderQuads(buffer, model.getQuads(state, enumfacing, 0L), color, stack);
 			}
-			renderQuads(vertexbuffer, model.getQuads(state, null, 0L), color, stack);
+			renderQuads(buffer, model.getQuads(state, null, 0L), color, stack);
 		}
 		catch (Exception e) {}
 		finally
@@ -356,7 +356,7 @@ public class RenderState
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 	
-	private static void renderQuads(VertexBuffer vertexbuffer, List<BakedQuad> quads, int color, ItemStack stack)
+	private static void renderQuads(BufferBuilder buffer, List<BakedQuad> quads, int color, ItemStack stack)
 	{
 		boolean flag = color == -1 && !stack.isEmpty();
 		int i = 0;
@@ -372,7 +372,7 @@ public class RenderState
 				
 				k = k | -16777216;
 			}
-			LightUtil.renderQuadColor(vertexbuffer, bakedquad, k);
+			LightUtil.renderQuadColor(buffer, bakedquad, k);
 		}
 	}
 	

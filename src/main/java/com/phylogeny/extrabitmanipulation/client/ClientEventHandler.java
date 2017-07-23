@@ -47,7 +47,7 @@ import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
@@ -264,8 +264,8 @@ public class ClientEventHandler
 							}
 							if (!shiftDown && drawnMode && event.isButtonstate())
 							{
-								IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
-										(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
+								IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.x - pos.getX(),
+										(float) hit.y - pos.getY(), (float) hit.z - pos.getZ(), side, pos, false);
 								if (bitLoc != null)
 								{
 									int x = pos.getX();
@@ -293,8 +293,8 @@ public class ClientEventHandler
 								if (shiftDown)
 								{
 									IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
-									IBitLocation bitLoc = api.getBitPos((float) hit.xCoord - pos.getX(), (float) hit.yCoord - pos.getY(),
-											(float) hit.zCoord - pos.getZ(), side, pos, false);
+									IBitLocation bitLoc = api.getBitPos((float) hit.x - pos.getX(), (float) hit.y - pos.getY(),
+											(float) hit.z - pos.getZ(), side, pos, false);
 									if (bitLoc != null)
 									{
 										try
@@ -603,7 +603,7 @@ public class ClientEventHandler
 		double playerZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * ticks;
 		EnumFacing dir = target.sideHit;
 		Tessellator t = Tessellator.getInstance();
-		VertexBuffer vb = t.getBuffer();
+		BufferBuilder buffer = t.getBuffer();
 		BlockPos pos = target.getBlockPos();
 		int x = pos.getX();
 		int y = pos.getY();
@@ -623,8 +623,8 @@ public class ClientEventHandler
 			boolean upDown = side <= 1;
 			boolean eastWest = side >= 4;
 			boolean northSouth = !upDown && !eastWest;
-			AxisAlignedBB box = new AxisAlignedBB(eastWest ? hit.xCoord : x, upDown ? hit.yCoord : y, northSouth ? hit.zCoord : z,
-					eastWest ? hit.xCoord : x + 1, upDown ? hit.yCoord : y + 1, northSouth ? hit.zCoord : z + 1);
+			AxisAlignedBB box = new AxisAlignedBB(eastWest ? hit.x : x, upDown ? hit.y : y, northSouth ? hit.z : z,
+					eastWest ? hit.x : x + 1, upDown ? hit.y : y + 1, northSouth ? hit.z : z + 1);
 			
 			int offsetX = Math.abs(dir.getFrontOffsetX());
 			int offsetY = Math.abs(dir.getFrontOffsetY());
@@ -703,11 +703,11 @@ public class ClientEventHandler
 			else if (mode == 2)
 			{
 				EnumFacing dir2 = side <= 1 ? EnumFacing.WEST : (side <= 3 ? EnumFacing.WEST : EnumFacing.DOWN);
-				box = contractBoxOrRenderArrows(true, t, vb, side, northSouth, dir2, box, invOffsetX,
+				box = contractBoxOrRenderArrows(true, t, buffer, side, northSouth, dir2, box, invOffsetX,
 						invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
 			}
 			
-			renderTexturedSide(t, vb, side, northSouth, box, minU, maxU, minV, maxV, 1);
+			renderTexturedSide(t, buffer, side, northSouth, box, minU, maxU, minV, maxV, 1);
 			GlStateManager.popMatrix();
 			
 			AxisAlignedBB box3 = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
@@ -843,11 +843,11 @@ public class ClientEventHandler
 					{
 						EnumFacing dir2 = side <= 1 ? (s == 2 || s == 3 ? EnumFacing.WEST : EnumFacing.DOWN)
 								: (side >= 4 ? EnumFacing.WEST : (s <= 1 ? EnumFacing.WEST : EnumFacing.DOWN));
-						box = contractBoxOrRenderArrows(oppRotation, t, vb, side, northSouth, dir2, box, invOffsetX,
+						box = contractBoxOrRenderArrows(oppRotation, t, buffer, side, northSouth, dir2, box, invOffsetX,
 								invOffsetY, invOffsetZ, invertDirection, minU, maxU, minV, maxV);
 					}
 					if (mode2 != 2 || oppRotation)
-						renderTexturedSide(t, vb, s, northSouth, box, minU, maxU, minV, maxV, 1);
+						renderTexturedSide(t, buffer, s, northSouth, box, minU, maxU, minV, maxV, 1);
 					
 					GlStateManager.popMatrix();
 				}
@@ -865,9 +865,9 @@ public class ClientEventHandler
 			int mode = BitToolSettingsHelper.getSculptMode(stack.getTagCompound());
 			if (!removeBits || mode > 0 || api.canBeChiseled(world, target.getBlockPos()))
 			{
-				float hitX = (float) hit.xCoord - pos.getX();
-				float hitY = (float) hit.yCoord - pos.getY();
-				float hitZ = (float) hit.zCoord - pos.getZ();
+				float hitX = (float) hit.x - pos.getX();
+				float hitY = (float) hit.y - pos.getY();
+				float hitZ = (float) hit.z - pos.getZ();
 				IBitLocation bitLoc = api.getBitPos(hitX, hitY, hitZ, dir, pos, false);
 				if (bitLoc != null)
 				{
@@ -900,9 +900,9 @@ public class ClientEventHandler
 						boolean inside = ItemSculptingTool.wasInsideClicked(dir, hit, pos);
 						if (drawnBox)
 						{
-							double x4 = drawnStartPoint.xCoord;
-							double y4 = drawnStartPoint.yCoord;
-							double z4 = drawnStartPoint.zCoord;
+							double x4 = drawnStartPoint.x;
+							double y4 = drawnStartPoint.y;
+							double z4 = drawnStartPoint.z;
 							if (Math.max(x3, x4) == x3)
 							{
 								x3 += Utility.PIXEL_D;
@@ -945,9 +945,9 @@ public class ClientEventHandler
 								r -= f;
 							}
 							box = new AxisAlignedBB(x - r, y - r, z - r, x + r + Utility.PIXEL_D, y + r + Utility.PIXEL_D, z + r + Utility.PIXEL_D)
-										.offset(x2 * Utility.PIXEL_D + f * vecOffset.xCoord,
-												y2 * Utility.PIXEL_D + f * vecOffset.yCoord,
-												z2 * Utility.PIXEL_D + f * vecOffset.zCoord);
+										.offset(x2 * Utility.PIXEL_D + f * vecOffset.x,
+												y2 * Utility.PIXEL_D + f * vecOffset.y,
+												z2 * Utility.PIXEL_D + f * vecOffset.z);
 							boolean placementOffset = BitToolSettingsHelper.isShapeOffset(nbt) && !removeBits && mode != 2;
 							double r2 = r + (targetBitGrid ? Utility.PIXEL_D * 0.5 : 0);
 							if (placementOffset)
@@ -967,7 +967,7 @@ public class ClientEventHandler
 							}
 						}
 						if (fixedNotSym)
-							shapeBox = box.expandXyz(0);
+							shapeBox = box.grow(0);
 						
 						if (mode == 0)
 						{
@@ -978,20 +978,20 @@ public class ClientEventHandler
 						}
 						double f = 0.0020000000949949026;
 						if (configBox.renderOuterShape)
-							RenderGlobal.drawSelectionBoundingBox(box.expandXyz(f).offset(-playerX, -playerY, -playerZ),
+							RenderGlobal.drawSelectionBoundingBox(box.grow(f).offset(-playerX, -playerY, -playerZ),
 									configBox.red, configBox.green, configBox.blue, configBox.outerShapeAlpha);
 						
 						if (configBox.renderInnerShape)
 						{
 							GlStateManager.depthFunc(GL11.GL_GREATER);
-							RenderGlobal.drawSelectionBoundingBox(box.expandXyz(f).offset(-playerX, -playerY, -playerZ),
+							RenderGlobal.drawSelectionBoundingBox(box.grow(f).offset(-playerX, -playerY, -playerZ),
 									configBox.red, configBox.green, configBox.blue, configBox.innerShapeAlpha);
 							GlStateManager.depthFunc(GL11.GL_LEQUAL);
 						}
 						GlStateManager.popMatrix();
 					}
 					if (!fixedNotSym && box != null)
-						shapeBox = box.expandXyz(0);
+						shapeBox = box.grow(0);
 					
 					boolean isHollow = BitToolSettingsHelper.isHollowShape(nbt, removeBits);
 					boolean isOpen = isHollow && BitToolSettingsHelper.areEndsOpen(nbt);
@@ -1384,7 +1384,7 @@ public class ClientEventHandler
 		GL11.glTranslated(-playerX + 0.002 * dir.getFrontOffsetX(), -playerY + 0.002 * dir.getFrontOffsetY(), -playerZ + 0.002 * dir.getFrontOffsetZ());
 	}
 	
-	private AxisAlignedBB contractBoxOrRenderArrows(boolean contractBox, Tessellator t, VertexBuffer vb, int side, boolean northSouth, EnumFacing dir,
+	private AxisAlignedBB contractBoxOrRenderArrows(boolean contractBox, Tessellator t, BufferBuilder buffer, int side, boolean northSouth, EnumFacing dir,
 			AxisAlignedBB box, double invOffsetX, double invOffsetY, double invOffsetZ, boolean invertDirection, float minU, float maxU, float minV, float maxV)
 	{
 		if (contractBox)
@@ -1428,48 +1428,48 @@ public class ClientEventHandler
 				}
 				AxisAlignedBB box2 = new AxisAlignedBB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ)
 					.offset(amount * dir.getFrontOffsetX(), amount * dir.getFrontOffsetY(), amount * dir.getFrontOffsetZ());
-				renderTexturedSide(t, vb, side, northSouth, box2, minU, maxU, minV, maxV, alpha);
+				renderTexturedSide(t, buffer, side, northSouth, box2, minU, maxU, minV, maxV, alpha);
 			}
 		}
 		else
 		{
-			renderTexturedSide(t, vb, side, northSouth, box, minU, maxU, minV, maxV, 1);
+			renderTexturedSide(t, buffer, side, northSouth, box, minU, maxU, minV, maxV, 1);
 		}
 		return box;
 	}
 	
-	private void renderTexturedSide(Tessellator t, VertexBuffer vb, int side, boolean northSouth,
+	private void renderTexturedSide(Tessellator t, BufferBuilder buffer, int side, boolean northSouth,
 			AxisAlignedBB box, float minU, float maxU, float minV, float maxV, double alpha)
 	{
 		GL11.glColor4d(1, 1, 1, alpha);
 		if (side == 1 || side == 3 || side == 4)
 		{
-			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
-			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
-			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
-			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
+			buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			buffer.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
+			buffer.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
+			buffer.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
+			buffer.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
 			t.draw();
-			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
-			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
-			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
-			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
+			buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			buffer.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, minV).endVertex();
+			buffer.pos(box.minX, box.minY, box.maxZ).tex(maxU, minV).endVertex();
+			buffer.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, maxV).endVertex();
+			buffer.pos(box.maxX, box.maxY, box.minZ).tex(minU, maxV).endVertex();
 			t.draw();
 		}
 		else
 		{
-			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
-			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
-			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
-			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
+			buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			buffer.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
+			buffer.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
+			buffer.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
+			buffer.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
 			t.draw();
-			vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-			vb.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
-			vb.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
-			vb.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
-			vb.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
+			buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			buffer.pos(box.maxX, box.maxY, box.minZ).tex(minU, minV).endVertex();
+			buffer.pos(box.minX, northSouth ? box.maxY : box.minY, box.minZ).tex(maxU, minV).endVertex();
+			buffer.pos(box.minX, box.minY, box.maxZ).tex(maxU, maxV).endVertex();
+			buffer.pos(box.maxX, northSouth ? box.minY : box.maxY, box.maxZ).tex(minU, maxV).endVertex();
 			t.draw();
 		}
 	}

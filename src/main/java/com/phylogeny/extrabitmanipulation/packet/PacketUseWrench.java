@@ -49,13 +49,13 @@ public class PacketUseWrench extends PacketBlockInteraction implements IMessage
 		@Override
 		public IMessage onMessage(final PacketUseWrench message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isBitWrenchStack(stack))
 						((ItemBitWrench) stack.getItem()).useWrench(stack, player, player.world, message.pos,

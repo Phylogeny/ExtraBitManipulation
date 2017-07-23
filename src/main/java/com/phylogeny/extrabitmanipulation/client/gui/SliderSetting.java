@@ -39,8 +39,8 @@ public abstract class SliderSetting
 	
 	private GuiButton createIncrementButton(GuiSliderSetting slider, int offsetX, String text)
 	{
-		return new GuiButtonExt(slider.id * 100, slider.xPosition - (offsetX > 0 ? slider.height : -slider.width)
-				+ offsetX, slider.yPosition, slider.height, slider.height, text);
+		return new GuiButtonExt(slider.id * 100, slider.x - (offsetX > 0 ? slider.height : -slider.width)
+				+ offsetX, slider.y, slider.height, slider.height, text);
 	}
 	
 	public void addAllElements(List<GuiButton> buttonList)

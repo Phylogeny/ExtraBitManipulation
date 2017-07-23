@@ -28,9 +28,9 @@ public class PacketBlockInteraction implements IMessage
 		buffer.writeInt(pos.getY());
 		buffer.writeInt(pos.getZ());
 		buffer.writeInt(side.ordinal());
-		buffer.writeDouble(hit.xCoord);
-		buffer.writeDouble(hit.yCoord);
-		buffer.writeDouble(hit.zCoord);
+		buffer.writeDouble(hit.x);
+		buffer.writeDouble(hit.y);
+		buffer.writeDouble(hit.z);
 	}
 	
 	@Override

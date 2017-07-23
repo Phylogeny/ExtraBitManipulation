@@ -37,9 +37,9 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 		super.toBytes(buffer);
 		if (BitIOHelper.notNullToBuffer(buffer, drawnStartPoint))
 		{
-			buffer.writeDouble(drawnStartPoint.xCoord);
-			buffer.writeDouble(drawnStartPoint.yCoord);
-			buffer.writeDouble(drawnStartPoint.zCoord);
+			buffer.writeDouble(drawnStartPoint.x);
+			buffer.writeDouble(drawnStartPoint.y);
+			buffer.writeDouble(drawnStartPoint.z);
 		}
 		sculptingData.toBytes(buffer);
 	}
@@ -59,13 +59,13 @@ public class PacketSculpt extends PacketBlockInteraction implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSculpt message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isSculptingToolStack(stack))
 						((ItemSculptingTool) stack.getItem()).sculptBlocks(stack, player, player.world, message.pos,

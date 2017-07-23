@@ -31,10 +31,9 @@ public class ClientHelper
 		return getPlayer().getHeldItemMainhand();
 	}
 	
-	public static void spawnParticle(World worldIn, Vec3d particlePos, IParticleFactory particleFactory)
+	public static void spawnParticle(World world, Vec3d particlePos, IParticleFactory particleFactory)
 	{
-		Minecraft.getMinecraft().effectRenderer.addEffect(particleFactory.createParticle(0, worldIn,
-				particlePos.xCoord, particlePos.yCoord, particlePos.zCoord, 0, 0, 0));
+		Minecraft.getMinecraft().effectRenderer.addEffect(particleFactory.createParticle(0, world, particlePos.x, particlePos.y, particlePos.z, 0, 0, 0));
 	}
 	
 }

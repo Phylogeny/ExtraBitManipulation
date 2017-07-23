@@ -38,13 +38,13 @@ public class PacketSetDirection implements IMessage
 		@Override
 		public IMessage onMessage(final PacketSetDirection message, final MessageContext ctx)
 		{
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					EntityPlayer player = ctx.getServerHandler().playerEntity;
+					EntityPlayer player = ctx.getServerHandler().player;
 					BitToolSettingsHelper.setDirection(player, player.getHeldItemMainhand(), message.direction, null);
 				}
 			});
