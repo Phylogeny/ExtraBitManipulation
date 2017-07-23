@@ -1,5 +1,8 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/extra-bit-manipulation",
+    "1.12": {
+    "1.12-3.0.0": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2454914"
+  },
   "1.11.2": {
     "1.11.2-3.0.6": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2404200"
   },
@@ -16,6 +19,8 @@
     "1.8.9-2.3.3": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2395243"
   },
   "promos": {
+    "1.12-latest": "1.12-3.0.0",
+    "1.12-recommended": "1.12-3.0.0",
     "1.11.2-latest": "1.11.2-3.0.6",
     "1.11.2-recommended": "1.11.2-3.0.6",
     "1.11-latest": "1.11.2-3.0.6",
