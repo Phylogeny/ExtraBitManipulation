@@ -3,18 +3,20 @@ package com.phylogeny.extrabitmanipulation.reference;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
-import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
-import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
-import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
-import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
-import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
-import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
-import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-
 import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+
+import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
+import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
+import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ArmorSlotRemovalMode;
 
 public class Configs
 {
@@ -35,6 +37,10 @@ public class Configs
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
 		public static boolean oneBitTypeInversionRequirement;
+		public static ArmorSlotRemovalMode armorSlotRemovalMode;
+		public static ArmorModelRenderMode armorModelRenderMode;
+		public static float armorZFightingBufferScale;
+		public static float armorZFightingBufferScaleRightFoot;
 		public static ConfigBitToolSettingInt sculptMode;
 		public static ConfigBitToolSettingInt sculptDirection;
 		public static ConfigBitToolSettingInt sculptShapeTypeCurved;
@@ -48,6 +54,17 @@ public class Configs
 		public static ConfigBitStack sculptSetBitWire;
 		public static ConfigBitStack sculptSetBitSpade;
 		public static ConfigBitToolSettingBoolean sculptOffsetShape;
+		public static ConfigBitToolSettingInt armorMode;
+		public static ConfigBitToolSettingInt armorScale;
+		public static ConfigBitToolSettingInt armorMovingPartHelmet;
+		public static ConfigBitToolSettingInt armorMovingPartChestplate;
+		public static ConfigBitToolSettingInt armorMovingPartLeggings;
+		public static ConfigBitToolSettingInt armorMovingPartBoots;
+		public static ConfigBitToolSettingInt armorTabIndex;
+		public static ConfigBitToolSettingBoolean armorTargetBits;
+		public static ConfigBitToolSettingBoolean armorPixelTranslation;
+		public static ConfigBitToolSettingBoolean armorFullIllumination;
+		public static ConfigBitToolSettingBoolean armorLookAtCursor;
 		public static ConfigBitToolSettingInt modelAreaMode;
 		public static ConfigBitToolSettingInt modelSnapMode;
 		public static ConfigBitToolSettingBoolean modelGuiOpen;

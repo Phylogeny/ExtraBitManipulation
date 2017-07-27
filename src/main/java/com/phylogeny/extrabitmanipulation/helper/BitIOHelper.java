@@ -263,7 +263,9 @@ public class BitIOHelper
 		
 		try
 		{
-			return decompressObject(buffer.readBytes(length).array());
+			byte[] bytes = new byte[length];
+			buffer.readBytes(bytes);
+			return decompressObject(bytes);
 		}
 		catch (ClassNotFoundException e) {}
 		catch (IOException e) {}

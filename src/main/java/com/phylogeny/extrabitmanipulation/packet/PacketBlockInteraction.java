@@ -24,9 +24,7 @@ public class PacketBlockInteraction implements IMessage
 	@Override
 	public void toBytes(ByteBuf buffer)
 	{
-		buffer.writeInt(pos.getX());
-		buffer.writeInt(pos.getY());
-		buffer.writeInt(pos.getZ());
+		buffer.writeLong(pos.toLong());
 		buffer.writeInt(side.ordinal());
 		buffer.writeDouble(hit.xCoord);
 		buffer.writeDouble(hit.yCoord);
@@ -36,7 +34,7 @@ public class PacketBlockInteraction implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer)
 	{
-		pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
+		pos = BlockPos.fromLong(buffer.readLong());
 		side = EnumFacing.getFront(buffer.readInt());
 		hit = new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
 	}

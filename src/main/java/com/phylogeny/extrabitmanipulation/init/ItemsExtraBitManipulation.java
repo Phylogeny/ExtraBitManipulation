@@ -1,24 +1,29 @@
 package com.phylogeny.extrabitmanipulation.init;
 
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 public class ItemsExtraBitManipulation
 {
 	public static Item diamondNugget, bitWrench, sculptingLoop, sculptingSquare, sculptingSpadeCurved, sculptingSpadeSquared, modelingTool,
-	modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead, sculptingSpadeCurvedHead, sculptingSpadeSquaredHead;
+	modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead, sculptingSpadeCurvedHead, sculptingSpadeSquaredHead,
+	chiseledHelmet, chiseledChestplate, chiseledLeggings, chiseledBoots;
 	
 	public static void itemsInit()
 	{
@@ -35,6 +40,13 @@ public class ItemsExtraBitManipulation
 		sculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
 		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("SculptingSpadeCurvedHead");
 		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("SculptingSpadeSquaredHead");
+		chiseledHelmet = new ItemChiseledArmor("chiseled_helmet", EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
+		chiseledChestplate = new ItemChiseledArmor("chiseled_chestplate", EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
+		chiseledLeggings = new ItemChiseledArmor("chiseled_leggings", EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
+		chiseledBoots = new ItemChiseledArmor("chiseled_boots", EntityEquipmentSlot.FEET,
+				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
 		registerItemAndDefaultRecipe(bitWrench, "Bit Wrench", true, false);
 		registerItemAndDefaultRecipe(sculptingLoop, "Curved Sculpting Wire", true, false);
 		registerItemAndDefaultRecipe(sculptingSquare, "Straight Sculpting Wire", true, false);
@@ -54,16 +66,26 @@ public class ItemsExtraBitManipulation
 		registerItemAndDefaultRecipe(sculptingSpadeSquaredHead, "Flat Sculpting Spade Head", true, true,
 				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
 		GameRegistry.register(diamondNugget);
+		GameRegistry.register(chiseledHelmet);
+		GameRegistry.register(chiseledChestplate);
+		GameRegistry.register(chiseledLeggings);
+		GameRegistry.register(chiseledBoots);
+		registerDefaultRecipe(Item.getItemFromBlock(BlocksExtraBitManipulation.bodyPartTemplate), "Bodypart Template", false, false, "minecraft:cobblestone");
 	}
 	
-	private static void registerItemAndDefaultRecipe(Item item, String itemTitle, boolean isShapedDefault,
-			boolean oreDictionaryDefault, String... recipeDefault)
+	private static void registerItemAndDefaultRecipe(Item item, String itemTitle,
+			boolean isShapedDefault, boolean oreDictionaryDefault, String... recipeDefault)
 	{
 		String itemName = ((ItemExtraBitManipulationBase) item).getName();
 		if (recipeDefault.length == 0)
 			recipeDefault = new String[]{"", Reference.MOD_ID + ":" + itemName + "Head", "minecraft:iron_ingot", ""};
 		
 		GameRegistry.register(item);
+		registerDefaultRecipe(item, itemTitle, isShapedDefault, oreDictionaryDefault, recipeDefault);
+	}
+	
+	private static void registerDefaultRecipe(Item item, String itemTitle, boolean isShapedDefault, boolean oreDictionaryDefault, String... recipeDefault)
+	{
 		Configs.itemRecipeMap.put(item, new ConfigRecipe(itemTitle, true, isShapedDefault, oreDictionaryDefault, recipeDefault));
 		if (item instanceof ItemBitToolBase)
 		{

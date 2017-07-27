@@ -12,6 +12,7 @@ import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu.GuiButtonSetting;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWrechMode;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -87,6 +88,12 @@ public abstract class ButtonsSetting
 	{
 		ItemStack stack = ClientHelper.getHeldItemMainhand();
 		return stack == null ? null : (ItemSculptingTool) stack.getItem();
+	}
+	
+	private static ItemChiseledArmor getChiseledArmor()
+	{
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
+		return stack == null ? null : (ItemChiseledArmor) stack.getItem();
 	}
 	
 	public static class WrenchMode extends ButtonsSetting
@@ -301,6 +308,80 @@ public abstract class ButtonsSetting
 		protected void setValue(EntityPlayer player, int value)
 		{
 			BitToolSettingsHelper.setShapeOffset(player, player.getHeldItemMainhand(), value == 0, Configs.sculptOffsetShape);
+		}
+		
+	}
+	
+	public static class ArmorMode extends ButtonsSetting
+	{
+		
+		@Override
+		protected int getValue()
+		{
+			return BitToolSettingsHelper.getArmorMode(getHeldStackNBT());
+		}
+		
+		@Override
+		protected void setValue(EntityPlayer player, int value)
+		{
+			BitToolSettingsHelper.setArmorMode(player, player.getHeldItemMainhand(), value, Configs.armorMode);
+		}
+		
+	}
+	
+	public static class ArmorScale extends ButtonsSetting
+	{
+		
+		@Override
+		protected int getValue()
+		{
+			return BitToolSettingsHelper.getArmorScale(getHeldStackNBT());
+		}
+		
+		@Override
+		protected void setValue(EntityPlayer player, int value)
+		{
+			BitToolSettingsHelper.setArmorScale(player, player.getHeldItemMainhand(), value, Configs.armorScale);
+		}
+		
+	}
+	
+	public static class ArmorMovingPart extends ButtonsSetting
+	{
+		
+		@Override
+		protected int getValue()
+		{
+			ItemChiseledArmor armorPiece = getChiseledArmor();
+			if (armorPiece == null)
+				return 0;
+			
+			return BitToolSettingsHelper.getArmorMovingPart(getHeldStackNBT(), armorPiece).getPartIndex();
+		}
+		
+		@Override
+		protected void setValue(EntityPlayer player, int value)
+		{
+			ItemChiseledArmor armorPiece = getChiseledArmor();
+			if (armorPiece != null)
+				BitToolSettingsHelper.setArmorMovingPart(player, player.getHeldItemMainhand(), armorPiece, value);
+		}
+		
+	}
+	
+	public static class ArmorGridTarget extends ButtonsSetting
+	{
+		
+		@Override
+		protected int getValue()
+		{
+			return BitToolSettingsHelper.areArmorBitsTargeted(getHeldStackNBT()) ? 1 : 0;
+		}
+		
+		@Override
+		protected void setValue(EntityPlayer player, int value)
+		{
+			BitToolSettingsHelper.setArmorBitsTargeted(player, player.getHeldItemMainhand(), value == 1, Configs.armorTargetBits);
 		}
 		
 	}

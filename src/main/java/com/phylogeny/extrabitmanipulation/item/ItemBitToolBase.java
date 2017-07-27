@@ -57,11 +57,6 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		}
 	}
 	
-	protected String colorSettingText(String text, ConfigBitToolSettingBase setting)
-	{
-		return (setting.isPerTool() ? TextFormatting.GREEN : TextFormatting.BLUE) + text;
-	}
-	
 	protected void initInt(NBTTagCompound nbt, String nbtKey, int initInt)
 	{
 		if (!nbt.hasKey(nbtKey))
@@ -74,7 +69,12 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 			nbt.setBoolean(nbtKey, initBoolean);
 	}
 	
-	protected void addColorInformation(List tooltip, boolean shiftDown)
+	public static String colorSettingText(String text, ConfigBitToolSettingBase setting)
+	{
+		return (setting.isPerTool() ? TextFormatting.GREEN : TextFormatting.BLUE) + text;
+	}
+	
+	public static void addColorInformation(List tooltip, boolean shiftDown)
 	{
 		if (shiftDown)
 		{
@@ -84,7 +84,7 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		}
 	}
 	
-	protected void addKeyInformation(List tooltip, boolean hasSettings)
+	public static void addKeyInformation(List tooltip, boolean hasSettings)
 	{
 		if (hasSettings)
 			tooltip.add("Hold SHIFT for settings.");
@@ -97,13 +97,13 @@ public class ItemBitToolBase extends ItemExtraBitManipulationBase
 		tooltip.add(TextFormatting.AQUA + "    to change tool settings.");
 	}
 	
-	protected void addKeybindReminders(List<String> tooltip, KeyBindingsExtraBitManipulation... keyBinds)
+	public static void addKeybindReminders(List<String> tooltip, KeyBindingsExtraBitManipulation... keyBinds)
 	{
 		tooltip.add("");
 		tooltip.add(TextFormatting.DARK_AQUA + ">>Replacable with " + (keyBinds.length > 1 ? "Keybinds" : "a Keybind") + "<<");
 	}
 	
-	protected String getColoredKeyBindText(KeyBindingsExtraBitManipulation keyBind)
+	public static String getColoredKeyBindText(KeyBindingsExtraBitManipulation keyBind)
 	{
 		return TextFormatting.DARK_AQUA + keyBind.getText() + TextFormatting.GRAY;
 	}

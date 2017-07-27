@@ -2,16 +2,6 @@ package com.phylogeny.extrabitmanipulation.client.gui;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
-
-import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.client.render.RenderState;
-import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
-import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
-
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
@@ -29,6 +19,17 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.render.RenderState;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
+import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 
 public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 {
@@ -109,7 +110,7 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 				GlStateManager.enableBlend();
 			}
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			mc.getTextureManager().bindTexture(bitMappingScreen.GUI_TEXTURE);
+			ClientHelper.bindTexture(bitMappingScreen.GUI_TEXTURE);
 			bitMappingScreen.drawTexturedModalRect(x, y, 0, 219, listWidth, slotHeight);
 			RenderHelper.enableGUIStandardItemLighting();
 			if (getBitStack() != null)
@@ -131,20 +132,20 @@ public class GuiListBitMappingEntry implements GuiListExtended.IGuiListEntry
 		GlStateManager.disableTexture2D();
 		GlStateManager.color(1, 0, 0);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		VertexBuffer buffer = tessellator.getBuffer();
 		ScaledResolution scaledresolution = new ScaledResolution(mc);
 		GL11.glLineWidth(scaledresolution.getScaleFactor() * 2);
-		vertexbuffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
+		buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 		int x2 = x + 44;
 		int y2 = y + 2;
 		int x3 = x2 + 16;
 		int y3 = y2 + 16;
-		vertexbuffer.pos(x2, y2, 0).color(255, 0, 0, 255).endVertex();
-		vertexbuffer.pos(x3, y3, 0).color(255, 0, 0, 255).endVertex();
+		buffer.pos(x2, y2, 0).color(255, 0, 0, 255).endVertex();
+		buffer.pos(x3, y3, 0).color(255, 0, 0, 255).endVertex();
 		tessellator.draw();
-		vertexbuffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer.pos(x3, y2, 0).color(255, 0, 0, 255).endVertex();
-		vertexbuffer.pos(x2, y3, 0).color(255, 0, 0, 255).endVertex();
+		buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+		buffer.pos(x3, y2, 0).color(255, 0, 0, 255).endVertex();
+		buffer.pos(x2, y3, 0).color(255, 0, 0, 255).endVertex();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
 		GlStateManager.popMatrix();

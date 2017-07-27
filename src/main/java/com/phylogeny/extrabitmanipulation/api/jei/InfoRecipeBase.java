@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
+
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class InfoRecipeBase extends BlankRecipeWrapper
 {
@@ -18,19 +17,24 @@ public class InfoRecipeBase extends BlankRecipeWrapper
 	protected List<String> tooltipLines = new ArrayList<String>();
 	protected ResourceLocation image;
 	protected int imageWidth, imageHeight;
-	protected IDrawable slotDrawable;
 	protected String name;
 	protected Rectangle imageBox;
 	
-	public InfoRecipeBase(List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String recipeName,
+	public InfoRecipeBase(List<ItemStack> itemStacks, int imageWidth, int imageHeight, String recipeName,
 			String imageName, String tooltipName, int imageLeft, int imageTop, int imageRight, int imageBottom, String catagoryName)
 	{
-		this.itemStacks = sculptingStacks;
+		this.itemStacks = itemStacks;
 		this.image = new ResourceLocation(Reference.GROUP_ID, "textures/jei/images/" + imageName + ".png");
 		this.imageWidth = imageWidth;
 		this.imageHeight = imageHeight;
 		this.name = JustEnoughItemsPlugin.translate(catagoryName + ".name." + recipeName);
-		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName + ".tooltip").split("\\\\n")));
+		String toolTip = ".tooltip";
+		if (!tooltipName.contains("."))
+			tooltipName += ".";
+		else
+			toolTip += ".";
+		
+		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName.replaceFirst("[.]", toolTip)).split("\\\\n")));
 		imageBox = new Rectangle(imageLeft, imageTop, imageRight - imageLeft, imageBottom - imageTop);
 	}
 	
@@ -54,6 +58,11 @@ public class InfoRecipeBase extends BlankRecipeWrapper
 			getTooltips.addAll(tooltipLines);
 		
 		return getTooltips;
+	}
+	
+	protected String translateName(String catagoryName, String name)
+	{
+		return JustEnoughItemsPlugin.translate(catagoryName + ".name." + name);
 	}
 	
 }

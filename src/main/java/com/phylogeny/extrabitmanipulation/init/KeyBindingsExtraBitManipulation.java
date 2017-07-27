@@ -1,12 +1,5 @@
 package com.phylogeny.extrabitmanipulation.init;
 
-import org.lwjgl.input.Keyboard;
-
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.client.ClientHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import mod.chiselsandbits.api.ItemType;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
@@ -14,6 +7,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+
+import org.lwjgl.input.Keyboard;
+
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 {
@@ -60,59 +60,110 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
-	OPEN_BIT_MAPPING_GUI("bitmapping", Keyboard.KEY_R, true, false, false)
+	OPEN_CHISELED_ARMOR_GUI("chiseledarmor", Keyboard.KEY_G)
 	{
 		@Override
 		public boolean isKeyDown()
 		{
 			return getKeyBinding().isKeyDown();
 		}
+		
+		@Override
+		public boolean isActive()
+		{
+			return true;
+		}
+		
+		@Override
+		public boolean conflicts(IKeyConflictContext other)
+		{
+			return other == this || other == KeyConflictContext.IN_GAME;
+		}
 	},
 	
-	SHIFT("Shift", 0, false, true, true)
+	OPEN_BIT_MAPPING_GUI("bitmapping", Keyboard.KEY_R, false)
+	{
+		@Override
+		public boolean isKeyDown()
+		{
+			return getKeyBinding().isKeyDown();
+		}
+		
+		@Override
+		public boolean isActive()
+		{
+			return ItemStackHelper.isModelingToolStack(ClientHelper.getHeldItemMainhand());
+		}
+	},
+	
+	SHIFT("Shift", Keyboard.KEY_NONE, true)
 	{
 		@Override
 		public boolean isKeyDown()
 		{
 			return isKeyDown(GuiScreen.isShiftKeyDown());
 		}
+		
+		@Override
+		public boolean isActive()
+		{
+			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			return ItemStackHelper.isSculptingToolStack(stack) || ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isBitWrenchStack(stack);
+		}
 	},
 	
-	CONTROL("Control", 0, false, false, true)
+	CONTROL("Control", Keyboard.KEY_NONE, true)
 	{
 		@Override
 		public boolean isKeyDown()
 		{
 			return isKeyDown(GuiScreen.isCtrlKeyDown());
 		}
+		
+		@Override
+		public boolean isActive()
+		{
+			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			return ItemStackHelper.isSculptingToolStack(stack) || ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isChiseledArmorStack(stack);
+		}
 	},
 	
-	ALT("Alt", 0, false, false, false)
+	ALT("Alt", Keyboard.KEY_X, false)
 	{
 		@Override
 		public boolean isKeyDown()
 		{
 			return isKeyDown(GuiScreen.isAltKeyDown());
 		}
+		
+		@Override
+		public boolean isActive()
+		{
+			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			return ItemStackHelper.isSculptingToolStack(stack) || ItemStackHelper.isChiseledArmorStack(stack);
+		}
+		
+		@Override
+		public String getText()
+		{
+			return keyBinding.getKeyCode() == Keyboard.KEY_NONE ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
+		}
 	};
 	
-	private KeyBinding keyBinding;
-	private String description;
+	protected KeyBinding keyBinding;
+	protected String description;
 	private int defaultKeyCode;
-	private boolean checkForOnlyModelingTool, checkForWrench, anyConflicts;
+	private boolean anyConflicts;
 	
 	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode)
 	{
-		this(description, defaultKeyCode, false, false, false);
+		this(description, defaultKeyCode, false);
 	}
 	
-	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode,
-			boolean checkForOnlyModelingTool, boolean checkForWrench, boolean anyConflicts)
+	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode, boolean anyConflicts)
 	{
 		this.description = description;
 		this.defaultKeyCode = defaultKeyCode;
-		this.checkForOnlyModelingTool = checkForOnlyModelingTool;
-		this.checkForWrench = checkForWrench;
 		this.anyConflicts = anyConflicts;
 	}
 	
@@ -123,7 +174,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	protected boolean isKeyDown(boolean defaultCheck)
 	{
-		return getKeyBinding().isSetToDefaultValue() ? defaultCheck : getKeyBinding().isKeyDown();
+		return getKeyBinding().getKeyCode() == Keyboard.KEY_NONE ? defaultCheck : getKeyBinding().isKeyDown();
 	}
 	
 	public static void init()
@@ -148,14 +199,6 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	public KeyBinding getKeyBinding()
 	{
 		return keyBinding;
-	}
-	
-	@Override
-	public boolean isActive()
-	{
-		ItemStack stack = ClientHelper.getHeldItemMainhand();
-		return ItemStackHelper.isModelingToolStack(stack) || (!checkForOnlyModelingTool
-				&& (ItemStackHelper.isSculptingToolStack(stack) || (checkForWrench && ItemStackHelper.isBitWrenchStack(stack))));
 	}
 	
 	@Override
