@@ -2,16 +2,23 @@ package com.phylogeny.extrabitmanipulation.init;
 
 import java.util.ArrayList;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-
+import mod.chiselsandbits.core.ChiselsAndBits;
+import mod.chiselsandbits.registry.ModItems;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
+import com.phylogeny.extrabitmanipulation.recipe.RecipeChiseledArmor;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class RecipesExtraBitManipulation
 {
@@ -22,30 +29,43 @@ public class RecipesExtraBitManipulation
 		
 		if (!Configs.disableDiamondToNuggets)
 		{
-			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.DIAMOND),
-					new Object[]{
-						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
-						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
-						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond"
-			}));
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.DIAMOND), "nuggetDiamond", "nuggetDiamond", "nuggetDiamond",
+						"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond"));
 		}
 		if (!Configs.disableNuggetsToDiamond)
 		{
-			GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.diamondNugget, 9),
-					new Object[]{
-						Items.DIAMOND
-			});
+			GameRegistry.addShapelessRecipe(new ItemStack(ItemsExtraBitManipulation.diamondNugget, 9), Items.DIAMOND);
 		}
+		GameRegistry.addShapelessRecipe(new ItemStack(Blocks.COBBLESTONE), BlocksExtraBitManipulation.bodyPartTemplate);
 		for (Item item : Configs.itemRecipeMap.keySet())
 		{
 			ConfigRecipe configRecipe = (ConfigRecipe) Configs.itemRecipeMap.get(item);
 			if (configRecipe.isEnabled)
 				registerRecipe(item, configRecipe.isShaped, configRecipe.useOreDictionary, configRecipe.recipe, configRecipe.getRecipeDefault());
 		}
+		RecipeSorter.register(Reference.MOD_ID + ":chiseled_armor", RecipeChiseledArmor.class, Category.SHAPELESS, "after:minecraft:shapeless");
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledHelmet, Items.DIAMOND_HELMET, 272);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledChestplate, Items.DIAMOND_CHESTPLATE, 444);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggings, Items.DIAMOND_LEGGINGS, 572);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBoots, Items.DIAMOND_BOOTS, 272);
 	}
 	
-	private static void registerRecipe(Item item, boolean isShaped, boolean useOreDictionary,
-			String[] userInput, String[] defaultInput)
+	private static void registerChiseledArmorRecipes(Item output, Item inputArmor, int bitCost)
+	{
+		ModItems items = ChiselsAndBits.getItems();
+		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselStone, bitCost);
+		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselIron, bitCost);
+		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselGold, bitCost);
+		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselDiamond, bitCost);
+		GameRegistry.addShapelessRecipe(new ItemStack(inputArmor), output);
+	}
+	
+	private static void registerChiseledArmorRecipes(Item output, Item inputArmor, Item inputChisel, int bitCost)
+	{
+		GameRegistry.addRecipe(new RecipeChiseledArmor(output, inputArmor, inputChisel, bitCost));
+	}
+	
+	private static void registerRecipe(Item item, boolean isShaped, boolean useOreDictionary, String[] userInput, String[] defaultInput)
 	{
 		Object[] recipeArray = isShaped ? createShapedRecipeArray(userInput, useOreDictionary, isShaped)
 				: createShapelessRecipeArray(userInput, useOreDictionary, isShaped);

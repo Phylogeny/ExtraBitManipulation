@@ -2,9 +2,6 @@ package com.phylogeny.extrabitmanipulation.client.render;
 
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.client.ClientHelper;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -15,6 +12,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -28,7 +26,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.pipeline.LightUtil;
+
+import org.lwjgl.opengl.GL11;
+
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class RenderState
 {
@@ -36,7 +40,7 @@ public class RenderState
 	
 	public static void renderStateIntoGUI(final IBlockState state, int x, int y)
 	{
-		BlockModelShapes blockModelShapes = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
+		BlockModelShapes blockModelShapes = ClientHelper.getBlockModelShapes();
 		IBakedModel model = blockModelShapes.getModelForState(state);
 		boolean emptyModel;
 		try
@@ -137,7 +141,7 @@ public class RenderState
 	
 	public static IBakedModel getItemModelWithOverrides(ItemStack stack)
 	{
-		return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, ClientHelper.getPlayer());
+		return ClientHelper.getRenderItem().getItemModelWithOverrides(stack, null, ClientHelper.getPlayer());
 	}
 	
 	private static boolean isNullItem(final Block block, ItemStack stack)
@@ -153,6 +157,12 @@ public class RenderState
 	public static void renderStateModelIntoGUI(IBlockState state, IBakedModel model, ItemStack stack,
 			boolean renderAsTileEntity, int x, int y, float angleX, float angleY, float scale)
 	{
+		renderStateModelIntoGUI(state, model, stack, 1.0F, false, renderAsTileEntity, x, y, angleX, angleY, scale);
+	}
+	
+	public static void renderStateModelIntoGUI(IBlockState state, IBakedModel model, ItemStack stack, float alphaMultiplier,
+			boolean transformFroGui, boolean renderAsTileEntity, int x, int y, float angleX, float angleY, float scale)
+	{
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		GlStateManager.pushMatrix();
 		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -164,7 +174,10 @@ public class RenderState
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		setupGuiTransform(x, y, model);
-		renderState(state, model, stack, renderAsTileEntity, angleX, angleY, scale);
+		if (transformFroGui)
+			model = ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.GUI, false);
+		
+		renderState(state, model, stack, alphaMultiplier, renderAsTileEntity, angleX, angleY, scale);
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
 		GlStateManager.popMatrix();
@@ -172,8 +185,8 @@ public class RenderState
 		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 	}
 	
-	private static void renderState(IBlockState state, IBakedModel model, ItemStack stack,
-			boolean renderAsTileEntity, float angleX, float angleY, float scale)
+	public static void renderState(IBlockState state, IBakedModel model, ItemStack stack,
+			float alphaMultiplier, boolean renderAsTileEntity, float angleX, float angleY, float scale)
 	{
 		boolean autoScale = scale < 0;
 		if (autoScale)
@@ -283,7 +296,7 @@ public class RenderState
 				GlStateManager.rotate(30, -1, 0, -1);
 			}
 			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-			renderModel(state, model, -1, stack);
+			renderModel(state, model, -1, alphaMultiplier, stack);
 			if (stack.hasEffect())
 				renderEffect(state, model);
 		}
@@ -292,7 +305,7 @@ public class RenderState
 	
 	private static void setupGuiTransform(int x, int y, IBakedModel model)
 	{
-		GlStateManager.translate(x + 6, y + 2, 100.0F + Minecraft.getMinecraft().getRenderItem().zLevel + 400);
+		GlStateManager.translate(x + 6, y + 2, 100.0F + ClientHelper.getRenderItem().zLevel + 400);
 		GlStateManager.translate(8.0F, 8.0F, 0.0F);
 		GlStateManager.scale(1.0F, -1.0F, 1.0F);
 		GlStateManager.scale(16.0F, 16.0F, 16.0F);
@@ -306,18 +319,18 @@ public class RenderState
 		}
 	}
 	
-	private static void renderModel(IBlockState state, IBakedModel model, int color, ItemStack stack)
+	private static void renderModel(IBlockState state, IBakedModel model, int color, float alphaMultiplier, ItemStack stack)
 	{
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.ITEM);
+		VertexBuffer buffer = tessellator.getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
 		try
 		{
 			for (EnumFacing enumfacing : EnumFacing.values())
 			{
-				renderQuads(vertexbuffer, model.getQuads(state, enumfacing, 0L), color, stack);
+				renderQuads(buffer, model.getQuads(state, enumfacing, 0L), color, alphaMultiplier, stack);
 			}
-			renderQuads(vertexbuffer, model.getQuads(state, null, 0L), color, stack);
+			renderQuads(buffer, model.getQuads(state, null, 0L), color, alphaMultiplier, stack);
 		}
 		catch (Exception e) {}
 		finally
@@ -332,47 +345,50 @@ public class RenderState
 		GlStateManager.depthFunc(514);
 		GlStateManager.disableLighting();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(RES_ITEM_GLINT);
+		ClientHelper.bindTexture(RES_ITEM_GLINT);
 		GlStateManager.matrixMode(5890);
 		GlStateManager.pushMatrix();
 		GlStateManager.scale(8.0F, 8.0F, 8.0F);
 		float f = Minecraft.getSystemTime() % 3000L / 3000.0F / 8.0F;
 		GlStateManager.translate(f, 0.0F, 0.0F);
 		GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
-		renderModel(state, model, -8372020, null);
+		renderModel(state, model, -8372020, 1.0F, null);
 		GlStateManager.popMatrix();
 		GlStateManager.pushMatrix();
 		GlStateManager.scale(8.0F, 8.0F, 8.0F);
 		float f1 = Minecraft.getSystemTime() % 4873L / 4873.0F / 8.0F;
 		GlStateManager.translate(-f1, 0.0F, 0.0F);
 		GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
-		renderModel(state, model, -8372020, null);
+		renderModel(state, model, -8372020, 1.0F, null);
 		GlStateManager.popMatrix();
 		GlStateManager.matrixMode(5888);
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableLighting();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		ClientHelper.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 	
-	private static void renderQuads(VertexBuffer vertexbuffer, List<BakedQuad> quads, int color, ItemStack stack)
+	private static void renderQuads(VertexBuffer buffer, List<BakedQuad> quads, int color, float alphaMultiplier, ItemStack stack)
 	{
 		boolean flag = color == -1 && !stack.isEmpty();
 		int i = 0;
 		for (int j = quads.size(); i < j; ++i)
 		{
-			BakedQuad bakedquad = quads.get(i);
-			int k = color;
-			if (flag && bakedquad.hasTintIndex())
+			BakedQuad quad = quads.get(i);
+			int colorQuad = color;
+			if (flag && quad.hasTintIndex())
 			{
-				k = Minecraft.getMinecraft().getItemColors().getColorFromItemstack(stack, bakedquad.getTintIndex());
+				colorQuad = Minecraft.getMinecraft().getItemColors().getColorFromItemstack(stack, quad.getTintIndex());
 				if (EntityRenderer.anaglyphEnable)
-					k = TextureUtil.anaglyphColor(k);
+					colorQuad = TextureUtil.anaglyphColor(colorQuad);
 				
-				k = k | -16777216;
+				colorQuad = colorQuad | -16777216;
 			}
-			LightUtil.renderQuadColor(vertexbuffer, bakedquad, k);
+			if (alphaMultiplier < 1)
+				colorQuad = (((int) ((color == -1 ? 255 : colorQuad >> 24) * alphaMultiplier)) << 24) | (colorQuad & 0x00ffffff);
+			
+			LightUtil.renderQuadColor(buffer, quad, colorQuad);
 		}
 	}
 	

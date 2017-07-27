@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.helper;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 
@@ -84,6 +85,16 @@ public class ItemStackHelper
 	public static boolean isBitWrenchItem(Item item)
 	{
 		return item != null && item instanceof ItemBitWrench;
+	}
+	
+	public static boolean isChiseledArmorStack(ItemStack stack)
+	{
+		return isChiseledArmorItem(stack.getItem());
+	}
+	
+	public static boolean isChiseledArmorItem(Item item)
+	{
+		return item != null && item instanceof ItemChiseledArmor;
 	}
 	
 	public static boolean isDesignStack(ItemStack stack)

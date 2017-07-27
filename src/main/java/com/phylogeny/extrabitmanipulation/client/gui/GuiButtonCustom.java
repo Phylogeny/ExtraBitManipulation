@@ -5,10 +5,21 @@ import net.minecraft.client.renderer.GlStateManager;
 
 public class GuiButtonCustom extends GuiButtonBase
 {
+	protected float textOffsetX, textOffsetY;
 	
 	public GuiButtonCustom(int buttonId, int x, int y, int widthIn, int heightIn, String text, String hoverText)
 	{
 		super(buttonId, x, y, widthIn, heightIn, text, hoverText);
+	}
+	
+	public void setTextOffsetX(float textOffsetX)
+	{
+		this.textOffsetX = textOffsetX;
+	}
+	
+	public void setTextOffsetY(float textOffsetY)
+	{
+		this.textOffsetY = textOffsetY;
 	}
 	
 	protected void drawCustomRect() {}
@@ -37,8 +48,11 @@ public class GuiButtonCustom extends GuiButtonBase
 		{
 			colorText = 16777120;
 		}
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(textOffsetX, textOffsetY, 0);
 		mc.fontRendererObj.drawString(displayString, xPosition + width / 2 - mc.fontRendererObj.getStringWidth(displayString) / 2,
 				yPosition + (height - 8) / 2, colorText);
+		GlStateManager.popMatrix();
 	}
 	
 }

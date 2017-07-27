@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -43,7 +44,9 @@ public class PacketCursorStack implements IMessage
 				@Override
 				public void run()
 				{
-					ctx.getServerHandler().playerEntity.inventory.setItemStack(message.stack);
+					EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+					if (player.capabilities.isCreativeMode)
+						player.inventory.setItemStack(message.stack);
 				}
 			});
 			return null;

@@ -69,7 +69,7 @@ public class ItemModelingTool extends ItemBitToolBase
 			BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
 		ItemStack stack = player.getHeldItem(hand);
-		if (world.isRemote && stack .hasTagCompound())
+		if (world.isRemote && stack.hasTagCompound())
 		{
 			@SuppressWarnings("null")
 			ModelWriteData modelingData = new ModelWriteData(stack.getTagCompound().getBoolean(NBTKeys.BIT_MAPS_PER_TOOL));

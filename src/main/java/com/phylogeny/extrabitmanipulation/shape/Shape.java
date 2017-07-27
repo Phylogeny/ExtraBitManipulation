@@ -133,17 +133,17 @@ public abstract class Shape
 	
 	protected float getBitPosX(BlockPos pos, int x, int y)
 	{
-		return (direction > 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getX() + x * Utility.PIXEL_F);
+		return direction > 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getX() + x * Utility.PIXEL_F;
 	}
 	
 	protected float getBitPosY(BlockPos pos, int x, int y, int z)
 	{
-		return (direction < 2 ? pos.getY() + y * Utility.PIXEL_F : (direction > 3 ? pos.getX() + x * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F));
+		return direction < 2 ? pos.getY() + y * Utility.PIXEL_F : (direction > 3 ? pos.getX() + x * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F);
 	}
 	
 	protected float getBitPosZ(BlockPos pos, int y, int z)
 	{
-		return (direction == 2 || direction == 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F);
+		return direction == 2 || direction == 3 ? pos.getY() + y * Utility.PIXEL_F : pos.getZ() + z * Utility.PIXEL_F;
 	}
 	
 	protected boolean isPointOffLine(float val, float centerVal, float semiDiameter)

@@ -8,6 +8,7 @@ public class ItemExtraBitManipulationBase extends Item
 {
 	private String name;
 	
+	@SuppressWarnings("null")
 	public ItemExtraBitManipulationBase(String name)
 	{
 		this.name = name;

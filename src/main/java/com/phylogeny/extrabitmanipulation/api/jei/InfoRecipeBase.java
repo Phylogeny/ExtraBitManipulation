@@ -6,14 +6,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class InfoRecipeBase extends BlankRecipeWrapper
 {
@@ -34,7 +34,13 @@ public class InfoRecipeBase extends BlankRecipeWrapper
 		this.imageHeight = imageHeight;
 		this.slotDrawable = guiHelper.getSlotDrawable();
 		this.name = JustEnoughItemsPlugin.translate(catagoryName + ".name." + recipeName);
-		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName + ".tooltip").split("\\\\n")));
+		String toolTip = ".tooltip";
+		if (!tooltipName.contains("."))
+			tooltipName += ".";
+		else
+			toolTip += ".";
+		
+		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName.replaceFirst("[.]", toolTip)).split("\\\\n")));
 		imageBox = new Rectangle(imageLeft, imageTop, imageRight - imageLeft, imageBottom - imageTop);
 	}
 	
@@ -53,6 +59,11 @@ public class InfoRecipeBase extends BlankRecipeWrapper
 			getTooltips.addAll(tooltipLines);
 		
 		return getTooltips;
+	}
+	
+	protected String translateName(String catagoryName, String name)
+	{
+		return JustEnoughItemsPlugin.translate(catagoryName + ".name." + name);
 	}
 	
 }

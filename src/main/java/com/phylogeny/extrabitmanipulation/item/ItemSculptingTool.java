@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
-import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
@@ -18,12 +18,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -50,9 +50,9 @@ import com.phylogeny.extrabitmanipulation.shape.Ellipsoid;
 import com.phylogeny.extrabitmanipulation.shape.PrismIsoscelesTriangular;
 import com.phylogeny.extrabitmanipulation.shape.PyramidIsoscelesTriangular;
 import com.phylogeny.extrabitmanipulation.shape.PyramidRectangular;
+import com.phylogeny.extrabitmanipulation.shape.PyramidSquare;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 import com.phylogeny.extrabitmanipulation.shape.Sphere;
-import com.phylogeny.extrabitmanipulation.shape.PyramidSquare;
 import com.phylogeny.extrabitmanipulation.shape.SymmetricalShape;
 
 public class ItemSculptingTool extends ItemBitToolBase
@@ -320,16 +320,19 @@ public class ItemSculptingTool extends ItemBitToolBase
 					
 					changed = possibleUses < initialpossibleUses;
 					if (changed)
-					{
-						@SuppressWarnings("deprecation")
-						SoundType sound = Blocks.STONE.getSoundType();
-						world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume()) / 8.0F, sound.getPitch() * 0.8F);
-					}
+						playPlacementSound(player, world, pos, 8.0F);
 				}
 				return changed;
 			}
 		}
 		return false;
+	}
+	
+	public static void playPlacementSound(EntityPlayer player, World world, BlockPos pos, float volumeReduction)
+	{
+		@SuppressWarnings("deprecation")
+		SoundType sound = Blocks.STONE.getSoundType();
+		world.playSound(player, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume()) / volumeReduction, sound.getPitch() * 0.8F);
 	}
 	
 	private float addPadding(float value, float padding)
@@ -377,7 +380,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 			}
 			catch (CannotBeChiseled e)
 			{
-				e.printStackTrace();
 				return remainingUses;
 			}
 			boolean byPassBitChecks = shape.isBlockInsideShape(pos);
@@ -485,9 +487,6 @@ public class ItemSculptingTool extends ItemBitToolBase
 				String shiftText = getColoredKeyBindText(KeyBindingsExtraBitManipulation.SHIFT);
 				String removeAddText = removeBits ? "remove" : "add";
 				String toFromText = removeBits ? "from" : "to";
-				if (!removeBits)
-					tooltip.add(shiftText + " left click bit to set bit type.");
-				
 				if (mode == 2)
 				{
 					tooltip.add("Left click point on block, drag");
@@ -509,6 +508,9 @@ public class ItemSculptingTool extends ItemBitToolBase
 					}
 				}
 				tooltip.add("Right click to cycle modes.");
+				if (!removeBits)
+					tooltip.add(shiftText + " left click bit to set bit type.");
+				
 				tooltip.add(shiftText + " mouse wheel to change");
 				tooltip.add("    " + (removeBits ? "removal" : "addition") + (Configs.displayNameDiameter ? " " : " semi-") + "diameter.");
 				tooltip.add("");

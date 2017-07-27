@@ -9,51 +9,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
-import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.client.render.RenderState;
-import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
-import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
-import com.phylogeny.extrabitmanipulation.packet.PacketBitMappingsPerTool;
-import com.phylogeny.extrabitmanipulation.packet.PacketClearStackBitMappings;
-import com.phylogeny.extrabitmanipulation.packet.PacketAddBitMapping;
-import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
-import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetDesign;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
-import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
+import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
+import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.ItemType;
-import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
-import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -64,6 +34,37 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.GuiHelper;
+import com.phylogeny.extrabitmanipulation.client.render.RenderState;
+import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
+import com.phylogeny.extrabitmanipulation.packet.PacketAddBitMapping;
+import com.phylogeny.extrabitmanipulation.packet.PacketBitMappingsPerTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketClearStackBitMappings;
+import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
+import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetDesign;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetTabAndStateBlockButton;
+import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
+import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class GuiBitMapping extends GuiContainer
 {
@@ -88,24 +89,25 @@ public class GuiBitMapping extends GuiContainer
 	private boolean stateMauallySelected, showSettings, bitMapPerTool, designMode, previewStackBoxClicked;
 	private String searchText = "";
 	private GuiTextField searchField;
-	private float previewStackScale, previewStackInitialOffsetX, previewStackInitialOffsetY, previewStackOffsetX, previewStackOffsetY;
-	private Vec3d previewStackAngles;
-	private static final int OFFSET_MAX = 400;
+	private float previewStackScale;
+	private Vec3d previewStackRotation, previewStackTranslation, previewStackTranslationInitial;
 	private AxisAlignedBB previewStackBox;
 	
-	public GuiBitMapping(InventoryPlayer playerInventory, boolean designMode)
+	public GuiBitMapping(EntityPlayer player, boolean designMode)
 	{
-		super(new ContainerBitMapping(playerInventory));
+		super(ProxyCommon.createBitMappingContainer(player));
 		this.designMode = designMode;
 		api = ChiselsAndBitsAPIAccess.apiInstance;
 		xSize = 254;
 		ySize = 219;
 		previewStackScale = 3.8F;
-		previewStackAngles = new Vec3d(30, 225, 0);
+		previewStackRotation = new Vec3d(30, 225, 0);
+		previewStackTranslation = Vec3d.ZERO;
+		previewStackTranslationInitial = Vec3d.ZERO;
 		if (designMode)
 			return;
 		
-		NBTTagCompound nbt = ItemStackHelper.getNBTOrNew(playerInventory.getCurrentItem());
+		NBTTagCompound nbt = ItemStackHelper.getNBTOrNew(player.inventory.getCurrentItem());
 		stateMauallySelected = nbt.getBoolean(NBTKeys.BUTTON_STATE_BLOCK_SETTING);
 		savedTab = nbt.getInteger(NBTKeys.TAB_SETTING);
 		bitMapPerTool = nbt.getBoolean(NBTKeys.BIT_MAPS_PER_TOOL);
@@ -375,8 +377,8 @@ public class GuiBitMapping extends GuiContainer
 		}
 		else
 		{
-			buttonSettings = new GuiButtonTextured(7, guiLeft + 237, guiTop + 6, 12, 12,
-					"Bit Mapping Settings", "Back To Preview", SETTINGS_BACK, SETTINGS_MAIN, null, null);
+			buttonSettings = new GuiButtonTextured(7, guiLeft + 237, guiTop + 6, 12, 12, "Bit Mapping Settings", SETTINGS_BACK, SETTINGS_MAIN, null, null);
+			buttonSettings.setHoverTextSelected("Back To Preview");
 			buttonBitMapPerTool = new GuiButtonTextured(8, guiLeft + 143, guiTop + 26, 12, 12, "Save/access mappings per tool or per client config",
 					BOX_CHECKED, BOX_UNCHECKED, SoundsExtraBitManipulation.boxCheck, SoundsExtraBitManipulation.boxUncheck);
 			if (showSettings)
@@ -428,12 +430,13 @@ public class GuiBitMapping extends GuiContainer
 				int vHeight = 0;
 				if (i == 1 || i == 3)
 				{
-					u = i == 1 ? 134 : 97;
+					u = i == 1 ? 104 : 67;
 					v = 219;
 					uWidth = 36;
 					vHeight = 36;
 				}
-				GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25, TAB_HOVER_TEXT[i], iconStack, u, v, uWidth, vHeight);
+				GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25,
+						TAB_HOVER_TEXT[i], iconStack, u, v, uWidth, vHeight, 141, 219, 256, GUI_TEXTURE);
 				if (i == savedTab)
 					tab.selected = true;
 				
@@ -521,7 +524,7 @@ public class GuiBitMapping extends GuiContainer
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_C))
 		{
-			previewStackOffsetX = previewStackOffsetY = 0;
+			previewStackTranslation = Vec3d.ZERO;
 		}
 		else if (showSettings)
 		{
@@ -544,23 +547,9 @@ public class GuiBitMapping extends GuiContainer
 		if (!previewStackBoxClicked)
 			bitMappingList.handleMouseInput();
 		
-		if (Mouse.getEventDWheel() != 0)
-		{
-			int mouseX = Mouse.getEventX() * width / mc.displayWidth;
-			int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-			if (!isCursorInsidePreviewStackBox(mouseX, mouseY))
-				return;
-			
-			float remainder = scalePreviewStack(Mouse.getEventDWheel() * 0.005F);
-			if (remainder == 0)
-				return;
-			
-			int x = (int) (previewStackOffsetX + previewStackBox.maxX / 2.0F + previewStackBox.minX / 2.0F);
-			int y = (int) (previewStackOffsetY + previewStackBox.maxY / 2.0F + previewStackBox.minY / 2.0F);
-			int sign = Mouse.getEventDWheel() > 0 ? 1 : -1;
-			previewStackOffsetX += (mouseX - x) * 0.15F * -sign * remainder;
-			previewStackOffsetY += (mouseY - y) * 0.15F * -sign * remainder;
-		}
+		Pair<Vec3d, Float> pair = GuiHelper.scaleObjectWithMouseWheel(this, previewStackBox, previewStackTranslation, previewStackScale, 30.0F);
+		previewStackTranslation = pair.getLeft();
+		previewStackScale = pair.getRight();
 	}
 	
 	@Override
@@ -574,50 +563,14 @@ public class GuiBitMapping extends GuiContainer
 		float deltaY = mouseInitialY - mouseY;
 		if (clickedMouseButton == 0)
 		{
-			if (isShiftKeyDown() || isCtrlKeyDown())
-			{
-				scalePreviewStack(deltaY * 0.05F);
-			}
-			else
-			{
-				double angleX = previewStackAngles.xCoord - (deltaY / previewStackScale) * 4.5F;
-				double angleY = previewStackAngles.yCoord - (deltaX / previewStackScale) * 4.5F;
-				if (angleX < -90 || angleX > 90)
-					angleX = 90 * (angleX > 0 ? 1 : -1);
-				
-				previewStackAngles = new Vec3d(angleX, angleY, 0);
-			}
 			mouseInitialX = mouseX;
 			mouseInitialY = mouseY;
 		}
-		else if (clickedMouseButton == 1)
-		{
-			previewStackOffsetX = previewStackInitialOffsetX - deltaX;
-			if (previewStackOffsetX < -OFFSET_MAX || previewStackOffsetX > OFFSET_MAX)
-				previewStackOffsetX = OFFSET_MAX * (previewStackOffsetX > 0 ? 1 : -1);
-			
-			previewStackOffsetY = previewStackInitialOffsetY - deltaY;
-			if (previewStackOffsetY < -OFFSET_MAX || previewStackOffsetY > OFFSET_MAX)
-				previewStackOffsetY = OFFSET_MAX * (previewStackOffsetY > 0 ? 1 : -1);
-		}
-	}
-	
-	private float scalePreviewStack(float amount)
-	{
-		amount *= previewStackScale;
-		float previewStackInitialScale = previewStackScale;
-		previewStackScale += amount;
-		if (previewStackScale < 0.1)
-		{
-			previewStackScale = 0.1F;
-			return (previewStackInitialScale - previewStackScale) / amount;
-		}
-		if (previewStackScale > 30)
-		{
-			previewStackScale = 30;
-			return (previewStackScale - previewStackInitialScale) / amount;
-		}
-		return 1;
+		Triple<Vec3d, Vec3d, Float> triple = GuiHelper.dragObject(clickedMouseButton, deltaX, deltaY,
+				previewStackTranslationInitial, previewStackRotation, previewStackScale, 30.0F, 4.5F, true);
+		previewStackTranslation = triple.getLeft();
+		previewStackRotation = triple.getMiddle();
+		previewStackScale = triple.getRight();
 	}
 	
 	@Override
@@ -633,11 +586,10 @@ public class GuiBitMapping extends GuiContainer
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
 		bitMappingList.mouseClicked(mouseX, mouseY, mouseButton);
-		previewStackBoxClicked = isCursorInsidePreviewStackBox(mouseX, mouseY);
+		previewStackBoxClicked = GuiHelper.isCursorInsideBox(previewStackBox, mouseX, mouseY);
 		mouseInitialX = mouseX;
 		mouseInitialY = mouseY;
-		previewStackInitialOffsetX = previewStackOffsetX;
-		previewStackInitialOffsetY = previewStackOffsetY;
+		previewStackTranslationInitial = new Vec3d(previewStackTranslation.xCoord, previewStackTranslation.yCoord, 0);
 		if (mc.player.inventory.getItemStack().isEmpty() && mouseButton == 2 && mc.player.capabilities.isCreativeMode && previewStackBoxClicked)
 		{
 			ItemStack previewStack = getPreviewStack();
@@ -648,11 +600,6 @@ public class GuiBitMapping extends GuiContainer
 			mc.player.inventory.setItemStack(stack);
 			ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack));
 		}
-	}
-	
-	private boolean isCursorInsidePreviewStackBox(int mouseX, int mouseY)
-	{
-		return previewStackBox.isVecInside(new Vec3d(mouseX, mouseY, 0));
 	}
 	
 	@Override
@@ -670,11 +617,11 @@ public class GuiBitMapping extends GuiContainer
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		if (previewStackBoxClicked)
+			return;
+		
 		for (int i = 0; i < bitMappingList.getSize(); i++)
 		{
-			if (previewStackBoxClicked)
-				continue;
-			
 			GuiListBitMappingEntry entry = bitMappingList.getListEntry(i);
 			if (mouseY >= bitMappingList.top && mouseY <= bitMappingList.bottom)
 			{
@@ -739,8 +686,6 @@ public class GuiBitMapping extends GuiContainer
 				RenderHelper.disableStandardItemLighting();
 			}
 		}
-		if (previewStackBoxClicked)
-			return;
 		
 		for (GuiButton button : buttonList)
 		{
@@ -749,8 +694,7 @@ public class GuiBitMapping extends GuiContainer
 			
 			GuiButtonBase buttonBase = (GuiButtonBase) button;
 			if (button.isMouseOver() && button.visible)
-				drawHoveringText(Arrays.<String>asList(new String[] {button instanceof GuiButtonTextured && buttonBase.selected
-						? ((GuiButtonTextured) button).getSelectedHoverText() : buttonBase.getHoverText()}), mouseX, mouseY, mc.fontRendererObj);
+				drawHoveringText(Arrays.<String>asList(new String[] {buttonBase.getHoverText()}), mouseX, mouseY, mc.fontRendererObj);
 		}
 		if (!designMode)
 		{
@@ -769,7 +713,7 @@ public class GuiBitMapping extends GuiContainer
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
 	{
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.getTextureManager().bindTexture(GUI_TEXTURE);
+		ClientHelper.bindTexture(GUI_TEXTURE);
 		int i = (width - xSize) / 2;
 		int j = (height - ySize) / 2;
 		if (designMode)
@@ -822,19 +766,18 @@ public class GuiBitMapping extends GuiContainer
 			if (!previewStack.isEmpty())
 			{
 				GL11.glEnable(GL11.GL_SCISSOR_TEST);
-				int scaleFactor = (new ScaledResolution(mc)).getScaleFactor();
-				int height = (int) (previewStackBox.maxY - previewStackBox.minY);
-				GL11.glScissor((int) previewStackBox.minX * scaleFactor, mc.displayHeight - ((int) previewStackBox.minY + height) * scaleFactor,
-						(int) (previewStackBox.maxX - previewStackBox.minX) * scaleFactor, height * scaleFactor);
+				GuiHelper.glScissor((int) previewStackBox.minX, (int) previewStackBox.minY,
+						(int) (previewStackBox.maxX - previewStackBox.minX),
+						(int) (previewStackBox.maxY - previewStackBox.minY));
 				RenderHelper.enableGUIStandardItemLighting();
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.5F + previewStackOffsetX, previewStackOffsetY, 0);
+				GlStateManager.translate(0.5 + previewStackTranslation.xCoord, previewStackTranslation.yCoord, 0);
 				RenderState.renderStateModelIntoGUI(null, RenderState.getItemModelWithOverrides(previewStack), previewStack, false,
-						guiLeft + 167, guiTop + 61, (float) previewStackAngles.xCoord,
-						(float) previewStackAngles.yCoord, previewStackScale);
+						guiLeft + 167, guiTop + 61, (float) previewStackRotation.xCoord,
+						(float) previewStackRotation.yCoord, previewStackScale);
 				GlStateManager.popMatrix();
 				RenderHelper.disableStandardItemLighting();
-				GL11.glDisable(GL11.GL_SCISSOR_TEST);
+				GuiHelper.glScissorDisable();
 			}
 			else
 			{

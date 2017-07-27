@@ -1,45 +1,50 @@
 package com.phylogeny.extrabitmanipulation.client.gui;
 
-import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.SoundEvent;
 
+import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
+
 public class GuiButtonBase extends GuiButton
 {
 	public boolean selected;
-	private String hoverText;
+	private boolean silent, helpMode;
+	private String hoverText, hoverTextSelected, hoverHelpText;
 	private SoundEvent soundSelect, soundDeselect;
 	
-	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String text, String hoverText)
+	public GuiButtonBase(int buttonId, int x, int y, int width, int height, String text, String hoverText)
 	{
-		this(buttonId, x, y, widthIn, heightIn, text, hoverText, null, null);
+		this(buttonId, x, y, width, height, text, hoverText, null, null);
 	}
 	
-	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String text, String hoverText, SoundEvent soundSelect, SoundEvent soundDeselect)
+	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn,
+			String text, String hoverText, SoundEvent soundSelect, SoundEvent soundDeselect)
 	{
 		super(buttonId, x, y, widthIn, heightIn, text);
-		this.hoverText = hoverText;
+		this.hoverText = hoverTextSelected = hoverText;
 		this.soundSelect = soundSelect;
 		this.soundDeselect = soundDeselect;
 	}
 	
-	@Override
-	public void playPressSound(SoundHandler soundHandlerIn)
+	public void setSilent(boolean silent)
 	{
-		if (soundSelect != null && !selected)
+		this.silent = silent;
+	}
+	
+	@Override
+	public void playPressSound(SoundHandler soundHandler)
+	{
+		if (silent)
+			return;
+		
+		if (soundSelect != null)
 		{
-			SoundsExtraBitManipulation.playSound(soundSelect);
+			SoundsExtraBitManipulation.playSound(selected ? soundDeselect : soundSelect);
 			return;
 		}
-		if (soundDeselect != null && selected)
-		{
-			SoundsExtraBitManipulation.playSound(soundDeselect);
-			return;
-		}
-		super.playPressSound(soundHandlerIn);
+		super.playPressSound(soundHandler);
 	}
 	
 	@Override
@@ -51,7 +56,27 @@ public class GuiButtonBase extends GuiButton
 	
 	public String getHoverText()
 	{
-		return hoverText;
+		return helpMode ? hoverHelpText : (selected ? hoverTextSelected : hoverText);
+	}
+	
+	public void setHoverText(String text)
+	{
+		hoverText = text;
+	}
+	
+	public void setHoverTextSelected(String text)
+	{
+		hoverTextSelected = text;
+	}
+	
+	public void setHoverHelpText(String text)
+	{
+		hoverHelpText = text;
+	}
+	
+	public void setHelpMode(boolean helpMode)
+	{
+		this.helpMode = helpMode;
 	}
 	
 	public GuiButtonBase setSoundSelect(SoundEvent sound)
