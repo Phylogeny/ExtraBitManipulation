@@ -3,13 +3,14 @@ package com.phylogeny.extrabitmanipulation.api.jei.icon;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.api.jei.CycleTimer;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-public class CategoryIconList extends CategoryIconBase
+import com.phylogeny.extrabitmanipulation.api.jei.CycleTimer;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
+public class CategoryIconList extends CategoryIconResourceBase
 {
 	private static List<ResourceLocation> images = new ArrayList<ResourceLocation>();
 	private final int itemCycleOffset = (int) (Math.random() * 1000);
@@ -28,7 +29,7 @@ public class CategoryIconList extends CategoryIconBase
 	protected void bindTexture(Minecraft minecraft)
 	{
 		cycleTimer.onDraw();
-		minecraft.getTextureManager().bindTexture(cycleTimer.getCycledItem(images));
+		ClientHelper.bindTexture(cycleTimer.getCycledItem(images));
 	}
 	
 }

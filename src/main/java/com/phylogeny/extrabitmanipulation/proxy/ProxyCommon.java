@@ -17,10 +17,14 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
+import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiChiseledArmor;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.container.ContainerBitMapping;
+import com.phylogeny.extrabitmanipulation.container.ContainerChiseledArmor;
+import com.phylogeny.extrabitmanipulation.container.ContainerHeldItem;
+import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.entity.EntityBit;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.BlocksExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
@@ -32,10 +36,13 @@ public class ProxyCommon implements IGuiHandler
 	
 	public void preinit(FMLPreInitializationEvent event)
 	{
+		BlocksExtraBitManipulation.blocksInit();
 		ItemsExtraBitManipulation.itemsInit(event);
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		MinecraftForge.EVENT_BUS.register(new ItemsExtraBitManipulation());
+		MinecraftForge.EVENT_BUS.register(new BlocksExtraBitManipulation());
+		MinecraftForge.EVENT_BUS.register(new RecipesExtraBitManipulation());
 		PacketRegistration.registerPackets();
 		ResourceLocation name = new ResourceLocation(Reference.MOD_ID, "entity_bit");
 		EntityRegistry.registerModEntity(name, EntityBit.class, name.toString(), 0, ExtraBitManipulation.instance, 64, 3, false);
@@ -51,28 +58,54 @@ public class ProxyCommon implements IGuiHandler
 	
 	public void init()
 	{
-		RecipesExtraBitManipulation.recipeInit();
+		RecipesExtraBitManipulation.registerOres();
 		NetworkRegistry.INSTANCE.registerGuiHandler(ExtraBitManipulation.instance, new ProxyCommon());
 	}
 	
 	public void postinit() {}
 	
+	public static ContainerHeldItem createBitMappingContainer(EntityPlayer player)
+	{
+		return new ContainerHeldItem(player, 60, 137);
+	}
+	
+	public static ContainerPlayerInventory createArmorContainer(EntityPlayer player)
+	{
+		return new ContainerChiseledArmor(player, 38, 148);
+	}
+	
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		return openBitMappingGui(id, player) ? new ContainerBitMapping(player.inventory) : null;
+		if (openBitMappingGui(id, player.getHeldItemMainhand()))
+			return createBitMappingContainer(player);
+		
+		if (openArmorGui(id))
+			return createArmorContainer(player);
+		
+		return null;
 	}
 	
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
-		return openBitMappingGui(id, player) ? new GuiBitMapping(player.inventory, ItemStackHelper.isDesignStack(player.getHeldItemMainhand())) : null;
+		if (openBitMappingGui(id, player.getHeldItemMainhand()))
+			return new GuiBitMapping(player, ItemStackHelper.isDesignStack(player.getHeldItemMainhand()));
+		
+		if (openArmorGui(id))
+			return new GuiChiseledArmor(player);
+		
+		return null;
 	}
 	
-	private boolean openBitMappingGui(int id, EntityPlayer player)
+	private boolean openBitMappingGui(int id, ItemStack stack)
 	{
-		ItemStack stack = player.getHeldItemMainhand();
-		return (id == GuiIDs.BIT_MAPPING_GUI.getID() && (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack)));
+		return id == GuiIDs.BIT_MAPPING.getID() && (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack));
+	}
+	
+	private boolean openArmorGui(int id)
+	{
+		return id == GuiIDs.CHISELED_ARMOR.getID();
 	}
 	
 }

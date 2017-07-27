@@ -30,5 +30,28 @@ public class NBTKeys
 	public static final String BUTTON_STATE_BLOCK_SETTING = "buttonStateBlockSetting";
 	public static final String BIT_MAPS_PER_TOOL = "bitMapsPerTool";
 	public static final String ENTITY_BIT_STACK = "stack";
+	public static final String ARMOR_MODE = "mode";
+	public static final String ARMOR_SCALE = "scale";
+	public static final String ARMOR_MOVING_PART = "movingPart";
+	public static final String ARMOR_TARGET_BITS = "targetBits";
+	public static final String ARMOR_TYPE = "type";
+	public static final String ARMOR_NOT_EMPTY = "notEmpty";
+	public static final String ARMOR_DATA = "data";
+	public static final String ARMOR_PART_DATA = "partData";
+	public static final String ARMOR_ITEM = "armorItem";
+	public static final String ARMOR_GL_OPERATIONS = "glOperations";
+	public static final String ARMOR_GL_OPERATIONS_PRE = "glOperationsPre";
+	public static final String ARMOR_GL_OPERATIONS_POST = "glOperationsPost";
+	public static final String ARMOR_GL_OPERATION_TYPE = "type";
+	public static final String ARMOR_GL_OPERATION_X = "x";
+	public static final String ARMOR_GL_OPERATION_Y = "y";
+	public static final String ARMOR_GL_OPERATION_Z = "z";
+	public static final String ARMOR_GL_OPERATION_ANGLE = "a";
+	public static final String ARMOR_FACING_PLACEMENT = "facingPlacement";
+	public static final String ARMOR_FACING_BOX = "facingBox";
+	public static final String ARMOR_YAW_PLAYER = "yaw";
+	public static final String ARMOR_USE_BIT_GRID = "useBitGrid";
+	public static final String ARMOR_POS = "pos";
+	public static final String ARMOR_HIT = "hit";
 	
 }

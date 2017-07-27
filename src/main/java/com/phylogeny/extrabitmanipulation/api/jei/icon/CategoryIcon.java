@@ -1,11 +1,12 @@
 package com.phylogeny.extrabitmanipulation.api.jei.icon;
 
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-public class CategoryIcon extends CategoryIconBase
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
+public class CategoryIcon extends CategoryIconResourceBase
 {
 	private static ResourceLocation image;
 	
@@ -18,7 +19,7 @@ public class CategoryIcon extends CategoryIconBase
 	@Override
 	protected void bindTexture(Minecraft minecraft)
 	{
-		minecraft.getTextureManager().bindTexture(image);
+		ClientHelper.bindTexture(image);
 	}
 	
 }

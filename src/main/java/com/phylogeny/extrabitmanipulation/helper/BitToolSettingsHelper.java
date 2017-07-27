@@ -1,46 +1,63 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
-import java.util.Map;
-
 import io.netty.buffer.ByteBuf;
 
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import mod.chiselsandbits.api.IBitBrush;
+import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
-import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.config.ConfigReplacementBits;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.BodyPartTemplate;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetArmorMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetArmorMovingPart;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetArmorScale;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetBitStack;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelAreaMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelGuiOpen;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelSnapMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSculptMode;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetDirection;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeOffset;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetShapeType;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetArmorBits;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
-
-import mod.chiselsandbits.api.IBitBrush;
-import mod.chiselsandbits.api.IChiselAndBitsAPI;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class BitToolSettingsHelper
 {
@@ -182,7 +199,7 @@ public class BitToolSettingsHelper
 		return getInt(Configs.modelAreaMode, nbt, NBTKeys.MODEL_AREA_MODE);
 	}
 	
-	public static void setModelAreaMode(EntityPlayer player, ItemStack stack, int mode, ConfigBitToolSettingInt modelAreaMode)
+	public static void setModelAreaMode(EntityPlayer player, ItemStack stack, int mode, @Nullable ConfigBitToolSettingInt modelAreaMode)
 	{
 		World world = player.world;
 		if (modelAreaMode == null || modelAreaMode.isPerTool())
@@ -208,7 +225,7 @@ public class BitToolSettingsHelper
 		return getInt(Configs.modelSnapMode, nbt, NBTKeys.MODEL_SNAP_MODE);
 	}
 	
-	public static void setModelSnapMode(EntityPlayer player, ItemStack stack, int mode, ConfigBitToolSettingInt modelSnapMode)
+	public static void setModelSnapMode(EntityPlayer player, ItemStack stack, int mode, @Nullable ConfigBitToolSettingInt modelSnapMode)
 	{
 		World world = player.world;
 		if (modelSnapMode == null || modelSnapMode.isPerTool())
@@ -234,7 +251,7 @@ public class BitToolSettingsHelper
 		return getBoolean(Configs.modelGuiOpen, nbt, NBTKeys.MODEL_GUI_OPEN);
 	}
 	
-	public static void setModelGuiOpen(EntityPlayer player, ItemStack stack, boolean isOpen, ConfigBitToolSettingBoolean modelGuiOpen)
+	public static void setModelGuiOpen(EntityPlayer player, ItemStack stack, boolean isOpen, @Nullable ConfigBitToolSettingBoolean modelGuiOpen)
 	{
 		World world = player.world;
 		if (modelGuiOpen == null || modelGuiOpen.isPerTool())
@@ -260,7 +277,7 @@ public class BitToolSettingsHelper
 		return getInt(Configs.sculptMode, nbt, NBTKeys.SCULPT_MODE);
 	}
 	
-	public static void setSculptMode(EntityPlayer player, ItemStack stack, int mode, ConfigBitToolSettingInt sculptMode)
+	public static void setSculptMode(EntityPlayer player, ItemStack stack, int mode, @Nullable ConfigBitToolSettingInt sculptMode)
 	{
 		World world = player.world;
 		if (sculptMode == null || sculptMode.isPerTool())
@@ -276,7 +293,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptMode, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, mode);
 		}
 	}
@@ -286,7 +303,7 @@ public class BitToolSettingsHelper
 		return getInt(Configs.sculptDirection, nbt, NBTKeys.DIRECTION);
 	}
 	
-	public static void setDirection(EntityPlayer player, ItemStack stack, int direction, ConfigBitToolSettingInt sculptDirection)
+	public static void setDirection(EntityPlayer player, ItemStack stack, int direction, @Nullable ConfigBitToolSettingInt sculptDirection)
 	{
 		World world = player.world;
 		if (sculptDirection == null || sculptDirection.isPerTool())
@@ -302,7 +319,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptDirection, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, direction);
 		}
 	}
@@ -314,7 +331,7 @@ public class BitToolSettingsHelper
 				: (!isCurved && shapeType < 3 ? Configs.sculptShapeTypeFlat.getDefaultValue() : shapeType);
 	}
 	
-	public static void setShapeType(EntityPlayer player, ItemStack stack, boolean isCurved, int shapeType, ConfigBitToolSettingInt sculptShapeType)
+	public static void setShapeType(EntityPlayer player, ItemStack stack, boolean isCurved, int shapeType, @Nullable ConfigBitToolSettingInt sculptShapeType)
 	{
 		World world = player.world;
 		if (sculptShapeType == null || sculptShapeType.isPerTool())
@@ -330,7 +347,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptShapeType, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, shapeType);
 		}
 	}
@@ -340,7 +357,8 @@ public class BitToolSettingsHelper
 		return getBoolean(Configs.sculptTargetBitGridVertexes, nbt, NBTKeys.TARGET_BIT_GRID_VERTEXES);
 	}
 	
-	public static void setBitGridTargeted(EntityPlayer player, ItemStack stack, boolean isTargeted, ConfigBitToolSettingBoolean sculptTargetBitGridVertexes)
+	public static void setBitGridTargeted(EntityPlayer player, ItemStack stack,
+			boolean isTargeted, @Nullable ConfigBitToolSettingBoolean sculptTargetBitGridVertexes)
 	{
 		World world = player.world;
 		if (sculptTargetBitGridVertexes == null || sculptTargetBitGridVertexes.isPerTool())
@@ -356,7 +374,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptTargetBitGridVertexes, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, isTargeted);
 		}
 	}
@@ -366,7 +384,7 @@ public class BitToolSettingsHelper
 		return getInt(Configs.sculptSemiDiameter, nbt, NBTKeys.SCULPT_SEMI_DIAMETER);
 	}
 	
-	public static void setSemiDiameter(EntityPlayer player, ItemStack stack, int semiDiameter, ConfigBitToolSettingInt sculptSemiDiameter)
+	public static void setSemiDiameter(EntityPlayer player, ItemStack stack, int semiDiameter, @Nullable ConfigBitToolSettingInt sculptSemiDiameter)
 	{
 		World world = player.world;
 		if (sculptSemiDiameter == null || sculptSemiDiameter.isPerTool())
@@ -382,7 +400,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptSemiDiameter, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, semiDiameter);
 		}
 	}
@@ -392,7 +410,8 @@ public class BitToolSettingsHelper
 		return getBoolean(isWire ? Configs.sculptHollowShapeWire : Configs.sculptHollowShapeSpade, nbt, NBTKeys.SCULPT_HOLLOW_SHAPE);
 	}
 	
-	public static void setHollowShape(EntityPlayer player, ItemStack stack, boolean isWire, boolean hollowShape, ConfigBitToolSettingBoolean sculptHollowShape)
+	public static void setHollowShape(EntityPlayer player, ItemStack stack, boolean isWire,
+			boolean hollowShape, @Nullable ConfigBitToolSettingBoolean sculptHollowShape)
 	{
 		World world = player.world;
 		if (sculptHollowShape == null || sculptHollowShape.isPerTool())
@@ -408,7 +427,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptHollowShape, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, hollowShape);
 		}
 	}
@@ -418,7 +437,7 @@ public class BitToolSettingsHelper
 		return getBoolean(Configs.sculptOpenEnds, nbt, NBTKeys.OPEN_ENDS);
 	}
 	
-	public static void setEndsOpen(EntityPlayer player, ItemStack stack, boolean openEnds, ConfigBitToolSettingBoolean sculptOpenEnds)
+	public static void setEndsOpen(EntityPlayer player, ItemStack stack, boolean openEnds, @Nullable ConfigBitToolSettingBoolean sculptOpenEnds)
 	{
 		World world = player.world;
 		if (sculptOpenEnds == null || sculptOpenEnds.isPerTool())
@@ -434,7 +453,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptOpenEnds, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, openEnds);
 		}
 	}
@@ -444,7 +463,7 @@ public class BitToolSettingsHelper
 		return getInt(Configs.sculptWallThickness, nbt, NBTKeys.WALL_THICKNESS);
 	}
 	
-	public static void setWallThickness(EntityPlayer player, ItemStack stack, int wallThickness, ConfigBitToolSettingInt sculptWallThickness)
+	public static void setWallThickness(EntityPlayer player, ItemStack stack, int wallThickness, @Nullable ConfigBitToolSettingInt sculptWallThickness)
 	{
 		World world = player.world;
 		if (sculptWallThickness == null || sculptWallThickness.isPerTool())
@@ -460,7 +479,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptWallThickness, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, wallThickness);
 		}
 	}
@@ -470,7 +489,7 @@ public class BitToolSettingsHelper
 		return getStack(isWire ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade, nbt, NBTKeys.SET_BIT);
 	}
 	
-	public static void setBitStack(EntityPlayer player, ItemStack stack, boolean isWire, IBitBrush bit, ConfigBitStack sculptSetBit)
+	public static void setBitStack(EntityPlayer player, ItemStack stack, boolean isWire, IBitBrush bit, @Nullable ConfigBitStack sculptSetBit)
 	{
 		World world = player.world;
 		if (sculptSetBit == null || sculptSetBit.isPerTool())
@@ -486,7 +505,7 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setStackProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setStackProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptSetBit, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, bit);
 		}
 	}
@@ -496,7 +515,7 @@ public class BitToolSettingsHelper
 		return getBoolean(Configs.sculptOffsetShape, nbt, NBTKeys.OFFSET_SHAPE);
 	}
 	
-	public static void setShapeOffset(EntityPlayer player, ItemStack stack, boolean offsetShape, ConfigBitToolSettingBoolean sculptOffsetShape)
+	public static void setShapeOffset(EntityPlayer player, ItemStack stack, boolean offsetShape, @Nullable ConfigBitToolSettingBoolean sculptOffsetShape)
 	{
 		World world = player.world;
 		if (sculptOffsetShape == null || sculptOffsetShape.isPerTool())
@@ -512,9 +531,218 @@ public class BitToolSettingsHelper
 		}
 		else if (world.isRemote)
 		{
-			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingMapConfigFile,
+			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.sculptingConfigFile,
 					sculptOffsetShape, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, offsetShape);
 		}
+	}
+	
+	public static int getArmorMode(NBTTagCompound nbt)
+	{
+		return getInt(Configs.armorMode, nbt, NBTKeys.ARMOR_MODE);
+	}
+	
+	public static void setArmorMode(EntityPlayer player, ItemStack stack, int mode, @Nullable ConfigBitToolSettingInt armorMode)
+	{
+		World world = player.world;
+		if (armorMode == null || armorMode.isPerTool())
+		{
+			if (world.isRemote)
+			{
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMode(mode));
+			}
+			else
+			{
+				setInt(player, stack, mode, NBTKeys.ARMOR_MODE);
+			}
+		}
+		else if (world.isRemote)
+		{
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+					armorMode, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, mode);
+		}
+	}
+	
+	public static int getArmorScale(NBTTagCompound nbt)
+	{
+		return getInt(Configs.armorScale, nbt, NBTKeys.ARMOR_SCALE);
+	}
+	
+	public static void setArmorScale(EntityPlayer player, ItemStack stack, int scale, @Nullable ConfigBitToolSettingInt armorScale)
+	{
+		setArmorScale(player, stack, scale, armorScale, null);
+	}
+	
+	public static void setArmorScale(EntityPlayer player, ItemStack stack, int scale,
+			@Nullable ConfigBitToolSettingInt armorScale, @Nullable EntityEquipmentSlot slot)
+	{
+		World world = player.world;
+		if (armorScale == null || armorScale.isPerTool())
+		{
+			if (world.isRemote)
+			{
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorScale(scale, slot));
+			}
+			setInt(player, stack, scale, NBTKeys.ARMOR_SCALE);
+		}
+		else if (world.isRemote)
+		{
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+					armorScale, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, scale);
+		}
+	}
+	
+	public static ConfigBitToolSettingInt getArmorMovingPartConfig(ArmorType armorType)
+	{
+		return armorType == ArmorType.HELMET ? Configs.armorMovingPartHelmet
+				: (armorType == ArmorType.CHESTPLATE ? Configs.armorMovingPartChestplate
+						: (armorType == ArmorType.LEGGINGS ? Configs.armorMovingPartLeggings : Configs.armorMovingPartBoots));
+	}
+	
+	public static ArmorMovingPart getArmorMovingPart(NBTTagCompound nbt, ItemChiseledArmor armorPiece)
+	{
+		return armorPiece.MOVING_PARTS[getInt(getArmorMovingPartConfig(armorPiece.armorType), nbt, NBTKeys.ARMOR_MOVING_PART)];
+	}
+	
+	public static void setArmorMovingPart(EntityPlayer player, ItemStack stack, ItemChiseledArmor armorPiece, int partIndex)
+	{
+		setArmorMovingPart(player, stack, partIndex, getArmorMovingPartConfig(armorPiece.armorType), null);
+	}
+	
+	public static void setArmorMovingPart(EntityPlayer player, ItemStack stack, int partIndex,
+			@Nullable ConfigBitToolSettingInt armorMovingPart, @Nullable EntityEquipmentSlot slot)
+	{
+		World world = player.world;
+		if (armorMovingPart == null || armorMovingPart.isPerTool())
+		{
+			if (world.isRemote)
+			{
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMovingPart(partIndex, slot));
+			}
+			setInt(player, stack, partIndex, NBTKeys.ARMOR_MOVING_PART);
+		}
+		else if (world.isRemote)
+		{
+			setIntProperty(world, ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+					armorMovingPart, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, partIndex);
+		}
+	}
+	
+	public static boolean areArmorBitsTargeted(NBTTagCompound nbt)
+	{
+		return getBoolean(Configs.armorTargetBits, nbt, NBTKeys.ARMOR_TARGET_BITS);
+	}
+	
+	public static void setArmorBitsTargeted(EntityPlayer player, ItemStack stack, boolean isTargeted, @Nullable ConfigBitToolSettingBoolean armorTargetBits)
+	{
+		World world = player.world;
+		if (armorTargetBits == null || armorTargetBits.isPerTool())
+		{
+			if (world.isRemote)
+			{
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetTargetArmorBits(isTargeted));
+			}
+			else
+			{
+				setBoolean(player, stack, isTargeted, NBTKeys.ARMOR_TARGET_BITS);
+			}
+		}
+		else if (world.isRemote)
+		{
+			setBooleanProperty(world, ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+					armorTargetBits, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, isTargeted);
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static int getArmorTabIndex()
+	{
+		return Configs.armorTabIndex.getValue();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void setArmorTabIndex(int armorTabIndex)
+	{
+		setIntProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+				Configs.armorTabIndex, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, armorTabIndex);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean getArmorPixelTranslation()
+	{
+		return Configs.armorPixelTranslation.getValue();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void setArmorPixelTranslation(boolean pixelTranslation)
+	{
+		setBooleanProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+				Configs.armorPixelTranslation, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, pixelTranslation);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean getArmorFullIllumination()
+	{
+		return Configs.armorFullIllumination.getValue();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void setArmorFullIllumination(boolean armorFullIllumination)
+	{
+		setBooleanProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+				Configs.armorFullIllumination, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, armorFullIllumination);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean getArmorLookAtCursor()
+	{
+		return Configs.armorLookAtCursor.getValue();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void setArmorLookAtCursor(boolean armorLookAtCursor)
+	{
+		setBooleanProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+				Configs.armorLookAtCursor, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, armorLookAtCursor);
+	}
+	
+	public static String getArmorModeText(NBTTagCompound nbt)
+	{
+		return getArmorModeText(getArmorMode(nbt));
+	}
+	
+	public static String getArmorModeText(int mode)
+	{
+		return "Mode: " + ItemChiseledArmor.MODE_TITLES[mode].toLowerCase();
+	}
+	
+	public static String getArmorScaleText(NBTTagCompound nbt)
+	{
+		return getArmorScaleText(getArmorScale(nbt));
+	}
+	
+	public static String getArmorScaleText(int scale)
+	{
+		return "Scale: " + ItemChiseledArmor.SCALE_TITLES[scale].toLowerCase();
+	}
+	
+	public static String getArmorMovingPartText(NBTTagCompound nbt, ItemChiseledArmor armorPiece)
+	{
+		return getArmorMovingPartText(getArmorMovingPart(nbt, armorPiece), armorPiece);
+	}
+	
+	public static String getArmorMovingPartText(ArmorMovingPart part, ItemChiseledArmor armorPiece)
+	{
+		return "Moving Part: " + armorPiece.MOVING_PART_TITLES[part.getPartIndex()].toLowerCase();
+	}
+	
+	public static String getArmorBitsTargetedText(NBTTagCompound nbt)
+	{
+		return getArmorBitsTargetedText(areArmorBitsTargeted(nbt));
+	}
+	
+	public static String getArmorBitsTargetedText(boolean targetBits)
+	{
+		return "Targeting: " + (targetBits ? "bits" : "blocks");
 	}
 	
 	public static String getModeText(String[] titles, String pefaceText, int mode)
@@ -709,6 +937,206 @@ public class BitToolSettingsHelper
 	public static String getBitName(ItemStack bitStack)
 	{
 		return bitStack.getDisplayName().replace("Chiseled Bit - ", "");
+	}
+	
+	public static class ArmorData
+	{
+		protected int scale;
+		protected ArmorMovingPart part;
+		
+		public ArmorData() {}
+		
+		public ArmorData(NBTTagCompound nbt, ItemChiseledArmor armorPiece)
+		{
+			scale = BitToolSettingsHelper.getArmorScale(nbt);
+			part = BitToolSettingsHelper.getArmorMovingPart(nbt, armorPiece);
+		}
+		
+		public void toBytes(ByteBuf buffer)
+		{
+			buffer.writeInt(scale);
+			buffer.writeInt(part.ordinal());
+		}
+		
+		public void fromBytes(ByteBuf buffer)
+		{
+			scale = buffer.readInt();
+			part = ArmorMovingPart.values()[buffer.readInt()];
+		}
+		
+		public int getScale()
+		{
+			return scale;
+		}
+		
+		public ArmorMovingPart getMovingPart()
+		{
+			return part;
+		}
+		
+	}
+	
+	public static class ArmorBodyPartTemplateData extends ArmorData
+	{
+		private int mode;
+		private boolean bitsTargeted;
+		
+		public ArmorBodyPartTemplateData() {}
+		
+		public ArmorBodyPartTemplateData(NBTTagCompound nbt, ItemChiseledArmor armor)
+		{
+			super(nbt, armor);
+			mode = BitToolSettingsHelper.getArmorMode(nbt);
+			bitsTargeted = BitToolSettingsHelper.areArmorBitsTargeted(nbt);
+		}
+		
+		@Override
+		public void toBytes(ByteBuf buffer)
+		{
+			super.toBytes(buffer);
+			buffer.writeInt(mode);
+			buffer.writeBoolean(bitsTargeted);
+		}
+		
+		@Override
+		public void fromBytes(ByteBuf buffer)
+		{
+			super.fromBytes(buffer);
+			mode = buffer.readInt();
+			bitsTargeted = buffer.readBoolean();
+		}
+		
+		public int getMode()
+		{
+			return mode;
+		}
+		
+		public boolean areBitsTargeted()
+		{
+			return bitsTargeted;
+		}
+		
+	}
+	
+	public static class ArmorCollectionData extends ArmorData
+	{
+		private AxisAlignedBB boxCollection;
+		private EnumFacing facing;
+		private Vec3d originBodyPart;
+		
+		public ArmorCollectionData() {}
+		
+		public ArmorCollectionData(NBTTagCompound nbt, ItemChiseledArmor armor, AxisAlignedBB boxCollection)
+		{
+			super(nbt, armor);
+			ArmorBodyPartTemplateBoxData boxData = new ArmorBodyPartTemplateBoxData(nbt, armor);
+			facing = boxData.getFacingBox();
+			this.boxCollection = boxCollection;
+			originBodyPart = new Vec3d(boxData.getBox().minX, boxData.getBox().minY, boxData.getBox().minZ);
+			float offsetX, offsetY, offsetZ;
+			ArmorMovingPart movingPart = part;
+			int scale = (int) Math.pow(2, this.scale);
+			if (movingPart == ArmorMovingPart.HEAD)
+			{
+				offsetX = offsetZ = 8 - scale * 4;
+				offsetY = 8 - scale * 8;
+			}
+			else if (movingPart.getBodyPartTemplate() == BodyPartTemplate.TORSO)
+			{
+				if (facing.getAxis() == Axis.Z)
+				{
+					offsetX = 8 - scale * 4;
+					offsetZ = 8 - scale * 2;
+				}
+				else
+				{
+					offsetX = 8 - scale * 2;
+					offsetZ = 8 - scale * 4;
+				}
+				offsetY = 8 - scale * (movingPart == ArmorMovingPart.PELVIS ? 8 : 4);
+			}
+			else
+			{
+				offsetX = offsetZ = 8 - scale * 2;
+				offsetY = 8 - scale * (movingPart == ArmorMovingPart.FOOT_RIGHT || movingPart == ArmorMovingPart.FOOT_LEFT ? 8 : 4);
+			}
+			originBodyPart = originBodyPart.subtract(offsetX * Utility.PIXEL_D, offsetY * Utility.PIXEL_D, offsetZ * Utility.PIXEL_D);
+		}
+		
+		@Override
+		public void toBytes(ByteBuf buffer)
+		{
+			super.toBytes(buffer);
+			buffer.writeDouble(boxCollection.minX);
+			buffer.writeDouble(boxCollection.minY);
+			buffer.writeDouble(boxCollection.minZ);
+			buffer.writeDouble(boxCollection.maxX);
+			buffer.writeDouble(boxCollection.maxY);
+			buffer.writeDouble(boxCollection.maxZ);
+			buffer.writeInt(facing.ordinal());
+			buffer.writeDouble(originBodyPart.x);
+			buffer.writeDouble(originBodyPart.y);
+			buffer.writeDouble(originBodyPart.z);
+		}
+		
+		@Override
+		public void fromBytes(ByteBuf buffer)
+		{
+			super.fromBytes(buffer);
+			boxCollection = new AxisAlignedBB(buffer.readDouble(), buffer.readDouble(), buffer.readDouble(),
+					buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+			facing = EnumFacing.values()[buffer.readInt()];
+			originBodyPart = new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+		}
+		
+		public EnumFacing getFacing()
+		{
+			return facing;
+		}
+		
+		public AxisAlignedBB getCollectionBox()
+		{
+			return boxCollection;
+		}
+		
+		public Vec3d getOriginBodyPart()
+		{
+			return originBodyPart;
+		}
+		
+	}
+	
+	public static class ArmorBodyPartTemplateBoxData
+	{
+		private EnumFacing facingBox, facingPlacement;
+		AxisAlignedBB boxTemplate;
+		
+		public ArmorBodyPartTemplateBoxData(NBTTagCompound nbt, ItemChiseledArmor armorPiece)
+		{
+			facingBox = BitAreaHelper.readFacingFromNBT(nbt, NBTKeys.ARMOR_FACING_BOX);
+			facingPlacement = BitAreaHelper.readFacingFromNBT(nbt, NBTKeys.ARMOR_FACING_PLACEMENT);
+			boxTemplate = ItemChiseledArmor.getBodyPartTemplateBox(nbt.getFloat(NBTKeys.ARMOR_YAW_PLAYER),
+					nbt.getBoolean(NBTKeys.ARMOR_USE_BIT_GRID), facingBox, facingPlacement,
+					BitAreaHelper.readBlockPosFromNBT(nbt, NBTKeys.ARMOR_POS),
+					BitAreaHelper.readVecFromNBT(nbt, NBTKeys.ARMOR_HIT), BitToolSettingsHelper.getArmorScale(nbt),
+					BitToolSettingsHelper.getArmorMovingPart(nbt, armorPiece));
+		}
+		
+		public EnumFacing getFacingBox()
+		{
+			return facingBox;
+		}
+		
+		public EnumFacing getFacingPlacement()
+		{
+			return facingPlacement;
+		}
+		
+		public AxisAlignedBB getBox()
+		{
+			return boxTemplate;
+		}
+		
 	}
 	
 	public static class ModelReadData

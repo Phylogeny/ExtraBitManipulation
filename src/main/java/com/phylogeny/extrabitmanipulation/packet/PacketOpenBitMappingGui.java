@@ -38,7 +38,7 @@ public class PacketOpenBitMappingGui implements IMessage
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack))
 					{
-						player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.world, 0, 0, 0);
+						player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING.getID(), player.world, 0, 0, 0);
 					}
 				}
 			});

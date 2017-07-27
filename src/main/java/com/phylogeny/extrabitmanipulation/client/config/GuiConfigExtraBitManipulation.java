@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
-import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
+import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.CategoryEntry;
-import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
+
+import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.config.ConfigNamed;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class GuiConfigExtraBitManipulation extends GuiConfig
 {
@@ -52,6 +52,8 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		String hoverText = "Configures @@@ data storage/access, default values, and " +
 				"chat notifications upon change. (applies to all tools -- see 'Item Properties' menu for item-specific settings)";
 		addToolDataDummyElements(ConfigHandlerExtraBitManipulation.configFileClient, configElementsToolData,
+				ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, hoverText);
+		addToolDataDummyElements(ConfigHandlerExtraBitManipulation.configFileClient, configElementsToolData,
 				ConfigHandlerExtraBitManipulation.DATA_CATAGORY_MODEL, hoverText);
 		addToolDataDummyElements(ConfigHandlerExtraBitManipulation.configFileClient, configElementsToolData,
 				ConfigHandlerExtraBitManipulation.DATA_CATAGORY_SCULPT, hoverText);
@@ -81,6 +83,11 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 	{
 		List<IConfigElement> configElementsToolSettings = new ArrayList<IConfigElement>();
 		boolean isClient = configFile.equals(ConfigHandlerExtraBitManipulation.configFileClient);
+		Class configClass = isClient ? ClientEntry.class : ServerEntry.class;
+		addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.ARMOR_SETTINGS,
+				isClient ? "Configures the z-fighting buffer scale amount for Chiseled Armor pieces"
+						: "Configures what to do with a Chiseled Armor GUI slot's itemstack when that slot is removed",
+				configElementsToolSettings, configClass);
 		if (isClient)
 		{
 			List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
@@ -97,7 +104,6 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 			addElementsToDummyElement("Modeling Tool Settings", textReplacementBits + textUnchiselable + " or " + textInsufficient,
 					configElementsToolSettings, configElementsModelingTool, ClientEntry.class);
 		}
-		Class configClass = isClient ? ClientEntry.class : ServerEntry.class;
 		addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.SCULPTING_WRENCH_SETTINGS,
 				"Configures sculpting dimensions, wrench inversion mode, the way bits are handled when removed from the world, and the way bit " +
 				"removal/addition areas are displayed. (applies to all sculpting tools -- see 'Item Properties' menu for item-specific settings)",

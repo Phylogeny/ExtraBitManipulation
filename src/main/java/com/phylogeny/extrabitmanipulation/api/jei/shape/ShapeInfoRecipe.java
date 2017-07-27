@@ -4,15 +4,16 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.api.jei.InfoRecipeBase;
-import com.phylogeny.extrabitmanipulation.api.jei.JustEnoughItemsPlugin;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
+import mezz.jei.api.IGuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import mezz.jei.api.IGuiHelper;
+
+import com.phylogeny.extrabitmanipulation.api.jei.InfoRecipeBase;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.GuiHelper;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ShapeInfoRecipe extends InfoRecipeBase
 {
@@ -33,10 +34,10 @@ public class ShapeInfoRecipe extends InfoRecipeBase
 		return recipes;
 	}
 	
-	public ShapeInfoRecipe(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String tooltipName, int imageIndex, boolean isNarrow)
+	public ShapeInfoRecipe(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String catagoryName, int imageIndex, boolean isNarrow)
 	{
 		super(guiHelper, sculptingStacks, imageWidth, imageHeight, GRAPHIC_NAMES[imageIndex * 2 + 1], GRAPHIC_NAMES[imageIndex * 2 + 1].toLowerCase().replace(" ", "_"),
-				tooltipName, isNarrow ? 19 : 2, 22, isNarrow ? 142 : 158, 124, ShapeInfoRecipeCategory.NAME);
+				catagoryName, isNarrow ? 19 : 2, 22, isNarrow ? 142 : 158, 123, catagoryName);
 		this.imageIndex = imageIndex;
 		graphicImageSymetrical = new ResourceLocation(Reference.MOD_ID, "textures/jei/graphics/" + GRAPHIC_NAMES[imageIndex * 2] + ".png");
 		graphicImageAsymetrical = new ResourceLocation(Reference.MOD_ID, "textures/jei/graphics/" + GRAPHIC_NAMES[imageIndex * 2 + 1] + ".png");
@@ -46,9 +47,9 @@ public class ShapeInfoRecipe extends InfoRecipeBase
 		textOpen = translateName("open");
 	}
 	
-	private String translateName(String name)
+	protected String translateName(String name)
 	{
-		return JustEnoughItemsPlugin.translate(ShapeInfoRecipeCategory.NAME + ".name." + name);
+		return translateName(ShapeInfoRecipeCategory.NAME, name);
 	}
 	
 	@Override
@@ -56,22 +57,17 @@ public class ShapeInfoRecipe extends InfoRecipeBase
 	{
 		int xPos = -5;
 		int yPos = -3;
-		minecraft.getTextureManager().bindTexture(graphicImageSymetrical);
+		ClientHelper.bindTexture(graphicImageSymetrical);
 		Gui.drawScaledCustomSizeModalRect(xPos, yPos, 0, 0, 870, 870, 24, 24, 870, 870);
 		xPos = 20;
-		minecraft.getTextureManager().bindTexture(graphicImageAsymetrical);
+		ClientHelper.bindTexture(graphicImageAsymetrical);
 		Gui.drawScaledCustomSizeModalRect(xPos, yPos, 0, 0, 870, 870, 24, 24, 870, 870);
 		xPos = 47;
 		yPos = 0;
 		slotDrawable.draw(minecraft, xPos, yPos);
-		minecraft.getTextureManager().bindTexture(image);
-		boolean isNarrow = imageIndex % 3 == 0;
-		float scaleFactor = isNarrow ? 6.06F : 6.83F;
-		int width = (int) (imageWidth / scaleFactor);
-		int height = (int) (imageHeight / scaleFactor);
-		xPos = recipeWidth / 2 - width / 2;
+		ClientHelper.bindTexture(image);
+		GuiHelper.drawTexturedRect(imageBox.getMinX(), imageBox.getMinY(), imageBox.getMaxX(), imageBox.getMaxY());
 		yPos += slotDrawable.getHeight() + 4;
-		Gui.drawScaledCustomSizeModalRect(xPos, yPos, 0, 0, imageWidth, imageHeight, width, height, imageWidth, imageHeight);
 		xPos = 69;
 		int nameWidth = minecraft.fontRenderer.getStringWidth(name);
 		if (nameWidth < 103)
@@ -80,7 +76,7 @@ public class ShapeInfoRecipe extends InfoRecipeBase
 		yPos = slotDrawable.getHeight() / 2 - minecraft.fontRenderer.FONT_HEIGHT / 2;
 		minecraft.fontRenderer.drawString(name, xPos, yPos, Color.black.getRGB());
 		boolean isSloped = imageIndex == 2 || imageIndex == 4;
-		xPos = isNarrow ? 51 : 33;
+		xPos = imageIndex % 3 == 0 ? 51 : 33;
 		yPos = imageIndex == 3 ? 25 : (isSloped ? 30 : 28);
 		minecraft.fontRenderer.drawString(textSolid, xPos - minecraft.fontRenderer.getStringWidth(textSolid) / 2, yPos, Color.black.getRGB());
 		xPos = 109;

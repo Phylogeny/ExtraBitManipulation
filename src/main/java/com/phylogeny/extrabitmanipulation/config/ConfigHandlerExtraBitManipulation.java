@@ -13,16 +13,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.LogHelper;
+import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderMode;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ArmorSlotRemovalMode;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
 public class ConfigHandlerExtraBitManipulation
 {
-	public static Configuration configFileClient, configFileServer, configFileCommon, modelingMapConfigFile, sculptingMapConfigFile;
+	public static Configuration configFileClient, configFileServer, configFileCommon, modelingMapConfigFile, sculptingConfigFile, chiseledArmorConfigFile;
+	public static final String ARMOR_SETTINGS = "Chiseled Armor Settings";
 	public static final String SCULPTING_WRENCH_SETTINGS = "Sculpting & Wrech Settings";
 	public static final String UNCHISELABLE_BLOCK_STATES = "Unchiselable Block States";
 	public static final String INSUFFICIENT_BITS = "Insufficient Bits";
@@ -32,6 +38,7 @@ public class ConfigHandlerExtraBitManipulation
 	public static final String STATE_TO_BIT_MAP = "State To Bit Map";
 	public static final String DATA_CATAGORY_SCULPT = "Sculpting Tool";
 	public static final String DATA_CATAGORY_MODEL = "Modeling Tool";
+	public static final String DATA_CATAGORY_ARMOR = "Chiseled Armor";
 	public static final String BIT_TOOL_DEFAULT_VALUES = "Default Values";
 	public static final String BIT_TOOL_PER_TOOL_OR_PER_CLIENT = "Per Tool or Per Client";
 	public static final String BIT_TOOL_DISPLAY_IN_CHAT = "Display In Chat";
@@ -298,7 +305,8 @@ public class ConfigHandlerExtraBitManipulation
 		configFileServer = getConfigFile(configDir, "server");
 		configFileCommon = getConfigFile(configDir, "common");
 		modelingMapConfigFile = getConfigFile(configDir, "modeling_data");
-		sculptingMapConfigFile = getConfigFile(configDir, "sculpting_data");
+		sculptingConfigFile = getConfigFile(configDir, "sculpting_data");
+		chiseledArmorConfigFile = getConfigFile(configDir, "armor_data");
 		updateConfigs();
 	}
 	
@@ -405,6 +413,58 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.replacementBitsInsufficient = getConfigReplacementBits(INSUFFICIENT_BITS, "minecraft:redstone_block", true, true, false);
 			
 			//BIT TOOL DATA SETTINGS
+			Configs.armorMode = getBitToolSettingIntFromStringArray("Mode", DATA_CATAGORY_ARMOR,
+					chiseledArmorConfigFile, true, true, 0, 0,
+					"mode",
+					"mode (either template creation mode to set the reference area of the moving part the blocks will be rendered relative to " +
+					"(and to optionally fill that area with bits), or block collection mode to import blocks into a moving part of the armor piece).",
+					ItemChiseledArmor.MODE_TITLES);
+			
+			Configs.armorScale = getBitToolSettingIntFromStringArray("Scale", DATA_CATAGORY_ARMOR,
+					chiseledArmorConfigFile, false, true, 0, 0,
+					"scale",
+					"scale (which sets the scale of the bodypart templates and the blocks when imported into the armor piece).",
+					ItemChiseledArmor.SCALE_TITLES);
+			
+			Configs.armorMovingPartHelmet = getArmorMovingPart(ItemsExtraBitManipulation.chiseledHelmet);
+			Configs.armorMovingPartChestplate = getArmorMovingPart(ItemsExtraBitManipulation.chiseledChestplate);
+			Configs.armorMovingPartLeggings = getArmorMovingPart(ItemsExtraBitManipulation.chiseledLeggings);
+			Configs.armorMovingPartBoots = getArmorMovingPart(ItemsExtraBitManipulation.chiseledBoots);
+			Configs.armorTabIndex = getArmorGuiInt("Selected Tab Index", 0, 0, 3);
+			Configs.armorPixelTranslation = getArmorGuiBoolean("Translation In Pixels", true);
+			Configs.armorFullIllumination = getArmorGuiBoolean("Full Illumination", false);
+			Configs.armorLookAtCursor = getArmorGuiBoolean("Look At Cursor", true);
+			
+			Configs.armorModelRenderMode = getEnumValueFromStringArray("Render Default Armor Model", ArmorModelRenderMode.class,
+					ARMOR_SETTINGS, configFileClient, 0,
+					"Specifies when to render the default Chiseled Armor model for a given armor piece. If set to 'If Empty', it will only render for " +
+					"an armor piece if there are no non-empty itemstacks in the itemstack lists of any of its moving parts. It will never/always render, " +
+					"if set to 'Never'/'Always', respectively",
+					"If Empty", "Never", "Always");
+			
+			Configs.armorZFightingBufferScale = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Global",
+					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
+					"A scale of this many pixels will be applied to all items rendered for all moving parts of all Chiseled Armor pieces, so as to prevent " +
+					"z-fighting of those items with the player model.");
+			
+			Configs.armorZFightingBufferScaleRightFoot = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Right Foot",
+					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
+					"A scale of this many pixels will be applied to all items rendered for the right foot moving part of Chiseled Armor boots, so as to " +
+					"prevent z-fighting of those items with the items of the left foot moving part.");
+			
+			Configs.armorSlotRemovalMode = getEnumValueFromStringArray("Slot Removal Mode", ArmorSlotRemovalMode.class, ARMOR_SETTINGS, configFileServer, 0,
+					"Specifies what to do with a slot's itemstack when that slot is removed. If set to 'Give Stack As Stack', any stack " +
+					" will be put in the player's inventory as-is (or spawned in the world if the player's inventory is full). If set to 'Give Stack As " +
+					"Bits If Possible', chiseled block stacks will be decomposed into bits, and those bits given to the player (again, spawning the bits in " +
+					"the world if the player's inventory is full); all other stacks will be given as-is.",
+					"Give Stack As Stack", "Give Stack As Bits If Possible", "Prevent Removal If Not Empty");
+			
+			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
+					chiseledArmorConfigFile, false, true, false,
+					"targeting mode",
+					"targeting mode (if true, when importing blocks into the armor piece in collection mode, the drawn collection area will be determined " +
+					"by the bit click and the bit released on. If false, it will be determined by the block click and block released on).");
+			
 			Configs.modelAreaMode = getBitToolSettingIntFromStringArray("Area Mode", DATA_CATAGORY_MODEL,
 					modelingMapConfigFile, false, true, 0, 0,
 					"area mode",
@@ -428,33 +488,33 @@ public class ConfigHandlerExtraBitManipulation
 					"do so. Regardless of this setting, the GUI can be opened by right-clicking while sneaking).");
 			
 			Configs.sculptMode = getBitToolSettingIntFromStringArray("Sculpting Mode", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, 0, 0,
+					sculptingConfigFile, false, true, 0, 0,
 					"sculpting mode",
 					"sculpting mode (local mode affects only the block clicked - global/drawn modes affects any bits from any blocks that intersect " +
 					"the sculpting shape when a block is clicked (global) or when the mouse is released after a click and drag (drawn)).",
 					ItemSculptingTool.MODE_TITLES);
 			
 			Configs.sculptDirection = getBitToolSettingIntFromStringArray("Direction", DATA_CATAGORY_SCULPT,
-						sculptingMapConfigFile, false, true, 1, 0,
-						"sculpting shape direction",
-						"direction.",
-						BitToolSettingsHelper.getDirectionNames());// TODO decompose to direction and rotation when triangular shapes are implemented
+					sculptingConfigFile, false, true, 1, 0,
+					"sculpting shape direction",
+					"direction.",
+					BitToolSettingsHelper.getDirectionNames());// TODO decompose to direction and rotation when triangular shapes are implemented
 			
 			Configs.sculptShapeTypeCurved = getBitToolSettingIntFromStringArray("Shape (curved)", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, 0, 0,
+					sculptingConfigFile, false, true, 0, 0,
 					"curved tool sculpting shape",
 					"sculpting shape.",
 					Arrays.copyOfRange(Shape.SHAPE_NAMES, 0, 3));
 			
 			Configs.sculptShapeTypeFlat = getBitToolSettingIntFromStringArray("Shape (flat/straight)", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, 0, 3,
+					sculptingConfigFile, false, true, 0, 3,
 					"flat/straight tool sculpting shape",
 					"sculpting shape.",
-					new String[]{Shape.SHAPE_NAMES[3], Shape.SHAPE_NAMES[6]});
+					Shape.SHAPE_NAMES[3], Shape.SHAPE_NAMES[6]);
 					//Arrays.copyOfRange(Shape.SHAPE_NAMES, 3, 7) TODO
 			
 			Configs.sculptTargetBitGridVertexes = getBitToolSettingBoolean("Target Bit Grid Vertexes", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, false,
+					sculptingConfigFile, false, true, false,
 					"targeting mode",
 					"targeting mode (when sculpting in local/global mode either bits are targeted [the shape is centered on the center of the bit looked " +
 					"- the diameter is one (the center bit) plus/minus x number of bits (semi-diameter is x + 1/2 bit)], or vertices of the bit " +
@@ -462,32 +522,32 @@ public class ConfigHandlerExtraBitManipulation
 					"vertex of the grid) - the diameter is 2x number of bits (x is a true semi-diameter)]).");
 			
 			Configs.sculptHollowShapeWire = getBitToolSettingBoolean("Hollow Shapes (wire)", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, false,
+					sculptingConfigFile, false, true, false,
 					"sculpting shape hollowness of sculpting wires",
 					"sculpting wire hollow property value (shape is either hollow or solid).");
 			
 			Configs.sculptHollowShapeSpade = getBitToolSettingBoolean("Hollow Shapes (spade)", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, false,
+					sculptingConfigFile, false, true, false,
 					"sculpting shape hollowness of sculpting spades",
 					"sculpting spade hollow property value (shape is either hollow or solid).");
 			
 			Configs.sculptOpenEnds = getBitToolSettingBoolean("Open Ends", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, false,
+					sculptingConfigFile, false, true, false,
 					"hollow sculpting shape open-endedness",
 					"hollow sculpting shape open-ended property value (hollow shapes, such as cylinders, pyramids, etc., can have open or closed ends).");
 			
 			Configs.sculptSemiDiameter = getBitToolSettingInt("Semi-Diameter", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, true, true, 5, 0, Integer.MAX_VALUE,
+					sculptingConfigFile, true, true, 5, 0, Integer.MAX_VALUE,
 					"sculpting shape semi-diameter",
 					"sculpting shape semi-diameter (in bits).", "5 bits");
 			
 			Configs.sculptWallThickness = getBitToolSettingInt("Wall Thickness", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, 2, 1, Integer.MAX_VALUE,
+					sculptingConfigFile, false, true, 2, 1, Integer.MAX_VALUE,
 					"hollow sculpting shape wall thickness",
 					"hollow sculpting shape wall thickness (in bits).", "2 bits");
 			
 			Configs.sculptSetBitWire = getBitToolSettingBitStack("Bit Type - Filter (wire)", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, true, true, "minecraft:air",
+					sculptingConfigFile, true, true, "minecraft:air",
 					"filtered bit type",
 					"filtered bit type (sculpting can remove only one bit type rather than any - this config sets the block [as specified " +
 					"by 'modID:name'] of the bit type that sculpting wires remove (an empty string, an unsupported block, or any misspelling " +
@@ -495,7 +555,7 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.sculptSetBitWire.init();
 			
 			Configs.sculptSetBitSpade = getBitToolSettingBitStack("Bit Type - Addition (spade)", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, true, true, "minecraft:air",
+					sculptingConfigFile, true, true, "minecraft:air",
 					"addition bit type",
 					"addition bit type (sets the block form [as specified by 'modID:name'] of the bit type that sculpting spades add to the " +
 					"world (an empty string, an unsupported block, or any misspelling will specify no bit type - the type will have to be set " +
@@ -503,7 +563,7 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.sculptSetBitSpade.init();
 			
 			Configs.sculptOffsetShape = getBitToolSettingBoolean("Offset Shape for Placement", DATA_CATAGORY_SCULPT,
-					sculptingMapConfigFile, false, true, true,
+					sculptingConfigFile, false, true, true,
 					"whether or not sculpting shapes added with spades will be offset for placement",
 					"shape placement property value (shapes added with spades can be centered around the bit clicked, of offset opposite the side clicked).");
 			
@@ -623,8 +683,42 @@ public class ConfigHandlerExtraBitManipulation
 			saveConfigFile(configFileServer);
 			saveConfigFile(configFileCommon);
 			saveConfigFile(modelingMapConfigFile);
-			saveConfigFile(sculptingMapConfigFile);
+			saveConfigFile(sculptingConfigFile);
+			saveConfigFile(chiseledArmorConfigFile);
 		}
+	}
+	
+	public static <T extends Enum<? >> T getEnumValueFromStringArray(String name, Class<T> enumType,
+			String catagory, Configuration dataConfigFile, int defaultIndex, String comment, String... titles)
+	{
+		String title = dataConfigFile.getString(name, catagory, titles[defaultIndex], comment, titles);
+		for (int i = 0; i < titles.length; i++)
+		{
+			if (titles[i].equals(title))
+				return enumType.getEnumConstants()[i];
+		}
+		return null;
+	}
+	
+	private static ConfigBitToolSettingInt getArmorGuiInt(String name, int defaultValue, int min, int max)
+	{
+		return new ConfigBitToolSettingInt(name, false, false, defaultValue,
+				chiseledArmorConfigFile.getInt(name, DATA_CATAGORY_ARMOR, defaultValue, min, max, "", name));
+	}
+	
+	private static ConfigBitToolSettingBoolean getArmorGuiBoolean(String name, boolean defaultValue)
+	{
+		return new ConfigBitToolSettingBoolean(name, false, false, defaultValue,
+				chiseledArmorConfigFile.getBoolean(name, DATA_CATAGORY_ARMOR, defaultValue, ""));
+	}
+	
+	private static ConfigBitToolSettingInt getArmorMovingPart(Item armorPiece)
+	{
+		return getBitToolSettingIntFromStringArray(((ItemChiseledArmor) armorPiece).armorType.getName() + " Moving Part", DATA_CATAGORY_ARMOR,
+				chiseledArmorConfigFile, true, true, 0, 0,
+				"moving part",
+				"moving part (specifies a moving part of this armor piece to import blocks into in collection mode).",
+				((ItemChiseledArmor) armorPiece).MOVING_PART_TITLES);
 	}
 	
 	private static boolean disableThrownLiquidBitProperty(String name, boolean ignite, boolean entities)
@@ -719,7 +813,7 @@ public class ConfigHandlerExtraBitManipulation
 	
 	private static String getToolTipBitToolSetting(String toolTipDefaultValue, String toolTipDefaultValueDefault)
 	{
-		return "Players and sculpting tools will initialize with this " + toolTipDefaultValue + " (default = " + toolTipDefaultValueDefault + ")";
+		return "Players and bit tools will initialize with this " + toolTipDefaultValue + " (default = " + toolTipDefaultValueDefault + ")";
 	}
 	
 	private static boolean getPerTool(String name, String catagoryEnding, boolean defaultPerTool, String toolTipPerTool)

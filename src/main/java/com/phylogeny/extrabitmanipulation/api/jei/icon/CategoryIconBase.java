@@ -2,18 +2,13 @@ package com.phylogeny.extrabitmanipulation.api.jei.icon;
 
 import mezz.jei.api.gui.IDrawableStatic;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 
 public abstract class CategoryIconBase implements IDrawableStatic
 {
-	private int textureWidth, textureHeight, u, v, width, height;
+	protected int width, height;
 	
-	public CategoryIconBase(int u, int v, int width, int height, int textureWidth, int textureHeight)
+	public CategoryIconBase(int width, int height)
 	{
-		this.textureWidth = textureWidth;
-		this.textureHeight = textureHeight;
-		this.u = u;
-		this.v = v;
 		this.width = width;
 		this.height = height;
 	}
@@ -40,21 +35,6 @@ public abstract class CategoryIconBase implements IDrawableStatic
 	public void draw(Minecraft minecraft, int xOffset, int yOffset)
 	{
 		draw(minecraft, xOffset, yOffset, 0, 0, 0, 0);
-	}
-	
-	protected abstract void bindTexture(Minecraft minecraft);
-	
-	@Override
-	public void draw(Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight)
-	{
-		bindTexture(minecraft);
-		int x = xOffset + maskLeft;
-		int y = yOffset + maskTop;
-		int u = this.u + maskLeft;
-		int v = this.v + maskTop;
-		int width = this.width - maskRight - maskLeft;
-		int height = this.height - maskBottom - maskTop;
-		Gui.drawScaledCustomSizeModalRect(x, y, u, v, textureWidth, textureHeight, width, height, textureWidth, textureHeight);
 	}
 	
 }

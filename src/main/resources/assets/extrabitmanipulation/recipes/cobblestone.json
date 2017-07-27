@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "extrabitmanipulation:bodypart_template"
+		}
+	],
+	"result": {
+		"item": "minecraft:cobblestone"
+	}
+}

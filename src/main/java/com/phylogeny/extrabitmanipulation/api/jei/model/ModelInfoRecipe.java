@@ -4,12 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.api.jei.InfoRecipeBase;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.item.ItemStack;
 import mezz.jei.api.IGuiHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import com.phylogeny.extrabitmanipulation.api.jei.InfoRecipeBase;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.GuiHelper;
 
 public class ModelInfoRecipe extends InfoRecipeBase
 {
@@ -24,10 +25,10 @@ public class ModelInfoRecipe extends InfoRecipeBase
 		return recipes;
 	}
 	
-	public ModelInfoRecipe(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String tooltipName, String imageName)
+	public ModelInfoRecipe(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String catagoryName, String imageName)
 	{
 		super(guiHelper, sculptingStacks, imageWidth, imageHeight, imageName,
-				imageName.toLowerCase().replace(" ", "_"), tooltipName, 0, 22, 178, 123, ModelInfoRecipeCategory.NAME);
+				imageName.toLowerCase().replace(" ", "_"), catagoryName, 0, 22, 178, 122, catagoryName);
 	}
 	
 	@Override
@@ -36,13 +37,8 @@ public class ModelInfoRecipe extends InfoRecipeBase
 		int xPos = 47;
 		int yPos = 0;
 		slotDrawable.draw(minecraft, xPos, yPos);
-		minecraft.getTextureManager().bindTexture(image);
-		float scaleFactor = 4.79F;
-		int width = (int) (imageWidth / scaleFactor);
-		int height = (int) (imageHeight / scaleFactor);
-		xPos = recipeWidth / 2 - width / 2;
-		yPos += slotDrawable.getHeight() + 4;
-		Gui.drawScaledCustomSizeModalRect(xPos, yPos, 0, 0, imageWidth, imageHeight, width, height, imageWidth, imageHeight);
+		ClientHelper.bindTexture(image);
+		GuiHelper.drawTexturedRect(imageBox.getMinX(), imageBox.getMinY(), imageBox.getMaxX(), imageBox.getMaxY());
 		xPos = 69;
 		int nameWidth = minecraft.fontRenderer.getStringWidth(name);
 		if (nameWidth < 103)

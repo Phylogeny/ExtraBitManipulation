@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.AxisDirection;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -12,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants.NBT;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
@@ -22,6 +25,46 @@ import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 public class BitAreaHelper
 {
+	
+	public static Vec3d readVecFromNBT(NBTTagCompound nbt, String key)
+	{
+		NBTTagList bounds = nbt.getTagList(key, NBT.TAG_DOUBLE);
+		return bounds.hasNoTags() ? null : new Vec3d(bounds.getDoubleAt(0), bounds.getDoubleAt(1), bounds.getDoubleAt(2));
+	}
+	
+	public static void writeVecToNBT(Vec3d vec, NBTTagCompound nbt, String key)
+	{
+		NBTTagList bounds = new NBTTagList();
+		appendBound(bounds, vec.x);
+		appendBound(bounds, vec.y);
+		appendBound(bounds, vec.z);
+		nbt.setTag(key, bounds);
+	}
+	
+	private static void appendBound(NBTTagList bounds, double bound)
+	{
+		bounds.appendTag(new NBTTagDouble(bound));
+	}
+	
+	public static EnumFacing readFacingFromNBT(NBTTagCompound nbt, String key)
+	{
+		return EnumFacing.VALUES[nbt.getInteger(key)];
+	}
+	
+	public static void writeFacingToNBT(EnumFacing face, NBTTagCompound nbt, String key)
+	{
+		nbt.setInteger(key, face.ordinal());
+	}
+	
+	public static BlockPos readBlockPosFromNBT(NBTTagCompound nbt, String key)
+	{
+		return BlockPos.fromLong(nbt.getLong(key));
+	}
+	
+	public static void writeBlockPosToNBT(BlockPos pos, NBTTagCompound nbt, String key)
+	{
+		nbt.setLong(key, pos.toLong());
+	}
 	
 	public static Vec3d getBitGridOffset(EnumFacing side, boolean inside, float hitX, float hitY, float hitZ, boolean removeBits)
 	{
@@ -73,7 +116,7 @@ public class BitAreaHelper
 		
 		BitIOHelper.saveBlockStates(ChiselsAndBitsAPIAccess.apiInstance, player, world, boxSet.getBoundingBox(), nbt);
 		if (modelingData.getGuiOpen())
-			player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING_GUI.getID(), player.world, 0, 0, 0);
+			player.openGui(ExtraBitManipulation.instance, GuiIDs.BIT_MAPPING.getID(), player.world, 0, 0, 0);
 		
 		return true;
 	}

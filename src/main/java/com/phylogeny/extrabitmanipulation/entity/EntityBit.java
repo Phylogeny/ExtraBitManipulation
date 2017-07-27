@@ -3,22 +3,15 @@ package com.phylogeny.extrabitmanipulation.entity;
 import io.netty.buffer.ByteBuf;
 
 import java.util.List;
+
 import javax.annotation.Nullable;
 
-import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.packet.PacketBitParticles;
-import com.phylogeny.extrabitmanipulation.packet.PacketPlaceEntityBit;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-import com.phylogeny.extrabitmanipulation.reference.Utility;
-
-import mod.chiselsandbits.api.IBitAccess;
-import mod.chiselsandbits.api.IBitLocation;
-import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.APIExceptions.SpaceOccupied;
+import mod.chiselsandbits.api.IBitAccess;
+import mod.chiselsandbits.api.IBitLocation;
+import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -46,6 +39,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.packet.PacketBitParticles;
+import com.phylogeny.extrabitmanipulation.packet.PacketPlaceEntityBit;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 public class EntityBit extends Entity implements IProjectile, IEntityAdditionalSpawnData
 {
@@ -95,9 +96,11 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	
 	public void setAim(Entity shooter, float pitch, float yaw, float velocity, float inaccuracy)
 	{
-		float x = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-		float y = -MathHelper.sin(pitch * 0.017453292F);
-		float z = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+		pitch = (float) Math.toRadians(pitch);
+		yaw = (float) Math.toRadians(yaw);
+		float x = -MathHelper.sin(yaw) * MathHelper.cos(pitch);
+		float y = -MathHelper.sin(pitch);
+		float z = MathHelper.cos(yaw) * MathHelper.cos(pitch);
 		setThrowableHeading(x, y, z, velocity, inaccuracy);
 		motionX += shooter.motionX;
 		motionZ += shooter.motionZ;
@@ -427,7 +430,7 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 	public void readEntityFromNBT(NBTTagCompound compound)
 	{
 		inGround = compound.getByte("inGround") == 1;
-		bitStack = new ItemStack((NBTTagCompound) compound.getTag(NBTKeys.ENTITY_BIT_STACK));
+		bitStack = new ItemStack(compound.getCompoundTag(NBTKeys.ENTITY_BIT_STACK));
 	}
 	
 	@Override

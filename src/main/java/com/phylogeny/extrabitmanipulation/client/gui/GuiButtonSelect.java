@@ -4,10 +4,9 @@ public class GuiButtonSelect extends GuiButtonCustom
 {
 	protected int colorFirst, colorSecond;
 	
-	public GuiButtonSelect(int buttonId, int x, int y, int widthIn, int heightIn, String text,
-			String hoverText, int colorFirst, int colorSecond)
+	public GuiButtonSelect(int buttonId, int x, int y, int width, int height, String text, String hoverText, int colorFirst, int colorSecond)
 	{
-		super(buttonId, x, y, widthIn, heightIn, text, hoverText);
+		super(buttonId, x, y, width, height, text, hoverText);
 		this.colorFirst = colorFirst;
 		this.colorSecond = colorSecond;
 	}

@@ -25,7 +25,7 @@ public class PacketSetBitStack implements IMessage
 	public PacketSetBitStack(boolean isCurved, IBitBrush bit)
 	{
 		this.isWire = isCurved;
-		this.bitStack = bit == null ? null : bit.getItemStack(1);
+		this.bitStack = bit == null ? ItemStack.EMPTY : bit.getItemStack(1);
 	}
 	
 	@Override

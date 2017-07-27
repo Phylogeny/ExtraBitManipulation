@@ -34,7 +34,13 @@ public class InfoRecipeBase implements IRecipeWrapper
 		this.imageHeight = imageHeight;
 		this.slotDrawable = guiHelper.getSlotDrawable();
 		this.name = JustEnoughItemsPlugin.translate(catagoryName + ".name." + recipeName);
-		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName + ".tooltip").split("\\\\n")));
+		String toolTip = ".tooltip";
+		if (!tooltipName.contains("."))
+			tooltipName += ".";
+		else
+			toolTip += ".";
+		
+		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName.replaceFirst("[.]", toolTip)).split("\\\\n")));
 		imageBox = new Rectangle(imageLeft, imageTop, imageRight - imageLeft, imageBottom - imageTop);
 	}
 	
@@ -53,6 +59,11 @@ public class InfoRecipeBase implements IRecipeWrapper
 			getTooltips.addAll(tooltipLines);
 		
 		return getTooltips;
+	}
+	
+	protected String translateName(String catagoryName, String name)
+	{
+		return JustEnoughItemsPlugin.translate(catagoryName + ".name." + name);
 	}
 	
 }
