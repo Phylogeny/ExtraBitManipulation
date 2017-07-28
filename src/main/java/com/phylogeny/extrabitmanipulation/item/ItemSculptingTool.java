@@ -13,6 +13,8 @@ import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IBitLocation;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import mod.chiselsandbits.helpers.ModUtil;
+import mod.chiselsandbits.items.ItemChiseledBit;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -453,15 +455,21 @@ public class ItemSculptingTool extends ItemBitToolBase
 		if (!ctrlDown || shiftDown)
 		{
 			String bitType = "Bit Type To " + (removeBits ? "Remove" : "Add") + ": ";
-			String unspecifiedBit = removeBits ? "any" : "none";
 			if (!setBitStack.isEmpty())
 			{
-				String stackName = setBitStack.getDisplayName();
-				bitType += (stackName.length() == 12 ? unspecifiedBit : stackName.substring(15));
+				String bitStateName = "N/A";
+				IBlockState state = ModUtil.getStateById(ItemChiseledBit.getStackState(setBitStack));
+				if (state != null)
+				{
+					String name = ItemChiseledBit.getBitStateName(state);
+					if (name != null)
+						bitStateName = name;
+				}
+				bitType += bitStateName;
 			}
 			else
 			{
-				bitType += unspecifiedBit;
+				bitType += removeBits ? "any" : "none";
 			}
 			tooltip.add(colorSettingText(bitType, removeBits ? Configs.sculptSetBitWire : Configs.sculptSetBitSpade));
 		}
