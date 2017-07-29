@@ -1,11 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
 import io.netty.buffer.ByteBuf;
-import mod.chiselsandbits.api.IBitAccess;
-import mod.chiselsandbits.api.IBitBrush;
-import mod.chiselsandbits.api.IBitVisitor;
-import mod.chiselsandbits.api.IChiselAndBitsAPI;
-import mod.chiselsandbits.api.ItemType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -15,38 +10,37 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
-import com.phylogeny.extrabitmanipulation.container.ContainerChiseledArmor;
+import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 {
-	private int slotNumber, scale;
-	private boolean add;
+	private int scale;
+	private ItemStack stack;
+	private ListOperation listOperation;
 	
 	public PacketChangeArmorItemList() {}
 	
 	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, int partIndex, int armorItemIndex,
-			int selectedEntry, int slotNumber, boolean add, int scale, boolean refreshLists)
+			int selectedEntry, ListOperation listOperation, ItemStack stack, int scale, boolean refreshLists)
 	{
 		super(equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
-		this.slotNumber = slotNumber;
-		this.add = add;
+		this.listOperation = listOperation;
+		this.stack = stack;
 		this.scale = scale;
 	}
 	
@@ -54,8 +48,8 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 	public void toBytes(ByteBuf buffer)
 	{
 		super.toBytes(buffer);
-		buffer.writeInt(slotNumber);
-		buffer.writeBoolean(add);
+		buffer.writeInt(listOperation.ordinal());
+		ByteBufUtils.writeItemStack(buffer, stack);
 		buffer.writeInt(scale);
 	}
 	
@@ -63,8 +57,8 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 	public void fromBytes(ByteBuf buffer)
 	{
 		super.fromBytes(buffer);
-		slotNumber = buffer.readInt();
-		add = buffer.readBoolean();
+		listOperation = ListOperation.values()[buffer.readInt()];
+		stack = ByteBufUtils.readItemStack(buffer);
 		scale = buffer.readInt();
 	}
 	
@@ -82,9 +76,10 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().playerEntity : ClientHelper.getPlayer();
 					ItemStack stack = player.getItemStackFromSlot(message.equipmentSlot);
-					if (stack != null && !stack.hasTagCompound())
+					if (!ItemStackHelper.isChiseledArmorStack(stack))
 						return;
 					
+					message.initData(message, stack);
 					NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 					NBTTagCompound data = message.getData(nbt, serverSide);
 					NBTTagList movingParts = data.getTagList(NBTKeys.ARMOR_PART_DATA, NBT.TAG_LIST);
@@ -93,47 +88,46 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 						return;
 					
 					Container container = player.openContainer;
-					if (container == null || !(container instanceof ContainerChiseledArmor))
+					if (container == null || !(container instanceof ContainerPlayerInventory))
 						return;
 					
 					NBTTagList itemList = (NBTTagList) nbtBase;
-					ContainerChiseledArmor containerArmor = (ContainerChiseledArmor) container;
-					int stackIndex = 5 - message.equipmentSlot.ordinal();
-					int glListRemovalIndex;
-					if (message.add)
+					int glListRemovalIndex = -1;
+					boolean add = message.listOperation == ListOperation.ADD;
+					if (message.listOperation == ListOperation.MODIFY)
 					{
-						containerArmor.addSlot(stackIndex, message.partIndex, message.slotNumber, message.selectedEntry);
-						NBTTagCompound armorItemNbt = new NBTTagCompound();
-						ArmorItem armorItem = new ArmorItem();
-						if (message.scale > 0)
-						{
-							float scale2 = (float) (1 / Math.pow(2, message.scale));
-							armorItem.addGlOperation(GlOperation.createScale(scale2, scale2, scale2));
-						}
-						armorItem.saveToNBT(armorItemNbt);
-						itemList.appendTag(armorItemNbt);
-						glListRemovalIndex = -1;
+						NBTTagCompound armorItemNbt = itemList.getCompoundTagAt(message.armorItemIndex);
+						ItemStackHelper.saveStackToNBT(armorItemNbt, message.stack, NBTKeys.ARMOR_ITEM);
+						itemList.set(message.armorItemIndex, armorItemNbt);
 					}
 					else
 					{
-						if (Configs.armorSlotRemovalMode == ArmorSlotRemovalMode.PREVENT_IF_FULL && serverSide
-								&& containerArmor.inventoryItemStacks.get(message.slotNumber) != null)
-							return;
-						
-						ItemStack stackRemoved = containerArmor.removeSlot(stackIndex, message.partIndex, message.slotNumber, message.armorItemIndex);
-						if (serverSide && stackRemoved != null)
-							new StackProvider(player, stackRemoved).giveStackToPlayer();
-						
-						itemList.removeTag(message.armorItemIndex);
-						glListRemovalIndex = message.armorItemIndex;
+						if (add)
+						{
+							NBTTagCompound armorItemNbt = new NBTTagCompound();
+							ArmorItem armorItem = new ArmorItem();
+							if (message.scale > 0)
+							{
+								float scale2 = (float) (1 / Math.pow(2, message.scale));
+								armorItem.addGlOperation(GlOperation.createScale(scale2, scale2, scale2));
+							}
+							armorItem.saveToNBT(armorItemNbt);
+							itemList.appendTag(armorItemNbt);
+						}
+						else
+						{
+							itemList.removeTag(message.armorItemIndex);
+							glListRemovalIndex = message.armorItemIndex;
+						}
 					}
 					movingParts.set(message.partIndex, itemList);
 					DataChiseledArmorPiece.setPartData(data, movingParts);
-					message.finalizeDataChange(message, stack, nbt, data, serverSide, true, message.add, glListRemovalIndex);
+					message.finalizeDataChange(message, stack, nbt, data, serverSide, true, add, glListRemovalIndex);
 					if (serverSide)
 					{
-						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot, message.partIndex, message.armorItemIndex,
-								message.selectedEntry, message.slotNumber, message.add, message.scale, message.refreshLists), (EntityPlayerMP) player);
+						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot,
+								message.partIndex, message.armorItemIndex, message.selectedEntry, message.listOperation,
+								message.stack, message.scale, message.refreshLists), (EntityPlayerMP) player);
 					}
 				}
 			});
@@ -142,48 +136,9 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 		
 	}
 	
-	public static class StackProvider implements IBitVisitor
+	public static enum ListOperation
 	{
-		private EntityPlayer player;
-		protected ItemStack stack;
-		private Vec3d spawnPos;
-		protected IChiselAndBitsAPI api;
-		
-		public StackProvider(EntityPlayer player, ItemStack stack)
-		{
-			this.player = player;
-			this.stack = stack;
-			spawnPos = new Vec3d(player.posX, player.posY, player.posZ);
-			api = ChiselsAndBitsAPIAccess.apiInstance;
-		}
-		
-		public boolean giveStackToPlayer()
-		{
-			if (Configs.armorSlotRemovalMode == ArmorSlotRemovalMode.GIVE_AS_BITS && api.getItemType(stack) == ItemType.CHISLED_BLOCK)
-			{
-				IBitAccess bitAccess = api.createBitItem(stack);
-				if (bitAccess != null)
-				{
-					bitAccess.visitBits(this);
-					return true;
-				}
-			}
-			api.giveBitToPlayer(player, stack, spawnPos);
-			return true;
-		}
-		
-		@Override
-		public IBitBrush visitBit(int x, int y, int z, IBitBrush bit)
-		{
-			api.giveBitToPlayer(player, bit.getItemStack(1), spawnPos);
-			return bit;
-		}
-		
-	}
-	
-	public static enum ArmorSlotRemovalMode
-	{
-		GIVE_AS_STACK, GIVE_AS_BITS, PREVENT_IF_FULL;
+		ADD, REMOVE, MODIFY;
 	}
 	
 }

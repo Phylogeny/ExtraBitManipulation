@@ -17,7 +17,6 @@ import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketPlaceEntityBit;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
-import com.phylogeny.extrabitmanipulation.packet.PacketRemoveStackFromSlotAsBits;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetArmorMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetArmorMovingPart;
@@ -92,7 +91,6 @@ public class PacketRegistration
 		registerPacket(PacketOpenChiseledArmorGui.Handler.class, PacketOpenChiseledArmorGui.class, Side.SERVER);
 		registerPacket(PacketChangeGlOperationList.Handler.class, PacketChangeGlOperationList.class, Side.BOTH);
 		registerPacket(PacketChangeArmorItemList.Handler.class, PacketChangeArmorItemList.class, Side.BOTH);
-		registerPacket(PacketRemoveStackFromSlotAsBits.Handler.class, PacketRemoveStackFromSlotAsBits.class, Side.BOTH);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

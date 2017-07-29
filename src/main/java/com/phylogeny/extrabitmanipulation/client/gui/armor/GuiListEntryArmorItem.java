@@ -1,26 +1,24 @@
 package com.phylogeny.extrabitmanipulation.client.gui.armor;
 
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.inventory.Slot;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
 
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 
 public class GuiListEntryArmorItem extends GuiListEntryChiseledArmor<ArmorItem>
 {
 	private boolean slotHovered;
-	private Slot slot;
 	
-	public GuiListEntryArmorItem(GuiListChiseledArmor<ArmorItem> listChiseledArmor, ArmorItem armorItem, int slotNumber)
+	public GuiListEntryArmorItem(GuiListChiseledArmor<ArmorItem> listChiseledArmor, ArmorItem armorItem)
 	{
 		super(listChiseledArmor, armorItem);
-		slot = listChiseledArmor.guiChiseledArmor.inventorySlots.getSlot(slotNumber);
-	}
-	
-	public Slot getSlot()
-	{
-		return slot;
 	}
 	
 	@Override
@@ -29,19 +27,47 @@ public class GuiListEntryArmorItem extends GuiListEntryChiseledArmor<ArmorItem>
 		slotHovered = mouseX > x + 4 && mouseX < x + 23 && mouseY > y && mouseY < y + 19;
 		x += 5;
 		y += 1;
-		GlStateManager.color(1.0F, 1.0F, 1.0F);
+		RenderHelper.enableGUIStandardItemLighting();
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 		ClientHelper.bindTexture(GuiChiseledArmor.TEXTURE_GUI);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.disableLighting();
 		Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 230, 18, 18, 512, 512);
 		mc.fontRendererObj.drawString("" + (slotIndex + 1), x + 21, y + 5, -1);
-		slot.xDisplayPosition = x - listChiseledArmor.left + 39;
-		slot.yDisplayPosition = y - listChiseledArmor.top + 25;
 	}
 	
 	@Override
 	public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
 	{
 		super.mousePressed(slotIndex, mouseX, mouseY, mouseEvent, relativeX, relativeY);
-		return slotClicked(relativeX, relativeY);
+		if (slotClicked(relativeX, relativeY))
+		{
+			ItemStack stack = mc.thePlayer.inventory.getItemStack();
+			if (stack == null && mouseEvent == 2 && mc.thePlayer.capabilities.isCreativeMode)
+			{
+				ItemStack stack2 = entryObject.getStack().copy();
+				if (stack2 != null)
+				{
+					mc.thePlayer.inventory.setItemStack(stack2);
+					ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack2));
+				}
+			}
+			else if (stack != null || GuiScreen.isShiftKeyDown())
+			{
+				ItemStack stack2;
+				if (stack == null)
+				{
+					stack2 = null;
+				}
+				else
+				{
+					stack2 = stack.copy();
+					stack2.stackSize = 1;
+				}
+				listChiseledArmor.guiChiseledArmor.modifyArmorItemListData(slotIndex,  stack2);
+			}
+		}
+		return false;
 	}
 	
 	private boolean slotClicked(int relativeX, int relativeY)
@@ -52,6 +78,11 @@ public class GuiListEntryArmorItem extends GuiListEntryChiseledArmor<ArmorItem>
 	public boolean isSlotHovered()
 	{
 		return slotHovered;
+	}
+	
+	public ItemStack getStack()
+	{
+		return entryObject.getStack();
 	}
 	
 }

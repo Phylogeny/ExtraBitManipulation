@@ -18,7 +18,6 @@ import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiChiseledArmor;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.container.ContainerChiseledArmor;
 import com.phylogeny.extrabitmanipulation.container.ContainerHeldItem;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.entity.EntityBit;
@@ -66,7 +65,7 @@ public class ProxyCommon implements IGuiHandler
 	
 	public static ContainerPlayerInventory createArmorContainer(EntityPlayer player)
 	{
-		return new ContainerChiseledArmor(player, 38, 148);
+		return new ContainerPlayerInventory(player, 38, 148);
 	}
 	
 	@Override

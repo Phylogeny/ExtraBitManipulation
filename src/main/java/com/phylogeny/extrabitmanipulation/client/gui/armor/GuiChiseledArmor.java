@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import mod.chiselsandbits.api.ItemType;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -32,11 +31,9 @@ import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation;
@@ -56,7 +53,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeGlOperationList;
-import com.phylogeny.extrabitmanipulation.packet.PacketRemoveStackFromSlotAsBits;
+import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ListOperation;
 import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -127,14 +124,14 @@ public class GuiChiseledArmor extends GuiContainer
 		playerScale = 1F;
 	}
 	
-	public void refreshListsAndSelectEntry(int selectedGlOperation, boolean isArmorItem, boolean scrollToEnd, int glListRemovalIndex)
+	public void refreshListsAndSelectEntry(int selectedEntry, boolean isArmorItem, boolean scrollToEnd, int glListRemovalIndex)
 	{
 		GuiListChiseledArmor list = isArmorItem ? getSelectedGuiListArmorItem() : getSelectedGuiListGlOperation();
-		if (glListRemovalIndex >= 0 && getSelectedGuiListArmorItemGlOperations().size() > 0 && !getSelectedGuiListGlOperation().equals(emptyGlList))
+		if (glListRemovalIndex >= 0 && glListRemovalIndex < getSelectedGuiListArmorItemGlOperations().size())
 			getSelectedGuiListArmorItemGlOperations().remove(glListRemovalIndex);
 		
-		if (selectedGlOperation >= 0)
-			list.selectListEntry(selectedGlOperation);
+		if (selectedEntry >= 0)
+			list.selectListEntry(selectedEntry);
 		
 		if (isArmorItem && scrollToEnd && BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound()) > 0)
 		{
@@ -152,7 +149,6 @@ public class GuiChiseledArmor extends GuiContainer
 	
 	private void refreshLists(boolean onlySelected)
 	{
-		int indexLocal = 0;
 		for (int i = 0; i < armorItemLists.length; i++)
 		{
 			ItemStack stack = getArmorStack(i);
@@ -165,7 +161,7 @@ public class GuiChiseledArmor extends GuiContainer
 				if (armorItemList == null)
 					continue;
 				
-				indexLocal += armorItemList.refreshList(indexLocal);
+				armorItemList.refreshList();
 				if (onlySelected && i != selectedTabIndex)
 					continue;
 				
@@ -247,14 +243,12 @@ public class GuiChiseledArmor extends GuiContainer
 		buttonScaleMeter = createButtonToggled(x, 81, TEXTURE_SCALE_METER, "Translation data in meters",
 				prefix + " meters.\n\n" + getPointExample() + " 2 = 2 meters");
 		int y = 127;
-		String text = " the item list of the selected moving part of the selected armor piece.\n\n";
+		String text = " the item list of the selected moving part of the selected armor piece.";
 		buttonItemAdd = createButtonListInteraction(46, y, TEXTURE_ADD, "",
-				"Adds an empty slot to" + text + "If the scale of the " +
+				"Adds an empty slot to" + text + "\n\nIf the scale of the " +
 				"armor piece is not 1:1, a GL scale operation will be added to its GL operations list automatically.");
 		buttonItemDelete = createButtonListInteraction(60, y, TEXTURE_DELETE, "Remove item",
-				"Removes the selected slot from" + text + "If the slot is not empty, either a shift or control click will be simulated, or the removal " +
-				"will be canceled.\n\nRefer to the help text of slots and of the 'Items' title above for more information on this config, and on what " +
-				"control/shift-clicking does.");
+				"Removes the selected slot from" + text);
 		buttonGlAdd = createButtonListInteraction(97, y, TEXTURE_ADD, "",
 				"Opens a selection screen, where the chosen GL operation is added to the list above, under the selected operation.");
 		buttonGlDelete = createButtonListInteraction(111, y, TEXTURE_DELETE, "",
@@ -275,7 +269,7 @@ public class GuiChiseledArmor extends GuiContainer
 		buttonHelp = new GuiButtonCustom(100, guiLeft + xSize - 17, guiTop + 5, 12, 12, "?", "Show more explanatory hover text");
 		buttonScale = new GuiButtonSelect(100, guiLeft + 178, guiTop + 127, 17, 12, "", "Armor piece scale", -5111553, -5111553);
 		buttonScale.setTextOffsetX(1);
-		buttonScale.setHoverHelpText("This is the scale of the selected armor piece. Just as all newly imported blocks are scaled by this amount " +
+		buttonScale.setHoverHelpText("This is the scale of the selected armor piece. Just as all newly imported block 1.5 are scaled by this amount " +
 				"when collecting them in-world, all newly added slots to any of the selected armor pieces' moving parts are likewise scaled by this amount.");
 		buttonHelp.setTextOffsetX(0.5F);
 		buttonHelp.setTextOffsetY(0.5F);
@@ -485,20 +479,7 @@ public class GuiChiseledArmor extends GuiContainer
 	@Override
 	public void handleMouseInput() throws IOException
 	{
-		boolean callSuper = true;
-		if (Mouse.getEventButtonState() && isCtrlKeyDown() && ClientHelper.getPlayer().inventory.getItemStack() == null)
-		{
-			Slot slotHovered = getHoveredSlot(Mouse.getEventX() * width / mc.displayWidth, height - Mouse.getEventY() * height / mc.displayHeight - 1);
-			if (slotHovered != null && slotHovered.getStack() != null
-					&& ChiselsAndBitsAPIAccess.apiInstance.getItemType(slotHovered.getStack()) == ItemType.CHISLED_BLOCK)
-			{
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketRemoveStackFromSlotAsBits(slotHovered.slotNumber));
-				callSuper = false;
-			}
-		}
-		if (callSuper)
-			super.handleMouseInput();
-		
+		super.handleMouseInput();
 		if (!playerBoxClicked && !buttonAddRotation.visible)
 		{
 			getSelectedGuiListArmorItem().handleMouseInput();
@@ -577,19 +558,7 @@ public class GuiChiseledArmor extends GuiContainer
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
-		for (int i = 36; i < inventorySlots.inventorySlots.size(); i++)
-		{
-			((SlotArmorItem) inventorySlots.inventorySlots.get(i)).setDisabled(true);
-		}
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		GuiListArmorItem armorItemsList = getSelectedGuiListArmorItem();
-		if (GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY))
-		{
-			for (int i = 0; i < armorItemsList.getSize(); i++)
-			{
-				((SlotArmorItem) ((GuiListEntryArmorItem) armorItemsList.getListEntry(i)).getSlot()).setDisabled(false);
-			}
-		}
 		if (playerBoxClicked || buttonAddRotation.visible)
 		{
 			if (buttonAddRotation.visible && buttonHelp.selected
@@ -622,13 +591,22 @@ public class GuiChiseledArmor extends GuiContainer
 				}
 			}
 		}
-		Slot slotHovered = getHoveredSlot(mouseX, mouseY);
-		if (slotHovered != null)
+		if (GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY))
 		{
-			if (buttonHelp.selected)
-				drawHoveringText(mouseX, mouseY, getArmoritemSlotHoverhelpText("These slots"));
-			else if (slotHovered.getStack() != null)
-				renderToolTip(slotHovered.getStack(), mouseX, mouseY);
+			GuiListArmorItem armorItemsList = getSelectedGuiListArmorItem();
+			for (int i = 0; i < armorItemsList.getSize(); i++)
+			{
+				GuiListEntryArmorItem entry = (GuiListEntryArmorItem) armorItemsList.getListEntry(i);
+				if (entry.isSlotHovered())
+				{
+					if (buttonHelp.selected)
+						drawHoveringText(mouseX, mouseY, getArmoritemSlotHoverhelpText("These slots"));
+					else if (entry.getStack() != null)
+						renderToolTip(entry.getStack(), mouseX, mouseY);
+					
+					break;
+				}
+			}
 		}
 		if (buttonHelp.selected)
 		{
@@ -655,14 +633,9 @@ public class GuiChiseledArmor extends GuiContainer
 	{
 		return prefix + " contain items of the selected moving part of the selected armor piece (" +
 				"currently, the " + ((ItemChiseledArmor) getArmorStack(selectedTabIndex).getItem()).MOVING_PARTS[selectedSubTabIndex - 1].getName() +
-				" of the " + ArmorType.values()[selectedTabIndex].getName() + ")\n\nItems can be added to slots as follows:\n" + getPointMain("1") +
-				" Clicked with an item on the cursor.\n\nItems can be removed from slots as follows:\n" + getPointMain("1") + " Clicked with an empty " +
-				"cursor.\n" + getPointMain("2") + " Shift-clicked to transfer to the main inventory automatically.\n" + getPointMain("3") + " " +
-				underlineText("If the item is a chiseled block") + " - Control-clicked with an empty cursor to decompose the block into bits, and " +
-				"place those bits into the main inventory (if space in slots and in bit bags runs out, the remaining bits will be spawned in the " +
-				"world, as normally occurs hen receiving bits).\n" + getPointMain("4") + " " + underlineText("If not prevented by the 'Slot Removal Mode' " +
-				"config setting") + " - Press, the minus button below to delete the slot and give the item as if shift-clicked or as if control-clicked " +
-				"(also depending on that same config setting).";
+				" of the " + ArmorType.values()[selectedTabIndex].getName() + ")\n\nSlots can be interacted with as follows:\n" + getPointMain("1") +
+				" Click with an item on the cursor to add a copy of that item.\n" + getPointMain("2") + " Shift-click to clear the copied item.\n" +
+				getPointMain("3") + " Middle mouse click in creative mode to get item.";
 	}
 	
 	private void drawHoveringText(int mouseX, int mouseY, String hoverText)
@@ -670,26 +643,6 @@ public class GuiChiseledArmor extends GuiContainer
 		drawHoveringText(Arrays.<String>asList(new String[] {hoverText}), mouseX, mouseY, mc.fontRendererObj);
 	}
 	
-	private Slot getHoveredSlot(int mouseX, int mouseY)
-	{
-		if (!GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY))
-			return null;
-		
-		Slot slotHovered = null;
-		GuiListArmorItem armorItemsList = getSelectedGuiListArmorItem();
-		for (int i = 0; i < armorItemsList.getSize(); i++)
-		{
-			SlotArmorItem slot = (SlotArmorItem) ((GuiListEntryArmorItem) armorItemsList.getListEntry(i)).getSlot();
-			if (isPointInRegion(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, mouseX, mouseY))
-			{
-				slotHovered = slot;
-				break;
-			}
-		}
-		return slotHovered;
-	}
-	
-	@SuppressWarnings("null")
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
@@ -725,24 +678,19 @@ public class GuiChiseledArmor extends GuiContainer
 			}
 		}
 		GlStateManager.popMatrix();
-		boolean armorItemAreaHovered = GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY);
 		glScissorBox(boxArmorItem);
 		int x, y;
 		for (int i = 0; i < armorItemsList.getSize(); i++)
 		{
+			ItemStack stack = ((GuiListEntryArmorItem) armorItemsList.getListEntry(i)).getStack();
+			if (stack == null)
+				continue;
+			
 			RenderHelper.enableGUIStandardItemLighting();
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			SlotArmorItem slot = (SlotArmorItem) ((GuiListEntryArmorItem) armorItemsList.getListEntry(i)).getSlot();
-			ItemStack stack = slot.getStack();
-			if (dragSplitting && dragSplittingSlots.size() > 1 && dragSplittingSlots.contains(slot)
-					&& ClientHelper.getPlayer().inventory.getItemStack() != null && slot.getStack() == null)
-			{
-				stack = ClientHelper.getPlayer().inventory.getItemStack().copy();
-				stack.stackSize = 1;
-			}
-			x = slot.xDisplayPosition;
-			y = slot.yDisplayPosition;
+			x = armorItemsList.left + 6 - guiLeft;
+			y = (armorItemsList.top - armorItemsList.getAmountScrolled()) + i * armorItemsList.slotHeight + armorItemsList.headerPadding - 2;
 			zLevel = 100.0F;
 			itemRender.zLevel = 100.0F;
 			GlStateManager.enableDepth();
@@ -750,16 +698,6 @@ public class GuiChiseledArmor extends GuiContainer
 			itemRender.renderItemOverlayIntoGUI(fontRendererObj, stack, x, y, null);
 			itemRender.zLevel = 0.0F;
 			zLevel = 0.0F;
-			if (!armorItemAreaHovered || !isPointInRegion(x, y, 16, 16, mouseX, mouseY))
-				continue;
-			
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepth();
-			GlStateManager.colorMask(true, true, true, false);
-			drawGradientRect(x, y, x + 16, y + 16, -2130706433, -2130706433);
-			GlStateManager.colorMask(true, true, true, true);
-			GlStateManager.enableLighting();
-			GlStateManager.enableDepth();
 		}
 		GuiHelper.glScissorDisable();
 	}
@@ -992,13 +930,13 @@ public class GuiChiseledArmor extends GuiContainer
 			int index = list.getSelectListEntryIndex();
 			if (button == buttonItemAdd)
 			{
-				setArmorItemListData(list, list.getSize(), button);
+				addOrRemoveArmorItemListData(list, list.getSize(), button);
 			}
 			else
 			{
 				GuiListEntryChiseledArmor<ArmorItem> entry = getSelectedGuiListArmorItem().getSelectedListEntry();
 				if (entry != null)
-					setArmorItemListData(list, index != 0 && index == list.getSize() - 1 ? index - 1 : -1, button);
+					addOrRemoveArmorItemListData(list, index != 0 && index == list.getSize() - 1 ? index - 1 : -1, button);
 			}
 		}
 		else if ((button == buttonGlAdd || button == buttonGlDelete) && (!buttonGlItems.selected || getSelectedGuiListArmorItem().getSize() > 0))
@@ -1046,13 +984,21 @@ public class GuiChiseledArmor extends GuiContainer
 		}
 	}
 	
-	private void setArmorItemListData(GuiListArmorItem list, int selectedArmorItem, GuiButton button)
+	private void addOrRemoveArmorItemListData(GuiListArmorItem list, int selectedArmorItem, GuiButton button)
 	{
-		int slotIndex = list.getSelectListEntryIndex();
-		boolean add = button == buttonItemAdd;
+		setArmorItemListData(list, selectedArmorItem, BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound()),
+				button == buttonItemAdd ? ListOperation.ADD : ListOperation.REMOVE, null);
+	}
+	
+	public void modifyArmorItemListData(int selectedArmorItem, ItemStack stack)
+	{
+		setArmorItemListData(getSelectedGuiListArmorItem(), selectedArmorItem, -1, ListOperation.MODIFY, stack);
+	}
+	
+	private void setArmorItemListData(GuiListArmorItem list, int selectedArmorItem, int scale, ListOperation listOperation, ItemStack stack)
+	{
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex),
-				selectedSubTabIndex - 1, slotIndex, selectedArmorItem, list.getSlotNumber(add ? list.getSize() : slotIndex), add,
-				BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound()), true));
+				selectedSubTabIndex - 1, list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, scale, true));
 	}
 	
 	public void setGlOperationListData(int selectedGlOperation, boolean refreshLists)
