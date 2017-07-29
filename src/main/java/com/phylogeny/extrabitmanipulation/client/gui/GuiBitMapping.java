@@ -672,7 +672,7 @@ public class GuiBitMapping extends GuiContainer
 						{
 							hoverTextList.add(TextFormatting.AQUA + "  - Shift click with empty cursor to map to air.");
 							hoverTextList.add(TextFormatting.AQUA + "  - Control click with empty cursor to remove mapping.");
-							hoverTextList.add(TextFormatting.AQUA + "  - Midle mouse click blocks or bits in crative mode to get stack.");
+							hoverTextList.add(TextFormatting.AQUA + "  - Middle mouse click blocks or bits in creative mode to get stack.");
 						}
 					}
 					drawHoveringText(hoverTextList, mouseX, mouseY, mc.fontRenderer);
