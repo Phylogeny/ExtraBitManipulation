@@ -329,37 +329,29 @@ public class ItemChiseledArmor extends ItemArmor
 		Vec3d orginBox = collectionData.getOriginBodyPart();
 		float scale = 1 / (float) Math.pow(2, collectionData.getScale());
 		int blocksCollected = 0;
-		try
+		for (int i = (int) boxBlocks.minX; i <= boxBlocks.maxX; i++)
 		{
-			api.beginUndoGroup(player);
-			for (int i = (int) boxBlocks.minX; i <= boxBlocks.maxX; i++)
+			for (int j = (int) boxBlocks.minY; j <= boxBlocks.maxY; j++)
 			{
-				for (int j = (int) boxBlocks.minY; j <= boxBlocks.maxY; j++)
+				for (int k = (int) boxBlocks.minZ; k <= boxBlocks.maxZ; k++)
 				{
-					for (int k = (int) boxBlocks.minZ; k <= boxBlocks.maxZ; k++)
-					{
-						blocksCollected = collectBits(world, new BlockPos(i, j, k), api, boxCollection,
-								facingBox, orginBox, scale, armorPiece, movingPart, blocksCollected);
-					}
+					blocksCollected = collectBits(world, new BlockPos(i, j, k), api, boxCollection,
+							facingBox, orginBox, scale, armorPiece, movingPart, blocksCollected);
 				}
 			}
 		}
-		finally
+		if (blocksCollected > 0)
 		{
-			api.endUndoGroup(player);
-			if (blocksCollected > 0)
+			if (world.isRemote)
 			{
-				if (world.isRemote)
-				{
-					ClientHelper.printChatMessageWithDeletion("Collected and imported " + blocksCollected + " block" + (blocksCollected > 1 ? "s" : "") +
-							" at " + SCALE_TITLES[collectionData.getScale()] + " scale into the " + collectionData.getMovingPart().getName().toLowerCase());
-				}
-				else
-				{
-					armorPiece.saveToNBT(nbt);
-					stack.setTagCompound(nbt);
-					player.inventoryContainer.detectAndSendChanges();
-				}
+				ClientHelper.printChatMessageWithDeletion("Imported " + blocksCollected + " block cop" + (blocksCollected > 1 ? "ies" : "y") +
+						" at " + SCALE_TITLES[collectionData.getScale()] + " scale into the " + collectionData.getMovingPart().getName().toLowerCase());
+			}
+			else
+			{
+				armorPiece.saveToNBT(nbt);
+				stack.setTagCompound(nbt);
+				player.inventoryContainer.detectAndSendChanges();
 			}
 		}
 		return blocksCollected > 0;
@@ -404,14 +396,12 @@ public class ItemChiseledArmor extends ItemArmor
 						if (!world.isRemote)
 							bitAccessNew.setBitAt(i, j, k, bit);
 						
-						bitAccess.setBitAt(i, j, k, null);
 						bitsCollected = true;
 					}
 					catch (SpaceOccupied e) {}
 				}
 			}
 		}
-		bitAccess.commitChanges(true);
 		if (!world.isRemote && bitsCollected)
 		{
 			ArmorItem armorItem = new ArmorItem(bitAccessNew.getBitsAsItem(null, ItemType.CHISLED_BLOCK, false));
