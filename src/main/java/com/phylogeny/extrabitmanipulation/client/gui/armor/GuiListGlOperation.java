@@ -52,6 +52,7 @@ public abstract class GuiListGlOperation<L> extends GuiListChiseledArmor<GlOpera
 		{
 			entries.add(new GuiListEntryGlOperation(this, getGlOperations().get(i), i));
 		}
+		updateScreen();
 	}
 	
 	@Override
