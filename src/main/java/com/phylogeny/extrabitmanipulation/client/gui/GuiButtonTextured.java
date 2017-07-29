@@ -43,17 +43,17 @@ public class GuiButtonTextured extends GuiButtonBase
 		GlStateManager.color(1, 1, 1, 1);
 		mc.getTextureManager().bindTexture(selected ? selectedTexture : deselectedTexture);
 		Tessellator t = Tessellator.getInstance();
-		BufferBuilder vb = t.getBuffer();
+		BufferBuilder buffer = t.getBuffer();
 		int offset = 0;
 		if (hovered)
 			offset = 1;
 		
-		vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+		buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		double y = this.y - 0.5;
-		vb.pos(x - offset, y - offset, 0).tex(0, 0).endVertex();
-		vb.pos(x - offset, y + height + offset, 0).tex(0, 1).endVertex();
-		vb.pos(x + width + offset, y + height + offset, 0).tex(1, 1).endVertex();
-		vb.pos(x + width + offset, y - offset, 0).tex(1, 0).endVertex();
+		buffer.pos(x - offset, y - offset, 0).tex(0, 0).endVertex();
+		buffer.pos(x - offset, y + height + offset, 0).tex(0, 1).endVertex();
+		buffer.pos(x + width + offset, y + height + offset, 0).tex(1, 1).endVertex();
+		buffer.pos(x + width + offset, y - offset, 0).tex(1, 0).endVertex();
 		t.draw();
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
