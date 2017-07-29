@@ -38,9 +38,9 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
@@ -120,9 +120,16 @@ public class ClientEventHandler
 	}
 	
 	@SubscribeEvent
-	public void clearDisplayListsMaps(@SuppressWarnings("unused") PlayerLoggedInEvent event)
+	public void clearDisplayListsMaps(@SuppressWarnings("unused") ClientConnectedToServerEvent event)
 	{
-		RenderLayersExtraBitManipulation.clearDisplayListsMaps();
+		ClientHelper.getThreadListener().addScheduledTask(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				RenderLayersExtraBitManipulation.clearDisplayListsMaps();
+			}
+		});
 	}
 	
 	@SubscribeEvent

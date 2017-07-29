@@ -92,8 +92,7 @@ public class GuiListChiseledArmor<E> extends GuiListExtended
 	{
 		for (int i = 0; i < getSize(); i++)
 		{
-			GuiListEntryChiseledArmor<E> entry = entries.get(i);
-			entry.updateScreen(isSelected(i));
+			entries.get(i).updateScreen(isSelected(i));
 		}
 	}
 	
