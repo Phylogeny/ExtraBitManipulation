@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -133,7 +134,8 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 			String textInitial = field.getText();
 			if (enterPressed || field.textboxKeyTyped(typedChar, keyCode))
 			{
-				if (field.isFocused() && keyCode != Keyboard.KEY_LEFT && keyCode != Keyboard.KEY_RIGHT)
+				if (field.isFocused() && keyCode != Keyboard.KEY_LEFT && keyCode != Keyboard.KEY_RIGHT
+						&& !GuiScreen.isKeyComboCtrlA(keyCode) && !GuiScreen.isKeyComboCtrlC(keyCode))
 					changeData(field, i, textInitial, enterPressed);
 				
 				if (enterPressed)
@@ -230,10 +232,9 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 	public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
 	{
 		float inc = 0.0F;
-		GuiChiseledArmor gui = listChiseledArmor.guiChiseledArmor;
-		boolean shiftDown = gui.isShiftKeyDown();
-		boolean controlDown = gui.isCtrlKeyDown();
-		boolean altDown = gui.isAltKeyDown();
+		boolean shiftDown = GuiScreen.isShiftKeyDown();
+		boolean controlDown = GuiScreen.isCtrlKeyDown();
+		boolean altDown = GuiScreen.isAltKeyDown();
 		if (buttonPlus.isMouseOver() || buttonMinus.isMouseOver())
 		{
 			inc = buttonPlus.isMouseOver() ? 1 : -1;
@@ -244,7 +245,7 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 			}
 			else if (entryObject.getType() == GlOperationType.TRANSLATION)
 			{
-				boolean scalePixel = gui.scalePixel();
+				boolean scalePixel = listChiseledArmor.guiChiseledArmor.scalePixel();
 				if (scalePixel && shiftDown)
 					inc *= 16;
 				
