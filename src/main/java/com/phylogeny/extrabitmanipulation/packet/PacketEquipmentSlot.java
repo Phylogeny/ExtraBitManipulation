@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nullable;
 
-import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 
 public class PacketEquipmentSlot implements IMessage
 {

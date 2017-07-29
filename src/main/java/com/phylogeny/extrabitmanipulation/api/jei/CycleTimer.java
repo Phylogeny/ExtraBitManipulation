@@ -1,7 +1,8 @@
 package com.phylogeny.extrabitmanipulation.api.jei;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiScreen;
 

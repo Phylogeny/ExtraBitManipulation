@@ -1,10 +1,8 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import javax.annotation.Nullable;
+import io.netty.buffer.ByteBuf;
 
-import com.phylogeny.extrabitmanipulation.client.ClientHelper;
-import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit;
-import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit.Factory;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
@@ -16,7 +14,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import io.netty.buffer.ByteBuf;
+
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit;
+import com.phylogeny.extrabitmanipulation.client.ParticleSplashBit.Factory;
 
 public class PacketBitParticles implements IMessage
 {

@@ -2,12 +2,6 @@ package com.phylogeny.extrabitmanipulation.item;
 
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
-import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBase;
-import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-
 import mod.chiselsandbits.api.KeyBindingContext;
 import mod.chiselsandbits.api.ModKeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +10,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.ForgeEventFactory;
+
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBase;
+import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 @KeyBindingContext(value = {"menuitem"}, applyToSubClasses = true)
 public class ItemBitToolBase extends ItemExtraBitManipulationBase
