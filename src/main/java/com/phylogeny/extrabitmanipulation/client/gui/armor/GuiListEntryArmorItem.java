@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.client.gui.armor;
 
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -53,9 +54,8 @@ public class GuiListEntryArmorItem extends GuiListEntryChiseledArmor<ArmorItem>
 			}
 			else
 			{
-				boolean shift = listChiseledArmor.guiChiseledArmor.isShiftKeyDown();
-				if (!stack.isEmpty() || shift)
-					listChiseledArmor.guiChiseledArmor.modifyArmorItemListData(slotIndex, shift ? ItemStack.EMPTY : stack);
+				if (!stack.isEmpty() || GuiScreen.isShiftKeyDown())
+					listChiseledArmor.guiChiseledArmor.modifyArmorItemListData(slotIndex,  GuiScreen.isShiftKeyDown() ? ItemStack.EMPTY : stack);
 			}
 		}
 		return false;

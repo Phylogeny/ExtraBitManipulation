@@ -25,15 +25,13 @@ import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 {
 	private String nbtKey;
-	private NBTTagCompound nbt = new NBTTagCompound();
 	
 	public PacketChangeGlOperationList() {}
 	
 	public PacketChangeGlOperationList(NBTTagCompound nbt, String nbtKey, EntityEquipmentSlot equipmentSlot,
 			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
 	{
-		super(equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
-		this.nbt = nbt;
+		super(nbt, equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
 		this.nbtKey = nbtKey;
 	}
 	
@@ -42,7 +40,6 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 	{
 		super.toBytes(buffer);
 		ByteBufUtils.writeUTF8String(buffer, nbtKey);
-		ByteBufUtils.writeTag(buffer, nbt);
 	}
 	
 	@Override
@@ -50,7 +47,6 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 	{
 		super.fromBytes(buffer);
 		nbtKey = ByteBufUtils.readUTF8String(buffer);
-		nbt = ByteBufUtils.readTag(buffer);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketChangeGlOperationList, IMessage>
