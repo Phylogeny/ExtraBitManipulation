@@ -3,11 +3,13 @@ package com.phylogeny.extrabitmanipulation.client.gui.armor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -31,6 +33,7 @@ import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
@@ -52,8 +55,8 @@ import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList;
-import com.phylogeny.extrabitmanipulation.packet.PacketChangeGlOperationList;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ListOperation;
+import com.phylogeny.extrabitmanipulation.packet.PacketChangeGlOperationList;
 import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -99,6 +102,10 @@ public class GuiChiseledArmor extends GuiContainer
 	private int selectedTabIndex, selectedSubTabIndex, mouseInitialX, mouseInitialY;
 	private float playerScale;
 	private Vec3d playerRotation, playerTranslation, playerTranslationInitial;
+	private ItemStack copiedArmorItem;
+	private NBTTagCompound copiedArmorItemGlOperations = new NBTTagCompound();
+	private NBTTagCompound copiedGlOperation = new NBTTagCompound();
+	private boolean waitingForServerResponse;
 	
 	public GuiChiseledArmor(EntityPlayer player)
 	{
@@ -133,7 +140,7 @@ public class GuiChiseledArmor extends GuiContainer
 		if (selectedEntry >= 0)
 			list.selectListEntry(selectedEntry);
 		
-		if (isArmorItem && scrollToEnd && BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound()) > 0)
+		if (isArmorItem && scrollToEnd && getArmorScale() > 0)
 		{
 			List<GuiListGlOperation> list2 = getSelectedGuiListArmorItemGlOperations();
 			int index = getSelectedGuiListArmorItem().getSelectListEntryIndex();
@@ -145,6 +152,8 @@ public class GuiChiseledArmor extends GuiContainer
 		refreshLists(true);
 		if (scrollToEnd)
 			list.scrollBy(Integer.MAX_VALUE);
+		
+		waitingForServerResponse = false;
 	}
 	
 	private void refreshLists(boolean onlySelected)
@@ -825,22 +834,85 @@ public class GuiChiseledArmor extends GuiContainer
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException
 	{
+		boolean cDown = Keyboard.isKeyDown(Keyboard.KEY_C);
 		if (buttonAddRotation.visible)
 		{
 			if (keyCode == Keyboard.KEY_ESCAPE || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode))
 				hideAddGlButtons();
 		}
-		else if (!isCtrlKeyDown() && (Keyboard.isKeyDown(Keyboard.KEY_C) || Keyboard.isKeyDown(Keyboard.KEY_R)))
+		else if (!isCtrlKeyDown() && (cDown || Keyboard.isKeyDown(Keyboard.KEY_R)))
 		{
-			if (Keyboard.isKeyDown(Keyboard.KEY_R))
+			if (!cDown)
 				resetRotationAndScale();
 			
 			playerTranslation = Vec3d.ZERO;
 		}
 		else
 		{
-			getSelectedGuiListGlOperation().keyTyped(typedChar, keyCode);
-			super.keyTyped(typedChar, keyCode);
+			ScaledResolution scaledresolution = new ScaledResolution(mc);
+			int mouseX = Mouse.getX() * scaledresolution.getScaledWidth() / mc.displayWidth;
+			int mouseY = scaledresolution.getScaledHeight() - Mouse.getY() * scaledresolution.getScaledHeight() /mc.displayHeight - 1;
+			boolean affectGlOperationsList = GuiHelper.isCursorInsideBox(boxGlOperation, mouseX, mouseY);
+			if (!waitingForServerResponse && affectGlOperationsList && (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)))
+			{
+				moveGlOperationInList(Keyboard.isKeyDown(Keyboard.KEY_UP));
+			}
+			else if (!waitingForServerResponse && (affectGlOperationsList || GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY))
+					&& (Keyboard.isKeyDown(Keyboard.KEY_DELETE) || isCtrlKeyDown() && (cDown || Keyboard.isKeyDown(Keyboard.KEY_V))))
+			{
+				GuiListChiseledArmor list = affectGlOperationsList ? getSelectedGuiListGlOperation() : getSelectedGuiListArmorItem();
+				if (cDown)
+				{
+					if (affectGlOperationsList)
+					{
+						GuiListEntryChiseledArmor entry = list.getSelectedListEntry();
+						if (entry != null)
+						{
+							copiedGlOperation = new NBTTagCompound();
+							((GlOperation) entry.entryObject).saveToNBT(copiedGlOperation);
+						}
+					}
+					else
+					{
+						GuiListEntryChiseledArmor<ArmorItem> entry = list.getSelectedListEntry();
+						if (entry != null)
+						{
+							copiedArmorItem = entry.entryObject.getStack().copy();
+							copiedArmorItemGlOperations = new NBTTagCompound();
+							GlOperation.saveListToNBT(copiedArmorItemGlOperations, NBTKeys.ARMOR_GL_OPERATIONS, entry.entryObject.getGlOperations());
+						}
+					}
+				}
+				else
+				{
+					if (Keyboard.isKeyDown(Keyboard.KEY_V))
+					{
+						if (affectGlOperationsList)
+							addGlOperationToList(new GlOperation(copiedGlOperation));
+						else
+							addOrRemoveArmorItemListData((GuiListArmorItem) list, list.getSize(), true);
+					}
+					else
+					{
+						if (affectGlOperationsList)
+						{
+							removeGlOperationFromListOrEnterAddSelection(false);
+						}
+						else
+						{
+							GuiListEntryChiseledArmor<ArmorItem> entry = getSelectedGuiListArmorItem().getSelectedListEntry();
+							int index = list.getSelectListEntryIndex();
+							if (entry != null)
+								addOrRemoveArmorItemListData((GuiListArmorItem) list, index != 0 && index == list.getSize() - 1 ? index - 1 : -1, false);
+						}
+					}
+				}
+			}
+			else
+			{
+				getSelectedGuiListGlOperation().keyTyped(typedChar, keyCode);
+				super.keyTyped(typedChar, keyCode);
+			}
 		}
 	}
 	
@@ -860,26 +932,17 @@ public class GuiChiseledArmor extends GuiContainer
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
+		if (waitingForServerResponse)
+		{
+			super.actionPerformed(button);
+			return;
+		}
 		if (buttonAddRotation.visible)
 		{
 			if (button == buttonAddRotation || button == buttonAddTranslation || button == buttonAddScale)
-			{
-				if (getSelectedGuiListGlOperation().equals(emptyGlList))
-				{
-					List<GuiListGlOperation> list = getSelectedGuiListArmorItemGlOperations();
-					int index = getSelectedGuiListArmorItem().getSelectListEntryIndex();
-					while (index >= list.size())
-					{
-						list.add(createGuiListGlOperation(getSelectedGuiListArmorItem().armorPiece));
-					}
-				}
-				GuiListGlOperation list = getSelectedGuiListGlOperation();
-				int index = list.getSelectListEntryIndex();
-				setGlOperationListData(list.addGlOperation(list.getSize() > 0 ? ++index : index, button == buttonAddRotation
-					? new GlOperation(GlOperationType.ROTATION)
-						: (button == buttonAddTranslation ? new GlOperation(GlOperationType.TRANSLATION) : new GlOperation(GlOperationType.SCALE, 1, 1, 1))),
-				list.getSize() > 0 ? index : -1, true);
-			}
+				addGlOperationToList(button == buttonAddRotation ? new GlOperation(GlOperationType.ROTATION)
+						: (button == buttonAddTranslation ? new GlOperation(GlOperationType.TRANSLATION) : new GlOperation(GlOperationType.SCALE, 1, 1, 1)));
+			
 			return;
 		}
 		if (button.id < 16)
@@ -927,7 +990,6 @@ public class GuiChiseledArmor extends GuiContainer
 		else if (button == buttonItemAdd || button == buttonItemDelete)
 		{
 			GuiListArmorItem list = getSelectedGuiListArmorItem();
-			int index = list.getSelectListEntryIndex();
 			if (button == buttonItemAdd)
 			{
 				addOrRemoveArmorItemListData(list, list.getSize(), button);
@@ -935,32 +997,18 @@ public class GuiChiseledArmor extends GuiContainer
 			else
 			{
 				GuiListEntryChiseledArmor<ArmorItem> entry = getSelectedGuiListArmorItem().getSelectedListEntry();
+				int index = list.getSelectListEntryIndex();
 				if (entry != null)
 					addOrRemoveArmorItemListData(list, index != 0 && index == list.getSize() - 1 ? index - 1 : -1, button);
 			}
 		}
-		else if ((button == buttonGlAdd || button == buttonGlDelete) && (!buttonGlItems.selected || getSelectedGuiListArmorItem().getSize() > 0))
+		else if ((button == buttonGlAdd || button == buttonGlDelete))
 		{
-			GuiListGlOperation list = getSelectedGuiListGlOperation();
-			if (button == buttonGlAdd)
-			{
-				buttonAddRotation.visible = buttonAddTranslation.visible = buttonAddScale.visible = true;
-			}
-			else if (list.getSize() > 0)
-			{
-				int index = list.getSelectListEntryIndex();
-				setGlOperationListData(list.removeGlOperation(index), index != 0 && index == list.getSize() - 1 ? index - 1 : -1, true);
-			}
+			removeGlOperationFromListOrEnterAddSelection(button == buttonGlAdd);
 		}
 		else if ((button == buttonGlMoveUp || button == buttonGlMoveDown))
 		{
-			GuiListGlOperation list = getSelectedGuiListGlOperation();
-			int index = list.getSelectListEntryIndex();
-			if (button == buttonGlMoveUp ? index > 0 : index < list.getSize() - 1)
-			{
-				setGlOperationListData(list.moveGlOperation(index, (GlOperation) list.getGlOperations().get(index), button == buttonGlMoveUp),
-						index += (button == buttonGlMoveUp ? -1 : 1), true);
-			}
+			moveGlOperationInList(button == buttonGlMoveUp);
 		}
 		else if (button == buttonScale)
 		{
@@ -984,26 +1032,103 @@ public class GuiChiseledArmor extends GuiContainer
 		}
 	}
 	
+	private void removeGlOperationFromListOrEnterAddSelection(boolean add)
+	{
+		if ((!buttonGlItems.selected || getSelectedGuiListArmorItem().getSize() > 0))
+		{
+			GuiListGlOperation list = getSelectedGuiListGlOperation();
+			if (add)
+			{
+				buttonAddRotation.visible = buttonAddTranslation.visible = buttonAddScale.visible = true;
+			}
+			else if (list.getSize() > 0)
+			{
+				int index = list.getSelectListEntryIndex();
+				setGlOperationListData(list.removeGlOperation(index), index != 0 && index == list.getSize() - 1 ? index - 1 : -1, true);
+			}
+		}
+	}
+	
+	private void addGlOperationToList(GlOperation glOperation)
+	{
+		if (getSelectedGuiListGlOperation().equals(emptyGlList))
+		{
+			List<GuiListGlOperation> list = getSelectedGuiListArmorItemGlOperations();
+			int index = getSelectedGuiListArmorItem().getSelectListEntryIndex();
+			while (index >= list.size())
+			{
+				list.add(createGuiListGlOperation(getSelectedGuiListArmorItem().armorPiece));
+			}
+		}
+		GuiListGlOperation list = getSelectedGuiListGlOperation();
+		int index = list.getSelectListEntryIndex();
+		setGlOperationListData(list.addGlOperation(list.getSize() > 0 ? ++index : index, glOperation), list.getSize() > 0 ? index : -1, true);
+	}
+	
+	private void moveGlOperationInList(boolean moveUp)
+	{
+		GuiListGlOperation list = getSelectedGuiListGlOperation();
+		int index = list.getSelectListEntryIndex();
+		if (moveUp ? index > 0 : index < list.getSize() - 1)
+			setGlOperationListData(list.moveGlOperation(index, (GlOperation) list.getGlOperations().get(index), moveUp), index += (moveUp ? -1 : 1), true);
+	}
+	
+	private int getArmorScale()
+	{
+		return BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound());
+	}
+	
 	private void addOrRemoveArmorItemListData(GuiListArmorItem list, int selectedArmorItem, GuiButton button)
 	{
-		setArmorItemListData(list, selectedArmorItem, BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound()),
-				button == buttonItemAdd ? ListOperation.ADD : ListOperation.REMOVE, null);
+		boolean add = button == buttonItemAdd;
+		NBTTagCompound nbtGlOperations = new NBTTagCompound();
+		int scale = getArmorScale();
+		if (add && scale > 0)
+		{
+			float scale2 = (float) (1 / Math.pow(2, scale));
+			GlOperation.saveListToNBT(nbtGlOperations, NBTKeys.ARMOR_GL_OPERATIONS, Collections.singletonList(GlOperation.createScale(scale2, scale2, scale2)));
+		}
+		setArmorItemListData(list, selectedArmorItem, add ? ListOperation.ADD : ListOperation.REMOVE, null, nbtGlOperations);
+	}
+	
+	private void addOrRemoveArmorItemListData(GuiListArmorItem list, int selectedArmorItem, boolean add)
+	{
+		NBTTagCompound nbtGlOperations = new NBTTagCompound();
+		ListOperation listOperation;
+		ItemStack stack;
+		if (add)
+		{
+			listOperation = ListOperation.ADD;
+			stack = copiedArmorItem.copy();
+			nbtGlOperations = copiedArmorItemGlOperations.copy();
+		}
+		else
+		{
+			listOperation = ListOperation.REMOVE;
+			stack = null;
+			nbtGlOperations = new NBTTagCompound();
+		}
+		setArmorItemListData(list, selectedArmorItem, listOperation, stack, nbtGlOperations);
 	}
 	
 	public void modifyArmorItemListData(int selectedArmorItem, ItemStack stack)
 	{
-		setArmorItemListData(getSelectedGuiListArmorItem(), selectedArmorItem, -1, ListOperation.MODIFY, stack);
+		NBTTagCompound nbtGlOperations = new NBTTagCompound();
+		setArmorItemListData(getSelectedGuiListArmorItem(), selectedArmorItem, ListOperation.MODIFY, stack, nbtGlOperations);
 	}
 	
-	private void setArmorItemListData(GuiListArmorItem list, int selectedArmorItem, int scale, ListOperation listOperation, ItemStack stack)
+	private void setArmorItemListData(GuiListArmorItem list, int selectedArmorItem,
+			ListOperation listOperation, ItemStack stack, NBTTagCompound nbtGlOperations)
 	{
-		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex),
-				selectedSubTabIndex - 1, list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, scale, true));
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex), selectedSubTabIndex - 1,
+				list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, nbtGlOperations, true));
+		waitingForServerResponse = true;
 	}
 	
 	public void setGlOperationListData(int selectedGlOperation, boolean refreshLists)
 	{
 		setGlOperationListData(getSelectedGuiListGlOperation().getGlOperations(), selectedGlOperation, refreshLists);
+		waitingForServerResponse = false;
 	}
 	
 	private void setGlOperationListData(List<GlOperation> glOperations, int selectedGlOperation, boolean refreshLists)
@@ -1014,6 +1139,7 @@ public class GuiChiseledArmor extends GuiContainer
 		GlOperation.saveListToNBT(nbt, key, glOperations);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeGlOperationList(nbt, key, getArmorSlot(selectedTabIndex),
 				selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists));
+		waitingForServerResponse = true;
 	}
 	
 	private void updateButtons()
@@ -1049,7 +1175,7 @@ public class GuiChiseledArmor extends GuiContainer
 		String suffix = (buttonGlItems.selected ? "the selected item" : "the global " + (buttonGlPre.selected ? "pre" : "post") + "-operations list");
 		buttonGlAdd.setHoverText("Add Gl operation to " + suffix);
 		buttonGlDelete.setHoverText("Remove GL operation from " + suffix);
-		buttonScale.displayString = ItemChiseledArmor.SCALE_TITLES[BitToolSettingsHelper.getArmorScale(getArmorStack(selectedTabIndex).getTagCompound())];
+		buttonScale.displayString = ItemChiseledArmor.SCALE_TITLES[getArmorScale()];
 		String text = "Add item";
 		if (!buttonScale.displayString.equals("1:1"))
 			text += " at " + buttonScale.displayString + " scale";

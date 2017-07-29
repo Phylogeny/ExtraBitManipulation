@@ -21,7 +21,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
-import com.phylogeny.extrabitmanipulation.armor.GlOperation;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
@@ -29,19 +28,17 @@ import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 {
-	private int scale;
 	private ItemStack stack;
 	private ListOperation listOperation;
 	
 	public PacketChangeArmorItemList() {}
 	
-	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, int partIndex, int armorItemIndex,
-			int selectedEntry, ListOperation listOperation, ItemStack stack, int scale, boolean refreshLists)
+	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, int partIndex, int armorItemIndex, int selectedEntry,
+			ListOperation listOperation, ItemStack stack, NBTTagCompound glOperationsNbt, boolean refreshLists)
 	{
-		super(equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
+		super(glOperationsNbt, equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
 		this.listOperation = listOperation;
 		this.stack = stack;
-		this.scale = scale;
 	}
 	
 	@Override
@@ -50,7 +47,6 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 		super.toBytes(buffer);
 		buffer.writeInt(listOperation.ordinal());
 		ByteBufUtils.writeItemStack(buffer, stack);
-		buffer.writeInt(scale);
 	}
 	
 	@Override
@@ -59,7 +55,6 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 		super.fromBytes(buffer);
 		listOperation = ListOperation.values()[buffer.readInt()];
 		stack = ByteBufUtils.readItemStack(buffer);
-		scale = buffer.readInt();
 	}
 	
 	public static class Handler implements IMessageHandler<PacketChangeArmorItemList, IMessage>
@@ -100,25 +95,20 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 						ItemStackHelper.saveStackToNBT(armorItemNbt, message.stack, NBTKeys.ARMOR_ITEM);
 						itemList.set(message.armorItemIndex, armorItemNbt);
 					}
+					else if (add)
+					{
+						NBTTagCompound armorItemNbt = new NBTTagCompound();
+						ArmorItem armorItem = new ArmorItem(message.stack);
+						armorItem.saveToNBT(armorItemNbt);
+						if (message.nbt.hasKey(NBTKeys.ARMOR_GL_OPERATIONS))
+							armorItemNbt.setTag(NBTKeys.ARMOR_GL_OPERATIONS, message.nbt.getTagList(NBTKeys.ARMOR_GL_OPERATIONS, NBT.TAG_COMPOUND));
+						
+						itemList.appendTag(armorItemNbt);
+					}
 					else
 					{
-						if (add)
-						{
-							NBTTagCompound armorItemNbt = new NBTTagCompound();
-							ArmorItem armorItem = new ArmorItem();
-							if (message.scale > 0)
-							{
-								float scale2 = (float) (1 / Math.pow(2, message.scale));
-								armorItem.addGlOperation(GlOperation.createScale(scale2, scale2, scale2));
-							}
-							armorItem.saveToNBT(armorItemNbt);
-							itemList.appendTag(armorItemNbt);
-						}
-						else
-						{
-							itemList.removeTag(message.armorItemIndex);
-							glListRemovalIndex = message.armorItemIndex;
-						}
+						itemList.removeTag(message.armorItemIndex);
+						glListRemovalIndex = message.armorItemIndex;
 					}
 					movingParts.set(message.partIndex, itemList);
 					DataChiseledArmorPiece.setPartData(data, movingParts);
@@ -127,7 +117,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 					{
 						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot,
 								message.partIndex, message.armorItemIndex, message.selectedEntry, message.listOperation,
-								message.stack, message.scale, message.refreshLists), (EntityPlayerMP) player);
+								message.stack, message.nbt, message.refreshLists), (EntityPlayerMP) player);
 					}
 				}
 			});

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
@@ -16,12 +17,15 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 {
 	protected int partIndex, armorItemIndex, selectedEntry;
 	protected boolean refreshLists;
+	protected NBTTagCompound nbt = new NBTTagCompound();
 	
 	public PacketChangeChiseledArmorList() {}
 	
-	public PacketChangeChiseledArmorList(EntityEquipmentSlot equipmentSlot, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
+	public PacketChangeChiseledArmorList(NBTTagCompound nbt, EntityEquipmentSlot equipmentSlot,
+			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
 	{
 		super(equipmentSlot);
+		this.nbt = nbt;
 		this.partIndex = partIndex;
 		this.armorItemIndex = armorItemIndex;
 		this.selectedEntry = selectedEntry;
@@ -32,6 +36,7 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 	public void toBytes(ByteBuf buffer)
 	{
 		super.toBytes(buffer);
+		ByteBufUtils.writeTag(buffer, nbt);
 		buffer.writeInt(partIndex);
 		buffer.writeInt(armorItemIndex);
 		buffer.writeInt(selectedEntry);
@@ -42,6 +47,7 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 	public void fromBytes(ByteBuf buffer)
 	{
 		super.fromBytes(buffer);
+		nbt = ByteBufUtils.readTag(buffer);
 		partIndex = buffer.readInt();
 		armorItemIndex = buffer.readInt();
 		selectedEntry = buffer.readInt();

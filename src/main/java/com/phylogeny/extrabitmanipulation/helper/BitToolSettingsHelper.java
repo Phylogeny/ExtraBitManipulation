@@ -20,6 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -1278,7 +1279,7 @@ public class BitToolSettingsHelper
 			buffer.writeBoolean(hollowShape);
 			buffer.writeBoolean(openEnds);
 			buffer.writeInt(wallThickness);
-			ItemStackHelper.stackToBytes(buffer, setBitStack);
+			ByteBufUtils.writeItemStack(buffer, setBitStack);
 			buffer.writeFloat(semiDiameterPadding);
 			buffer.writeBoolean(offsetShape);
 		}
@@ -1293,7 +1294,7 @@ public class BitToolSettingsHelper
 			hollowShape = buffer.readBoolean();
 			openEnds = buffer.readBoolean();
 			wallThickness = buffer.readInt();
-			setBitStack = ItemStackHelper.stackFromBytes(buffer);
+			setBitStack = ByteBufUtils.readItemStack(buffer);
 			semiDiameterPadding = buffer.readFloat();
 			offsetShape = buffer.readBoolean();
 		}

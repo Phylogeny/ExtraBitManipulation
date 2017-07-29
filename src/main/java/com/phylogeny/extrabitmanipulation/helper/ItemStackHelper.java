@@ -1,18 +1,16 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
+import mod.chiselsandbits.api.ItemType;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
-
-import io.netty.buffer.ByteBuf;
-import mod.chiselsandbits.api.ItemType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class ItemStackHelper
 {
@@ -33,17 +31,6 @@ public class ItemStackHelper
 			stack = ItemStack.loadItemStackFromNBT((NBTTagCompound) nbt.getTag(key));
 		
 		return stack;
-	}
-	
-	public static void stackToBytes(ByteBuf buffer, ItemStack bitStack)
-	{
-		if (BitIOHelper.notNullToBuffer(buffer, bitStack))
-			ByteBufUtils.writeItemStack(buffer, bitStack);
-	}
-	
-	public static ItemStack stackFromBytes(ByteBuf buffer)
-	{
-		return buffer.readBoolean() ? ByteBufUtils.readItemStack(buffer) : null;
 	}
 	
 	public static boolean hasNBT(ItemStack stack)
