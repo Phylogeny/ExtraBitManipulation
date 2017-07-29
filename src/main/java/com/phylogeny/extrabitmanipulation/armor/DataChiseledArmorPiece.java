@@ -123,6 +123,7 @@ public class DataChiseledArmorPiece
 			armorItem.render(entity, scale, armorType == ArmorType.BOOTS && partIndex == 0);
 			GlStateManager.popMatrix();
 		}
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.glEndList();
 		GlStateManager.popMatrix();
 		return displayList;
