@@ -18,7 +18,6 @@ import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRende
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
-import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ArmorSlotRemovalMode;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -423,7 +422,7 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.armorScale = getBitToolSettingIntFromStringArray("Scale", DATA_CATAGORY_ARMOR,
 					chiseledArmorConfigFile, false, true, 0, 0,
 					"scale",
-					"scale (which sets the scale of the bodypart templates and the blocks when imported into the armor piece).",
+					"scale (which sets the scale of the bodypart templates, and of the block copies imported into the armor piece from the world).",
 					ItemChiseledArmor.SCALE_TITLES);
 			
 			Configs.armorMovingPartHelmet = getArmorMovingPart(ItemsExtraBitManipulation.chiseledHelmet);
@@ -451,13 +450,6 @@ public class ConfigHandlerExtraBitManipulation
 					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
 					"A scale of this many pixels will be applied to all items rendered for the right foot moving part of Chiseled Armor boots, so as to " +
 					"prevent z-fighting of those items with the items of the left foot moving part.");
-			
-			Configs.armorSlotRemovalMode = getEnumValueFromStringArray("Slot Removal Mode", ArmorSlotRemovalMode.class, ARMOR_SETTINGS, configFileServer, 0,
-					"Specifies what to do with a slot's itemstack when that slot is removed. If set to 'Give Stack As Stack', any stack " +
-					" will be put in the player's inventory as-is (or spawned in the world if the player's inventory is full). If set to 'Give Stack As " +
-					"Bits If Possible', chiseled block stacks will be decomposed into bits, and those bits given to the player (again, spawning the bits in " +
-					"the world if the player's inventory is full); all other stacks will be given as-is.",
-					"Give Stack As Stack", "Give Stack As Bits If Possible", "Prevent Removal If Not Empty");
 			
 			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
 					chiseledArmorConfigFile, false, true, false,

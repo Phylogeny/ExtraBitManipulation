@@ -4,11 +4,10 @@ import java.util.List;
 
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
-import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 
 public class GuiListArmorItem extends GuiListChiseledArmor<ArmorItem>
 {
-	private int partIndex, localIndex;
+	private int partIndex;
 	
 	public GuiListArmorItem(GuiChiseledArmor guiChiseledArmor, int heightIn, int topIn, int bottomIn,
 			int slotHeightIn, int offsetX, int listWidth, DataChiseledArmorPiece armorPiece, int partIndex)
@@ -17,22 +16,16 @@ public class GuiListArmorItem extends GuiListChiseledArmor<ArmorItem>
 		this.partIndex = partIndex;
 	}
 	
-	public int refreshList(int localIndex)
+	@Override
+	public void refreshList()
 	{
-		this.localIndex = localIndex;
-		refreshList();
+		super.refreshList();
 		List<ArmorItem> armorItems = armorPiece.getArmorItemsForPart(partIndex);
 		for (int i = 0; i < armorItems.size(); i++)
 		{
 			ArmorItem armorItem = armorItems.get(i);
-			entries.add(new GuiListEntryArmorItem(this, armorItem, getSlotNumber(i)));
+			entries.add(new GuiListEntryArmorItem(this, armorItem));
 		}
-		return armorItems.size();
-	}
-	
-	public int getSlotNumber(int slotIndex)
-	{
-		return ContainerPlayerInventory.SIZE_MAIN_INVENTORY + localIndex + slotIndex;
 	}
 	
 }

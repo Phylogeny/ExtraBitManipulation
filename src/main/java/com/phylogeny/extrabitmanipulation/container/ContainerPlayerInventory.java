@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 
 public class ContainerPlayerInventory extends Container
 {
-	public static final int SIZE_MAIN_INVENTORY = 36;
 	
 	public ContainerPlayerInventory(EntityPlayer player, int startX, int startY)
 	{
@@ -44,7 +43,7 @@ public class ContainerPlayerInventory extends Container
 			stack = stack2.copy();
 			if (index < 9)
 			{
-				if (!mergeItemStack(stack2, 9, SIZE_MAIN_INVENTORY, false))
+				if (!mergeItemStack(stack2, 9, 36, false))
 					return ItemStack.EMPTY;
 			}
 			else if (!mergeItemStack(stack2, 0, 9, true))
