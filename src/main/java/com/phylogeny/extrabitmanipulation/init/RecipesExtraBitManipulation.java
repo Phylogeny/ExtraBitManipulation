@@ -57,12 +57,17 @@ public class RecipesExtraBitManipulation
 		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselIron, bitCost);
 		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselGold, bitCost);
 		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselDiamond, bitCost);
-		GameRegistry.addShapelessRecipe(new ItemStack(inputArmor), output);
 	}
 	
-	private static void registerChiseledArmorRecipes(Item output, Item inputArmor, Item inputChisel, int bitCost)
+	private static void registerChiseledArmorRecipes(Item output, Item input, Item inputChisel, int bitCost)
 	{
-		GameRegistry.addRecipe(new RecipeChiseledArmor(output, inputArmor, inputChisel, bitCost));
+		registerChiseledArmorRecipe(output, input, inputChisel, bitCost);
+		registerChiseledArmorRecipe(input, output, inputChisel, bitCost);
+	}
+	
+	private static void registerChiseledArmorRecipe(Item output, Item input, Item inputChisel, int bitCost)
+	{
+		GameRegistry.addRecipe(new RecipeChiseledArmor(output, input, inputChisel, bitCost));
 	}
 	
 	private static void registerRecipe(Item item, boolean isShaped, boolean useOreDictionary, String[] userInput, String[] defaultInput)
