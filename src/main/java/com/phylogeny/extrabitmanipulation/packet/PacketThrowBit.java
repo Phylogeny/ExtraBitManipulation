@@ -1,8 +1,6 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import com.phylogeny.extrabitmanipulation.entity.EntityBit;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -13,7 +11,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import io.netty.buffer.ByteBuf;
+
+import com.phylogeny.extrabitmanipulation.entity.EntityBit;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 public class PacketThrowBit implements IMessage
 {

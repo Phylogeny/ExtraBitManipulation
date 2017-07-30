@@ -1,7 +1,7 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class ConfigReplacementBits
 {

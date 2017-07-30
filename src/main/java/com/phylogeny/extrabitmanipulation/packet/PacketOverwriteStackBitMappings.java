@@ -1,11 +1,9 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.Map;
 
-import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-
-import io.netty.buffer.ByteBuf;
 import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +13,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
 public class PacketOverwriteStackBitMappings extends PacketBitMapIO
 {

@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiListExtended;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
