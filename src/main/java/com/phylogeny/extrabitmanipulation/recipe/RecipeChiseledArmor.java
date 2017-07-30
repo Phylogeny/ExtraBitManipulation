@@ -14,13 +14,13 @@ public class RecipeChiseledArmor extends ShapelessRecipes
 {
 	private Random rand = new Random();
 	private ItemStack chiselRemaining;
-	private Item inputArmor;
+	private Item input;
 	private int bitCost;
 	
-	public RecipeChiseledArmor(Item output, Item inputArmor, Item inputChisel, int bitCost)
+	public RecipeChiseledArmor(Item output, Item input, Item inputChisel, int bitCost)
 	{
-		super(new ItemStack(output), Arrays.asList(new ItemStack[]{new ItemStack(inputArmor), new ItemStack(inputChisel)}));
-		this.inputArmor = inputArmor;
+		super(new ItemStack(output), Arrays.asList(new ItemStack[]{new ItemStack(input), new ItemStack(inputChisel)}));
+		this.input = input;
 		this.bitCost = bitCost;
 	}
 	
@@ -43,7 +43,7 @@ public class RecipeChiseledArmor extends ShapelessRecipes
 				if (isChisel)
 					chisel = stack;
 				
-				boolean isArmor = stack.getItem() == inputArmor;
+				boolean isArmor = stack.getItem() == input;
 				if (isArmor)
 					foundArmor = true;
 				

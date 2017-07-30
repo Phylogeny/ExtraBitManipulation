@@ -104,7 +104,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private Vec3d playerRotation, playerTranslation, playerTranslationInitial;
 	private ItemStack copiedArmorItem;
 	private NBTTagCompound copiedArmorItemGlOperations = new NBTTagCompound();
-	private NBTTagCompound copiedGlOperation = new NBTTagCompound();
+	private NBTTagCompound copiedGlOperation;
 	private boolean waitingForServerResponse;
 	
 	public GuiChiseledArmor(EntityPlayer player)
@@ -140,7 +140,7 @@ public class GuiChiseledArmor extends GuiContainer
 		if (selectedEntry >= 0)
 			list.selectListEntry(selectedEntry);
 		
-		if (isArmorItem && scrollToEnd && getArmorScale() > 0)
+		if (isArmorItem && scrollToEnd)
 		{
 			List<GuiListGlOperation> list2 = getSelectedGuiListArmorItemGlOperations();
 			int index = getSelectedGuiListArmorItem().getSelectListEntryIndex();
@@ -875,7 +875,7 @@ public class GuiChiseledArmor extends GuiContainer
 					else
 					{
 						GuiListEntryChiseledArmor<ArmorItem> entry = list.getSelectedListEntry();
-						if (entry != null)
+						if (entry != null && entry.entryObject.getStack() != null)
 						{
 							copiedArmorItem = entry.entryObject.getStack().copy();
 							copiedArmorItemGlOperations = new NBTTagCompound();
@@ -887,10 +887,10 @@ public class GuiChiseledArmor extends GuiContainer
 				{
 					if (Keyboard.isKeyDown(Keyboard.KEY_V))
 					{
-						if (affectGlOperationsList)
-							addGlOperationToList(new GlOperation(copiedGlOperation));
-						else
+						if (!affectGlOperationsList)
 							addOrRemoveArmorItemListData((GuiListArmorItem) list, list.getSize(), true);
+						else if (copiedGlOperation != null)
+							addGlOperationToList(new GlOperation(copiedGlOperation));
 					}
 					else
 					{
@@ -1099,7 +1099,7 @@ public class GuiChiseledArmor extends GuiContainer
 		if (add)
 		{
 			listOperation = ListOperation.ADD;
-			stack = copiedArmorItem.copy();
+			stack = copiedArmorItem == null ? null : copiedArmorItem.copy();
 			nbtGlOperations = copiedArmorItemGlOperations.copy();
 		}
 		else
