@@ -621,6 +621,7 @@ public class GuiBitMapping extends GuiContainer
 		if (previewStackBoxClicked)
 			return;
 		
+		renderHoveredToolTip(mouseX, mouseY);
 		for (int i = 0; i < bitMappingList.getSize(); i++)
 		{
 			GuiListBitMappingEntry entry = bitMappingList.getListEntry(i);
