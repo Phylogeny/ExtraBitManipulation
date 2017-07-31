@@ -87,12 +87,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		List<IConfigElement> configElementsToolSettings = new ArrayList<IConfigElement>();
 		boolean isClient = configFile.equals(ConfigHandlerExtraBitManipulation.configFileClient);
 		Class configClass = isClient ? ClientEntry.class : ServerEntry.class;
-		addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.ARMOR_SETTINGS,
-				isClient ? "Configures the z-fighting buffer scale amount for Chiseled Armor pieces"
-						: "Configures what to do with a Chiseled Armor GUI slot's itemstack when that slot is removed",
-				configElementsToolSettings, configClass);
 		if (isClient)
 		{
+			addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.ARMOR_SETTINGS,
+					"Configures the z-fighting buffer scale amount for Chiseled Armor pieces", configElementsToolSettings, configClass);
 			List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
 			String textStorage = "the the way block states are stored, and ";
 			String textReplacementBits = "Configures" + textStorage + "the procedures for finding replacement bits ";
@@ -213,7 +211,8 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		{
 			if (isRecipe)
 			{
-				addRecipeChildElementsToDummyElement(names[i], childElements, configClass);
+				addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
+						names[i], "Configures the recipe type and configuration for the " + names[i], childElements, configClass);
 			}
 			else
 			{
@@ -221,12 +220,6 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 			}
 		}
 		addElementsToDummyElement(names[len - 2], names[len - 1], configElements, childElements, configClass);
-	}
-	
-	private static void addRecipeChildElementsToDummyElement(String name, List<IConfigElement> configElements, Class configClass)
-	{
-		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
-				name, "Configures the recipe type and configuration for the " + name, configElements, configClass);
 	}
 	
 	private static void addElementsToDummyElement(String text, String toolTip,
