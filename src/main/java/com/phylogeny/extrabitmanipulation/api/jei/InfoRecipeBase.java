@@ -25,10 +25,10 @@ public class InfoRecipeBase extends BlankRecipeWrapper
 	protected String name;
 	protected Rectangle imageBox;
 	
-	public InfoRecipeBase(IGuiHelper guiHelper, List<ItemStack> sculptingStacks, int imageWidth, int imageHeight, String recipeName,
+	public InfoRecipeBase(IGuiHelper guiHelper, List<ItemStack> itemStacks, int imageWidth, int imageHeight, String recipeName,
 			String imageName, String tooltipName, int imageLeft, int imageTop, int imageRight, int imageBottom, String catagoryName)
 	{
-		this.itemStacks = sculptingStacks;
+		this.itemStacks = itemStacks;
 		this.image = new ResourceLocation(Reference.MOD_ID, "textures/jei/images/" + imageName + ".png");
 		this.imageWidth = imageWidth;
 		this.imageHeight = imageHeight;

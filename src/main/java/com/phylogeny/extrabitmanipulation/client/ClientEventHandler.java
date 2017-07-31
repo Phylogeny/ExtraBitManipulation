@@ -160,7 +160,7 @@ public class ClientEventHandler
 				boolean armorFound = false;
 				for (int i = 2; i < EntityEquipmentSlot.values().length; i++)
 				{
-					if (ClientHelper.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.values()[i]).getItem() instanceof ItemChiseledArmor)
+					if (ItemStackHelper.isChiseledArmorStack(ClientHelper.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.values()[i])))
 					{
 						armorFound = true;
 						break;
@@ -709,9 +709,6 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void renderBoxesSpheresAndOverlays(RenderWorldLastEvent event)
 	{
-		if (Configs.disableOverlays)
-			return;
-		
 		EntityPlayer player = ClientHelper.getPlayer();
 		World world = player.world;
 		ItemStack stack = player.getHeldItemMainhand();
@@ -722,7 +719,7 @@ public class ClientEventHandler
 		Item item = stack.getItem();
 		boolean hitBlock = target != null && target.typeOfHit.equals(RayTraceResult.Type.BLOCK);
 		boolean isArmor = ItemStackHelper.isChiseledArmorItem(item);
-		if ((!hitBlock && !isArmor) || (!ItemStackHelper.isBitToolItem(item) && !isArmor))
+		if (!isArmor && (!hitBlock || !ItemStackHelper.isBitToolItem(item)))
 			return;
 		
 		IChiselAndBitsAPI api = ChiselsAndBitsAPIAccess.apiInstance;
@@ -753,7 +750,7 @@ public class ClientEventHandler
 		double diffY = playerY - y;
 		double diffZ = playerZ - z;
 		Vec3d hit = target.hitVec;
-		if (ItemStackHelper.isBitWrenchItem(item) && api.isBlockChiseled(world, target.getBlockPos()))
+		if (ItemStackHelper.isBitWrenchItem(item) && api.isBlockChiseled(world, target.getBlockPos()) && !Configs.disableOverlays)
 		{
 			int mode = ItemStackHelper.getNBTOrNew(stack).getInteger(NBTKeys.WRENCH_MODE);
 			if (timer == null)

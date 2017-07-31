@@ -104,7 +104,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private Vec3d playerRotation, playerTranslation, playerTranslationInitial;
 	private ItemStack copiedArmorItem = ItemStack.EMPTY;
 	private NBTTagCompound copiedArmorItemGlOperations = new NBTTagCompound();
-	private NBTTagCompound copiedGlOperation = new NBTTagCompound();
+	private NBTTagCompound copiedGlOperation;
 	private boolean waitingForServerResponse;
 	
 	public GuiChiseledArmor(EntityPlayer player)
@@ -135,7 +135,7 @@ public class GuiChiseledArmor extends GuiContainer
 		if (selectedEntry >= 0)
 			list.selectListEntry(selectedEntry);
 		
-		if (isArmorItem && scrollToEnd && getArmorScale() > 0)
+		if (isArmorItem && scrollToEnd)
 		{
 			List<GuiListGlOperation> list2 = getSelectedGuiListArmorItemGlOperations();
 			int index = getSelectedGuiListArmorItem().getSelectListEntryIndex();
@@ -595,13 +595,22 @@ public class GuiChiseledArmor extends GuiContainer
 				}
 			}
 		}
-		ItemStack stackHovered = getHoveredStack(mouseX, mouseY);
-		if (stackHovered != null)
+		if (GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY))
 		{
-			if (buttonHelp.selected)
-				drawHoveringText(mouseX, mouseY, getArmoritemSlotHoverhelpText("These slots"));
-			else if (!stackHovered.isEmpty())
-				renderToolTip(stackHovered, mouseX, mouseY);
+			GuiListArmorItem armorItemsList = getSelectedGuiListArmorItem();
+			for (int i = 0; i < armorItemsList.getSize(); i++)
+			{
+				GuiListEntryArmorItem entry = (GuiListEntryArmorItem) armorItemsList.getListEntry(i);
+				if (entry.isSlotHovered())
+				{
+					if (buttonHelp.selected)
+						drawHoveringText(mouseX, mouseY, getArmoritemSlotHoverhelpText("These slots"));
+					else if (entry.getStack() != null)
+						renderToolTip(entry.getStack(), mouseX, mouseY);
+					
+					break;
+				}
+			}
 		}
 		if (buttonHelp.selected)
 		{
@@ -636,22 +645,6 @@ public class GuiChiseledArmor extends GuiContainer
 	private void drawHoveringText(int mouseX, int mouseY, String hoverText)
 	{
 		drawHoveringText(Arrays.<String>asList(new String[] {hoverText}), mouseX, mouseY, mc.fontRendererObj);
-	}
-	
-	private ItemStack getHoveredStack(int mouseX, int mouseY)
-	{
-		if (!GuiHelper.isCursorInsideBox(boxArmorItem, mouseX, mouseY))
-			return null;
-		
-		ItemStack stackHovered = null;
-		GuiListArmorItem armorItemsList = getSelectedGuiListArmorItem();
-		for (int i = 0; i < armorItemsList.getSize(); i++)
-		{
-			GuiListEntryArmorItem entry = (GuiListEntryArmorItem) armorItemsList.getListEntry(i);
-			if (entry.isSlotHovered())
-				return entry.getStack();
-		}
-		return stackHovered;
 	}
 	
 	@Override
@@ -889,10 +882,10 @@ public class GuiChiseledArmor extends GuiContainer
 				{
 					if (Keyboard.isKeyDown(Keyboard.KEY_V))
 					{
-						if (affectGlOperationsList)
-							addGlOperationToList(new GlOperation(copiedGlOperation));
-						else
+						if (!affectGlOperationsList)
 							addOrRemoveArmorItemListData((GuiListArmorItem) list, list.getSize(), true);
+						else if (copiedGlOperation != null)
+							addGlOperationToList(new GlOperation(copiedGlOperation));
 					}
 					else
 					{

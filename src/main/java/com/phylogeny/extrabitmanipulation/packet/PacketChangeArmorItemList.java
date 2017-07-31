@@ -24,7 +24,6 @@ import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
@@ -72,12 +71,10 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().playerEntity : ClientHelper.getPlayer();
 					ItemStack stack = player.getItemStackFromSlot(message.equipmentSlot);
-					if (!stack.hasTagCompound())
-					{
-						NBTTagCompound nbt = new NBTTagCompound();
-						new DataChiseledArmorPiece(ArmorType.values()[5 - message.equipmentSlot.ordinal()]).saveToNBT(nbt);
-						stack.setTagCompound(nbt);
-					}
+					if (!ItemStackHelper.isChiseledArmorStack(stack))
+						return;
+					
+					message.initData(message, stack);
 					NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 					NBTTagCompound data = message.getData(nbt, serverSide);
 					NBTTagList movingParts = data.getTagList(NBTKeys.ARMOR_PART_DATA, NBT.TAG_LIST);
