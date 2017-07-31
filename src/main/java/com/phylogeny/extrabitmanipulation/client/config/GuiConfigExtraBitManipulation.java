@@ -1,6 +1,7 @@
 package com.phylogeny.extrabitmanipulation.client.config;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,9 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
 				configElementsCommon, Configs.itemPropertyMap, "Item Properties",
 				"Configures the damage characteristics and default data of the Bit Tools", CommonEntry.class);
+		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
+				configElementsCommon, new HashMap<Item, ConfigNamed>(),
+				"Recipes", "Configures the disabling of diamond nugget Ore Dictionary registration", RecipeEntry.class);
 		addDummyElementsOfProcessedChildElementSetsToDummyElement(ConfigHandlerExtraBitManipulation.configFileClient, configElementsClient, Configs.itemShapes,
 				ClientEntry.class, ConfigHandlerExtraBitManipulation.RENDER_OVERLAYS, "Configures the way the Bit Wrench overlays are rendered",
 				"Sculpting Tool Shapes", "Configures the Sculpting Tools' bit removal/addition shapes/boxes",
@@ -84,12 +88,10 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		List<IConfigElement> configElementsToolSettings = new ArrayList<IConfigElement>();
 		boolean isClient = configFile.equals(ConfigHandlerExtraBitManipulation.configFileClient);
 		Class configClass = isClient ? ClientEntry.class : ServerEntry.class;
-		addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.ARMOR_SETTINGS,
-				isClient ? "Configures the z-fighting buffer scale amount for Chiseled Armor pieces"
-						: "Configures what to do with a Chiseled Armor GUI slot's itemstack when that slot is removed",
-				configElementsToolSettings, configClass);
 		if (isClient)
 		{
+			addChildElementsToDummyElement(configFile, ConfigHandlerExtraBitManipulation.ARMOR_SETTINGS,
+					"Configures the z-fighting buffer scale amount for Chiseled Armor pieces", configElementsToolSettings, configClass);
 			List<IConfigElement> configElementsModelingTool = new ArrayList<IConfigElement>();
 			String textStorage = "the the way block states are stored, and ";
 			String textReplacementBits = "Configures" + textStorage + "the procedures for finding replacement bits ";
@@ -177,7 +179,9 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		int i = 0;
 		for (Item item : configs.keySet())
 		{
-			processedNames[i++] = "Configures the damage characteristics of the " + configs.get(item).getTitle() + " Properties";
+			String itemTitle = configs.get(item).getTitle();
+			processedNames[i++] = itemTitle + " Properties";
+			processedNames[i++] = "Configures the damage characteristics of the " + itemTitle;
 		}
 		processedNames[len - 2] = name;
 		processedNames[len - 1] = toolTip;
@@ -192,9 +196,22 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		if (len < 2)
 			return;
 		
-		for (int i = 0; i < names.length - 2; i += 2)
+		boolean isRecipe = configClass == RecipeEntry.class;
+		if (isRecipe)
+			childElements.addAll(getChildElements(configFile, ConfigHandlerExtraBitManipulation.RECIPES_DISABLE));
+		
+		int inc = isRecipe ? 1 : 2;
+		for (int i = 0; i < names.length - 2; i += inc)
 		{
-			addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
+			if (isRecipe)
+			{
+				addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileCommon,
+						names[i], "Configures the recipe type and configuration for the " + names[i], childElements, configClass);
+			}
+			else
+			{
+				addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
+			}
 		}
 		addElementsToDummyElement(names[len - 2], names[len - 1], configElements, childElements, configClass);
 	}
@@ -299,6 +316,16 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		protected String getFileName()
 		{
 			return "common";
+		}
+		
+	}
+	
+	public static class RecipeEntry extends CommonEntry
+	{
+		
+		public RecipeEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
+		{
+			super(owningScreen, owningEntryList, prop);
 		}
 		
 	}
