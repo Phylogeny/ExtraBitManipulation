@@ -79,7 +79,7 @@ public class ArmorItem
 	
 	public boolean isEmpty()
 	{
-		return !stack.isEmpty();
+		return stack.isEmpty();
 	}
 	
 	public void saveToNBT(NBTTagCompound nbt)

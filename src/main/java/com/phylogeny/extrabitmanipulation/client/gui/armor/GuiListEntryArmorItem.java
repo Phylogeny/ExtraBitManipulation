@@ -52,10 +52,19 @@ public class GuiListEntryArmorItem extends GuiListEntryChiseledArmor<ArmorItem>
 					ExtraBitManipulation.packetNetwork.sendToServer(new PacketCursorStack(stack2));
 				}
 			}
-			else
+			else if (!stack.isEmpty() || GuiScreen.isShiftKeyDown())
 			{
-				if (!stack.isEmpty() || GuiScreen.isShiftKeyDown())
-					listChiseledArmor.guiChiseledArmor.modifyArmorItemListData(slotIndex,  GuiScreen.isShiftKeyDown() ? ItemStack.EMPTY : stack);
+				ItemStack stack2;
+				if (stack.isEmpty())
+				{
+					stack2 = ItemStack.EMPTY;
+				}
+				else
+				{
+					stack2 = stack.copy();
+					stack2.setCount(1);
+				}
+				listChiseledArmor.guiChiseledArmor.modifyArmorItemListData(slotIndex,  stack2);
 			}
 		}
 		return false;

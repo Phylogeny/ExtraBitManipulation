@@ -63,9 +63,10 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().player : ClientHelper.getPlayer();
 					ItemStack stack = player.getItemStackFromSlot(message.equipmentSlot);
-					if (!stack.hasTagCompound())
+					if (!ItemStackHelper.isChiseledArmorStack(stack))
 						return;
 					
+					message.initData(message, stack);
 					NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 					NBTTagCompound data = message.getData(nbt, serverSide);
 					NBTTagList glOperationList = message.nbt.getTagList(message.nbtKey, NBT.TAG_COMPOUND);

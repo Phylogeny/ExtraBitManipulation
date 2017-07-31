@@ -114,7 +114,7 @@ public class DataChiseledArmorPiece
 		GlOperation.executeList(globalGlOperationsPre);
 		for (ArmorItem armorItem : partItemLists[partIndex])
 		{
-			if (!armorItem.isEmpty())
+			if (armorItem.isEmpty())
 				continue;
 			
 			GlStateManager.pushMatrix();

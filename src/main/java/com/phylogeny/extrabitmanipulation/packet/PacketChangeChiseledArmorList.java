@@ -6,9 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiChiseledArmor;
 import com.phylogeny.extrabitmanipulation.init.RenderLayersExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
@@ -59,6 +61,16 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 			RenderLayersExtraBitManipulation.removeFromDisplayListsMaps(data);
 		
 		return data;
+	}
+	
+	protected void initData(final PacketChangeChiseledArmorList message, ItemStack stack)
+	{
+		if (stack.hasTagCompound())
+			return;
+		
+		NBTTagCompound nbt = new NBTTagCompound();
+		new DataChiseledArmorPiece(ArmorType.values()[5 - message.equipmentSlot.ordinal()]).saveToNBT(nbt);
+		stack.setTagCompound(nbt);
 	}
 	
 	protected void finalizeDataChange(PacketChangeChiseledArmorList message, ItemStack stack, NBTTagCompound nbt,
