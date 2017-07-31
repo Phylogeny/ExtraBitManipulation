@@ -4,14 +4,14 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.api.jei.InfoRecipeBase;
-import com.phylogeny.extrabitmanipulation.api.jei.JustEnoughItemsPlugin;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import com.phylogeny.extrabitmanipulation.api.jei.InfoRecipeBase;
+import com.phylogeny.extrabitmanipulation.api.jei.JustEnoughItemsPlugin;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ShapeInfoRecipe extends InfoRecipeBase
 {

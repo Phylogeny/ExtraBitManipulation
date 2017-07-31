@@ -1,8 +1,8 @@
 package com.phylogeny.extrabitmanipulation.item;
 
-import com.phylogeny.extrabitmanipulation.client.CreativeTabExtraBitManipulation;
-
 import net.minecraft.item.Item;
+
+import com.phylogeny.extrabitmanipulation.client.CreativeTabExtraBitManipulation;
 
 public class ItemExtraBitManipulationBase extends Item
 {

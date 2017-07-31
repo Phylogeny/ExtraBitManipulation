@@ -1,12 +1,12 @@
 package com.phylogeny.extrabitmanipulation.init;
 
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class SoundsExtraBitManipulation
 {

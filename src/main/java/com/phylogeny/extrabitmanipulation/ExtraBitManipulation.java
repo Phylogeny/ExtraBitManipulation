@@ -1,8 +1,5 @@
 package com.phylogeny.extrabitmanipulation;
 
-import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -11,6 +8,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+
+import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 @Mod(modid = Reference.MOD_ID,
 	 version = Reference.VERSION,

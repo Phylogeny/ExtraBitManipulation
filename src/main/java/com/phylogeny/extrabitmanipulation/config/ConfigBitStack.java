@@ -1,11 +1,11 @@
 package com.phylogeny.extrabitmanipulation.config;
 
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 
 public class ConfigBitStack extends ConfigBitToolSettingBase
 {

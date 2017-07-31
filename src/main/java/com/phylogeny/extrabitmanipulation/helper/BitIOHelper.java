@@ -14,12 +14,6 @@ import java.util.Map.Entry;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-import org.apache.logging.log4j.Level;
-
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import mod.chiselsandbits.api.APIExceptions.InvalidBitItem;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
@@ -36,6 +30,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import org.apache.logging.log4j.Level;
+
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class BitIOHelper
 {

@@ -2,14 +2,14 @@ package com.phylogeny.extrabitmanipulation.shape;
 
 import javax.annotation.Nonnull;
 
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.Utility;
-
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 public abstract class Shape
 {

@@ -1,12 +1,12 @@
 package com.phylogeny.extrabitmanipulation.client;
 
-import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class CreativeTabExtraBitManipulation
 {
