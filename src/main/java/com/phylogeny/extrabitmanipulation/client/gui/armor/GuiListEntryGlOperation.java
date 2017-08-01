@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
@@ -89,6 +90,16 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 		}
 		this.index = index;
 		scaleFactor = GuiHelper.getScaleFactor();
+	}
+	
+	public boolean fieldIsFocused()
+	{
+		for (GuiTextField field : dataFields)
+		{
+			if (field.isFocused())
+				return true;
+		}
+		return false;
 	}
 	
 	private String getDataFieldString(float data)
@@ -233,17 +244,10 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 	{
 		float inc = 0.0F;
 		boolean shiftDown = GuiScreen.isShiftKeyDown();
-		boolean controlDown = GuiScreen.isCtrlKeyDown();
-		boolean altDown = GuiScreen.isAltKeyDown();
 		if (buttonPlus.isMouseOver() || buttonMinus.isMouseOver())
 		{
 			inc = buttonPlus.isMouseOver() ? 1 : -1;
-			if (entryObject.getType() == GlOperationType.SCALE)
-			{
-				if (shiftDown)
-					inc *= Configs.armorZFightingBufferScale;
-			}
-			else if (entryObject.getType() == GlOperationType.TRANSLATION)
+			if (entryObject.getType() == GlOperationType.TRANSLATION)
 			{
 				boolean scalePixel = listChiseledArmor.guiChiseledArmor.scalePixel();
 				if (scalePixel && shiftDown)
@@ -252,12 +256,7 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 				if (!scalePixel && !shiftDown)
 					inc *= Utility.PIXEL_F;
 			}
-			if (controlDown)
-				inc *= 0.5F;
-			
-			if (altDown)
-				inc *= 0.25F;
-			
+			inc = alterIncrementAmount(inc);
 			buttonPlus.playPressSound(mc.getSoundHandler());
 		}
 		for (int i = 0; i < dataFields.size(); i++)
@@ -288,11 +287,7 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 					if (shiftDown)
 						inc *= 90;
 					
-					if (controlDown)
-						inc *= 0.5F;
-					
-					if (altDown)
-						inc *= 0.25F;
+					inc = alterIncrementAmount(inc);
 				}
 				String textInitial = field.getText();
 				try
@@ -311,6 +306,26 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 		return super.mousePressed(slotIndex, mouseX, mouseY, mouseEvent, relativeX, relativeY);
 	}
 	
+	private float alterIncrementAmount(float inc)
+	{
+		if (Minecraft.IS_RUNNING_ON_MAC ? Keyboard.isKeyDown(Keyboard.KEY_LMETA) : Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+			inc *= 0.5F;
+		
+		if (Minecraft.IS_RUNNING_ON_MAC ? Keyboard.isKeyDown(Keyboard.KEY_RMETA) : Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
+			inc *= 0.1F;
+		
+		if (Keyboard.isKeyDown(Keyboard.KEY_LMENU))
+			inc *= 0.25F;
+		
+		if (Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+			inc *= 10.0F;
+		
+		if (Keyboard.isKeyDown(Keyboard.KEY_Z))
+			inc *= Math.round(Configs.armorZFightingBufferScale * 100000.0) / 100000.0;
+		
+		return inc;
+	}
+	
 	public boolean isElementHovered(boolean isHelpMode)
 	{
 		return iconHovered || (isHelpMode && (buttonPlus.isMouseOver() || buttonMinus.isMouseOver()));
@@ -323,15 +338,14 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 			String name = entryObject.getType().getName();
 			return hoverHelpText == null ? name : "GL Operation: " + name + "\n\n" + hoverHelpText;
 		}
-		String fieldType = "x/y/z values";
-		return "If one of the fields to the left is focused, pressing these buttons will increase or decrease" +
-				"its contents. The base value of the change depends on the type of GL operation, as follows:\n" +
+		return "If one of the fields to the left is focused, pressing these buttons will increase or decrease " +
+				"its contents.\n\nHolding shift affects the base value of the change for the following GL operation fields:\n" +
 				getBaseValueText(GlOperationType.ROTATION, "angle value", "1\u00B0", "90\u00B0") + "\n" +
-				getBaseValueText(GlOperationType.ROTATION, fieldType, "1", "1") + "\n" +
-				getBaseValueText(GlOperationType.TRANSLATION, fieldType, "1 pixel", "1 meter") + "\n" +
-				getBaseValueText(GlOperationType.SCALE, fieldType, "1", "Z-fighting buffer (default = 1/20th pixel)\n" +
-				"\nFor all fields, if control is also down the base value will be divided by 2, if alt " +
-				"is down it will be divided by 4, and if both are down it will be divided by 8.");
+				getBaseValueText(GlOperationType.TRANSLATION, "x/y/z values", "1 pixel", "1 meter") + "\n\nHolding the following buttons " +
+				"multiplies the base value by:\n" + TextFormatting.AQUA + "All fields:" + TextFormatting.RESET + "\n" +
+				GuiChiseledArmor.getPointSub("Left Control-click") + " 0.5\n" + GuiChiseledArmor.getPointSub("Left Alt-click") + " 0.25\n" +
+				GuiChiseledArmor.getPointSub("Right Control-click") + " 0.1\n" + GuiChiseledArmor.getPointSub("Right Alt-click") + " 10\n" + 
+				GuiChiseledArmor.getPointSub("Z-click") + " Z-fighting buffer (default = 1/20th pixel)";
 	}
 	
 	private String getBaseValueText(GlOperationType operationType, String fieldType, String click, String shiftClick)

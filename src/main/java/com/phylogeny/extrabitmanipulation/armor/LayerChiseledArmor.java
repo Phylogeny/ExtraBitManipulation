@@ -94,6 +94,8 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 	public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
 	{
+		GlStateManager.enableBlend();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		ClientHelper.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		ItemStack headStack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		if (headStack != null && headStack.hasTagCompound() && headStack.getItem() instanceof ItemChiseledArmor)
@@ -111,7 +113,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 				GlStateManager.translate(0.0F, 16.0F * Utility.PIXEL_F, 0.0F);
 			}
 			head.postRender(scale);
-			GlStateManager.translate(0.0F, -scale * (8 + Configs.armorZFightingBufferScale * 2), 0.0F);
+			GlStateManager.translate(0.0F, -scale * (8 + Configs.armorZFightingBufferScale), 0.0F);
 			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 			
@@ -167,6 +169,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			renderLegPieces(displayLists[0], displayLists[1], scale, 4);
 			GlStateManager.popMatrix();
 		}
+		GlStateManager.disableBlend();
 	}
 	
 	private void adjustForSneaking(EntityLivingBase entity)
