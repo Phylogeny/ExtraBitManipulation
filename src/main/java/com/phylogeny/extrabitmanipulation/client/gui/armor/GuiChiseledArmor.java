@@ -81,7 +81,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private static final String[] GL_OPERATION_TITLES = new String[]{"Rotation", "Translation", "Scale"};
 	private static final String[] GL_OPERATION_DATA_TITLES = new String[]{"X component", "Y component", "Z component", "Angle"};
 	private static final int HELP_TEXT_BACKGROUNG_COLOR = 1694460416;
-	private static String glOperationHoverHelpText;
+	private static String glOperationHoverHelpText, glOperationHoverKeysHelpText;
 	private static final float PLAYER_HEIGHT_HALF = 37.25F;
 	private static final float PLAYER_HEIGHT_EYES = 64.5F;
 	private GuiListArmorItem[][] armorItemLists = new GuiListArmorItem[4][3];
@@ -217,8 +217,11 @@ public class GuiChiseledArmor extends GuiContainer
 			}
 			boxesData[i] = new AxisAlignedBB(left2, top, -1, left2 + width, top + 11, 1);
 		}
+		glOperationHoverKeysHelpText = "\n\nKey presses manipulate GL operations as follows:\n" + getPointMain("Control + C") + " copy\n" +
+				getPointMain("Control + V") + " paste\n" + getPointMain("Delete") + " delete\n" + getPointMain("Up Arrow") + " move up\n" +
+				getPointMain("Down Arrow") + " move down";
 		glOperationHoverHelpText = "Operations, like this, cause the items of armor piece's moving parts to either rotate (by the given angle), " +
-				"translate, or scale in the given axes.";
+				"translate, or scale in the given axes." + glOperationHoverKeysHelpText;
 		buttonGlItems = createButtonGl(100, 209, 11, "Items", "Performed for the selected item",
 				"Each rendered item for each moving part of an armor piece can have a list of GL operations applied to it.\n\nIf this button is selected, " +
 				"and if the selected moving part of the selected armor piece (indicated by the tabs on the left of the GUI) have any items to render, " +
@@ -620,7 +623,7 @@ public class GuiChiseledArmor extends GuiContainer
 				drawHoveringText(mouseX, mouseY, "The rendered items for the moving parts of armor pieces can have any number of GL operations applied " +
 					"to them. The three types are rotation, translation, and scale.\n\nGlobal pre/post-operations apply to all items of an armor piece, " +
 					"while item-specific operations only apply to a single item.\n\nFor more information on these three categories refer to the hover " +
-					"text of the corresponding buttons to the right.");
+					"text of the corresponding buttons to the right." + glOperationHoverKeysHelpText);
 			
 			for (int i = 0; i < boxesData.length; i++)
 			{
@@ -639,7 +642,8 @@ public class GuiChiseledArmor extends GuiContainer
 				"currently, the " + ((ItemChiseledArmor) getArmorStack(selectedTabIndex).getItem()).MOVING_PARTS[selectedSubTabIndex - 1].getName() +
 				" of the " + ArmorType.values()[selectedTabIndex].getName() + ")\n\nSlots can be interacted with as follows:\n" + getPointMain("1") +
 				" Click with an item on the cursor to add a copy of that item.\n" + getPointMain("2") + " Shift-click to clear the copied item.\n" +
-				getPointMain("3") + " Middle mouse click in creative mode to get item.";
+				getPointMain("3") + " Middle mouse click in creative mode to get item.\n\nKey presses manipulate slots (along with any associated " +
+				"GL operations) as follows:\n" + getPointMain("Control + C") + " copy\n" + getPointMain("Control + V") + " paste\n" + getPointMain("Delete") + " delete\n";
 	}
 	
 	private void drawHoveringText(int mouseX, int mouseY, String hoverText)
@@ -848,6 +852,12 @@ public class GuiChiseledArmor extends GuiContainer
 			int mouseX = Mouse.getX() * scaledresolution.getScaledWidth() / mc.displayWidth;
 			int mouseY = scaledresolution.getScaledHeight() - Mouse.getY() * scaledresolution.getScaledHeight() /mc.displayHeight - 1;
 			boolean affectGlOperationsList = GuiHelper.isCursorInsideBox(boxGlOperation, mouseX, mouseY);
+			if (affectGlOperationsList && fieldIsFocused(getSelectedGuiListGlOperation()))
+			{
+				getSelectedGuiListGlOperation().keyTyped(typedChar, keyCode);
+				super.keyTyped(typedChar, keyCode);
+				return;
+			}
 			if (!waitingForServerResponse && affectGlOperationsList && (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)))
 			{
 				moveGlOperationInList(Keyboard.isKeyDown(Keyboard.KEY_UP));
@@ -909,6 +919,16 @@ public class GuiChiseledArmor extends GuiContainer
 				super.keyTyped(typedChar, keyCode);
 			}
 		}
+	}
+	
+	private boolean fieldIsFocused(GuiListChiseledArmor list)
+	{
+		for (int i = 0; i < list.getSize(); i++)
+		{
+			if (((GuiListEntryGlOperation) list.getListEntry(i)).fieldIsFocused())
+				return true;
+		}
+		return false;
 	}
 	
 	private boolean hideAddGlButtons()
