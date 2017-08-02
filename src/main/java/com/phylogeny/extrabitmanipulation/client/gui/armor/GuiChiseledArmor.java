@@ -236,13 +236,15 @@ public class GuiChiseledArmor extends GuiContainer
 				prefix + "render with its faces darkened based on rotation, as it does in-world.");
 		buttonFullIlluminationOn = createButtonToggled(x, 154, TEXTURE_ILLUMINATION_ON, "Full illumination",
 				prefix + "render without darkening any of its faces.");
-		String suffix = " can be interacted with as follows:\n" + getPointMain("1") + " Translated by right-clicking and dragging.\n" +
+		String suffix1 = " can be interacted with as follows:\n" + getPointMain("1") + " Translated by right-clicking and dragging.\n" +
 				getPointMain("2") + " Scaled by:\n" + getPointSub("a") + " Scrolling the mouse wheel.\n" + getPointSub("b") +
 				" Right-clicking and dragging while holding shift.";
+		String suffix2 = "\n\nAlter the player model's orientation by pressing the following keys:\n" + getPointMain("C") +
+				" centers it\n" + getPointMain("R") + " resets its translation/rotation/scale";
 		buttonPlayerFollowCursor = createButtonToggled(x, 186, TEXTURE_PLAYER_FOLLOW_CURSOR, "Look at cursor",
-				prefix + "bend and twist to look at the cursor. In this mode, the model cannot be rotated, but" + suffix);
-		buttonPlayerRotate = createButtonToggled(x, 200, TEXTURE_PLAYER_ROTATE, "Left-click & drag to rotate", prefix + "only look forward. In this mode, " +
-				"the model" + suffix + "\n" + getPointMain("3") + " Rotated by left-clicking and dragging.");
+				prefix + "bend and twist to look at the cursor. In this mode, the model cannot be rotated, but" + suffix1 + suffix2);
+		buttonPlayerRotate = createButtonToggled(x, 200, TEXTURE_PLAYER_ROTATE, "Left-click & drag to rotate", prefix + "only look forward. " +
+				"In this mode, the model" + suffix1 + "\n" + getPointMain("3") + " Rotated by left-clicking and dragging." + suffix2);
 		x = 311;
 		prefix = "The x/y/z data of translation operations will display in";
 		buttonScalePixel = createButtonToggled(x, 67, TEXTURE_SCALE_PIXEL, "Translation data in pixels",
@@ -364,12 +366,12 @@ public class GuiChiseledArmor extends GuiContainer
 
 	public static String getPointMain(String point)
 	{
-		return TextFormatting.AQUA + point + ")" + TextFormatting.RESET;
+		return TextFormatting.AQUA + point + TextFormatting.RESET;
 	}
 	
 	public static String getPointSub(String point)
 	{
-		return "    " + TextFormatting.GREEN + point + ")" + TextFormatting.RESET;
+		return "    " + TextFormatting.GREEN + point + TextFormatting.RESET;
 	}
 	
 	public static String getPointExample()
@@ -841,7 +843,7 @@ public class GuiChiseledArmor extends GuiContainer
 			if (!cDown)
 				resetRotationAndScale();
 			
-			playerTranslation = Vec3d.ZERO;
+			playerTranslation = new Vec3d(0, -PLAYER_HEIGHT_HALF + PLAYER_HEIGHT_HALF * playerScale, 0);
 		}
 		else
 		{
