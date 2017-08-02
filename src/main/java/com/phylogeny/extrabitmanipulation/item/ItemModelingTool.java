@@ -108,9 +108,8 @@ public class ItemModelingTool extends ItemBitToolBase
 			{
 				int missingBitCount = 0;
 				for (IBlockState state : missingBitMap.keySet())
-				{
 					missingBitCount += missingBitMap.get(state);
-				}
+				
 				addChatMessage(player, "Missing " + missingBitCount + " bits to represent the following blocks:");
 				for (IBlockState state : missingBitMap.keySet())
 				{

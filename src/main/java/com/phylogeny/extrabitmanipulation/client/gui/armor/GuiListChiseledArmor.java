@@ -73,9 +73,8 @@ public class GuiListChiseledArmor<E> extends GuiListExtended
 		int relativeX = mouseX - left;
 		int relativeY = mouseY - top + getAmountScrolled() - headerPadding - 1;
 		for (int i = 0; i < getSize(); ++i)
-		{
 			getListEntry(i).mouseReleased(i, mouseX, mouseY, mouseEvent, relativeX, relativeY - i * slotHeight);
-		}
+		
 		setEnabled(true);
 		return false;
 	}
@@ -91,9 +90,7 @@ public class GuiListChiseledArmor<E> extends GuiListExtended
 	public void updateScreen()
 	{
 		for (int i = 0; i < getSize(); i++)
-		{
 			entries.get(i).updateScreen(isSelected(i));
-		}
 	}
 	
 	public void keyTyped(char typedChar, int keyCode)

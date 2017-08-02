@@ -29,9 +29,7 @@ public class DataChiseledArmorPiece
 		this.armorType = armorType;
 		partItemLists = new ArrayList[armorType.getMovingpartCount()];
 		for (int i = 0; i < partItemLists.length; i++)
-		{
 			partItemLists[i] = new ArrayList<ArmorItem>();
-		}
 	}
 	
 	public DataChiseledArmorPiece(NBTTagCompound nbt, ArmorType armorType)
@@ -173,9 +171,7 @@ public class DataChiseledArmorPiece
 			partItemLists[i].clear();
 			NBTTagList itemList = (NBTTagList) nbtBase;
 			for (int j = 0; j < itemList.tagCount(); j++)
-			{
 				partItemLists[i].add(new ArmorItem(itemList.getCompoundTagAt(j)));
-			}
 		}
 		GlOperation.loadListFromNBT(data, NBTKeys.ARMOR_GL_OPERATIONS_PRE, globalGlOperationsPre);
 		GlOperation.loadListFromNBT(data, NBTKeys.ARMOR_GL_OPERATIONS_POST, globalGlOperationsPost);

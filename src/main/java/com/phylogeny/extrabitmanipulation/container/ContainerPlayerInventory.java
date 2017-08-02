@@ -19,9 +19,7 @@ public class ContainerPlayerInventory extends Container
 		for (int k = 0; k < 3; ++k)
 		{
 			for (int l = 0; l < 9; ++l)
-			{
 				addSlotToContainer(new Slot(player.inventory, l + k * 9 + 9, startX + l * 18, startY + k * 18));
-			}
 		}
 	}
 	

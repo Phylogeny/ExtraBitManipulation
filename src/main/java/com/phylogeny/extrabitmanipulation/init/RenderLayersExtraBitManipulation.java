@@ -50,17 +50,13 @@ public class RenderLayersExtraBitManipulation
 	public static void clearDisplayListsMaps()
 	{
 		for (LayerChiseledArmor layer : armorLayers)
-		{
 			layer.clearDisplayListsMap();
-		}
 	}
 	
 	public static void removeFromDisplayListsMaps(NBTTagCompound... nbtTags)
 	{
 		for (LayerChiseledArmor layer : armorLayers)
-		{
 			layer.removeFromDisplayListsMap(nbtTags);
-		}
 	}
 	
 }

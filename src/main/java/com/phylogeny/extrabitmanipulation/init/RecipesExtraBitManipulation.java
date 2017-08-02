@@ -135,9 +135,7 @@ public class RecipesExtraBitManipulation
 			{
 				recipe = new Object[root + ingredients.size()];
 				for (int i = 0; i < recipe.length; i++)
-				{
 					recipe[i] = i < root ? template.get(i) : ingredients.get(i - root);
-				}
 			}
 		}
 		return recipe;
@@ -159,9 +157,7 @@ public class RecipesExtraBitManipulation
 			{
 				recipe = new Object[ingredients.size()];
 				for (int i = 0; i < recipe.length; i++)
-				{
 					recipe[i] = ingredients.get(i);
-				}
 			}
 		}
 		return recipe;

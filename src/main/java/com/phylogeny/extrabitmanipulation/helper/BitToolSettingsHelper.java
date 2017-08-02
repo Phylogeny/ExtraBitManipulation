@@ -66,9 +66,8 @@ public class BitToolSettingsHelper
 	{
 		String[] directionTexts = new String[6];
 		for (EnumFacing facing : EnumFacing.VALUES)
-		{
 			directionTexts[facing.getIndex()] = facing.getName().substring(0, 1).toUpperCase() + facing.getName().substring(1);
-		}
+		
 		return directionTexts;
 	}
 	

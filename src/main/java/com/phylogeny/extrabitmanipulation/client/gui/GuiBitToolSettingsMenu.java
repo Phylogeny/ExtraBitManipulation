@@ -64,9 +64,8 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 			String[] snapTexts = ItemModelingTool.SNAP_MODE_TITLES;
 			String[] snapTextsNew = new String[snapTexts.length];
 			for (int i = 0; i < snapTexts.length; i++)
-			{
 				snapTextsNew[i] = snapTexts[i].replace("Snap-to-Chunk ", "");
-			}
+			
 			addButtonsSettings(new ButtonsSetting.ModelSnapMode(), "Chunk Snap", snapTextsNew);
 			addButtonsSettings(new ButtonsSetting.ModelGuiOpen(), "Open GUI", "On Read", "Off");
 		}
@@ -163,9 +162,8 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 		if (visibility == 0)
 		{
 			for (SliderSetting sliderSetting : sliderSettingList)
-			{
 				sliderSetting.getSlider().mousePressed(mc, mouseX, mouseY);
-			}
+			
 			setToolValuesIfDiffrent();
 			mc.thePlayer.closeScreen();
 		}
@@ -199,29 +197,24 @@ public class GuiBitToolSettingsMenu extends GuiScreen implements ISlider
 				if (button2.id == button.id)
 				{
 					for (int i2 = 0; i2 < buttonsSetting.buttons.size(); i2++)
-					{
 						buttonsSetting.buttons.get(i2).selected = false;
-					}
+					
 					button2.selected = true;
 				}
 			}
 		}
 		for (SliderSetting sliderSetting : sliderSettingList)
-		{
 			sliderSetting.increment(button);
-		}
+		
 	}
 	
 	private void setToolValuesIfDiffrent()
 	{
 		for (ButtonsSetting buttonsSetting : buttonsSettingList)
-		{
 			buttonsSetting.setValueIfDiffrent();
-		}
+		
 		for (SliderSetting sliderSetting : sliderSettingList)
-		{
 			sliderSetting.setValueIfDiffrent();
-		}
 	}
 	
 	@Override
