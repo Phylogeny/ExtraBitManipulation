@@ -497,7 +497,7 @@ public class GuiChiseledArmor extends GuiContainer
 			getSelectedGuiListArmorItem().handleMouseInput();
 			getSelectedGuiListGlOperation().handleMouseInput();
 		}
-		Pair<Vec3d, Float> pair = GuiHelper.scaleObjectWithMouseWheel(this, boxPlayer, playerTranslation, playerScale, 5.0F);
+		Pair<Vec3d, Float> pair = GuiHelper.scaleObjectWithMouseWheel(this, boxPlayer, playerTranslation, playerScale, 5.0F, 40.25F);
 		playerTranslation = pair.getLeft();
 		playerScale = pair.getRight();
 	}
@@ -517,7 +517,7 @@ public class GuiChiseledArmor extends GuiContainer
 			mouseInitialY = mouseY;
 		}
 		Triple<Vec3d, Vec3d, Float> triple = GuiHelper.dragObject(clickedMouseButton, deltaX, deltaY,
-				playerTranslationInitial, playerRotation, playerScale, 5.0F, 3.0F, buttonPlayerRotate.selected);
+				playerTranslationInitial, playerRotation, playerScale, 5.0F, 2.0F, 3.0F, buttonPlayerRotate.selected);
 		playerTranslation = triple.getLeft();
 		playerRotation = triple.getMiddle();
 		playerScale = triple.getRight();
