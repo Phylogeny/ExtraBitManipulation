@@ -85,7 +85,7 @@ public class GuiHelper
 		GlStateManager.disableBlend();
 	}
 	
-	public static Pair<Float, Float> changeScale(float scale, float amount, float max)
+	public static Pair<Float, Boolean> changeScale(float scale, float amount, float max)
 	{
 		amount *= scale;
 		float previewStackInitialScale = scale;
@@ -93,18 +93,18 @@ public class GuiHelper
 		if (scale < 0.1)
 		{
 			scale = 0.1F;
-			return new ImmutablePair<Float, Float>(scale, (previewStackInitialScale - scale) / amount);
+			return new ImmutablePair<Float, Boolean>(previewStackInitialScale, true);
 		}
 		if (scale > max)
 		{
 			scale = max;
-			return new ImmutablePair<Float, Float>(scale, (scale - previewStackInitialScale) / amount);
+			return new ImmutablePair<Float, Boolean>(previewStackInitialScale, true);
 		}
-		return new ImmutablePair<Float, Float>(scale, 1.0F);
+		return new ImmutablePair<Float, Boolean>(scale, false);
 	}
 
 	public static Triple<Vec3d, Vec3d, Float> dragObject(int clickedMouseButton, float deltaX, float deltaY, Vec3d translationInitialVec,
-			Vec3d rotationVec, float scale, float scaleMax, float rotationMultiplier, boolean affectRotation)
+			Vec3d rotationVec, float scale, float scaleMax, float rotationMultiplierX, float rotationMultiplierY, boolean affectRotation)
 	{
 		MutableTriple<Vec3d, Vec3d, Float> triple = new MutableTriple<Vec3d, Vec3d, Float>(translationInitialVec, rotationVec, scale);
 		if (clickedMouseButton == 0)
@@ -115,8 +115,8 @@ public class GuiHelper
 			}
 			else if (affectRotation)
 			{
-				double angleX = rotationVec.xCoord - (deltaY / scale) * rotationMultiplier;
-				double angleY = rotationVec.yCoord - (deltaX / scale) * rotationMultiplier;
+				double angleX = rotationVec.xCoord - (deltaY / scale) * rotationMultiplierX;
+				double angleY = rotationVec.yCoord - (deltaX / scale) * rotationMultiplierY;
 				if (angleX < -90 || angleX > 90)
 					angleX = 90 * (angleX > 0 ? 1 : -1);
 				
@@ -138,7 +138,8 @@ public class GuiHelper
 		return triple;
 	}
 
-	public static Pair<Vec3d, Float> scaleObjectWithMouseWheel(GuiScreen screen, AxisAlignedBB box, Vec3d translationVec, float scale, float scaleMax)
+	public static Pair<Vec3d, Float> scaleObjectWithMouseWheel(GuiScreen screen, AxisAlignedBB box,
+			Vec3d translationVec, float scale, float scaleMax, float yOffset)
 	{
 		MutablePair<Vec3d, Float> pair = new MutablePair<Vec3d, Float>(translationVec, scale);
 		if (Mouse.getEventDWheel() == 0)
@@ -149,15 +150,15 @@ public class GuiHelper
 		if (!GuiHelper.isCursorInsideBox(box, mouseX, mouseY))
 			return pair;
 		
-		Pair<Float, Float> scaleNew = changeScale(scale, Mouse.getEventDWheel() * 0.005F, scaleMax);
-		pair.setRight(scaleNew.getLeft());
-		float remainder = scaleNew.getRight();
-		if (remainder == 0)
+		float amount = Mouse.getEventDWheel();
+		Pair<Float, Boolean> scaleNew = changeScale(scale, amount * 0.005F, scaleMax);
+		if (scaleNew.getRight())
 			return pair;
 		
-		int x = mouseX - (int) (translationVec.xCoord + box.maxX / 2.0F + box.minX / 2.0F);
-		int y = mouseY - (int) (translationVec.yCoord + box.maxY / 2.0F + box.minY / 2.0F);
-		float offset = (Mouse.getEventDWheel() > 0 ? -1 : 1) * 0.15F * remainder;
+		pair.setRight(scaleNew.getLeft());
+		float x = mouseX - (int) (translationVec.xCoord + (box.maxX + box.minX) * 0.5F);
+		float y = mouseY - (int) (translationVec.yCoord + yOffset + (box.maxY + box.minY) * 0.5F);
+		float offset = (amount / -30) * 0.15F;
 		pair.setLeft(translationVec.addVector(x * offset, y * offset, 0));
 		return pair;
 	}

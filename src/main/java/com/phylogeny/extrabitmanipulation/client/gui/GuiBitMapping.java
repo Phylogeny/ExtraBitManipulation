@@ -547,7 +547,7 @@ public class GuiBitMapping extends GuiContainer
 		if (!previewStackBoxClicked)
 			bitMappingList.handleMouseInput();
 		
-		Pair<Vec3d, Float> pair = GuiHelper.scaleObjectWithMouseWheel(this, previewStackBox, previewStackTranslation, previewStackScale, 30.0F);
+		Pair<Vec3d, Float> pair = GuiHelper.scaleObjectWithMouseWheel(this, previewStackBox, previewStackTranslation, previewStackScale, 30.0F, 0.0F);
 		previewStackTranslation = pair.getLeft();
 		previewStackScale = pair.getRight();
 	}
@@ -567,7 +567,7 @@ public class GuiBitMapping extends GuiContainer
 			mouseInitialY = mouseY;
 		}
 		Triple<Vec3d, Vec3d, Float> triple = GuiHelper.dragObject(clickedMouseButton, deltaX, deltaY,
-				previewStackTranslationInitial, previewStackRotation, previewStackScale, 30.0F, 4.5F, true);
+				previewStackTranslationInitial, previewStackRotation, previewStackScale, 30.0F, 4.5F, 4.5F, true);
 		previewStackTranslation = triple.getLeft();
 		previewStackRotation = triple.getMiddle();
 		previewStackScale = triple.getRight();
