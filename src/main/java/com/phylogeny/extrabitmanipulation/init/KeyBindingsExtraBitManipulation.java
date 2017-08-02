@@ -179,9 +179,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	public static void init()
 	{
 		for (KeyBindingsExtraBitManipulation keyBinding : values())
-		{
 			keyBinding.registerKeyBinding();
-		}
 	}
 	
 	private void registerKeyBinding()

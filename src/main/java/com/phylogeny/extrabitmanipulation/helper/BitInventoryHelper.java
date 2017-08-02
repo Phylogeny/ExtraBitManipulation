@@ -73,9 +73,8 @@ public class BitInventoryHelper
 		Collections.sort(bitCountsList, comparator);
 		LinkedHashMap bitCountsSorted = new LinkedHashMap();
 		for (Map.Entry entry : bitCountsList)
-		{
 			bitCountsSorted.put(entry.getKey(), entry.getValue());
-		}
+		
 		return bitCountsSorted;
 	}
 	

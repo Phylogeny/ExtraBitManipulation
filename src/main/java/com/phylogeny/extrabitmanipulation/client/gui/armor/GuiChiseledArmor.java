@@ -353,9 +353,8 @@ public class GuiChiseledArmor extends GuiContainer
 				List<GuiListGlOperation> armorItemGlList = new ArrayList<GuiListGlOperation>();
 				List<ArmorItem> armorItems = armorPiece.getArmorItemsForPart(j);
 				for (int k = 0; k < armorItems.size(); k ++)
-				{
 					armorItemGlList.add(createGuiListGlOperation(armorPiece, GlOperationListType.ARMOR_ITEM, j, k));
-				}
+				
 				armorItemGlLists[i][j] = armorItemGlList;
 			}
 		}
@@ -778,9 +777,7 @@ public class GuiChiseledArmor extends GuiContainer
 			drawRect((int) boxTitleGlOperations.minX, (int) boxTitleGlOperations.minY,
 					(int) boxTitleGlOperations.maxX, (int) boxTitleGlOperations.maxY, HELP_TEXT_BACKGROUNG_COLOR);
 			for (AxisAlignedBB box : boxesData)
-			{
 				drawRect((int) box.minX, (int) box.minY, (int) box.maxX, (int) box.maxY, HELP_TEXT_BACKGROUNG_COLOR);
-			}
 		}
 	}
 	

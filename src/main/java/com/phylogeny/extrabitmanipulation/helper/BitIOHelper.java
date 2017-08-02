@@ -71,9 +71,8 @@ public class BitIOHelper
 		String[] entryStrings = new String[bitMap.size()];
 		int index = 0;
 		for (Entry<IBlockState, IBitBrush> entry : bitMap.entrySet())
-		{
 			entryStrings[index++] = getModelBitMapEntryString(entry);
-		}
+		
 		return entryStrings;
 	}
 	
@@ -312,9 +311,7 @@ public class BitIOHelper
 				for (int j = 0; j < 16; j++)
 				{
 					for (int k = 0; k < 16; k++)
-					{
 						stateArray[i][j][k] = air;
-					}
 				}
 			}
 		}

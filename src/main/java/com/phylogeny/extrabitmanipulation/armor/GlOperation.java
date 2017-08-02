@@ -96,9 +96,7 @@ public class GlOperation
 	public static void executeList(List<GlOperation> glOperations)
 	{
 		for (GlOperation glOperation : glOperations)
-		{
 			glOperation.execute();
-		}
 	}
 	
 	public void saveToNBT(NBTTagCompound nbt)
@@ -127,9 +125,7 @@ public class GlOperation
 		glOperations.clear();
 		NBTTagList glOperationsNbt = nbt.getTagList(key, NBT.TAG_COMPOUND);
 		for (int i = 0; i < glOperationsNbt.tagCount(); i++)
-		{
 			glOperations.add(new GlOperation(glOperationsNbt.getCompoundTagAt(i)));
-		}
 	}
 	
 	public GlOperationType getType()

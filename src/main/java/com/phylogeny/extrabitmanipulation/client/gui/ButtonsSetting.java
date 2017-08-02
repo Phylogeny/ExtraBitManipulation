@@ -41,9 +41,7 @@ public abstract class ButtonsSetting
 	public void initButtons()
 	{
 		for (GuiButtonSetting button : buttons)
-		{
 			button.setButtonList(buttons);
-		}
 	}
 	
 	protected int getValue()

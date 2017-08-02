@@ -49,9 +49,8 @@ public abstract class GuiListGlOperation<L> extends GuiListChiseledArmor<GlOpera
 	{
 		super.refreshList();
 		for (int i = 0; i < getGlOperations().size(); i++)
-		{
 			entries.add(new GuiListEntryGlOperation(this, getGlOperations().get(i), i));
-		}
+		
 		updateScreen();
 	}
 	
@@ -59,9 +58,8 @@ public abstract class GuiListGlOperation<L> extends GuiListChiseledArmor<GlOpera
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent)
 	{
 		for (GuiListEntryChiseledArmor<GlOperation> entry : entries)
-		{
 			((GuiListEntryGlOperation) entry).formatDataFields(mouseX, mouseY);
-		}
+		
 		return super.mouseClicked(mouseX, mouseY, mouseEvent);
 	}
 	
@@ -69,9 +67,7 @@ public abstract class GuiListGlOperation<L> extends GuiListChiseledArmor<GlOpera
 	protected void drawListHeader(int insideLeft, int insideTop, Tessellator tessellatorIn)
 	{
 		for (int i = 0; i < glComponents.length; i++)
-		{
 			mc.fontRendererObj.drawString(glComponents[i], (int) (insideLeft + 37 + i * (i == 3 ? 42.5 : 45)), top + 1, -1);
-		}
 	}
 	
 }

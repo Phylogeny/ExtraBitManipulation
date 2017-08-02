@@ -71,9 +71,8 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			leftLeg = modelBiped.bipedLeftLeg;
 			villagerArms = null;
 			if (model instanceof ModelPlayer)
-			{
 				smallArms = ReflectionHelper.getPrivateValue(ModelPlayer.class, (ModelPlayer) model, "smallArms", "field_178735_y");
-			}
+			
 			isVex = model instanceof ModelVex;
 		}
 	}
@@ -81,18 +80,15 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 	public void clearDisplayListsMap()
 	{
 		for (Integer[] displayLists : movingPartsDisplayListsMap.values())
-		{
 			deleteDisplayLists(displayLists);
-		}
+		
 		movingPartsDisplayListsMap.clear();
 	}
 	
 	public void removeFromDisplayListsMap(NBTTagCompound... nbtTags)
 	{
 		for (NBTTagCompound nbt : nbtTags)
-		{
 			deleteDisplayLists(movingPartsDisplayListsMap.remove(nbt));
-		}
 	}
 	
 	private void deleteDisplayLists(Integer[] displayLists)
@@ -100,9 +96,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		if (displayLists != null)
 		{
 			for (Integer displayList : displayLists)
-			{
 				GLAllocation.deleteDisplayLists(displayList);
-			}
 		}
 	}
 	
@@ -209,9 +203,8 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 	{
 		Integer[] movingPartsDisplayLists = new Integer[movingpartCount];
 		for (int i = 0; i < movingPartsDisplayLists.length; i++)
-		{
 			movingPartsDisplayLists[i] = armorPiece.generateDisplayList(i, entity, scale);
-		}
+		
 		movingPartsDisplayListsMap.put(getArmorData(armorNbt), movingPartsDisplayLists);
 		return movingPartsDisplayLists;
 	}

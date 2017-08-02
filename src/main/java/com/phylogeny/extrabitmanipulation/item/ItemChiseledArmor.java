@@ -79,9 +79,7 @@ public class ItemChiseledArmor extends ItemArmor
 		MOVING_PARTS = movingParts;
 		MOVING_PART_TITLES = new String[MOVING_PARTS.length];
 		for (int i = 0; i < MOVING_PARTS.length; i++)
-		{
 			MOVING_PART_TITLES[i] = MOVING_PARTS[i].getName();
-		}
 	}
 	
 	@Override
@@ -165,9 +163,7 @@ public class ItemChiseledArmor extends ItemArmor
 				for (int j = (int) boxBlocks.minY; j <= boxBlocks.maxY; j++)
 				{
 					for (int k = (int) boxBlocks.minZ; k <= boxBlocks.maxZ; k++)
-					{
 						bitsPlaced = placeBodyPartTemplateBits(world, new BlockPos(i, j, k), api, box, bitBodyPartTemplate, bitsPlaced);
-					}
 				}
 			}
 		}
