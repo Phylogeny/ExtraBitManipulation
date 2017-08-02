@@ -327,9 +327,8 @@ public class RenderState
 		try
 		{
 			for (EnumFacing enumfacing : EnumFacing.values())
-			{
 				renderQuads(buffer, model.getQuads(state, enumfacing, 0L), color, alphaMultiplier, stack);
-			}
+			
 			renderQuads(buffer, model.getQuads(state, null, 0L), color, alphaMultiplier, stack);
 		}
 		catch (Exception e) {}

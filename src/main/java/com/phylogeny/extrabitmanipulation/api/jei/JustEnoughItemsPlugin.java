@@ -93,9 +93,8 @@ public class JustEnoughItemsPlugin implements IModPlugin
 	{
 		List<ItemStack> stacks = new ArrayList<ItemStack>();
 		for (Item item : items)
-		{
 			stacks.add(new ItemStack(item));
-		}
+		
 		registry.addIngredientInfo(stacks, ItemStack.class, "jei.description." + Reference.MOD_ID + ":" + langKeySuffix);
 		return stacks;
 	}

@@ -121,9 +121,8 @@ public class PacketBitParticles implements IMessage
 					{
 						Factory particleFactory = new ParticleSplashBit.Factory();
 						for (int i = 0; i < 8; i++)
-						{
 							ClientHelper.spawnParticle(world, message.locBit, particleFactory);
-						}
+						
 						if (message.flag != 2)
 							return;
 						

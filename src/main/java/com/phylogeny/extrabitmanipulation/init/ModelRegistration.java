@@ -63,9 +63,7 @@ public class ModelRegistration
 		for (ArmorMovingPart movingPart : ArmorMovingPart.values())
 		{
 			for (ModelResourceLocation modelLocation : movingPart.getIconModelLocations())
-			{
 				modelLocations.add(modelLocation);
-			}
 		}
 		registerIsolatedModel(ItemsExtraBitManipulation.chiseledHelmet, modelLocations.toArray(new ResourceLocation[modelLocations.size()]));
 	}

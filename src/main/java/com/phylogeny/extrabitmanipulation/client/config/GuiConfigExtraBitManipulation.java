@@ -139,9 +139,8 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		List<IConfigElement> childElements = new ArrayList<IConfigElement>();
 		int startLen = names.length;
 		for (int i = 0; i < startLen - 4; i += 2)
-		{
 			addChildElementsToDummyElement(configFile, names[i], names[i + 1], childElements, configClass);
-		}
+		
 		int endLen = config.length * 2 + 2;
 		String[] processedNames = new String[endLen];
 		for (int i = 0; i < endLen - 2; i++)

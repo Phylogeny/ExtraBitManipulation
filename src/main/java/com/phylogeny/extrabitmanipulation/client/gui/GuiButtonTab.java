@@ -117,9 +117,7 @@ public class GuiButtonTab extends GuiButtonBase
 		else
 		{
 			for (IBakedModel model : iconModels)
-			{
 				RenderState.renderStateModelIntoGUI(null, model, iconStack, alphaMultiplier, true, false, x - 6, y - 2, 0, 0, 1);
-			}
 		}
 		GlStateManager.popMatrix();
 		RenderHelper.disableStandardItemLighting();

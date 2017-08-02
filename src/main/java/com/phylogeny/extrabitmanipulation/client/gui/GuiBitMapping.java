@@ -270,9 +270,8 @@ public class GuiBitMapping extends GuiContainer
 			{
 				ArrayList<BitCount> bitCountArray = new ArrayList<BitCount>();
 				for (BitCount bitCount : entry.getValue())
-				{
 					bitCountArray.add(new BitCount(bitCount.getBit(), bitCount.getCount()));
-				}
+				
 				stateToBitCountArrayCopy.put(entry.getKey(), bitCountArray);
 			}
 			previewResultStack = itemModelingTool.createModel(null, null, getHeldStack(), stateArray, stateToBitCountArrayCopy, bitAccess)
@@ -854,9 +853,8 @@ public class GuiBitMapping extends GuiContainer
 				boolean allBlocksPrev = tabButtons[2].selected;
 				boolean resultsPrev = isResultsTabSelected();
 				for (GuiButtonTab tab : tabButtons)
-				{
 					tab.selected = tab.id == id;
-				}
+				
 				savedTab = id;
 				boolean allBlocks = tabButtons[2].selected;
 				boolean results = isResultsTabSelected();

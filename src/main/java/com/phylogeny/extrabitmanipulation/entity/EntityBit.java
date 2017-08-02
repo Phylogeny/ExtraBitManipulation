@@ -186,18 +186,16 @@ public class EntityBit extends Entity implements IProjectile, IEntityAdditionalS
 		rotationYaw = (float)(MathHelper.atan2(motionX, motionZ) * (180D / Math.PI));
 		for (rotationPitch = (float)(MathHelper.atan2(motionY, f4) * (180D / Math.PI));
 				rotationPitch - prevRotationPitch < -180.0F; prevRotationPitch -= 360.0F) {}
+		
 		while (rotationPitch - prevRotationPitch >= 180.0F)
-		{
 			prevRotationPitch += 360.0F;
-		}
+		
 		while (rotationYaw - prevRotationYaw < -180.0F)
-		{
 			prevRotationYaw -= 360.0F;
-		}
+		
 		while (rotationYaw - prevRotationYaw >= 180.0F)
-		{
 			prevRotationYaw += 360.0F;
-		}
+		
 		rotationPitch = prevRotationPitch + (rotationPitch - prevRotationPitch) * 0.2F;
 		rotationYaw = prevRotationYaw + (rotationYaw - prevRotationYaw) * 0.2F;
 		float attenuation = 0.99F;
