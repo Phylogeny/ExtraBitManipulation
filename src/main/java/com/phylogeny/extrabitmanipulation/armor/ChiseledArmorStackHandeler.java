@@ -88,7 +88,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 						float offsetX = p == 0 ? 0.0F : (Utility.PIXEL_F * (p == 1 ? offset : -offset));
 						for (ArmorItem armorItem : armorPiece.getArmorItemsForPart(p))
 						{
-							if (armorItem.getStack().isEmpty())
+							if (armorItem.getStack() == null)
 								continue;
 							
 							glOperationsItem = armorItem.getGlOperations();
