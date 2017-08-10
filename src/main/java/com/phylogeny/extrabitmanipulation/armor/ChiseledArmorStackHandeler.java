@@ -19,6 +19,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -27,6 +28,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
@@ -247,6 +251,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 	
 	public static class ChiseledArmorBakedModel extends BaseBakedPerspectiveModel
 	{
+		private static Matrix4f ground, fixed;
 		private final ItemOverrideList overrides;
 		private List<BakedQuad>[] face;
 		private List<BakedQuad> generic;
@@ -261,6 +266,28 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 		public ChiseledArmorBakedModel()
 		{
 			overrides = new ChiseledArmorStackHandeler();
+			if (ground == null)
+			{
+				ground = createMatrix(TransformType.GROUND);
+				fixed = createMatrix(TransformType.FIXED);
+			}
+		}
+		
+		private Matrix4f createMatrix(TransformType transformType)
+		{
+			Matrix4f matrix = new Matrix4f();
+			matrix.set(1.35F);
+			matrix.mul(handlePerspective(transformType).getRight());
+			return matrix;
+		}
+		
+		@Override
+		public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType)
+		{
+			if (ground != null && fixed != null && (cameraTransformType == TransformType.GROUND || cameraTransformType == TransformType.FIXED))
+				return new ImmutablePair<IBakedModel, Matrix4f>(this, cameraTransformType == TransformType.GROUND ? ground : fixed);
+			
+			return super.handlePerspective(cameraTransformType);
 		}
 		
 		@Override
