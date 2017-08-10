@@ -57,6 +57,7 @@ public class RecipesExtraBitManipulation
 		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselIron, bitCost);
 		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselGold, bitCost);
 		registerChiseledArmorRecipes(output, inputArmor, items.itemChiselDiamond, bitCost);
+		GameRegistry.addShapelessRecipe(new ItemStack(output), output);
 	}
 	
 	private static void registerChiseledArmorRecipes(Item output, Item input, Item inputChisel, int bitCost)
