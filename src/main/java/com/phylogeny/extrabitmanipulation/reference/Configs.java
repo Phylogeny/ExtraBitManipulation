@@ -7,6 +7,7 @@ import mod.chiselsandbits.api.IBitBrush;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 
+import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
@@ -37,6 +38,7 @@ public class Configs
 		public static int maxWallThickness;
 		public static boolean oneBitTypeInversionRequirement;
 		public static ArmorModelRenderMode armorModelRenderMode;
+		public static ArmorStackModelRenderMode armorStackModelRenderMode;
 		public static float armorZFightingBufferScale;
 		public static float armorZFightingBufferScaleRightFoot;
 		public static ConfigBitToolSettingInt sculptMode;

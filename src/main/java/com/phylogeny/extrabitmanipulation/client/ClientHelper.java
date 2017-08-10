@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -75,6 +76,11 @@ public class ClientHelper
 	public static BlockModelShapes getBlockModelShapes()
 	{
 		return getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
+	}
+	
+	public static ItemColors getItemColors()
+	{
+		return getMinecraft().getItemColors();
 	}
 	
 }

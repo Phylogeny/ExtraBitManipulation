@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "extrabitmanipulation:chiseled_chestplate"
+		}
+	],
+	"result": {
+		"item": "extrabitmanipulation:chiseled_chestplate"
+	}
+}

@@ -68,6 +68,8 @@ public class ItemChiseledArmor extends ItemArmor
 	public final ArmorMovingPart[] MOVING_PARTS;
 	public final String[] MOVING_PART_TITLES;
 	public final ArmorType armorType;
+	@SideOnly(Side.CLIENT)
+	private ModelResourceLocation itemModelLocation;
 	
 	@SuppressWarnings("null")
 	public ItemChiseledArmor(String name, EntityEquipmentSlot equipmentSlot, ArmorType armorType, ArmorMovingPart... movingParts)
@@ -81,6 +83,28 @@ public class ItemChiseledArmor extends ItemArmor
 		MOVING_PART_TITLES = new String[MOVING_PARTS.length];
 		for (int i = 0; i < MOVING_PARTS.length; i++)
 			MOVING_PART_TITLES[i] = MOVING_PARTS[i].getName();
+	}
+	
+	@SuppressWarnings("null")
+	@SideOnly(Side.CLIENT)
+	public ResourceLocation initItemModelLocation()
+	{
+		ResourceLocation loc = new ResourceLocation(getRegistryName().getResourceDomain(),
+				getRegistryName().getResourcePath() + "_default");
+		itemModelLocation = new ModelResourceLocation(loc, "inventory");
+		return loc;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public ModelResourceLocation getItemModelLocation()
+	{
+		return itemModelLocation;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public IBakedModel getItemModel()
+	{
+		return ClientHelper.getBlockModelShapes().getModelManager().getModel(itemModelLocation);
 	}
 	
 	@Override
@@ -101,7 +125,8 @@ public class ItemChiseledArmor extends ItemArmor
 	@Override
 	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
 	{
-		return slotChanged;
+		return slotChanged || oldStack.hasTagCompound() != newStack.hasTagCompound() || (oldStack.hasTagCompound() && newStack.hasTagCompound()
+				&& !ItemStackHelper.getArmorData(oldStack.getTagCompound()).equals(ItemStackHelper.getArmorData(newStack.getTagCompound())));
 	}
 	
 	@Override
