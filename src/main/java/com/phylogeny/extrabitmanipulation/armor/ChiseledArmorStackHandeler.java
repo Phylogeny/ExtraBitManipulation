@@ -86,6 +86,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 								? Configs.armorZFightingBufferScaleRightFoot : 0.0F);
 						float offset = armor.armorType == ArmorType.CHESTPLATE ? 6.0F : (armor.armorType == ArmorType.BOOTS ? 3.9F : 2.0F);
 						float offsetX = p == 0 ? 0.0F : (Utility.PIXEL_F * (p == 1 ? offset : -offset));
+						float offsetY = armor.armorType == ArmorType.LEGGINGS && p == 0 ? 1.0F : 0.0F;
 						for (ArmorItem armorItem : armorPiece.getArmorItemsForPart(p))
 						{
 							if (armorItem.getStack().isEmpty())
@@ -98,7 +99,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 							{
 								for (BakedQuad quad : model.getQuads(null, null, 0L))
 								{
-									quadsGeneric.add(createTransformedQuad(quad, null, armorItem.getStack(), bounds, scale, offsetX, matrix));
+									quadsGeneric.add(createTransformedQuad(quad, null, armorItem.getStack(), bounds, scale, offsetX, offsetY, matrix));
 									found = true;
 								}
 								for (EnumFacing facing : EnumFacing.values())
@@ -106,7 +107,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 									for (BakedQuad quad : model.getQuads(null, facing, 0L))
 									{
 										quadsFace[facing.ordinal()].add(createTransformedQuad(quad, facing,
-												armorItem.getStack(), bounds, scale, offsetX, matrix));
+												armorItem.getStack(), bounds, scale, offsetX, offsetY, matrix));
 										found = true;
 									}
 								}
@@ -199,7 +200,8 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 		}
 	}
 	
-	private BakedQuad createTransformedQuad(BakedQuad quad, EnumFacing facing, ItemStack stack, float[] bounds, float scale, float offsetX, Matrix4f matrix)
+	private BakedQuad createTransformedQuad(BakedQuad quad, EnumFacing facing, ItemStack stack,
+			float[] bounds, float scale, float offsetX, float offsetY, Matrix4f matrix)
 	{
 		int size = quad.getFormat().getIntegerSize();
 		int[] data = quad.getVertexData().clone();
@@ -215,7 +217,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 			vec = new Vector4f(x, y, z, 1);
 			matrix.transform(vec);
 			x = vec.x * scale + offsetX;
-			y = vec.y * scale;
+			y = vec.y * scale + offsetY;
 			z = vec.z * scale;
 			if (x < bounds[0])
 				bounds[0] = x;
