@@ -110,7 +110,7 @@ public class ClientEventHandler
 		registerTexture(ARROW_CYCLICAL);
 		registerTexture(CIRCLE);
 		registerTexture(INVERSION);
-		RenderLayersExtraBitManipulation.clearDisplayListsMaps();
+		RenderLayersExtraBitManipulation.clearRenderMaps();
 	}
 	
 	private void registerTexture(ResourceLocation resourceLocation)
@@ -127,7 +127,7 @@ public class ClientEventHandler
 			@Override
 			public void run()
 			{
-				RenderLayersExtraBitManipulation.clearDisplayListsMaps();
+				RenderLayersExtraBitManipulation.clearRenderMaps();
 			}
 		});
 	}

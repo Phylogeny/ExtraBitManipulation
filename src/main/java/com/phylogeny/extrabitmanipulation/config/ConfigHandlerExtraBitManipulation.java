@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import org.apache.logging.log4j.Level;
 
+import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
@@ -440,8 +441,12 @@ public class ConfigHandlerExtraBitManipulation
 					ARMOR_SETTINGS, configFileClient, 0,
 					"Specifies when to render the default Chiseled Armor model for a given armor piece. If set to 'If Empty', it will only render for " +
 					"an armor piece if there are no non-empty itemstacks in the itemstack lists of any of its moving parts. It will never/always render, " +
-					"if set to 'Never'/'Always', respectively",
-					"If Empty", "Never", "Always");
+					"if set to 'Never'/'Always', respectively");
+			
+			Configs.armorStackModelRenderMode = getEnumValueFromStringArray("Rendered Armor Stack Models", ArmorStackModelRenderMode.class,
+					ARMOR_SETTINGS, configFileClient, 0,
+					"Specifies when to render the Chiseled Armor itemstacks as they render when worn, rather than the default model. The specified " +
+					"model will either will always render, or will only render if the player is holding shift.");
 			
 			Configs.armorZFightingBufferScale = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Global",
 					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
@@ -700,13 +705,32 @@ public class ConfigHandlerExtraBitManipulation
 	}
 	
 	public static <T extends Enum<? >> T getEnumValueFromStringArray(String name, Class<T> enumType,
-			String catagory, Configuration dataConfigFile, int defaultIndex, String comment, String... titles)
+			String catagory, Configuration dataConfigFile, int defaultIndex, String comment)
 	{
-		String title = dataConfigFile.getString(name, catagory, titles[defaultIndex], comment, titles);
-		for (int i = 0; i < titles.length; i++)
+		T[] values = enumType.getEnumConstants();
+		int len = values.length;
+		String[] titles = new String[len];
+		String title = "";
+		for (int i = 0; i < len * 2; i++)
 		{
-			if (titles[i].equals(title))
-				return enumType.getEnumConstants()[i];
+			if (i < len)
+			{
+				String valueName = "";
+				String[] valueNames = values[i].name().split("_");
+				for (int j = 0; j < valueNames.length; j++)
+					valueName += (j > 0 ? " " : "") + valueNames[j].charAt(0)
+						+ valueNames[j].substring(1, valueNames[j].length()).toLowerCase();
+				
+				titles[i] = valueName;
+			}
+			else
+			{
+				if (i == len)
+					title = dataConfigFile.getString(name, catagory, titles[defaultIndex], comment, titles);
+				
+				if (titles[i % len].equals(title))
+					return values[i % len];
+			}
 		}
 		return null;
 	}

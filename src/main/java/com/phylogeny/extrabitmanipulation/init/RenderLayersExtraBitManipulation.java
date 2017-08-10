@@ -22,6 +22,7 @@ import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler;
 import com.phylogeny.extrabitmanipulation.armor.LayerChiseledArmor;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 
@@ -59,16 +60,18 @@ public class RenderLayersExtraBitManipulation
 		armorLayers.add(layer);
 	}
 	
-	public static void clearDisplayListsMaps()
+	public static void clearRenderMaps()
 	{
+		ChiseledArmorStackHandeler.clearModelMap();
 		for (LayerChiseledArmor layer : armorLayers)
 			layer.clearDisplayListsMap();
 	}
 	
-	public static void removeFromDisplayListsMaps(NBTTagCompound... nbtTags)
+	public static void removeFromRenderMaps(NBTTagCompound nbt)
 	{
+		ChiseledArmorStackHandeler.removeFromModelMap(nbt);
 		for (LayerChiseledArmor layer : armorLayers)
-			layer.removeFromDisplayListsMap(nbtTags);
+			layer.removeFromDisplayListsMap(nbt);
 	}
 	
 }

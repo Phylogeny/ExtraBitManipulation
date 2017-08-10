@@ -11,6 +11,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class ItemStackHelper
 {
@@ -105,6 +106,11 @@ public class ItemStackHelper
 	public static boolean isDesignItemType(ItemType itemType)
 	{
 		return itemType == ItemType.MIRROR_DESIGN || itemType == ItemType.NEGATIVE_DESIGN || itemType == ItemType.POSITIVE_DESIGN;
+	}
+	
+	public static NBTTagCompound getArmorData(NBTTagCompound armorNbt)
+	{
+		return armorNbt.getCompoundTag(NBTKeys.ARMOR_DATA);
 	}
 	
 }
