@@ -22,10 +22,10 @@ import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
@@ -68,10 +68,9 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		movingPartsDisplayListsMap.clear();
 	}
 	
-	public void removeFromDisplayListsMap(NBTTagCompound... nbtTags)
+	public void removeFromDisplayListsMap(NBTTagCompound nbt)
 	{
-		for (NBTTagCompound nbt : nbtTags)
-			deleteDisplayLists(movingPartsDisplayListsMap.remove(nbt));
+		deleteDisplayLists(movingPartsDisplayListsMap.remove(nbt));
 	}
 	
 	private void deleteDisplayLists(Integer[] displayLists)
@@ -95,7 +94,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		{
 			GlStateManager.pushMatrix();
 			NBTTagCompound nbt = headStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(getArmorData(nbt));
+			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
 			if (displayLists == null)
 				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.HELMET), nbt, 1);
 			
@@ -121,7 +120,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		{
 			GlStateManager.pushMatrix();
 			NBTTagCompound nbt = chestStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(getArmorData(nbt));
+			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
 			if (displayLists == null)
 				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.CHESTPLATE), nbt, 3);
 			
@@ -137,7 +136,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		{
 			GlStateManager.pushMatrix();
 			NBTTagCompound nbt = legsStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(getArmorData(nbt));
+			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
 			if (displayLists == null)
 				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.LEGGINGS), nbt, 3);
 			
@@ -153,7 +152,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		{
 			GlStateManager.pushMatrix();
 			NBTTagCompound nbt = feetStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(getArmorData(nbt));
+			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
 			if (displayLists == null)
 				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.BOOTS), nbt, 2);
 			
@@ -187,13 +186,8 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		for (int i = 0; i < movingPartsDisplayLists.length; i++)
 			movingPartsDisplayLists[i] = armorPiece.generateDisplayList(i, entity, scale);
 		
-		movingPartsDisplayListsMap.put(getArmorData(armorNbt), movingPartsDisplayLists);
+		movingPartsDisplayListsMap.put(ItemStackHelper.getArmorData(armorNbt), movingPartsDisplayLists);
 		return movingPartsDisplayLists;
-	}
-	
-	private NBTTagCompound getArmorData(NBTTagCompound armorNbt)
-	{
-		return armorNbt.getCompoundTag(NBTKeys.ARMOR_DATA);
 	}
 	
 	private void renderLegPieces(int displayListRight, int displayListLeft, float scale, float offsetY)

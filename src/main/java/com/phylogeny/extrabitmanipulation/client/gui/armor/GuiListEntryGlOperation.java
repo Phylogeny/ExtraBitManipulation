@@ -172,7 +172,9 @@ public class GuiListEntryGlOperation<L> extends GuiListEntryChiseledArmor<GlOper
 			field.setText(getDataFieldString(data));
 		}
 		field.setCursorPosition(pos);
-		data %= 360;
+		if (index == 3)
+			data %= 360;
+		
 		if (entryObject.getType() == GlOperationType.TRANSLATION && index < 3 && listChiseledArmor.guiChiseledArmor.scalePixel())
 			data *= Utility.PIXEL_F;
 		

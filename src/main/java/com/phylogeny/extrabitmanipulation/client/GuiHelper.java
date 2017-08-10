@@ -20,7 +20,6 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiHelper
 {
-	private static final int OFFSET_MAX = 400;
 	
 	public static void glScissor(int x, int y, int width, int height)
 	{
@@ -125,15 +124,7 @@ public class GuiHelper
 		}
 		else if (clickedMouseButton == 1)
 		{
-			double offsetX = translationInitialVec.xCoord - deltaX;
-			if (offsetX < -OFFSET_MAX || offsetX > OFFSET_MAX)
-				offsetX = OFFSET_MAX * (offsetX > 0 ? 1 : -1);
-			
-			double offsetY = translationInitialVec.yCoord - deltaY;
-			if (offsetY < -OFFSET_MAX || offsetY > OFFSET_MAX)
-				offsetY = OFFSET_MAX * (offsetY > 0 ? 1 : -1);
-			
-			triple.setLeft(new Vec3d(offsetX, offsetY, 0));
+			triple.setLeft(new Vec3d(translationInitialVec.xCoord - deltaX, translationInitialVec.yCoord - deltaY, 0));
 		}
 		return triple;
 	}
