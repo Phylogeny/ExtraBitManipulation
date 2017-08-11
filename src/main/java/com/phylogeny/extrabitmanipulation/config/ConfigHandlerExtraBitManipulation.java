@@ -453,10 +453,14 @@ public class ConfigHandlerExtraBitManipulation
 					"A scale of this many pixels will be applied to all items rendered for all moving parts of all Chiseled Armor pieces, so as to prevent " +
 					"z-fighting of those items with the player model.");
 			
-			Configs.armorZFightingBufferScaleRightFoot = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Right Foot",
+			Configs.armorZFightingBufferScaleRightLegOrFoot = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Leg & Foot",
 					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
-					"A scale of this many pixels will be applied to all items rendered for the right foot moving part of Chiseled Armor boots, so as to " +
-					"prevent z-fighting of those items with the items of the left foot moving part.");
+					"A scale of this many pixels will be additionally applied to all items rendered for the right leg and foot moving parts of Chiseled " +
+					"Armor boots, so as to prevent z-fighting of those items with the items of the left leg and foot moving parts.");
+			
+			Configs.armorZFightingBufferTranslationFeet = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Translation - Feet",
+					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
+					"The items of both feet will be translated down by this many pixels to prevent z-fighting with the items of both legs.");
 			
 			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
 					chiseledArmorConfigFile, false, true, false,

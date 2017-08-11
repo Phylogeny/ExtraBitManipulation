@@ -118,7 +118,7 @@ public class DataChiseledArmorPiece
 			GlStateManager.pushMatrix();
 			armorItem.executeGlOperations();
 			GlOperation.executeList(globalGlOperationsPost);
-			armorItem.render(entity, scale, armorType == ArmorType.BOOTS && partIndex == 0);
+			armorItem.render(entity, scale, (armorType == ArmorType.BOOTS && partIndex == 0) || (armorType == ArmorType.LEGGINGS && partIndex == 1));
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
