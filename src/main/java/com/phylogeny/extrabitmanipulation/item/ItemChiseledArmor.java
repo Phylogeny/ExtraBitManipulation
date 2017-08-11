@@ -83,7 +83,6 @@ public class ItemChiseledArmor extends ItemArmor
 			MOVING_PART_TITLES[i] = MOVING_PARTS[i].getName();
 	}
 	
-	@SuppressWarnings("null")
 	@SideOnly(Side.CLIENT)
 	public ResourceLocation initItemModelLocation()
 	{
