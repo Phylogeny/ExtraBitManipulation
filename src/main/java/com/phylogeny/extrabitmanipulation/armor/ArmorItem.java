@@ -56,11 +56,11 @@ public class ArmorItem
 		return glOperations;
 	}
 	
-	public void render(EntityLivingBase entity, float scale, boolean isRightFoot)
+	public void render(EntityLivingBase entity, float scale, boolean isRightLegOrFoot)
 	{
 		float scale2 = 32 * scale + Configs.armorZFightingBufferScale;
-		if (isRightFoot)
-			scale2 += Configs.armorZFightingBufferScaleRightFoot;
+		if (isRightLegOrFoot)
+			scale2 += Configs.armorZFightingBufferScaleRightLegOrFoot;
 		
 		GlStateManager.scale(scale2, scale2, scale2);
 		if (ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) != ItemType.CHISLED_BLOCK)

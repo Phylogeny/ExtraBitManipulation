@@ -26,7 +26,6 @@ import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 {
@@ -102,7 +101,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			if (entity.isChild() && !(entity instanceof EntityVillager))
 			{
 				GlStateManager.scale(0.75F, 0.75F, 0.75F);
-				GlStateManager.translate(0.0F, 16.0F * Utility.PIXEL_F, 0.0F);
+				GlStateManager.translate(0.0F, 1.0F, 0.0F);
 			}
 			head.postRender(scale);
 			GlStateManager.translate(0.0F, -scale * (8 + Configs.armorZFightingBufferScale), 0.0F);
@@ -158,6 +157,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			
 			adjustForSneaking(entity);
 			adjustForChildModel();
+			GlStateManager.translate(0.0F, scale * (Configs.armorZFightingBufferTranslationFeet), 0.0F);
 			renderLegPieces(displayLists[0], displayLists[1], scale, 4);
 			GlStateManager.popMatrix();
 		}

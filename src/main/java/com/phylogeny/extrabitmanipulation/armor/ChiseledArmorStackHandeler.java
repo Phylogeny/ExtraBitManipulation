@@ -86,8 +86,8 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 					boolean found = false;
 					for (int p = 0; p < 3; p++)
 					{
-						float scale = 1 + Configs.armorZFightingBufferScale + (armor.armorType == ArmorType.BOOTS && p == 0
-								? Configs.armorZFightingBufferScaleRightFoot : 0.0F);
+						float scale = 1 + Configs.armorZFightingBufferScale + ((armor.armorType == ArmorType.BOOTS && p == 0)
+								|| (armor.armorType == ArmorType.LEGGINGS && p == 1) ? Configs.armorZFightingBufferScaleRightLegOrFoot : 0.0F);
 						float offset = armor.armorType == ArmorType.CHESTPLATE ? 6.0F : (armor.armorType == ArmorType.BOOTS ? 3.9F : 2.0F);
 						float offsetX = p == 0 ? 0.0F : (Utility.PIXEL_F * (p == 1 ? offset : -offset));
 						float offsetY = armor.armorType == ArmorType.LEGGINGS && p == 0 ? 1.0F : 0.0F;

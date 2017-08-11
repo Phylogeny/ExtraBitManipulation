@@ -40,7 +40,8 @@ public class Configs
 		public static ArmorModelRenderMode armorModelRenderMode;
 		public static ArmorStackModelRenderMode armorStackModelRenderMode;
 		public static float armorZFightingBufferScale;
-		public static float armorZFightingBufferScaleRightFoot;
+		public static float armorZFightingBufferScaleRightLegOrFoot;
+		public static float armorZFightingBufferTranslationFeet;
 		public static ConfigBitToolSettingInt sculptMode;
 		public static ConfigBitToolSettingInt sculptDirection;
 		public static ConfigBitToolSettingInt sculptShapeTypeCurved;

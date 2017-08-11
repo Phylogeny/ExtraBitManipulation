@@ -160,7 +160,7 @@ public class ModelChiseledArmor extends ModelChiseledArmorBase
 		bipedLeftArm.addChild(armLeftSide);
 		
 		//Right Foot
-		float scale2 = scale + Configs.armorZFightingBufferScaleRightFoot;
+		float scale2 = scale + Configs.armorZFightingBufferScaleRightLegOrFoot;
 		bipedRightLeg = new ModelRenderer(this, 16, 57);
 		bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 		bipedRightLeg.addBox(-3.0F, 11.0F, -3.0F, 6, 1, 6, scale2);
