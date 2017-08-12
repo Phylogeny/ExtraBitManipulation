@@ -57,7 +57,7 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 	
 	protected NBTTagCompound getData(NBTTagCompound nbt, boolean serverSide)
 	{
-		NBTTagCompound data = nbt.getCompoundTag(NBTKeys.ARMOR_DATA);
+		NBTTagCompound data = ItemStackHelper.getArmorData(nbt);
 		if (!serverSide)
 			RenderLayersExtraBitManipulation.removeFromRenderMaps(data);
 		
