@@ -160,7 +160,7 @@ public class DataChiseledArmorPiece
 	
 	public void loadFromNBT(NBTTagCompound nbt)
 	{
-		NBTTagCompound data = nbt.getCompoundTag(NBTKeys.ARMOR_DATA);
+		NBTTagCompound data = ItemStackHelper.getArmorData(nbt);
 		NBTTagList movingParts = data.getTagList(NBTKeys.ARMOR_PART_DATA, NBT.TAG_LIST);
 		for (int i = 0; i < movingParts.tagCount(); i++)
 		{

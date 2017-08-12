@@ -132,7 +132,7 @@ public class ModelRegistration
 	private static boolean shouldRenderEmptymodel(ItemStack stack)
 	{
 		return Configs.armorModelRenderMode == ArmorModelRenderMode.NEVER || (Configs.armorModelRenderMode == ArmorModelRenderMode.IF_EMPTY
-				&& ItemStackHelper.getNBTOrNew(stack).getCompoundTag(NBTKeys.ARMOR_DATA).getBoolean(NBTKeys.ARMOR_NOT_EMPTY));
+				&& ItemStackHelper.getArmorData(ItemStackHelper.getNBTOrNew(stack)).getBoolean(NBTKeys.ARMOR_NOT_EMPTY));
 	}
 	
 	public static enum ArmorModelRenderMode
