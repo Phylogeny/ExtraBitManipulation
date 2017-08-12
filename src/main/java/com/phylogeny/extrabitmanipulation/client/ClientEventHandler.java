@@ -327,36 +327,45 @@ public class ClientEventHandler
 								}
 								if ((isArmor || !shiftDown) && drawnMode && event.isButtonstate())
 								{
-									IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
-											(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
-									if (bitLoc != null)
+									if (isArmor && !ItemStackHelper.getNBTOrNew(stack).hasKey(NBTKeys.ARMOR_HIT))
 									{
-										int x = pos.getX();
-										int y = pos.getY();
-										int z = pos.getZ();
-										float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
-										float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
-										float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
-										if (!removeBits)
-										{
-											x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
-											y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
-											z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
-										}
-										drawnStartPoint = new Vec3d(x2, y2, z2);
-										if (isArmor && player.isSneaking())
-										{
-											Vec3d vec = new Vec3d(side.getFrontOffsetX(), side.getFrontOffsetY(), side.getFrontOffsetZ());
-											if (BitToolSettingsHelper.areArmorBitsTargeted(ItemStackHelper.getNBTOrNew(stack)))
-												vec = vec.scale(Utility.PIXEL_D);
-											
-											drawnStartPoint = drawnStartPoint.add(vec);
-										}
+										ClientHelper.printChatMessageWithDeletion("You must set a bodypart template reference area in 'Template Creation' " +
+												"mode before collecting block copies.");
+										swingTool = false;
 									}
 									else
 									{
-										drawnStartPoint = null;
-										swingTool = false;
+										IBitLocation bitLoc = ChiselsAndBitsAPIAccess.apiInstance.getBitPos((float) hit.xCoord - pos.getX(),
+												(float) hit.yCoord - pos.getY(), (float) hit.zCoord - pos.getZ(), side, pos, false);
+										if (bitLoc != null)
+										{
+											int x = pos.getX();
+											int y = pos.getY();
+											int z = pos.getZ();
+											float x2 = x + bitLoc.getBitX() * Utility.PIXEL_F;
+											float y2 = y + bitLoc.getBitY() * Utility.PIXEL_F;
+											float z2 = z + bitLoc.getBitZ() * Utility.PIXEL_F;
+											if (!removeBits)
+											{
+												x2 += side.getFrontOffsetX() * Utility.PIXEL_F;
+												y2 += side.getFrontOffsetY() * Utility.PIXEL_F;
+												z2 += side.getFrontOffsetZ() * Utility.PIXEL_F;
+											}
+											drawnStartPoint = new Vec3d(x2, y2, z2);
+											if (isArmor && player.isSneaking())
+											{
+												Vec3d vec = new Vec3d(side.getFrontOffsetX(), side.getFrontOffsetY(), side.getFrontOffsetZ());
+												if (BitToolSettingsHelper.areArmorBitsTargeted(ItemStackHelper.getNBTOrNew(stack)))
+													vec = vec.scale(Utility.PIXEL_D);
+												
+												drawnStartPoint = drawnStartPoint.add(vec);
+											}
+										}
+										else
+										{
+											drawnStartPoint = null;
+											swingTool = false;
+										}
 									}
 								}
 								else
