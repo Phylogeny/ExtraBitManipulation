@@ -701,7 +701,7 @@ public class GuiChiseledArmor extends GuiContainer
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			x = armorItemsList.left + 6 - guiLeft;
-			y = (armorItemsList.top - armorItemsList.getAmountScrolled()) + i * armorItemsList.slotHeight + armorItemsList.headerPadding - 2;
+			y = (armorItemsList.top - armorItemsList.getAmountScrolled()) + i * armorItemsList.slotHeight + armorItemsList.headerPadding + 3 - guiTop;
 			zLevel = 100.0F;
 			itemRender.zLevel = 100.0F;
 			GlStateManager.enableDepth();
