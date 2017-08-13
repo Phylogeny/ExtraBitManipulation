@@ -245,7 +245,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 			data[index + 1] = Float.floatToRawIntBits(y);
 			data[index + 2] = Float.floatToRawIntBits(z);
 		}
-		return new BakedQuad(data, ClientHelper.getItemColors().getColorFromItemstack(stack, quad.getTintIndex()),
+		return new BakedQuad(data, quad.getTintIndex() == -1 ? -1 : ClientHelper.getItemColors().getColorFromItemstack(stack, quad.getTintIndex()),
 				facing, quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat());
 	}
 	
