@@ -1,16 +1,19 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/extra-bit-manipulation",
-    "1.12": {
-    "1.12-3.1.0": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2463149"
+  "1.12.1": {
+    "1.12-3.1.1": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2464384"
+  },
+  "1.12": {
+    "1.12-3.1.1": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2464384"
   },
   "1.11.2": {
-    "1.11.2-3.1.0": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2463147"
+    "1.11.2-3.1.1": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2464381"
   },
   "1.11": {
-    "1.11.2-3.1.0": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2463147"
+    "1.11.2-3.1.1": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2464381"
   },
   "1.10.2": {
-    "1.10.2-2.4.0": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2463144"
+    "1.10.2-2.4.1": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2464380"
   },
   "1.9.4": {
     "1.9.4-2.3.3": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2395244"
@@ -19,14 +22,16 @@
     "1.8.9-2.3.3": "Changelog: https://minecraft.curseforge.com/projects/extra-bit-manipulation/files/2395243"
   },
   "promos": {
-    "1.12-latest": "1.12-3.1.0",
-    "1.12-recommended": "1.12-3.1.0",
-    "1.11.2-latest": "1.11.2-3.1.0",
-    "1.11.2-recommended": "1.11.2-3.1.0",
-    "1.11-latest": "1.11.2-3.1.0",
-    "1.11-recommended": "1.11.2-3.1.0",
-    "1.10.2-latest": "1.10.2-2.4.0",
-    "1.10.2-recommended": "1.10.2-2.4.0",
+    "1.12.1-latest": "1.12-3.1.1",
+    "1.12.1-recommended": "1.12-3.1.1",
+	"1.12-latest": "1.12-3.1.1",
+    "1.12-recommended": "1.12-3.1.1",
+    "1.11.2-latest": "1.11.2-3.1.1",
+    "1.11.2-recommended": "1.11.2-3.1.1",
+    "1.11-latest": "1.11.2-3.1.1",
+    "1.11-recommended": "1.11.2-3.1.1",
+    "1.10.2-latest": "1.10.2-2.4.1",
+    "1.10.2-recommended": "1.10.2-2.4.1",
     "1.9.4-latest": "1.9.4-2.3.3",
     "1.9.4-recommended": "1.9.4-2.3.3",
     "1.8.9-latest": "1.8.9-2.3.3",
