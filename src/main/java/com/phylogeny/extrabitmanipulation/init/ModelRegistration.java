@@ -107,6 +107,7 @@ public class ModelRegistration
 		
 		registerItemModel(armorPiece, name.getResourcePath());
 		registerIsolatedModel(armorPiece, armorPiece.initItemModelLocation());
+		armorPiece.armorType.initIconStack(armorPiece);
 	}
 	
 	private static void registerItemModel(Item item, String name)

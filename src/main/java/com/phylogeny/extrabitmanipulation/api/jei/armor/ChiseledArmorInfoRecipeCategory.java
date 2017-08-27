@@ -12,7 +12,7 @@ public class ChiseledArmorInfoRecipeCategory extends InfoRecipeCategoryBase<Chis
 	
 	public ChiseledArmorInfoRecipeCategory(IGuiHelper guiHelper)
 	{
-		super(guiHelper, NAME, 160, 125);
+		super(guiHelper, NAME, 186, 125);
 	}
 	
 	@Override

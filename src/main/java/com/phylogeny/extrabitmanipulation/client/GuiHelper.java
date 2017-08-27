@@ -1,6 +1,9 @@
 package com.phylogeny.extrabitmanipulation.client;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,14 +21,21 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonBase;
+
 public class GuiHelper
 {
+	
+	private static Minecraft getMinecraft()
+	{
+		return Minecraft.getMinecraft();
+	}
 	
 	public static void glScissor(int x, int y, int width, int height)
 	{
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		int scaleFactor = getScaleFactor();
-		GL11.glScissor(x * scaleFactor, Minecraft.getMinecraft().displayHeight - (y + height) * scaleFactor, width * scaleFactor, height * scaleFactor);
+		GL11.glScissor(x * scaleFactor, getMinecraft().displayHeight - (y + height) * scaleFactor, width * scaleFactor, height * scaleFactor);
 	}
 	
 	public static void glScissorDisable()
@@ -35,12 +45,12 @@ public class GuiHelper
 	
 	public static int getScaleFactor()
 	{
-		return (new ScaledResolution(Minecraft.getMinecraft())).getScaleFactor();
+		return (new ScaledResolution(getMinecraft())).getScaleFactor();
 	}
 	
 	public static GuiScreen getOpenGui()
 	{
-		return Minecraft.getMinecraft().currentScreen;
+		return getMinecraft().currentScreen;
 	}
 	
 	public static boolean isCursorInsideBox(AxisAlignedBB box, int mouseX, int mouseY)
@@ -82,6 +92,24 @@ public class GuiHelper
 		buffer.pos(right, top, 0).tex(1, 0).endVertex();
 		t.draw();
 		GlStateManager.disableBlend();
+	}
+	
+	public static void drawHoveringTextForButtons(IHoveringTextRenderer hoveringTextRenderer, List<GuiButton> buttonList, int mouseX, int mouseY)
+	{
+		for (GuiButton button : buttonList)
+		{
+			if (!(button instanceof GuiButtonBase))
+				continue;
+			
+			if (button.isMouseOver() && button.visible)
+			{
+				String text = ((GuiButtonBase) button).getHoverText();
+				if (!text.isEmpty())
+					hoveringTextRenderer.render(text, mouseX, mouseY);
+				
+				break;
+			}
+		}
 	}
 	
 	public static Pair<Float, Boolean> changeScale(float scale, float amount, float max)
@@ -152,6 +180,11 @@ public class GuiHelper
 		float offset = (amount / -30) * 0.15F;
 		pair.setLeft(translationVec.addVector(x * offset, y * offset, 0));
 		return pair;
+	}
+	
+	public static interface IHoveringTextRenderer
+	{
+		public void render(String text, int mouseX, int mouseY);
 	}
 	
 }

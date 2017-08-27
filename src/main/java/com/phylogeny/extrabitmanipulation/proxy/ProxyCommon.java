@@ -9,16 +9,24 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.capability.Storage;
+import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsEventHandler;
+import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiChiseledArmor;
+import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlots;
 import com.phylogeny.extrabitmanipulation.config.ConfigHandlerExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.container.ContainerHeldItem;
+import com.phylogeny.extrabitmanipulation.container.ContainerPlayerArmorSlots;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.entity.EntityBit;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
@@ -26,6 +34,7 @@ import com.phylogeny.extrabitmanipulation.init.BlocksExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.reference.BaublesReferences;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
@@ -36,8 +45,11 @@ public class ProxyCommon implements IGuiHandler
 	{
 		BlocksExtraBitManipulation.blocksInit();
 		ItemsExtraBitManipulation.itemsInit();
+		BaublesReferences.isBaublesLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
+		MinecraftForge.EVENT_BUS.register(new ChiseledArmorSlotsEventHandler());
+		CapabilityManager.INSTANCE.register(IChiseledArmorSlotsHandler.class, new Storage<IChiseledArmorSlotsHandler>(), ChiseledArmorSlotsHandler.class);
 		PacketRegistration.registerPackets();
 		EntityRegistry.registerModEntity(EntityBit.class, Reference.MOD_ID + ":entity_bit", 0, ExtraBitManipulation.instance, 64, 3, false);
 		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ChiselsAndBits.getItems().itemBlockBit, new BehaviorProjectileDispense()
@@ -68,14 +80,22 @@ public class ProxyCommon implements IGuiHandler
 		return new ContainerPlayerInventory(player, 38, 148);
 	}
 	
+	public static ContainerPlayerArmorSlots createArmorSlotsContainer(EntityPlayer player)
+	{
+		return new ContainerPlayerArmorSlots(player.inventory, !player.worldObj.isRemote, player);
+	}
+	
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{
 		if (openBitMappingGui(id, player.getHeldItemMainhand()))
 			return createBitMappingContainer(player);
 		
-		if (openArmorGui(id))
+		if (id == GuiIDs.CHISELED_ARMOR_MIAN.getID() || id == GuiIDs.CHISELED_ARMOR_VANITY.getID())
 			return createArmorContainer(player);
+		
+		if (id == GuiIDs.CHISELED_ARMOR_SLOTS.getID())
+			return createArmorSlotsContainer(player);
 		
 		return null;
 	}
@@ -86,8 +106,12 @@ public class ProxyCommon implements IGuiHandler
 		if (openBitMappingGui(id, player.getHeldItemMainhand()))
 			return new GuiBitMapping(player, ItemStackHelper.isDesignStack(player.getHeldItemMainhand()));
 		
-		if (openArmorGui(id))
-			return new GuiChiseledArmor(player);
+		boolean isMain = id == GuiIDs.CHISELED_ARMOR_MIAN.getID();
+		if (isMain || id == GuiIDs.CHISELED_ARMOR_VANITY.getID())
+			return new GuiChiseledArmor(player, isMain);
+		
+		if (id == GuiIDs.CHISELED_ARMOR_SLOTS.getID())
+			return new GuiInventoryArmorSlots(createArmorSlotsContainer(player));
 		
 		return null;
 	}
@@ -95,11 +119,6 @@ public class ProxyCommon implements IGuiHandler
 	private boolean openBitMappingGui(int id, ItemStack stack)
 	{
 		return id == GuiIDs.BIT_MAPPING.getID() && (ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isDesignStack(stack));
-	}
-	
-	private boolean openArmorGui(int id)
-	{
-		return id == GuiIDs.CHISELED_ARMOR.getID();
 	}
 	
 }

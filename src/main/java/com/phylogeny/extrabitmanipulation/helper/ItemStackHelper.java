@@ -1,11 +1,17 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
+import javax.annotation.Nullable;
+
 import mod.chiselsandbits.api.ItemType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
@@ -118,6 +124,17 @@ public class ItemStackHelper
 	public static NBTTagCompound getArmorData(NBTTagCompound armorNbt)
 	{
 		return armorNbt.getCompoundTag(NBTKeys.ARMOR_DATA);
+	}
+	
+	public static ItemStack getChiseledArmorStack(EntityPlayer player, @Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
+	{
+		if (equipmentSlot == null)
+			return player.getHeldItemMainhand();
+		else if (mainArmor)
+			return player.getItemStackFromSlot(equipmentSlot);
+		
+		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
+		return cap == null ? null : cap.getStackInSlot(3 - equipmentSlot.getIndex());
 	}
 	
 }

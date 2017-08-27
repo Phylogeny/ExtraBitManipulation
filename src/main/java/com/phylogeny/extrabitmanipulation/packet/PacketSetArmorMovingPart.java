@@ -22,9 +22,9 @@ public class PacketSetArmorMovingPart extends PacketEquipmentSlot
 	
 	public PacketSetArmorMovingPart() {}
 	
-	public PacketSetArmorMovingPart(int partIndex, @Nullable EntityEquipmentSlot equipmentSlot)
+	public PacketSetArmorMovingPart(int partIndex, @Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
 	{
-		super(equipmentSlot);
+		super(equipmentSlot, mainArmor);
 		this.partIndex = partIndex;
 	}
 	
@@ -54,9 +54,9 @@ public class PacketSetArmorMovingPart extends PacketEquipmentSlot
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack stack = message.equipmentSlot == null ? player.getHeldItemMainhand() : player.getItemStackFromSlot(message.equipmentSlot);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
 					if (ItemStackHelper.isChiseledArmorStack(stack))
-						BitToolSettingsHelper.setArmorMovingPart(player, stack, message.partIndex, null, null);
+						BitToolSettingsHelper.setArmorMovingPart(player, stack, message.partIndex, null, message.equipmentSlot, false);
 				}
 			});
 			return null;

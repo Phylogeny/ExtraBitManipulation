@@ -72,6 +72,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketCollectArmorBlocks;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
 import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetCollectionBox;
@@ -142,7 +143,9 @@ public class ClientEventHandler
 		if (ChiselsAndBitsAPIAccess.apiInstance.getKeyBinding(ModKeyBinding.MODE_MENU).isKeyDown()
 				|| KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown()
 				|| KeyBindingsExtraBitManipulation.EDIT_DESIGN.isKeyDown()
-				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.isKeyDown())
+				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.isKeyDown()
+				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_VANITY.isKeyDown()
+				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_SLOTS_GUI.isKeyDown())
 		{
 			ItemStack stack = ClientHelper.getHeldItemMainhand();
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
@@ -155,21 +158,29 @@ public class ClientEventHandler
 				if (stack != null && stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack))
 					openBitMappingGui();
 			}
-			else if (KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.isKeyDown())
+			else if (KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.isKeyDown()
+					|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_VANITY.isKeyDown())
 			{
+				boolean openVanitySlots = KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_VANITY.isKeyDown();
 				boolean armorFound = false;
 				for (int i = 2; i < EntityEquipmentSlot.values().length; i++)
 				{
-					if (ItemStackHelper.isChiseledArmorStack(ClientHelper.getPlayer().getItemStackFromSlot(EntityEquipmentSlot.values()[i])))
+					if (ItemStackHelper.isChiseledArmorStack(ItemStackHelper.getChiseledArmorStack(
+							ClientHelper.getPlayer(), EntityEquipmentSlot.values()[i], !openVanitySlots)))
 					{
 						armorFound = true;
 						break;
 					}
 				}
 				if (armorFound)
-					ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui());
+					ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui(!openVanitySlots));
 				else
-					ClientHelper.printChatMessageWithDeletion("You must be wearing at least one piece of Chiseled Armor to open the Chiseled Armor GUI.");
+					ClientHelper.printChatMessageWithDeletion("You must be wearing at least one piece of Chiseled Armor"
+							+ (openVanitySlots ? " in a vanity slot" : "") + " to open the Chiseled Armor GUI" + (openVanitySlots ? " for those slots." : "."));
+			}
+			else if (KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_SLOTS_GUI.isKeyDown())
+			{
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenInventoryGui(false));
 			}
 			else if (ItemStackHelper.isBitToolStack(stack) || ItemStackHelper.isChiseledArmorStack(stack))
 			{

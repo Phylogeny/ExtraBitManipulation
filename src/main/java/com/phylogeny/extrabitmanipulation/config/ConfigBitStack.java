@@ -7,16 +7,15 @@ import net.minecraft.item.ItemStack;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 
-public class ConfigBitStack extends ConfigBitToolSettingBase
+public class ConfigBitStack extends ConfigBitToolSettingBase<ItemStack>
 {
-	private ItemStack value, bitStackDefault;
 	private IBlockState valueDefault, stateDefault, stateDefaultDefault;
 	private String stringDeafult;
 	
 	public ConfigBitStack(ItemStack bitStackDefault)
 	{
 		super("", false, false);
-		this.bitStackDefault = bitStackDefault;
+		defaultValue = bitStackDefault;
 	}
 	
 	public ConfigBitStack(String name, IBlockState bitBlockDefault, IBlockState defaultDefaultBitBlock, String stringDefault, IBlockState valueDefault)
@@ -36,7 +35,7 @@ public class ConfigBitStack extends ConfigBitToolSettingBase
 	
 	public void init()
 	{
-		bitStackDefault = getBitStack(stateDefault);
+		defaultValue = getBitStack(stateDefault);
 		value = getBitStack(valueDefault);
 	}
 	
@@ -57,29 +56,20 @@ public class ConfigBitStack extends ConfigBitToolSettingBase
 		return bitStack;
 	}
 	
-	public ItemStack getDefaultValue()
-	{
-		return bitStackDefault;
-	}
-	
 	public IBlockState getDefaultState()
 	{
 		return stateDefault != null ? stateDefault : stateDefaultDefault;
 	}
 	
-	public ItemStack getValue()
-	{
-		return value;
-	}
-	
-	public void setValue(ItemStack value)
-	{
-		this.value = value;
-	}
-	
 	public String getStringDeafult()
 	{
 		return stringDeafult;
+	}
+	
+	@Override
+	public boolean isAtDefaultValue()
+	{
+		return super.isAtDefaultValue() || ItemStack.areItemStacksEqual(value, defaultValue);
 	}
 	
 }

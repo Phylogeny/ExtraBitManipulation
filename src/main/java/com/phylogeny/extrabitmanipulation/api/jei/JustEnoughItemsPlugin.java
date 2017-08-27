@@ -1,10 +1,12 @@
 package com.phylogeny.extrabitmanipulation.api.jei;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -31,6 +33,24 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 @JEIPlugin
 public class JustEnoughItemsPlugin extends BlankModPlugin
 {
+	private static IJeiRuntime jeiRuntime;
+	
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime)
+	{
+		this.jeiRuntime = jeiRuntime;
+	}
+	
+	public static boolean isJeiInstalled()
+	{
+		return jeiRuntime != null;
+	}
+	
+	public static void openCategory(String categoryUid)
+	{
+		if (isJeiInstalled())
+			jeiRuntime.getRecipesGui().showCategories(Collections.<String>singletonList(categoryUid));
+	}
 	
 	public static String translate(String langKey)
 	{

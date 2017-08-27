@@ -14,7 +14,7 @@ import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 
 public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 {
-	public static final String[] GRAPHIC_NAMES = new String[]{"chiseled_helmet", "creation", "collection", "chiseled_armor_gui"};
+	public static final String[] GRAPHIC_NAMES = new String[]{"chiseled_helmet", "creation", "collection", "chiseled_armor_gui", "chiseled_armor_slots_gui"};
 	private int imageIndex;
 	
 	public static List<ChiseledArmorInfoRecipe> create(List<ItemStack> sculptingStacks)
@@ -23,8 +23,8 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		for (int i = 0; i < GRAPHIC_NAMES.length; i++)
 		{
 			recipes.add(new ChiseledArmorInfoRecipe(sculptingStacks, ChiseledArmorInfoRecipeCategory.NAME,
-					GRAPHIC_NAMES[i], i == 0 ? 66 : (i == 3 ? 61 : 65), i == 0 ? 22 : (i == 3 ? 36 : 25),
-							i == 0 ? 164 : (i == 3 ? 162 : 163), i == 0 ? 128 : (i == 3 ? 106 : 121), i));
+					GRAPHIC_NAMES[i], i == 0 ? 79 : (i == 3 ? 12 : (i == 4 ? 75 : 78)), i == 0 ? 21 : (i == 3 ? 54 : (i == 4 ? 30 : 24)),
+							i == 0 ? 177 : (i == 3 ? 113 : (i == 4 ? 176 : 176)), i == 0 ? 127 : (i == 3 ? 124 : (i == 4 ? 114 : 120)), i));
 		}
 		return recipes;
 	}
@@ -35,6 +35,9 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		super(sculptingStacks, 0, 0, imageName, imageName.toLowerCase().replace(" ", "_"), ChiseledArmorInfoRecipeCategory.NAME + "." + imageName,
 				imageLeft, imageTop, imageRight, imageBottom, catagoryName);
 		this.imageIndex = imageIndex;
+		for (int i = 0; i < tooltipLines.size(); i++)
+			tooltipLines.set(i, tooltipLines.get(i).replace("@",
+					KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_SLOTS_GUI.getKeyBinding().getDisplayName()));
 	}
 	
 	protected String translateName(String name)
@@ -45,42 +48,56 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY)
 	{
-		int xPos = 47;
+		int xPos = 60;
 		int yPos = 0;
 		ClientHelper.bindTexture(image);
-		GuiHelper.drawTexturedRect(imageBox.getMinX(), imageBox.getMinY(), imageBox.getMaxX(), imageBox.getMaxY());
+		GuiHelper.drawTexturedRect(imageBox.getMinX() - 2, imageBox.getMinY(), imageBox.getMaxX() - 2, imageBox.getMaxY());
 		xPos = recipeWidth / 2 - minecraft.fontRendererObj.getStringWidth(name) / 2;
 		yPos = 4;
 		minecraft.fontRendererObj.drawString(name, xPos, yPos, Color.black.getRGB());
-		String text;
+		String text = this.text;
 		int wrapWidth = 60;
-		if (imageIndex == 0)
+		if (imageIndex == 3)
 		{
-			text = "Render items and blocks as moving parts of armor pieces.";
-			xPos = 40;
+			xPos = 15;
+			yPos = 26;
+			text = text.replaceFirst("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_VANITY.getKeyBinding().getDisplayName())
+					.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.getKeyBinding().getDisplayName());
+			wrapWidth = 153;
+			List<String> strings = minecraft.fontRendererObj.listFormattedStringToWidth(text, wrapWidth);
+			String lastLine = "";
+			for (int i = 0; i < strings.size() && i < 3; i++)
+			{
+				lastLine = strings.get(i);
+				minecraft.fontRendererObj.drawString(lastLine, xPos, yPos, Color.black.getRGB());
+				yPos += minecraft.fontRendererObj.FONT_HEIGHT;
+			}
+			wrapWidth = 62;
+			xPos += 99;
+			strings = minecraft.fontRendererObj.listFormattedStringToWidth(text.substring(text.indexOf(lastLine)
+					+ lastLine.length()).trim(), wrapWidth);
+			for (int i = 0; i < strings.size(); i++)
+			{
+				minecraft.fontRendererObj.drawString(strings.get(i), xPos, yPos, Color.black.getRGB());
+				yPos += minecraft.fontRendererObj.FONT_HEIGHT;
+			}
+			return;
+		}
+		else if (imageIndex == 0)
+		{
+			xPos = 53;
 			yPos = 44;
 			wrapWidth = 84;
 		}
 		else if (imageIndex == 1)
 		{
-			text = "To import copies of blocks from the world, start by setting a boypart template area.";
-			xPos = 30;
+			xPos = 42;
 			yPos = 30;
 		}
 		else
 		{
-			if (imageIndex == 2)
-			{
-				text = "Once your model is created, draw a box around it in collection mode to copy and import the intersecting blocks.";
-				xPos = 30;
-			}
-			else
-			{
-				text = "Items (and rendering operations to apply to them) of worn armor pieces can be manually added and modified by pressing ";
-				xPos = 28;
-			}
-			text += KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.getKeyBinding().getDisplayName() + ".";
-			yPos = 23;
+			xPos = 42;
+			yPos = imageIndex > 2 ? 26 : 23;
 		}
 		for (String s : minecraft.fontRendererObj.listFormattedStringToWidth(text, wrapWidth))
 		{
