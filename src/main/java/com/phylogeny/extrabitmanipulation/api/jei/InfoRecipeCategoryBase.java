@@ -50,8 +50,13 @@ public abstract class InfoRecipeCategoryBase<T extends IRecipeWrapper> extends B
 	public void setRecipe(IRecipeLayout recipeLayout, IRecipeWrapper recipeWrapper, IIngredients ingredients)
 	{
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		guiItemStacks.init(0, true, 47, 0);
+		guiItemStacks.init(0, true, getSlotPosX(), 0);
 		guiItemStacks.set(ingredients);
+	}
+	
+	protected int getSlotPosX()
+	{
+		return 47;
 	}
 	
 }

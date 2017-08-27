@@ -12,12 +12,14 @@ import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 public class PacketEquipmentSlot implements IMessage
 {
 	protected EntityEquipmentSlot equipmentSlot;
+	protected boolean mainArmor;
 	
 	public PacketEquipmentSlot() {}
 	
-	public PacketEquipmentSlot(@Nullable EntityEquipmentSlot equipmentSlot)
+	public PacketEquipmentSlot(@Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
 	{
 		this.equipmentSlot = equipmentSlot;
+		this.mainArmor = mainArmor;
 	}
 	
 	@Override
@@ -25,6 +27,8 @@ public class PacketEquipmentSlot implements IMessage
 	{
 		if (BitIOHelper.notNullToBuffer(buffer, equipmentSlot))
 			buffer.writeInt(equipmentSlot.ordinal());
+		
+		buffer.writeBoolean(mainArmor);
 	}
 	
 	@Override
@@ -32,6 +36,8 @@ public class PacketEquipmentSlot implements IMessage
 	{
 		if (buffer.readBoolean())
 			equipmentSlot = EntityEquipmentSlot.values()[buffer.readInt()];
+		
+		mainArmor = buffer.readBoolean();
 	}
 	
 }

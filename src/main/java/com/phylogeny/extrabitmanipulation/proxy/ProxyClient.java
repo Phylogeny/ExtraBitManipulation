@@ -19,6 +19,7 @@ import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ModelRegistration;
 import com.phylogeny.extrabitmanipulation.init.RenderLayersExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 public class ProxyClient extends ProxyCommon
@@ -47,7 +48,7 @@ public class ProxyClient extends ProxyCommon
 	{
 		super.init();
 		KeyBindingsExtraBitManipulation.init();
-		FMLInterModComms.sendMessage("chiselsandbits", "initkeybindingannotations", "");
+		FMLInterModComms.sendMessage(ChiselsAndBitsReferences.MOD_ID, "initkeybindingannotations", "");
 		RenderLayersExtraBitManipulation.init();
 	}
 	

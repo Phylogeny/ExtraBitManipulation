@@ -20,12 +20,15 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityVindicator;
 import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
@@ -105,15 +108,12 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		ClientHelper.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		ItemStack headStack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		if (headStack.hasTagCompound() && headStack.getItem() instanceof ItemChiseledArmor)
+		IChiseledArmorSlotsHandler cap = entity instanceof EntityPlayer ? ChiseledArmorSlotsHandler.getCapability((EntityPlayer) entity) : null;
+		Integer[] displayListsHelmet = getStackDisplayLists(entity, scale, EntityEquipmentSlot.HEAD, ArmorType.HELMET);
+		Integer[] displayListsSlotHelmet = getSlotStackDisplayLists(entity, scale, cap, ArmorType.HELMET);
+		if (displayListsHelmet != null || displayListsSlotHelmet != null)
 		{
 			GlStateManager.pushMatrix();
-			NBTTagCompound nbt = headStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
-			if (displayLists == null)
-				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.HELMET), nbt, 1);
-			
 			adjustForSneaking(entity);
 			if (entity.isChild() && !(entity instanceof EntityVillager))
 			{
@@ -128,58 +128,103 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			if (entity instanceof EntityVillager || entity instanceof EntityZombieVillager || entity instanceof EntityVindicator)
 				GlStateManager.translate(0.0F, scale * 2, 0.0F);
 			
-			GlStateManager.callList(displayLists[0]);
+			GlStateManager.pushMatrix();
+			if (displayListsHelmet != null)
+				GlStateManager.callList(displayListsHelmet[0]);
+			
+			GlStateManager.popMatrix();
+			if (displayListsSlotHelmet != null)
+				GlStateManager.callList(displayListsSlotHelmet[0]);
+			
 			GlStateManager.popMatrix();
 		}
-		ItemStack chestStack = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-		if (chestStack.hasTagCompound() && chestStack.getItem() instanceof ItemChiseledArmor)
+		Integer[] displayListsChestplate = getStackDisplayLists(entity, scale, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE);
+		Integer[] displayListsSlotChestplate = getSlotStackDisplayLists(entity, scale, cap, ArmorType.CHESTPLATE);
+		if (displayListsChestplate != null || displayListsSlotChestplate != null)
 		{
 			GlStateManager.pushMatrix();
-			NBTTagCompound nbt = chestStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
-			if (displayLists == null)
-				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.CHESTPLATE), nbt, 3);
-			
 			adjustForSneaking(entity);
 			adjustForChildModel();
-			renderArmorPiece(body, displayLists[0], scale, 8);
 			boolean isPassive = !isVindicator || !((EntityVindicator) entity).isAggressive();
-			renderSleeve(displayLists[1], EnumHandSide.RIGHT, scale, isPassive);
-			renderSleeve(displayLists[2], EnumHandSide.LEFT, scale, isPassive);
+			GlStateManager.pushMatrix();
+			if (displayListsChestplate != null)
+			{
+				renderArmorPiece(body, displayListsChestplate[0], scale, 8);
+				renderSleeve(displayListsChestplate[1], EnumHandSide.RIGHT, scale, isPassive);
+				renderSleeve(displayListsChestplate[2], EnumHandSide.LEFT, scale, isPassive);
+			}
+			GlStateManager.popMatrix();
+			if (displayListsSlotChestplate != null)
+			{
+				renderArmorPiece(body, displayListsSlotChestplate[0], scale, 8);
+				renderSleeve(displayListsSlotChestplate[1], EnumHandSide.RIGHT, scale, isPassive);
+				renderSleeve(displayListsSlotChestplate[2], EnumHandSide.LEFT, scale, isPassive);
+			}
 			GlStateManager.popMatrix();
 		}
-		ItemStack legsStack = entity.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-		if (legsStack.hasTagCompound() && legsStack.getItem() instanceof ItemChiseledArmor)
+		Integer[] displayListsLeggings = getStackDisplayLists(entity, scale, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS);
+		Integer[] displayListsSlotLeggings = getSlotStackDisplayLists(entity, scale, cap, ArmorType.LEGGINGS);
+		if (displayListsLeggings != null || displayListsSlotLeggings != null)
 		{
 			GlStateManager.pushMatrix();
-			NBTTagCompound nbt = legsStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
-			if (displayLists == null)
-				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.LEGGINGS), nbt, 3);
-			
 			adjustForSneaking(entity);
 			adjustForChildModel();
-			renderArmorPiece(body, displayLists[0], scale, 4);
-			
-			renderLegPieces(displayLists[1], displayLists[2], scale, 8);
+			GlStateManager.pushMatrix();
+			if (displayListsLeggings != null)
+			{
+				renderArmorPiece(body, displayListsLeggings[0], scale, 4);
+				renderLegPieces(displayListsLeggings[1], displayListsLeggings[2], scale, 8);
+			}
+			GlStateManager.popMatrix();
+			if (displayListsSlotLeggings != null)
+			{
+				renderArmorPiece(body, displayListsSlotLeggings[0], scale, 4);
+				renderLegPieces(displayListsSlotLeggings[1], displayListsSlotLeggings[2], scale, 8);
+			}
 			GlStateManager.popMatrix();
 		}
-		ItemStack feetStack = entity.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-		if (feetStack.hasTagCompound() && feetStack.getItem() instanceof ItemChiseledArmor)
+		Integer[] displayListsBoots = getStackDisplayLists(entity, scale, EntityEquipmentSlot.FEET, ArmorType.BOOTS);
+		Integer[] displayListsSlotBoots = getSlotStackDisplayLists(entity, scale, cap, ArmorType.BOOTS);
+		if (displayListsBoots != null || displayListsSlotBoots != null)
 		{
 			GlStateManager.pushMatrix();
-			NBTTagCompound nbt = feetStack.getTagCompound();
-			Integer[] displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
-			if (displayLists == null)
-				displayLists = addMovingPartsDisplayListsToMap(entity, scale, new DataChiseledArmorPiece(nbt, ArmorType.BOOTS), nbt, 2);
-			
 			adjustForSneaking(entity);
 			adjustForChildModel();
 			GlStateManager.translate(0.0F, scale * (Configs.armorZFightingBufferTranslationFeet), 0.0F);
-			renderLegPieces(displayLists[0], displayLists[1], scale, 4);
+			GlStateManager.pushMatrix();
+			if (displayListsBoots != null)
+				renderLegPieces(displayListsBoots[0], displayListsBoots[1], scale, 4);
+			
+			GlStateManager.popMatrix();
+			if (displayListsSlotBoots != null)
+				renderLegPieces(displayListsSlotBoots[0], displayListsSlotBoots[1], scale, 4);
+			
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.disableBlend();
+	}
+	
+	private Integer[] getStackDisplayLists(EntityLivingBase entity, float scale, EntityEquipmentSlot slot, ArmorType armorType)
+	{
+		return getDisplayLists(entity, scale, armorType, entity.getItemStackFromSlot(slot));
+	}
+	
+	private Integer[] getSlotStackDisplayLists(EntityLivingBase entity, float scale, IChiseledArmorSlotsHandler cap, ArmorType armorType)
+	{
+		return cap == null ? null : getDisplayLists(entity, scale, armorType, cap.getStackInSlot(armorType.ordinal()));
+	}
+	
+	private Integer[] getDisplayLists(EntityLivingBase entity, float scale, ArmorType armorType, ItemStack stack)
+	{
+		Integer[] displayLists = null;
+		if (stack.hasTagCompound() && stack.getItem() instanceof ItemChiseledArmor)
+		{
+			NBTTagCompound nbt = stack.getTagCompound();
+			displayLists = movingPartsDisplayListsMap.get(ItemStackHelper.getArmorData(nbt));
+			if (displayLists == null)
+				displayLists = addMovingPartsDisplayListsToMap(entity, scale, nbt, armorType);
+		}
+		return displayLists;
 	}
 	
 	private void adjustForSneaking(EntityLivingBase entity)
@@ -197,12 +242,11 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		}
 	}
 	
-	private Integer[] addMovingPartsDisplayListsToMap(EntityLivingBase entity, float scale,
-			DataChiseledArmorPiece armorPiece, NBTTagCompound armorNbt, int movingpartCount)
+	private Integer[] addMovingPartsDisplayListsToMap(EntityLivingBase entity, float scale, NBTTagCompound armorNbt, ArmorType armorType)
 	{
-		Integer[] movingPartsDisplayLists = new Integer[movingpartCount];
+		Integer[] movingPartsDisplayLists = new Integer[armorType.getMovingpartCount()];
 		for (int i = 0; i < movingPartsDisplayLists.length; i++)
-			movingPartsDisplayLists[i] = armorPiece.generateDisplayList(i, entity, scale);
+			movingPartsDisplayLists[i] = new DataChiseledArmorPiece(armorNbt, armorType).generateDisplayList(i, entity, scale);
 		
 		movingPartsDisplayListsMap.put(ItemStackHelper.getArmorData(armorNbt), movingPartsDisplayLists);
 		return movingPartsDisplayLists;

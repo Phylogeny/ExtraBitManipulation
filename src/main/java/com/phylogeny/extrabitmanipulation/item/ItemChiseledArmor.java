@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -534,6 +535,8 @@ public class ItemChiseledArmor extends ItemArmor
 		
 		private String name;
 		private int movingpartCount;
+		@SideOnly(Side.CLIENT)
+		private ItemStack iconStack;
 		
 		private ArmorType(String name, int movingpartCount)
 		{
@@ -549,6 +552,18 @@ public class ItemChiseledArmor extends ItemArmor
 		public int getMovingpartCount()
 		{
 			return movingpartCount;
+		}
+		
+		@SideOnly(Side.CLIENT)
+		public void initIconStack(Item item)
+		{
+			iconStack = new ItemStack(item);
+		}
+		
+		@SideOnly(Side.CLIENT)
+		public IBakedModel getIconModel()
+		{
+			return ClientHelper.getRenderItem().getItemModelWithOverrides(iconStack, null, ClientHelper.getPlayer());
 		}
 		
 	}

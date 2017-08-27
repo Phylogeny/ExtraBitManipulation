@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.client.gui;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -12,10 +14,10 @@ public class GuiButtonTextured extends GuiButtonBase
 {
 	private ResourceLocation selectedTexture, deselectedTexture;
 	
-	public GuiButtonTextured(int buttonId, int x, int y, int widthIn, int heightIn, String hoverText, ResourceLocation selectedTexture,
-			ResourceLocation deselectedTexture, SoundEvent boxCheck, SoundEvent boxUncheck)
+	public GuiButtonTextured(int buttonId, int x, int y, int width, int height, String hoverText, ResourceLocation selectedTexture,
+			ResourceLocation deselectedTexture, @Nullable SoundEvent boxCheck, @Nullable SoundEvent boxUncheck)
 	{
-		super(buttonId, x, y, widthIn, heightIn, "", hoverText, boxCheck, boxUncheck);
+		super(buttonId, x, y, width, height, "", hoverText, boxCheck, boxUncheck);
 		this.selectedTexture = selectedTexture;
 		this.deselectedTexture = deselectedTexture;
 	}

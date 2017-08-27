@@ -2,7 +2,6 @@ package com.phylogeny.extrabitmanipulation.client.gui.armor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,10 +13,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
@@ -34,7 +30,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
@@ -43,8 +38,8 @@ import com.phylogeny.extrabitmanipulation.armor.GlOperation;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation.GlOperationType;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonBase;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonCustom;
+import com.phylogeny.extrabitmanipulation.client.GuiHelper.IHoveringTextRenderer;
+import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonHelp;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonSelect;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonSelectTextured;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonTab;
@@ -62,9 +57,10 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
-public class GuiChiseledArmor extends GuiContainer
+public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRenderer
 {
 	public static final ResourceLocation TEXTURE_GUI = new ResourceLocation(Reference.MOD_ID, "textures/guis/chiseled_armor.png");
+	public static final int HELP_TEXT_BACKGROUNG_COLOR = 1694460416;
 	private static final ResourceLocation TEXTURE_ROTATION = new ResourceLocation(Reference.MOD_ID, "textures/guis/rotation_large.png");
 	private static final ResourceLocation TEXTURE_TRANSLATION = new ResourceLocation(Reference.MOD_ID, "textures/guis/translation_large.png");
 	private static final ResourceLocation TEXTURE_SCALE = new ResourceLocation(Reference.MOD_ID, "textures/guis/scale_large.png");
@@ -80,7 +76,6 @@ public class GuiChiseledArmor extends GuiContainer
 	private static final ResourceLocation TEXTURE_MOVE_DOWN = new ResourceLocation(Reference.MOD_ID, "textures/guis/move_down.png");
 	private static final String[] GL_OPERATION_TITLES = new String[]{"Rotation", "Translation", "Scale"};
 	private static final String[] GL_OPERATION_DATA_TITLES = new String[]{"X component", "Y component", "Z component", "Angle"};
-	private static final int HELP_TEXT_BACKGROUNG_COLOR = 1694460416;
 	private static String glOperationHoverHelpText, glOperationHoverKeysHelpText;
 	private static final float PLAYER_HEIGHT_HALF = 37.25F;
 	private static final float PLAYER_HEIGHT_EYES = 64.5F;
@@ -95,10 +90,10 @@ public class GuiChiseledArmor extends GuiContainer
 									buttonScaleMeter, buttonItemAdd, buttonItemDelete, buttonGlAdd, buttonGlDelete, buttonGlMoveUp, buttonGlMoveDown,
 									buttonAddRotation, buttonAddTranslation, buttonAddScale;
 	private GuiButtonSelect buttonGlItems, buttonGlPre, buttonGlPost, buttonScale;
-	private GuiButtonCustom buttonHelp;
+	private GuiButtonHelp buttonHelp;
 	private AxisAlignedBB boxPlayer, boxArmorItem, boxGlOperation, boxTitleItems, boxTitleGlOperations;
 	private AxisAlignedBB[] boxesData = new AxisAlignedBB[4];
-	private boolean playerBoxClicked;
+	private boolean playerBoxClicked, isMainArmorMode;
 	private int selectedTabIndex, selectedSubTabIndex, mouseInitialX, mouseInitialY;
 	private float playerScale;
 	private Vec3d playerRotation, playerTranslation, playerTranslationInitial;
@@ -107,9 +102,10 @@ public class GuiChiseledArmor extends GuiContainer
 	private NBTTagCompound copiedGlOperation;
 	private boolean waitingForServerResponse;
 	
-	public GuiChiseledArmor(EntityPlayer player)
+	public GuiChiseledArmor(EntityPlayer player, boolean openForMainArmor)
 	{
 		super(ProxyCommon.createArmorContainer(player));
+		isMainArmorMode = openForMainArmor;
 		xSize = 328;
 		ySize = 230;
 		selectedSubTabIndex = 1;
@@ -275,14 +271,11 @@ public class GuiChiseledArmor extends GuiContainer
 		buttonAddRotation = createButtonAddGlOperation(109, y, TEXTURE_ROTATION, 0);
 		buttonAddTranslation = createButtonAddGlOperation(170, y, TEXTURE_TRANSLATION, 1);
 		buttonAddScale = createButtonAddGlOperation(231, y, TEXTURE_SCALE, 2);
-		buttonHelp = new GuiButtonCustom(100, guiLeft + xSize - 17, guiTop + 5, 12, 12, "?", "Show more explanatory hover text");
+		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 17, guiTop + 5, "Show more explanatory hover text", "Exit help mode");
 		buttonScale = new GuiButtonSelect(100, guiLeft + 178, guiTop + 127, 17, 12, "", "Armor piece scale", -5111553, -5111553);
 		buttonScale.setTextOffsetX(1);
-		buttonScale.setHoverHelpText("This is the scale of the selected armor piece. Just as all newly imported block 1.5 are scaled by this amount " +
+		buttonScale.setHoverHelpText("This is the scale of the selected armor piece. Just as all newly imported blocks are scaled by this amount " +
 				"when collecting them in-world, all newly added slots to any of the selected armor pieces' moving parts are likewise scaled by this amount.");
-		buttonHelp.setTextOffsetX(0.5F);
-		buttonHelp.setTextOffsetY(0.5F);
-		buttonHelp.setHoverTextSelected("Exit help mode");
 		buttonList.add(buttonGlItems);
 		buttonList.add(buttonGlPre);
 		buttonList.add(buttonGlPost);
@@ -391,7 +384,7 @@ public class GuiChiseledArmor extends GuiContainer
 	
 	private ItemStack getArmorStack(int index)
 	{
-		return ClientHelper.getPlayer().getItemStackFromSlot(getArmorSlot(index));
+		return ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), getArmorSlot(index), isMainArmorMode);
 	}
 	
 	private GuiListGlOperation createGuiListGlOperation(DataChiseledArmorPiece armorPiece)
@@ -571,21 +564,15 @@ public class GuiChiseledArmor extends GuiContainer
 		{
 			if (buttonAddRotation.visible && buttonHelp.selected
 					&& (buttonAddRotation.isMouseOver() || buttonAddTranslation.isMouseOver() || buttonAddScale.isMouseOver()))
-				drawHoveringText(mouseX, mouseY, buttonAddRotation.getHoverText());
+				drawCreativeTabHoveringText(buttonAddRotation.getHoverText(), mouseX, mouseY);
 			
 			return;
 		}
-		for (GuiButton button : buttonList)
-		{
-			if (!(button instanceof GuiButtonBase))
-				continue;
-			
-			if (button.isMouseOver() && button.visible)
-			{
-				drawHoveringText(mouseX, mouseY, ((GuiButtonBase) button).getHoverText());
-				break;
-			}
-		}
+		Slot slot = getSlotUnderMouse();
+		if (mc.player.inventory.getItemStack().isEmpty() && slot != null && slot.getHasStack())
+			renderToolTip(slot.getStack(), mouseX, mouseY);
+		
+		GuiHelper.drawHoveringTextForButtons(this, buttonList, mouseX, mouseY);
 		GuiListGlOperation glOperationsList = getSelectedGuiListGlOperation();
 		if (GuiHelper.isCursorInsideBox(boxGlOperation, mouseX, mouseY))
 		{
@@ -594,7 +581,7 @@ public class GuiChiseledArmor extends GuiContainer
 				GuiListEntryGlOperation entry = (GuiListEntryGlOperation) glOperationsList.getListEntry(i);
 				if (entry.isElementHovered(buttonHelp.selected))
 				{
-					drawHoveringText(mouseX, mouseY, entry.getElementHoverText(buttonHelp.selected ? glOperationHoverHelpText : null));
+					drawCreativeTabHoveringText(entry.getElementHoverText(buttonHelp.selected ? glOperationHoverHelpText : null), mouseX, mouseY);
 					break;
 				}
 			}
@@ -608,7 +595,7 @@ public class GuiChiseledArmor extends GuiContainer
 				if (entry.isSlotHovered())
 				{
 					if (buttonHelp.selected)
-						drawHoveringText(mouseX, mouseY, getArmoritemSlotHoverhelpText("These slots"));
+						drawCreativeTabHoveringText(getArmoritemSlotHoverhelpText("These slots"), mouseX, mouseY);
 					else if (entry.getStack() != null)
 						renderToolTip(entry.getStack(), mouseX, mouseY);
 					
@@ -619,18 +606,18 @@ public class GuiChiseledArmor extends GuiContainer
 		if (buttonHelp.selected)
 		{
 			if (GuiHelper.isCursorInsideBox(boxTitleItems, mouseX, mouseY))
-				drawHoveringText(mouseX, mouseY, getArmoritemSlotHoverhelpText("The slots of the list below"));
+				drawCreativeTabHoveringText(getArmoritemSlotHoverhelpText("The slots of the list below"), mouseX, mouseY);
 			else if (GuiHelper.isCursorInsideBox(boxTitleGlOperations, mouseX, mouseY))
-				drawHoveringText(mouseX, mouseY, "The rendered items for the moving parts of armor pieces can have any number of GL operations applied " +
+				drawCreativeTabHoveringText("The rendered items for the moving parts of armor pieces can have any number of GL operations applied " +
 					"to them. The three types are rotation, translation, and scale.\n\nGlobal pre/post-operations apply to all items of an armor piece, " +
 					"while item-specific operations only apply to a single item.\n\nFor more information on these three categories refer to the hover " +
-					"text of the corresponding buttons to the right." + glOperationHoverKeysHelpText);
+					"text of the corresponding buttons to the right." + glOperationHoverKeysHelpText, mouseX, mouseY);
 			
 			for (int i = 0; i < boxesData.length; i++)
 			{
 				if (GuiHelper.isCursorInsideBox(boxesData[i], mouseX, mouseY))
 				{
-					drawHoveringText(mouseX, mouseY, GL_OPERATION_DATA_TITLES[i] + " of the GL operations below");
+					drawCreativeTabHoveringText(GL_OPERATION_DATA_TITLES[i] + " of the GL operations below", mouseX, mouseY);
 					break;
 				}
 			}
@@ -645,11 +632,6 @@ public class GuiChiseledArmor extends GuiContainer
 				" Click with an item on the cursor to add a copy of that item.\n" + getPointMain("2") + " Shift-click to clear the copied item.\n" +
 				getPointMain("3") + " Middle mouse click in creative mode to get item.\n\nKey presses manipulate slots (along with any associated " +
 				"GL operations) as follows:\n" + getPointMain("Control + C") + " copy\n" + getPointMain("Control + V") + " paste\n" + getPointMain("Delete") + " delete\n";
-	}
-	
-	private void drawHoveringText(int mouseX, int mouseY, String hoverText)
-	{
-		drawHoveringText(Arrays.<String>asList(new String[] {hoverText}), mouseX, mouseY, mc.fontRendererObj);
 	}
 	
 	@Override
@@ -743,36 +725,6 @@ public class GuiChiseledArmor extends GuiContainer
 		drawEntityOnScreen(40, lookX, lookY, mc.player);
 		GuiHelper.glScissorDisable();
 		GlStateManager.popMatrix();
-		x = guiLeft + xSize - 11;
-		y = guiTop + 11;
-		double radius = 6;
-		int red, green, blue;
-		if (buttonHelp.selected)
-		{
-			red = blue = 0;
-			green = 200;
-		}
-		else
-		{
-			red = green = blue = 120;
-		}
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer buffer = tessellator.getBuffer();
-		GlStateManager.enableBlend();
-		GlStateManager.disableTexture2D();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		buffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(x, y, 0).color(red, green, blue, 255).endVertex();
-		double s = 30;
-		for(int k = 0; k <= s; k++) 
-		{
-			double angle = (Math.PI * 2 * k / s) + Math.toRadians(180);
-			buffer.pos(x + Math.sin(angle) * radius, y + Math.cos(angle) * radius, 0).color(red, green, blue, 255).endVertex();
-		}
-		tessellator.draw();
-		GlStateManager.enableTexture2D();
-		GlStateManager.disableBlend();
 		if (buttonHelp.selected)
 		{
 			drawRect((int) boxTitleItems.minX, (int) boxTitleItems.minY, (int) boxTitleItems.maxX, (int) boxTitleItems.maxY, HELP_TEXT_BACKGROUNG_COLOR);
@@ -969,10 +921,10 @@ public class GuiChiseledArmor extends GuiContainer
 				selectedSubTabIndex = indexSubTab == 0 ? 1 : indexSubTab;
 				if (indexSubTab != 0)
 				{
-					EntityEquipmentSlot slot = getArmorSlot(indexTab);
-					ItemStack stack = mc.player.getItemStackFromSlot(slot);
+					ItemStack stack = getArmorStack(indexTab);
 					BitToolSettingsHelper.setArmorMovingPart(mc.player, stack, indexSubTab - 1,
-							BitToolSettingsHelper.getArmorMovingPartConfig(((ItemChiseledArmor) stack.getItem()).armorType), slot);
+							BitToolSettingsHelper.getArmorMovingPartConfig(((ItemChiseledArmor) stack.getItem()).armorType),
+							getArmorSlot(indexTab), isMainArmorMode);
 				}
 			}
 			updateButtons();
@@ -1025,19 +977,9 @@ public class GuiChiseledArmor extends GuiContainer
 		}
 		else if (button == buttonScale)
 		{
-			BitToolSettingsHelper.setArmorScale(ClientHelper.getPlayer(), getArmorStack(selectedTabIndex),
-				(Integer.parseInt(buttonScale.displayString.substring(2)) / 2 + 1) % 3, Configs.armorScale, getArmorSlot(selectedTabIndex));
+			BitToolSettingsHelper.setArmorScale(mc.player, getArmorStack(selectedTabIndex),
+				(Integer.parseInt(buttonScale.displayString.substring(2)) / 2 + 1) % 3, Configs.armorScale, getArmorSlot(selectedTabIndex), isMainArmorMode);
 			updateButtons();
-		}
-		else if (button == buttonHelp)
-		{
-			boolean helpMode = !buttonHelp.selected;
-			buttonHelp.selected = helpMode;
-			for (GuiButton button2 : buttonList)
-			{
-				if (button2 != buttonHelp && button2 instanceof GuiButtonBase)
-					((GuiButtonBase) button2).setHelpMode(helpMode);
-			}
 		}
 		else
 		{
@@ -1133,7 +1075,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private void setArmorItemListData(GuiListArmorItem list, int selectedArmorItem,
 			ListOperation listOperation, ItemStack stack, NBTTagCompound nbtGlOperations)
 	{
-		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex), selectedSubTabIndex - 1,
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex), isMainArmorMode, selectedSubTabIndex - 1,
 				list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, nbtGlOperations, true));
 		waitingForServerResponse = true;
 	}
@@ -1151,7 +1093,7 @@ public class GuiChiseledArmor extends GuiContainer
 		NBTTagCompound nbt = new NBTTagCompound();
 		GlOperation.saveListToNBT(nbt, key, glOperations);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeGlOperationList(nbt, key, getArmorSlot(selectedTabIndex),
-				selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists));
+				isMainArmorMode, selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists));
 		waitingForServerResponse = true;
 	}
 	
@@ -1194,6 +1136,12 @@ public class GuiChiseledArmor extends GuiContainer
 			text += " at " + buttonScale.displayString + " scale";
 		
 		buttonItemAdd.setHoverText(text);
+	}
+	
+	@Override
+	public void render(String text, int mouseX, int mouseY)
+	{
+		drawCreativeTabHoveringText(text, mouseX, mouseY);
 	}
 	
 	private static enum GlOperationListType

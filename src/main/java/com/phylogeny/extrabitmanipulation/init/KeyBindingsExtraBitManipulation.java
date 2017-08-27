@@ -6,6 +6,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import org.lwjgl.input.Keyboard;
@@ -20,12 +21,6 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	EDIT_DESIGN("design", Keyboard.KEY_R)
 	{
 		@Override
-		public boolean isKeyDown()
-		{
-			return getKeyBinding().isKeyDown();
-		}
-		
-		@Override
 		public boolean isActive()
 		{
 			return ItemStackHelper.isDesignStack(ClientHelper.getHeldItemMainhand());
@@ -34,18 +29,12 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean conflicts(IKeyConflictContext other)
 		{
-			return other == this || other == KeyConflictContext.IN_GAME;
+			return conflictsInGame(other);
 		}
 	},
 	
 	THROW_BIT("throw.bit", Keyboard.KEY_R)
 	{
-		@Override
-		public boolean isKeyDown()
-		{
-			return getKeyBinding().isKeyDown();
-		}
-		
 		@Override
 		public boolean isActive()
 		{
@@ -55,18 +44,12 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean conflicts(IKeyConflictContext other)
 		{
-			return other == this || other == KeyConflictContext.IN_GAME;
+			return conflictsInGame(other);
 		}
 	},
 	
-	OPEN_CHISELED_ARMOR_GUI("chiseledarmor", Keyboard.KEY_G)
+	OPEN_CHISELED_ARMOR_GUI_MAIN("chiseledarmor.main", Keyboard.KEY_G)
 	{
-		@Override
-		public boolean isKeyDown()
-		{
-			return getKeyBinding().isKeyDown();
-		}
-		
 		@Override
 		public boolean isActive()
 		{
@@ -76,18 +59,48 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean conflicts(IKeyConflictContext other)
 		{
-			return other == this || other == KeyConflictContext.IN_GAME;
+			return conflictsInGame(other);
+		}
+	},
+	
+	OPEN_CHISELED_ARMOR_GUI_VANITY("chiseledarmor.vanity", Keyboard.KEY_G)
+	{
+		@Override
+		public boolean isActive()
+		{
+			return true;
+		}
+		
+		@Override
+		public boolean conflicts(IKeyConflictContext other)
+		{
+			return conflictsInGame(other);
+		}
+		
+		@Override
+		protected KeyModifier getModifier()
+		{
+			return KeyModifier.SHIFT;
+		}
+	},
+	
+	OPEN_CHISELED_ARMOR_SLOTS_GUI("chiseledarmor.slots", Keyboard.KEY_H)
+	{
+		@Override
+		public boolean isActive()
+		{
+			return true;
+		}
+		
+		@Override
+		public boolean conflicts(IKeyConflictContext other)
+		{
+			return conflictsInGame(other);
 		}
 	},
 	
 	OPEN_BIT_MAPPING_GUI("bitmapping", Keyboard.KEY_R, false)
 	{
-		@Override
-		public boolean isKeyDown()
-		{
-			return getKeyBinding().isKeyDown();
-		}
-		
 		@Override
 		public boolean isActive()
 		{
@@ -168,7 +181,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	public boolean isKeyDown()
 	{
-		return false;
+		return getKeyBinding().isKeyDown();
 	}
 	
 	protected boolean isKeyDown(boolean defaultCheck)
@@ -182,9 +195,15 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 			keyBinding.registerKeyBinding();
 	}
 	
+	protected KeyModifier getModifier()
+	{
+		return KeyModifier.NONE;
+	}
+	
 	private void registerKeyBinding()
 	{
-		keyBinding = new KeyBinding("keybinding." + Reference.MOD_ID + "." + description.toLowerCase(), this, defaultKeyCode, "itemGroup." + Reference.MOD_ID);
+		keyBinding = new KeyBinding("keybinding." + Reference.MOD_ID + "." + description.toLowerCase(),
+				this, getModifier(), defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
 	}
 	
@@ -203,6 +222,11 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	{
 		return other == this || other == KeyConflictContext.IN_GAME || other == SHIFT || other == CONTROL
 				|| (anyConflicts && (other == ALT || other == OPEN_BIT_MAPPING_GUI));
+	}
+	
+	protected boolean conflictsInGame(IKeyConflictContext other)
+	{
+		return other == this || other == KeyConflictContext.IN_GAME;
 	}
 	
 }

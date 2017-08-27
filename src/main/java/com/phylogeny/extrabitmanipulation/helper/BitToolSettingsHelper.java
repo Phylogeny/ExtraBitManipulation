@@ -24,6 +24,9 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
@@ -568,18 +571,18 @@ public class BitToolSettingsHelper
 	
 	public static void setArmorScale(EntityPlayer player, ItemStack stack, int scale, @Nullable ConfigBitToolSettingInt armorScale)
 	{
-		setArmorScale(player, stack, scale, armorScale, null);
+		setArmorScale(player, stack, scale, armorScale, null, false);
 	}
 	
 	public static void setArmorScale(EntityPlayer player, ItemStack stack, int scale,
-			@Nullable ConfigBitToolSettingInt armorScale, @Nullable EntityEquipmentSlot slot)
+			@Nullable ConfigBitToolSettingInt armorScale, @Nullable EntityEquipmentSlot slot, boolean mainArmor)
 	{
 		World world = player.world;
 		if (armorScale == null || armorScale.isPerTool())
 		{
 			if (world.isRemote)
 			{
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorScale(scale, slot));
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorScale(scale, slot, mainArmor));
 			}
 			setInt(player, stack, scale, NBTKeys.ARMOR_SCALE);
 		}
@@ -604,18 +607,18 @@ public class BitToolSettingsHelper
 	
 	public static void setArmorMovingPart(EntityPlayer player, ItemStack stack, ItemChiseledArmor armorPiece, int partIndex)
 	{
-		setArmorMovingPart(player, stack, partIndex, getArmorMovingPartConfig(armorPiece.armorType), null);
+		setArmorMovingPart(player, stack, partIndex, getArmorMovingPartConfig(armorPiece.armorType), null, false);
 	}
 	
 	public static void setArmorMovingPart(EntityPlayer player, ItemStack stack, int partIndex,
-			@Nullable ConfigBitToolSettingInt armorMovingPart, @Nullable EntityEquipmentSlot slot)
+			@Nullable ConfigBitToolSettingInt armorMovingPart, @Nullable EntityEquipmentSlot slot, boolean mainArmor)
 	{
 		World world = player.world;
 		if (armorMovingPart == null || armorMovingPart.isPerTool())
 		{
 			if (world.isRemote)
 			{
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMovingPart(partIndex, slot));
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMovingPart(partIndex, slot, mainArmor));
 			}
 			setInt(player, stack, partIndex, NBTKeys.ARMOR_MOVING_PART);
 		}
@@ -702,6 +705,25 @@ public class BitToolSettingsHelper
 	{
 		setBooleanProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
 				Configs.armorLookAtCursor, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, armorLookAtCursor);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static Pair<Integer, Integer> getArmorButtonPosition()
+	{
+		return new ImmutablePair<Integer, Integer>(Configs.armorButtonX.getValue(), Configs.armorButtonY.getValue());
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void setArmorButtonPosition(int armorButtonX, int armorButtonY)
+	{
+		setArmorButtonInt(Configs.armorButtonX, armorButtonX);
+		setArmorButtonInt(Configs.armorButtonY, armorButtonY);
+	}
+	
+	private static void setArmorButtonInt(ConfigBitToolSettingInt config, int armorButtonAxis)
+	{
+		setIntProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+				config, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, armorButtonAxis);
 	}
 	
 	public static String getArmorModeText(NBTTagCompound nbt)

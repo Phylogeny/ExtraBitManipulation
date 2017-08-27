@@ -22,9 +22,9 @@ public class PacketSetArmorScale extends PacketEquipmentSlot
 	
 	public PacketSetArmorScale() {}
 	
-	public PacketSetArmorScale(int scale, @Nullable EntityEquipmentSlot equipmentSlot)
+	public PacketSetArmorScale(int scale, @Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
 	{
-		super(equipmentSlot);
+		super(equipmentSlot, mainArmor);
 		this.scale = scale;
 	}
 	
@@ -54,9 +54,9 @@ public class PacketSetArmorScale extends PacketEquipmentSlot
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack stack = message.equipmentSlot == null ? player.getHeldItemMainhand() : player.getItemStackFromSlot(message.equipmentSlot);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
 					if (ItemStackHelper.isChiseledArmorStack(stack))
-						BitToolSettingsHelper.setArmorScale(player, stack, message.scale, null);
+						BitToolSettingsHelper.setArmorScale(player, stack, message.scale, null, message.equipmentSlot, message.mainArmor);
 				}
 			});
 			return null;
