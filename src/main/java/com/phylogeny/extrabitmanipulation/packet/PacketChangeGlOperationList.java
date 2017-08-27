@@ -29,9 +29,9 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 	public PacketChangeGlOperationList() {}
 	
 	public PacketChangeGlOperationList(NBTTagCompound nbt, String nbtKey, EntityEquipmentSlot equipmentSlot,
-			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
+			boolean mainArmor, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
 	{
-		super(nbt, equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
+		super(nbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists);
 		this.nbtKey = nbtKey;
 	}
 	
@@ -62,7 +62,7 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 				public void run()
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().player : ClientHelper.getPlayer();
-					ItemStack stack = player.getItemStackFromSlot(message.equipmentSlot);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
 					if (!ItemStackHelper.isChiseledArmorStack(stack))
 						return;
 					
@@ -90,8 +90,9 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 					message.finalizeDataChange(message, stack, nbt, data, serverSide, false, false, -1);
 					if (serverSide)
 					{
-						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeGlOperationList(message.nbt, message.nbtKey, message.equipmentSlot,
-								message.partIndex, message.armorItemIndex, message.selectedEntry, message.refreshLists), (EntityPlayerMP) player);
+						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeGlOperationList(message.nbt, message.nbtKey,
+								message.equipmentSlot, message.mainArmor, message.partIndex, message.armorItemIndex,
+								message.selectedEntry, message.refreshLists), (EntityPlayerMP) player);
 					}
 				}
 			});

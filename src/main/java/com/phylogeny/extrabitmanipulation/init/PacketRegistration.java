@@ -14,6 +14,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketCursorStack;
 import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
 import com.phylogeny.extrabitmanipulation.packet.PacketOverwriteStackBitMappings;
 import com.phylogeny.extrabitmanipulation.packet.PacketPlaceEntityBit;
 import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
@@ -38,6 +39,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetArmorBits;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetTargetBitGridVertexes;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWallThickness;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetWrechMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllArmorSlotData;
 import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit;
 import com.phylogeny.extrabitmanipulation.packet.PacketUseWrench;
 
@@ -91,6 +93,8 @@ public class PacketRegistration
 		registerPacket(PacketOpenChiseledArmorGui.Handler.class, PacketOpenChiseledArmorGui.class, Side.SERVER);
 		registerPacket(PacketChangeGlOperationList.Handler.class, PacketChangeGlOperationList.class, Side.BOTH);
 		registerPacket(PacketChangeArmorItemList.Handler.class, PacketChangeArmorItemList.class, Side.BOTH);
+		registerPacket(PacketSyncAllArmorSlotData.Handler.class, PacketSyncAllArmorSlotData.class, Side.CLIENT);
+		registerPacket(PacketOpenInventoryGui.Handler.class, PacketOpenInventoryGui.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

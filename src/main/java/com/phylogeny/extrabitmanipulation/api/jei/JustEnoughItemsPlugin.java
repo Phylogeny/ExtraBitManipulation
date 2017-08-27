@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
@@ -31,6 +32,24 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 @JEIPlugin
 public class JustEnoughItemsPlugin implements IModPlugin
 {
+	private static IJeiRuntime jeiRuntime;
+	
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime)
+	{
+		this.jeiRuntime = jeiRuntime;
+	}
+	
+	public static boolean isJeiInstalled()
+	{
+		return jeiRuntime != null;
+	}
+	
+	public static void openCategory(String categoryUid)
+	{
+		if (isJeiInstalled())
+			jeiRuntime.getRecipesGui().showCategories(Collections.<String>singletonList(categoryUid));
+	}
 	
 	public static String translate(String langKey)
 	{

@@ -1,5 +1,7 @@
 package com.phylogeny.extrabitmanipulation.client.gui;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
@@ -19,8 +21,8 @@ public class GuiButtonBase extends GuiButton
 		this(buttonId, x, y, width, height, text, hoverText, null, null);
 	}
 	
-	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn,
-			String text, String hoverText, SoundEvent soundSelect, SoundEvent soundDeselect)
+	public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String text,
+			String hoverText, @Nullable SoundEvent soundSelect, @Nullable SoundEvent soundDeselect)
 	{
 		super(buttonId, x, y, widthIn, heightIn, text);
 		this.hoverText = hoverTextSelected = hoverText;

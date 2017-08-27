@@ -16,7 +16,13 @@ public class ChiseledArmorInfoRecipeCategory extends InfoRecipeCategoryBase<Chis
 	
 	public ChiseledArmorInfoRecipeCategory(IGuiHelper guiHelper, List<ItemStack> stacks)
 	{
-		super(guiHelper, new CategoryIconStackList(16, 16, stacks), NAME, 160, 125);
+		super(guiHelper, new CategoryIconStackList(16, 16, stacks), NAME, 186, 125);
+	}
+	
+	@Override
+	protected int getSlotPosX()
+	{
+		return 60;
 	}
 	
 	@Override

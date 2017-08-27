@@ -23,9 +23,9 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 	public PacketChangeChiseledArmorList() {}
 	
 	public PacketChangeChiseledArmorList(NBTTagCompound nbt, EntityEquipmentSlot equipmentSlot,
-			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
+			boolean mainArmor, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
 	{
-		super(equipmentSlot);
+		super(equipmentSlot, mainArmor);
 		this.nbt = nbt;
 		this.partIndex = partIndex;
 		this.armorItemIndex = armorItemIndex;

@@ -8,6 +8,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
+import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;
@@ -20,12 +21,41 @@ import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRende
 
 public class Configs
 {
+	//CHISELED ARMOR SETTINGS
+		public static ArmorModelRenderMode armorModelRenderMode;
+		public static ArmorStackModelRenderMode armorStackModelRenderMode;
+		public static ArmorButtonVisibiltyMode armorButtonVisibiltyMode;
+		public static boolean armorSlotsGuiExitToMainInventory;
+		public static float armorZFightingBufferScale;
+		public static float armorZFightingBufferScaleRightLegOrFoot;
+		public static float armorZFightingBufferTranslationFeet;
+		public static ConfigBitToolSettingInt armorMode;
+		public static ConfigBitToolSettingInt armorScale;
+		public static ConfigBitToolSettingInt armorMovingPartHelmet;
+		public static ConfigBitToolSettingInt armorMovingPartChestplate;
+		public static ConfigBitToolSettingInt armorMovingPartLeggings;
+		public static ConfigBitToolSettingInt armorMovingPartBoots;
+		public static ConfigBitToolSettingInt armorTabIndex;
+		public static ConfigBitToolSettingBoolean armorTargetBits;
+		public static ConfigBitToolSettingBoolean armorPixelTranslation;
+		public static ConfigBitToolSettingBoolean armorFullIllumination;
+		public static ConfigBitToolSettingBoolean armorLookAtCursor;
+		public static ConfigBitToolSettingInt armorButtonX;
+		public static ConfigBitToolSettingInt armorButtonY;
+		
 	//MODELING TOOL SETTINGS
 		public static boolean saveStatesById;
 		public static ConfigReplacementBits replacementBitsUnchiselable;
 		public static ConfigReplacementBits replacementBitsInsufficient;
+		public static ConfigBitToolSettingInt modelAreaMode;
+		public static ConfigBitToolSettingInt modelSnapMode;
+		public static ConfigBitToolSettingBoolean modelGuiOpen;
+		public static String[] modelBlockToBitMapEntryStrings;
+		public static String[] modelStateToBitMapEntryStrings;
+		public static Map<IBlockState, IBitBrush> modelBlockToBitMap;
+		public static Map<IBlockState, IBitBrush> modelStateToBitMap;
 		
-	//BIT TOOL SETTINGS
+	//SCULPTING TOOL SETTINGS
 		public static boolean displayNameDiameter;
 		public static boolean displayNameUseMeterUnits;
 		public static float semiDiameterPadding;
@@ -37,11 +67,6 @@ public class Configs
 		public static int maxSemiDiameter;
 		public static int maxWallThickness;
 		public static boolean oneBitTypeInversionRequirement;
-		public static ArmorModelRenderMode armorModelRenderMode;
-		public static ArmorStackModelRenderMode armorStackModelRenderMode;
-		public static float armorZFightingBufferScale;
-		public static float armorZFightingBufferScaleRightLegOrFoot;
-		public static float armorZFightingBufferTranslationFeet;
 		public static ConfigBitToolSettingInt sculptMode;
 		public static ConfigBitToolSettingInt sculptDirection;
 		public static ConfigBitToolSettingInt sculptShapeTypeCurved;
@@ -55,24 +80,6 @@ public class Configs
 		public static ConfigBitStack sculptSetBitWire;
 		public static ConfigBitStack sculptSetBitSpade;
 		public static ConfigBitToolSettingBoolean sculptOffsetShape;
-		public static ConfigBitToolSettingInt armorMode;
-		public static ConfigBitToolSettingInt armorScale;
-		public static ConfigBitToolSettingInt armorMovingPartHelmet;
-		public static ConfigBitToolSettingInt armorMovingPartChestplate;
-		public static ConfigBitToolSettingInt armorMovingPartLeggings;
-		public static ConfigBitToolSettingInt armorMovingPartBoots;
-		public static ConfigBitToolSettingInt armorTabIndex;
-		public static ConfigBitToolSettingBoolean armorTargetBits;
-		public static ConfigBitToolSettingBoolean armorPixelTranslation;
-		public static ConfigBitToolSettingBoolean armorFullIllumination;
-		public static ConfigBitToolSettingBoolean armorLookAtCursor;
-		public static ConfigBitToolSettingInt modelAreaMode;
-		public static ConfigBitToolSettingInt modelSnapMode;
-		public static ConfigBitToolSettingBoolean modelGuiOpen;
-		public static String[] modelBlockToBitMapEntryStrings;
-		public static String[] modelStateToBitMapEntryStrings;
-		public static Map<IBlockState, IBitBrush> modelBlockToBitMap;
-		public static Map<IBlockState, IBitBrush> modelStateToBitMap;
 		
 	//ITEM PROPERTIES
 		public static Map<Item, ConfigNamed> itemPropertyMap = new HashMap<Item, ConfigNamed>();

@@ -33,10 +33,10 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 	
 	public PacketChangeArmorItemList() {}
 	
-	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, int partIndex, int armorItemIndex, int selectedEntry,
-			ListOperation listOperation, ItemStack stack, NBTTagCompound glOperationsNbt, boolean refreshLists)
+	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, boolean mainArmor, int partIndex, int armorItemIndex,
+			int selectedEntry, ListOperation listOperation, ItemStack stack, NBTTagCompound glOperationsNbt, boolean refreshLists)
 	{
-		super(glOperationsNbt, equipmentSlot, partIndex, armorItemIndex, selectedEntry, refreshLists);
+		super(glOperationsNbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists);
 		this.listOperation = listOperation;
 		this.stack = stack;
 	}
@@ -70,7 +70,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 				public void run()
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().player : ClientHelper.getPlayer();
-					ItemStack stack = player.getItemStackFromSlot(message.equipmentSlot);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
 					if (!ItemStackHelper.isChiseledArmorStack(stack))
 						return;
 					
@@ -115,7 +115,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 					message.finalizeDataChange(message, stack, nbt, data, serverSide, true, add, glListRemovalIndex);
 					if (serverSide)
 					{
-						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot,
+						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot, message.mainArmor,
 								message.partIndex, message.armorItemIndex, message.selectedEntry, message.listOperation,
 								message.stack, message.nbt, message.refreshLists), (EntityPlayerMP) player);
 					}

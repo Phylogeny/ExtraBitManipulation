@@ -22,7 +22,7 @@ public class InfoRecipeBase implements IRecipeWrapper
 	protected ResourceLocation image;
 	protected int imageWidth, imageHeight;
 	protected IDrawable slotDrawable;
-	protected String name;
+	protected String name, text;
 	protected Rectangle imageBox;
 	
 	public InfoRecipeBase(IGuiHelper guiHelper, List<ItemStack> itemStacks, int imageWidth, int imageHeight, String recipeName,
@@ -40,7 +40,9 @@ public class InfoRecipeBase implements IRecipeWrapper
 		else
 			toolTip += ".";
 		
-		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName.replaceFirst("[.]", toolTip)).split("\\\\n")));
+		tooltipName = tooltipName.replaceFirst("[.]", toolTip);
+		tooltipLines.addAll(Arrays.asList(JustEnoughItemsPlugin.translate(tooltipName).split("\\\\n")));
+		text = JustEnoughItemsPlugin.translate(tooltipName.replace("tooltip", "text"));
 		imageBox = new Rectangle(imageLeft, imageTop, imageRight - imageLeft, imageBottom - imageTop);
 	}
 	

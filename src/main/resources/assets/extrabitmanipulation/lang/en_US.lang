@@ -1,7 +1,9 @@
 itemGroup.extrabitmanipulation=Extra Bit Manipulation
 
 keybinding.extrabitmanipulation.bitmapping=Open Modeling Tool GUI
-keybinding.extrabitmanipulation.chiseledarmor=Open Chiseled Armor GUI
+keybinding.extrabitmanipulation.chiseledarmor.main=Open Chiseled Armor GUI Main
+keybinding.extrabitmanipulation.chiseledarmor.vanity=Open Chiseled Armor GUI Vanity
+keybinding.extrabitmanipulation.chiseledarmor.slots=Open Chiseled Armor Vanity Slots
 keybinding.extrabitmanipulation.design=Edit Chisel Design
 keybinding.extrabitmanipulation.throw.bit=Throw Bit
 keybinding.extrabitmanipulation.shift=Bit Tool SHIFT Replacement
@@ -48,10 +50,17 @@ jei.extrabitmanipulation.chiseled_armor.name.chiseled_helmet=Chiseled Armor
 jei.extrabitmanipulation.chiseled_armor.name.creation=Template Creation
 jei.extrabitmanipulation.chiseled_armor.name.collection=Block Collection
 jei.extrabitmanipulation.chiseled_armor.name.chiseled_armor_gui=Chiseled Armor GUI
+jei.extrabitmanipulation.chiseled_armor.name.chiseled_armor_slots_gui=Vanity Slots
 jei.extrabitmanipulation.chiseled_armor.tooltip.chiseled_helmet= Example of a 1:4\nscale helmet model
 jei.extrabitmanipulation.chiseled_armor.tooltip.creation= Settings the\nhead template
 jei.extrabitmanipulation.chiseled_armor.tooltip.collection= Collecting the\nchiseled blocks 
 jei.extrabitmanipulation.chiseled_armor.tooltip.chiseled_armor_gui= All render data can\nbe modified in the GUI\n    §b(add any item)
+jei.extrabitmanipulation.chiseled_armor.tooltip.chiseled_armor_slots_gui=Click the helmet icon (if displayed) in the survival player inventory or press @ to access
+jei.extrabitmanipulation.chiseled_armor.text.chiseled_helmet=Render items and blocks as moving parts of armor pieces.
+jei.extrabitmanipulation.chiseled_armor.text.creation=To import copies of blocks from the world, start by setting a boypart template area.
+jei.extrabitmanipulation.chiseled_armor.text.collection=Once your model is created, draw a box around it in collection mode to copy and import the intersecting blocks.
+jei.extrabitmanipulation.chiseled_armor.text.chiseled_armor_gui=Items (and rendering operations to apply to them) of worn armor pieces can be added and modified by pressing @ or @.
+jei.extrabitmanipulation.chiseled_armor.text.chiseled_armor_slots_gui=Armor worn in one of the added inventory vanity slots render on the player, but don't take up an armor slot.
 
 jei.description.chiselsandbits:block_bit=Press Extra Bit Manipulation's Throw Bit key binding (default: R) to throw bits like snowballs. They can be deployed from vanilla dispensers, as well. Upon block collision, they place in the world, if possible. If not possible (or if thrown at entities) they drop as items.\nIf not disabled via config, bits with a material of lava ignite blocks/entities and bit with a material of water extinguish them. Throwing a water bit at a Blaze will damage it.
 

@@ -11,6 +11,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEve
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
+import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.LogHelper;
@@ -19,6 +20,7 @@ import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRende
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.reference.BaublesReferences;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -328,13 +330,115 @@ public class ConfigHandlerExtraBitManipulation
 	{
 		try
 		{
-			//MODELING TOOL MAPs
+			//MODELING TOOL SETTINGS
+			Configs.saveStatesById = configFileClient.getBoolean("Save States By ID", MODELING_TOOL_SETTINGS, false,
+					"If set to true, and if the 'per tool' box is checked in a given Modeling Tool (causing mappings to be read/written from/to the " +
+					"NBT tag of the itemstack), manually mapped blocks and block states will be saved to the itemstack's NBT as state IDs (integers - " +
+					"4 bytes each). If set to false, they will be saved as a registry name (2 strings - 1 byte per char) and metadata (1 byte). Saving " +
+					"states as registry name for blocks and as registry name and metadata for block states takes up several times more space, and if " +
+					"thousands of mappings are manually stored in an item (as unlikely as that is), client or server crashing may occur if that item " +
+					"is sent through a packet network since the maximum payload is 32767 bytes. The benefit is that if the item is transported across " +
+					"worlds, the states will remain consistent. Saving states as integers, however, takes several times less space (meaning that 10k+ " +
+					"mappings would be necessary to cause a crash, which is even less likely), but the state IDs may not remain consistent if the item is " +
+					"transported across worlds. Changing this config will not cause any previously mapped states to be lost; all saved mappings " +
+					"will simply be read and saved in the new format the next time a state is manually mapped or unmapped.");
+			Configs.replacementBitsUnchiselable = getConfigReplacementBits(UNCHISELABLE_BLOCK_STATES, "minecraft:redstone_block", true, true, false);
+			Configs.replacementBitsInsufficient = getConfigReplacementBits(INSUFFICIENT_BITS, "minecraft:redstone_block", true, true, false);
+			
+			Configs.modelAreaMode = getBitToolSettingIntFromStringArray("Area Mode", DATA_CATAGORY_MODEL,
+					modelingMapConfigFile, false, true, 0, 0,
+					"area mode",
+					"area mode (the area is either drawn (drawn), centered on the nearest block grid vertex (centered), or the area faces away " +
+					"from the player with one of the corners of the area at the nearest block grid vertex (corner)).",
+					ItemModelingTool.AREA_MODE_TITLES);
+			
+			Configs.modelSnapMode = getBitToolSettingIntFromStringArray("Chunk-Snap Mode", DATA_CATAGORY_MODEL,
+					modelingMapConfigFile, false, true, 2, 0,
+					"chunk-snap mode",
+					"chunk-snap mode (either the area does not snap at all (off), it snaps in the X and Z axes (Y axis is unaffected) to whichever " +
+					"chunk the block the player is looking at is in (snap-to-chunk XZ), or it additionally snaps in the Y axis to the 'vertical chunk' " +
+					"(as visualized by pressing F3 + G) the block the player is looking at is in (snap-to-chunk XYZ)).",
+					ItemModelingTool.SNAP_MODE_TITLES);
+			
+			Configs.modelGuiOpen = getBitToolSettingBoolean("Open Gui Upon Read", DATA_CATAGORY_MODEL,
+					modelingMapConfigFile, false, true, true,
+					"whether the modeling tool GUI opens upon reading block states",
+					"whether the modeling tool GUI opens upon reading block states (if true, upon reading an area of block states in the world, the " +
+					"GUI that allows the player to preview the model and to manually map bits to block states will open. If set to false, it will not " +
+					"do so. Regardless of this setting, the GUI can be opened by right-clicking while sneaking).");
+			
 			String toolTip = "This is a list of entries of mappings of @@@ to bits for the Modeling Tool";
 			Configs.modelBlockToBitMapEntryStrings = modelingMapConfigFile.getStringList(BLOCK_TO_BIT_MAP, MODELING_TOOL_MANUAL_MAPPINGS,
 					BLOCK_TO_BIT_MAP_DEFAULT_VALUES, toolTip.replace("@@@", "block states"));
 			
 			Configs.modelStateToBitMapEntryStrings = modelingMapConfigFile.getStringList(STATE_TO_BIT_MAP, MODELING_TOOL_MANUAL_MAPPINGS,
 					STATE_TO_BIT_MAP_DEFAULT_VALUES, toolTip.replace("@@@", "states"));
+			
+			//CHISELED ARMOR SETTINGS
+			Configs.armorMode = getBitToolSettingIntFromStringArray("Mode", DATA_CATAGORY_ARMOR,
+					chiseledArmorConfigFile, true, true, 0, 0,
+					"mode",
+					"mode (either template creation mode to set the reference area of the moving part the blocks will be rendered relative to " +
+					"(and to optionally fill that area with bits), or block collection mode to import blocks into a moving part of the armor piece).",
+					ItemChiseledArmor.MODE_TITLES);
+			
+			Configs.armorScale = getBitToolSettingIntFromStringArray("Scale", DATA_CATAGORY_ARMOR,
+					chiseledArmorConfigFile, false, true, 0, 0,
+					"scale",
+					"scale (which sets the scale of the bodypart templates, and of the block copies imported into the armor piece from the world).",
+					ItemChiseledArmor.SCALE_TITLES);
+			
+			Configs.armorMovingPartHelmet = getArmorMovingPart(ItemsExtraBitManipulation.chiseledHelmet);
+			Configs.armorMovingPartChestplate = getArmorMovingPart(ItemsExtraBitManipulation.chiseledChestplate);
+			Configs.armorMovingPartLeggings = getArmorMovingPart(ItemsExtraBitManipulation.chiseledLeggings);
+			Configs.armorMovingPartBoots = getArmorMovingPart(ItemsExtraBitManipulation.chiseledBoots);
+			Configs.armorTabIndex = getArmorGuiInt("Selected Tab Index", 0, 0, 3);
+			Configs.armorPixelTranslation = getArmorGuiBoolean("Translation In Pixels", true);
+			Configs.armorFullIllumination = getArmorGuiBoolean("Full Illumination", false);
+			Configs.armorLookAtCursor = getArmorGuiBoolean("Look At Cursor", true);
+			
+			Configs.armorSlotsGuiExitToMainInventory = configFileClient.getBoolean("Exit To Main Inventory From Slots GUI", ARMOR_SETTINGS, false,
+					"If set to true, pressing E or Escape will switch back to the main inventory GUI. If set to false, doing so will simply close the GUI.");
+			
+			Configs.armorModelRenderMode = getEnumValueFromStringArray("Render Default Armor Model", ArmorModelRenderMode.class,
+					ARMOR_SETTINGS, configFileClient, 0,
+					"Specifies when to render the default Chiseled Armor model for a given armor piece. If set to 'If Empty', it will only render for " +
+					"an armor piece if there are no non-empty itemstacks in the itemstack lists of any of its moving parts. It will never/always render, " +
+					"if set to 'Never'/'Always', respectively");
+			
+			Configs.armorStackModelRenderMode = getEnumValueFromStringArray("Rendered Armor Stack Models", ArmorStackModelRenderMode.class,
+					ARMOR_SETTINGS, configFileClient, 0,
+					"Specifies when to render the Chiseled Armor itemstacks as they render when worn, rather than the default model. The specified " +
+					"model will either will always render, or will only render if the player is holding shift.");
+			
+			Configs.armorButtonVisibiltyMode = getEnumValueFromStringArray("Show Armor Slots Inventory Button", ArmorButtonVisibiltyMode.class,
+					ARMOR_SETTINGS, configFileClient, 2,
+					"Specifies when to show the button in the vanilla survival inventory that allows switching between it and the Chiseled Armor " +
+					"slots inventory. It will either be shown when in possession of any items, only " + Reference.MOD_NAME + " items, only EBM or Chisels " +
+					"& Bits items, only Chiseled Armor items, or will always/never be shown.");
+			
+			Configs.armorButtonX = getArmorButtonInt("X", 62);
+			Configs.armorButtonY = getArmorButtonInt("Y", 8);
+			
+			Configs.armorZFightingBufferScale = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Global",
+					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
+					"A scale of this many pixels will be applied to all items rendered for all moving parts of all Chiseled Armor pieces, so as to prevent " +
+					"z-fighting of those items with the player model.");
+			
+			Configs.armorZFightingBufferScaleRightLegOrFoot = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Leg & Foot",
+					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
+					"A scale of this many pixels will be additionally applied to all items rendered for the right leg and foot moving parts of Chiseled " +
+					"Armor boots, so as to prevent z-fighting of those items with the items of the left leg and foot moving parts.");
+			
+			Configs.armorZFightingBufferTranslationFeet = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Translation - Feet",
+					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
+					"The items of both feet will be translated down by this many pixels to prevent z-fighting with the items of both legs.");
+			
+			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
+					chiseledArmorConfigFile, false, true, false,
+					"targeting mode",
+					"targeting mode (if true, when importing blocks into the armor piece in collection mode, the drawn collection area will be determined " +
+					"by the bit click and the bit released on. If false, it will be determined by the block click and block released on).");
 			
 			//SCULPTING SETTINGS
 			Configs.maxSemiDiameter = configFileClient.getInt("Max Semi-Diameter", SCULPTING_WRENCH_SETTINGS, 32, 1, Integer.MAX_VALUE,
@@ -396,97 +500,6 @@ public class ConfigHandlerExtraBitManipulation
 					"If set to true, the Bit Wrench will only be able to invert blocks that are comprised of one bit type. " +
 					"If set to false, any block can be inverted and the bit type that empty bits will be filled with is whichever bit is " +
 					"the most prevalent in the block space. (default = false)");
-			
-			//MODELING TOOL SETTINGS
-			Configs.saveStatesById = configFileClient.getBoolean("Save States By ID", MODELING_TOOL_SETTINGS, false,
-					"If set to true, and if the 'per tool' box is checked in a given Modeling Tool (causing mappings to be read/written from/to the " +
-					"NBT tag of the itemstack), manually mapped blocks and block states will be saved to the itemstack's NBT as state IDs (integers - " +
-					"4 bytes each). If set to false, they will be saved as a registry name (2 strings - 1 byte per char) and metadata (1 byte). Saving " +
-					"states as registry name for blocks and as registry name and metadata for block states takes up several times more space, and if " +
-					"thousands of mappings are manually stored in an item (as unlikely as that is), client or server crashing may occur if that item " +
-					"is sent through a packet network since the maximum payload is 32767 bytes. The benefit is that if the item is transported across " +
-					"worlds, the states will remain consistent. Saving states as integers, however, takes several times less space (meaning that 10k+ " +
-					"mappings would be necessary to cause a crash, which is even less likely), but the state IDs may not remain consistent if the item is " +
-					"transported across worlds. Changing this config will not cause any previously mapped states to be lost; all saved mappings " +
-					"will simply be read and saved in the new format the next time a state is manually mapped or unmapped.");
-			Configs.replacementBitsUnchiselable = getConfigReplacementBits(UNCHISELABLE_BLOCK_STATES, "minecraft:redstone_block", true, true, false);
-			Configs.replacementBitsInsufficient = getConfigReplacementBits(INSUFFICIENT_BITS, "minecraft:redstone_block", true, true, false);
-			
-			//BIT TOOL DATA SETTINGS
-			Configs.armorMode = getBitToolSettingIntFromStringArray("Mode", DATA_CATAGORY_ARMOR,
-					chiseledArmorConfigFile, true, true, 0, 0,
-					"mode",
-					"mode (either template creation mode to set the reference area of the moving part the blocks will be rendered relative to " +
-					"(and to optionally fill that area with bits), or block collection mode to import blocks into a moving part of the armor piece).",
-					ItemChiseledArmor.MODE_TITLES);
-			
-			Configs.armorScale = getBitToolSettingIntFromStringArray("Scale", DATA_CATAGORY_ARMOR,
-					chiseledArmorConfigFile, false, true, 0, 0,
-					"scale",
-					"scale (which sets the scale of the bodypart templates, and of the block copies imported into the armor piece from the world).",
-					ItemChiseledArmor.SCALE_TITLES);
-			
-			Configs.armorMovingPartHelmet = getArmorMovingPart(ItemsExtraBitManipulation.chiseledHelmet);
-			Configs.armorMovingPartChestplate = getArmorMovingPart(ItemsExtraBitManipulation.chiseledChestplate);
-			Configs.armorMovingPartLeggings = getArmorMovingPart(ItemsExtraBitManipulation.chiseledLeggings);
-			Configs.armorMovingPartBoots = getArmorMovingPart(ItemsExtraBitManipulation.chiseledBoots);
-			Configs.armorTabIndex = getArmorGuiInt("Selected Tab Index", 0, 0, 3);
-			Configs.armorPixelTranslation = getArmorGuiBoolean("Translation In Pixels", true);
-			Configs.armorFullIllumination = getArmorGuiBoolean("Full Illumination", false);
-			Configs.armorLookAtCursor = getArmorGuiBoolean("Look At Cursor", true);
-			
-			Configs.armorModelRenderMode = getEnumValueFromStringArray("Render Default Armor Model", ArmorModelRenderMode.class,
-					ARMOR_SETTINGS, configFileClient, 0,
-					"Specifies when to render the default Chiseled Armor model for a given armor piece. If set to 'If Empty', it will only render for " +
-					"an armor piece if there are no non-empty itemstacks in the itemstack lists of any of its moving parts. It will never/always render, " +
-					"if set to 'Never'/'Always', respectively");
-			
-			Configs.armorStackModelRenderMode = getEnumValueFromStringArray("Rendered Armor Stack Models", ArmorStackModelRenderMode.class,
-					ARMOR_SETTINGS, configFileClient, 0,
-					"Specifies when to render the Chiseled Armor itemstacks as they render when worn, rather than the default model. The specified " +
-					"model will either will always render, or will only render if the player is holding shift.");
-			
-			Configs.armorZFightingBufferScale = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Global",
-					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
-					"A scale of this many pixels will be applied to all items rendered for all moving parts of all Chiseled Armor pieces, so as to prevent " +
-					"z-fighting of those items with the player model.");
-			
-			Configs.armorZFightingBufferScaleRightLegOrFoot = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Scale - Leg & Foot",
-					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
-					"A scale of this many pixels will be additionally applied to all items rendered for the right leg and foot moving parts of Chiseled " +
-					"Armor boots, so as to prevent z-fighting of those items with the items of the left leg and foot moving parts.");
-			
-			Configs.armorZFightingBufferTranslationFeet = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Translation - Feet",
-					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
-					"The items of both feet will be translated down by this many pixels to prevent z-fighting with the items of both legs.");
-			
-			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
-					chiseledArmorConfigFile, false, true, false,
-					"targeting mode",
-					"targeting mode (if true, when importing blocks into the armor piece in collection mode, the drawn collection area will be determined " +
-					"by the bit click and the bit released on. If false, it will be determined by the block click and block released on).");
-			
-			Configs.modelAreaMode = getBitToolSettingIntFromStringArray("Area Mode", DATA_CATAGORY_MODEL,
-					modelingMapConfigFile, false, true, 0, 0,
-					"area mode",
-					"area mode (the area is either drawn (drawn), centered on the nearest block grid vertex (centered), or the area faces away " +
-					"from the player with one of the corners of the area at the nearest block grid vertex (corner)).",
-					ItemModelingTool.AREA_MODE_TITLES);
-			
-			Configs.modelSnapMode = getBitToolSettingIntFromStringArray("Chunk-Snap Mode", DATA_CATAGORY_MODEL,
-					modelingMapConfigFile, false, true, 1, 0,
-					"chunk-snap mode",
-					"chunk-snap mode (either the area does not snap at all (off), it snaps in the X and Z axes (Y axis is unaffected) to whichever " +
-					"chunk the block the player is looking at is in (snap-to-chunk XZ), or it additionally snaps in the Y axis to the 'vertical chunk' " +
-					"(as visualized by pressing F3 + G) the block the player is looking at is in (snap-to-chunk XYZ)).",
-					ItemModelingTool.SNAP_MODE_TITLES);
-			
-			Configs.modelGuiOpen = getBitToolSettingBoolean("Open Gui Upon Read", DATA_CATAGORY_MODEL,
-					modelingMapConfigFile, false, true, true,
-					"whether the modeling tool GUI opens upon reading block states",
-					"whether the modeling tool GUI opens upon reading block states (if true, upon reading an area of block states in the world, the " +
-					"GUI that allows the player to preview the model and to manually map bits to block states will open. If set to false, it will not " +
-					"do so. Regardless of this setting, the GUI can be opened by right-clicking while sneaking).");
 			
 			Configs.sculptMode = getBitToolSettingIntFromStringArray("Sculpting Mode", DATA_CATAGORY_SCULPT,
 					sculptingConfigFile, false, true, 0, 0,
@@ -689,6 +702,18 @@ public class ConfigHandlerExtraBitManipulation
 		}
 	}
 	
+	private static ConfigBitToolSettingInt getArmorButtonInt(String axis, int defaultValue)
+	{
+		String name = "Armor Button " + axis + " Position";
+		if (BaublesReferences.isBaublesLoaded)
+		{
+			name += " With Baubles Loaded";
+			if (axis.equals("X"))
+				defaultValue -= 32;
+		}
+		return getArmorGuiInt(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+	
 	public static <T extends Enum<? >> T getEnumValueFromStringArray(String name, Class<T> enumType,
 			String catagory, Configuration dataConfigFile, int defaultIndex, String comment)
 	{
@@ -706,7 +731,7 @@ public class ConfigHandlerExtraBitManipulation
 					valueName += (j > 0 ? " " : "") + valueNames[j].charAt(0)
 						+ valueNames[j].substring(1, valueNames[j].length()).toLowerCase();
 				
-				titles[i] = valueName;
+				titles[i] = valueName.replace("Ebm", "EBM").replace("Cnb", "C&B");
 			}
 			else
 			{
