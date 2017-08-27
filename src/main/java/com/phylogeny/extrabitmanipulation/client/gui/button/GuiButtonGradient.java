@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.gui;
+package com.phylogeny.extrabitmanipulation.client.gui.button;
 
 public class GuiButtonGradient extends GuiButtonCustom
 {
