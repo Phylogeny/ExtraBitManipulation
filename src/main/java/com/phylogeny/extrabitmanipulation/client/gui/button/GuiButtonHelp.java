@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.client.gui;
+package com.phylogeny.extrabitmanipulation.client.gui.button;
 
 import java.util.List;
 
