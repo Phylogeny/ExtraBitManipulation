@@ -192,14 +192,18 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void throwBit(TickEvent.PlayerTickEvent event)
 	{
-		if (event.phase == Phase.START && keyThrowBitIsDown && timer.elapsed(TimeUnit.MILLISECONDS) > 150)
+		if (event.phase != Phase.START || !keyThrowBitIsDown)
+			return;
+		
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
+		boolean isBit = ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT;
+		if (!stack.isEmpty() && (ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.BIT_BAG
+				|| (timer.elapsed(TimeUnit.MILLISECONDS) > 150 && isBit)))
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
-			if (!stack.isEmpty() && ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT)
-			{
+			if (isBit)
 				timer = Stopwatch.createStarted();
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketThrowBit());
-			}
+			
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketThrowBit());
 		}
 	}
 	

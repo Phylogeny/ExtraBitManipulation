@@ -20,6 +20,7 @@ import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRende
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit.BitBagBitSelectionMode;
 import com.phylogeny.extrabitmanipulation.reference.BaublesReferences;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -604,13 +605,15 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.disableIgniteBlocks = disableThrownLiquidBitProperty("Ignite Blocks", true, false);
 			Configs.disableExtinguishEntities = disableThrownLiquidBitProperty("Extinguish Entities", false, true);
 			Configs.disableExtinguishBlocks = disableThrownLiquidBitProperty("Extinguish Blocks", false, false);
+			Configs.thrownBitVelocity = getThrownBitVelocity(1.5F, false);
+			Configs.thrownBitVelocityBitBag = getThrownBitVelocity(0.5F, true);
+			Configs.thrownBitInaccuracy = getThrownBitInaccuracy(1.0F, false);
+			Configs.thrownBitInaccuracyBitBag = getThrownBitInaccuracy(10.0F, true);
 			
-			Configs.thrownBitVelocity = configFileServer.getFloat("Initial Velocity", THROWN_BIT_PROPERTIES, 1.5F, 0, Float.MAX_VALUE, 
-					"The initial velocity in meters per tick that a thrown bit will initially have when thrown. (default = 1.5 meters per tick bits)");
-			
-			Configs.thrownBitInaccuracy = configFileServer.getFloat("Inaccuracy", THROWN_BIT_PROPERTIES, 1, 0, Float.MAX_VALUE, 
-					"A relative value that denote the amount of random deviation a thrown bit will have from the direction the " +
-					"player is looking. (default = 1)");
+			Configs.bitBagBitSelectionMode = getEnumValueFromStringArray("Bit Bag Thrown Bit Selection", BitBagBitSelectionMode.class,
+					THROWN_BIT_PROPERTIES, configFileServer, 0,
+					"Specifies how bits are selected from a Bit bag to be thrown in the world. The bits will either be selected randomly, sytematically " +
+					"from the first slot to the last, or sytematically from the last slot to the first.");
 			
 			Configs.thrownBitDamage = configFileServer.getFloat("Damage Inflicted", THROWN_BIT_PROPERTIES, Float.MIN_VALUE, 0, Float.MAX_VALUE, 
 					"The amount of damage (1 = half a heart) applied to entities when hit with bits. If this is set to 0, there will be no effect on " +
@@ -700,6 +703,37 @@ public class ConfigHandlerExtraBitManipulation
 			saveConfigFile(sculptingConfigFile);
 			saveConfigFile(chiseledArmorConfigFile);
 		}
+	}
+	
+	private static float getThrownBitVelocity(float defaultValue, boolean isBitBag)
+	{
+		return configFileServer.getFloat(getThrownBitName("Initial Velocity", isBitBag), THROWN_BIT_PROPERTIES, defaultValue, 0, Float.MAX_VALUE, 
+				"The initial velocity in meters per tick that a thrown bit will initially have when thrown" + getThrownBitDescriptionSuffix(isBitBag) +
+				" (default = " + getThrownBitDefaultValueString(defaultValue) + " meters per tick bits)");
+	}
+	
+	private static float getThrownBitInaccuracy(float defaultValue, boolean isBitBag)
+	{
+		return configFileServer.getFloat(getThrownBitName("Inaccuracy", isBitBag), THROWN_BIT_PROPERTIES, defaultValue, 0, Float.MAX_VALUE, 
+				"A relative value that denote the amount of random deviation a thrown bit will have from the direction the player is looking" +
+				getThrownBitDescriptionSuffix(isBitBag) + " (default = " + getThrownBitDefaultValueString(defaultValue) + ")");
+	}
+	
+	private static String getThrownBitDescriptionSuffix(boolean isBitBag)
+	{
+		return isBitBag ? " from a Bit Bag." : ".";
+	}
+	
+	private static String getThrownBitName(String name, boolean isBitBag)
+	{
+		return name + (isBitBag ? " From Bit Bag" : "");
+	}
+	
+	private static String getThrownBitDefaultValueString(float defaultValue)
+	{
+		String defaultValueString = Float.toString(defaultValue);
+		defaultValueString = defaultValueString.substring(0, defaultValueString.length() - (defaultValueString.endsWith(".0F") ? 3 : 1));
+		return defaultValueString;
 	}
 	
 	private static ConfigBitToolSettingInt getArmorButtonInt(String axis, int defaultValue)

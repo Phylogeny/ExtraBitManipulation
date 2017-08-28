@@ -38,7 +38,9 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(ClientHelper.getHeldItemMainhand()) == ItemType.CHISLED_BIT;
+			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT
+					|| ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.BIT_BAG;
 		}
 		
 		@Override
