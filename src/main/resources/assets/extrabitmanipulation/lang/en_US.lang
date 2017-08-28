@@ -6,6 +6,7 @@ keybinding.extrabitmanipulation.chiseledarmor.vanity=Open Chiseled Armor GUI Van
 keybinding.extrabitmanipulation.chiseledarmor.slots=Open Chiseled Armor Vanity Slots
 keybinding.extrabitmanipulation.design=Edit Chisel Design
 keybinding.extrabitmanipulation.throw.bit=Throw Bit
+keybinding.extrabitmanipulation.throw.bit.bitbag=Throw Bit From Bit Bag
 keybinding.extrabitmanipulation.shift=Bit Tool SHIFT Replacement
 keybinding.extrabitmanipulation.control=Bit Tool CONTROL Replacement
 keybinding.extrabitmanipulation.alt=Bit Tool ALT Replacement

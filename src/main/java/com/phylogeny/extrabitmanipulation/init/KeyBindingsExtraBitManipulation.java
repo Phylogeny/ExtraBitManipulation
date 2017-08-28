@@ -49,6 +49,21 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
+	THROW_BIT_BIT_BAG("throw.bit.bitbag", Keyboard.KEY_R)
+	{
+		@Override
+		public boolean isActive()
+		{
+			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(ClientHelper.getHeldItemMainhand()) == ItemType.BIT_BAG;
+		}
+		
+		@Override
+		public boolean conflicts(IKeyConflictContext other)
+		{
+			return conflictsInGame(other);
+		}
+	},
+	
 	OPEN_CHISELED_ARMOR_GUI_MAIN("chiseledarmor.main", Keyboard.KEY_G)
 	{
 		@Override
@@ -221,8 +236,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	@Override
 	public boolean conflicts(IKeyConflictContext other)
 	{
-		return other == this || other == KeyConflictContext.IN_GAME || other == SHIFT || other == CONTROL
-				|| (anyConflicts && (other == ALT || other == OPEN_BIT_MAPPING_GUI));
+		return conflictsInGame(other) || other == SHIFT || other == CONTROL || (anyConflicts && (other == ALT || other == OPEN_BIT_MAPPING_GUI));
 	}
 	
 	protected boolean conflictsInGame(IKeyConflictContext other)
