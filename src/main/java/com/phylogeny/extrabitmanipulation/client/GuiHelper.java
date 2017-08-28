@@ -94,12 +94,6 @@ public class GuiHelper
 		GlStateManager.disableBlend();
 	}
 	
-//	public static void renderHoveredToolTip(GuiContainer gui, int mouseX, int mouseY)
-//	{
-//		if (gui.mc.player.inventory.getItemStack().isEmpty() && gui.getSlotUnderMouse() != null && gui.getSlotUnderMouse().getHasStack())
-//			gui.renderToolTip(gui.getSlotUnderMouse().getStack(), mouseX, mouseY);
-//	}
-	
 	public static void drawHoveringTextForButtons(IHoveringTextRenderer hoveringTextRenderer, List<GuiButton> buttonList, int mouseX, int mouseY)
 	{
 		for (GuiButton button : buttonList)
