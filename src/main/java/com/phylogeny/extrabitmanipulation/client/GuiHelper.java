@@ -21,7 +21,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonBase;
+import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonBase;
 
 public class GuiHelper
 {

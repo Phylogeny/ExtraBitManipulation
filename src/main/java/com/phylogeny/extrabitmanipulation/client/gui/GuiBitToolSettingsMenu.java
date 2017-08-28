@@ -22,6 +22,8 @@ import org.lwjgl.input.Keyboard;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonBase;
+import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonSelect;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;

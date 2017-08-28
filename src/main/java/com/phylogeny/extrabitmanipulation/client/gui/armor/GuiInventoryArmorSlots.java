@@ -24,7 +24,7 @@ import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHa
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper.IHoveringTextRenderer;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonHelp;
+import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonHelp;
 import com.phylogeny.extrabitmanipulation.client.render.RenderState;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerArmorSlots;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;

@@ -23,7 +23,7 @@ import com.phylogeny.extrabitmanipulation.armor.GlOperation;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation.GlOperationType;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiButtonBase;
+import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonBase;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
