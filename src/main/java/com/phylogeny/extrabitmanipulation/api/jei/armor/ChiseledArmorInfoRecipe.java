@@ -23,8 +23,8 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		for (int i = 0; i < GRAPHIC_NAMES.length; i++)
 		{
 			recipes.add(new ChiseledArmorInfoRecipe(sculptingStacks, ChiseledArmorInfoRecipeCategory.NAME,
-					GRAPHIC_NAMES[i], i == 0 ? 79 : (i == 3 ? 12 : (i == 4 ? 75 : 78)), i == 0 ? 21 : (i == 3 ? 54 : (i == 4 ? 30 : 24)),
-							i == 0 ? 177 : (i == 3 ? 113 : (i == 4 ? 176 : 176)), i == 0 ? 127 : (i == 3 ? 124 : (i == 4 ? 114 : 120)), i));
+					GRAPHIC_NAMES[i], i == 0 ? 79 : (i == 3 ? 10 : (i == 4 ? 75 : 78)), i == 0 ? 22 : (i == 3 ? 54 : (i == 4 ? 30 : 24)),
+							i == 0 ? 177 : (i == 3 ? 111 : (i == 4 ? 176 : 176)), i == 0 ? 128 : (i == 3 ? 124 : (i == 4 ? 114 : 120)), i));
 		}
 		return recipes;
 	}
@@ -51,7 +51,7 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		int xPos = 60;
 		int yPos = 0;
 		ClientHelper.bindTexture(image);
-		GuiHelper.drawTexturedRect(imageBox.getMinX() - 2, imageBox.getMinY(), imageBox.getMaxX() - 2, imageBox.getMaxY());
+		GuiHelper.drawTexturedRect(imageBox.getMinX(), imageBox.getMinY(), imageBox.getMaxX(), imageBox.getMaxY());
 		xPos = recipeWidth / 2 - minecraft.fontRendererObj.getStringWidth(name) / 2;
 		yPos = 4;
 		minecraft.fontRendererObj.drawString(name, xPos, yPos, Color.black.getRGB());
@@ -92,12 +92,12 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		else if (imageIndex == 1)
 		{
 			xPos = 42;
-			yPos = 30;
+			yPos = 32;
 		}
 		else
 		{
 			xPos = 42;
-			yPos = imageIndex > 2 ? 26 : 23;
+			yPos = imageIndex > 2 ? 26 : 22;
 		}
 		for (String s : minecraft.fontRendererObj.listFormattedStringToWidth(text, wrapWidth))
 		{
