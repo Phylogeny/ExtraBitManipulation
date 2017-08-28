@@ -16,17 +16,10 @@ public class ReflectionExtraBitManipulation
 	
 	public static void initReflectionFieldsClient()
 	{
-		oldMouseX = findField(GuiInventory.class, "oldMouseX", "field_147048_u");
-		oldMouseY = findField(GuiInventory.class, "oldMouseY", "field_147047_v");
-		smallArms = findField(ModelPlayer.class, "smallArms", "field_178735_y");
-		buttonList = findField(GuiScreen.class, "buttonList", "field_146292_n");
-	}
-	
-	private static Field findField(Class<?> clazz, String... fieldNames)
-	{
-		Field field = ReflectionHelper.findField(clazz, fieldNames);
-		field.setAccessible(true);
-		return field;
+		oldMouseX = ReflectionHelper.findField(GuiInventory.class, "oldMouseX", "field_147048_u");
+		oldMouseY = ReflectionHelper.findField(GuiInventory.class, "oldMouseY", "field_147047_v");
+		smallArms = ReflectionHelper.findField(ModelPlayer.class, "smallArms", "field_178735_y");
+		buttonList = ReflectionHelper.findField(GuiScreen.class, "buttonList", "field_146292_n");
 	}
 	
 	private static void setFloat(Field field, Object instance, float value)
