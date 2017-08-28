@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.client;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -95,11 +94,6 @@ public class GuiHelper
 		GlStateManager.disableBlend();
 	}
 	
-	public static void drawHoveringText(GuiScreen gui, int mouseX, int mouseY, String hoverText)
-	{
-		gui.drawHoveringText(Arrays.<String>asList(new String[] {hoverText}), mouseX, mouseY);
-	}
-	
 	public static void drawHoveringTextForButtons(GuiScreen gui, List<GuiButton> buttonList, int mouseX, int mouseY)
 	{
 		for (GuiButton button : buttonList)
@@ -111,7 +105,7 @@ public class GuiHelper
 			{
 				String text = ((GuiButtonBase) button).getHoverText();
 				if (!text.isEmpty())
-					GuiHelper.drawHoveringText(gui, mouseX, mouseY, text);
+					gui.drawHoveringText(text, mouseX, mouseY);
 				
 				break;
 			}

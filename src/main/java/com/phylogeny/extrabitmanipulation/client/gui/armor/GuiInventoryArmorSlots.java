@@ -100,7 +100,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		GuiHelper.drawHoveringTextForButtons(this, buttonList, mouseX, mouseY);
 		if (buttonJEI.isMouseOver())
-			GuiHelper.drawHoveringText(this, mouseX, mouseY, "Get more info on Chiseled Armor");
+			drawHoveringText("Get more info on Chiseled Armor", mouseX, mouseY);
 		
 		boolean cancelStackHoverTextRender = false;
 		if (helpMode)
@@ -108,8 +108,8 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 			Slot slot = getSlotUnderMouse();
 			if (slot != null && slot.slotNumber > 45)
 			{
-				GuiHelper.drawHoveringText(this, mouseX, mouseY, "Only Chiseled Armor with items to render can be put in these slots.\n\nArmor warn here " +
-						"will render in addition to any normally worn armor, but will not confer any additional protection.");
+				drawHoveringText("Only Chiseled Armor with items to render can be put in these slots.\n\nArmor warn here " +
+						"will render in addition to any normally worn armor, but will not confer any additional protection.", mouseX, mouseY);
 				cancelStackHoverTextRender = true;
 			}
 		}

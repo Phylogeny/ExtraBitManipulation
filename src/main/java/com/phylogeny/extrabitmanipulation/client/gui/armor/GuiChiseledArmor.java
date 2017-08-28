@@ -564,7 +564,7 @@ public class GuiChiseledArmor extends GuiContainer
 		{
 			if (buttonAddRotation.visible && buttonHelp.selected
 					&& (buttonAddRotation.isMouseOver() || buttonAddTranslation.isMouseOver() || buttonAddScale.isMouseOver()))
-				GuiHelper.drawHoveringText(this, mouseX, mouseY, buttonAddRotation.getHoverText());
+				drawHoveringText(buttonAddRotation.getHoverText(), mouseX, mouseY);
 			
 			return;
 		}
@@ -578,7 +578,7 @@ public class GuiChiseledArmor extends GuiContainer
 				GuiListEntryGlOperation entry = (GuiListEntryGlOperation) glOperationsList.getListEntry(i);
 				if (entry.isElementHovered(buttonHelp.selected))
 				{
-					GuiHelper.drawHoveringText(this, mouseX, mouseY, entry.getElementHoverText(buttonHelp.selected ? glOperationHoverHelpText : null));
+					drawHoveringText(entry.getElementHoverText(buttonHelp.selected ? glOperationHoverHelpText : null), mouseX, mouseY);
 					break;
 				}
 			}
@@ -592,7 +592,7 @@ public class GuiChiseledArmor extends GuiContainer
 				if (entry.isSlotHovered())
 				{
 					if (buttonHelp.selected)
-						GuiHelper.drawHoveringText(this, mouseX, mouseY, getArmoritemSlotHoverhelpText("These slots"));
+						drawHoveringText(getArmoritemSlotHoverhelpText("These slots"), mouseX, mouseY);
 					else if (entry.getStack() != null)
 						renderToolTip(entry.getStack(), mouseX, mouseY);
 					
@@ -603,18 +603,18 @@ public class GuiChiseledArmor extends GuiContainer
 		if (buttonHelp.selected)
 		{
 			if (GuiHelper.isCursorInsideBox(boxTitleItems, mouseX, mouseY))
-				GuiHelper.drawHoveringText(this, mouseX, mouseY, getArmoritemSlotHoverhelpText("The slots of the list below"));
+				drawHoveringText(getArmoritemSlotHoverhelpText("The slots of the list below"), mouseX, mouseY);
 			else if (GuiHelper.isCursorInsideBox(boxTitleGlOperations, mouseX, mouseY))
-				GuiHelper.drawHoveringText(this, mouseX, mouseY, "The rendered items for the moving parts of armor pieces can have any number of GL operations applied " +
+				drawHoveringText("The rendered items for the moving parts of armor pieces can have any number of GL operations applied " +
 					"to them. The three types are rotation, translation, and scale.\n\nGlobal pre/post-operations apply to all items of an armor piece, " +
 					"while item-specific operations only apply to a single item.\n\nFor more information on these three categories refer to the hover " +
-					"text of the corresponding buttons to the right." + glOperationHoverKeysHelpText);
+					"text of the corresponding buttons to the right." + glOperationHoverKeysHelpText, mouseX, mouseY);
 			
 			for (int i = 0; i < boxesData.length; i++)
 			{
 				if (GuiHelper.isCursorInsideBox(boxesData[i], mouseX, mouseY))
 				{
-					GuiHelper.drawHoveringText(this, mouseX, mouseY, GL_OPERATION_DATA_TITLES[i] + " of the GL operations below");
+					drawHoveringText(GL_OPERATION_DATA_TITLES[i] + " of the GL operations below", mouseX, mouseY);
 					break;
 				}
 			}
