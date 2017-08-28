@@ -24,8 +24,8 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		for (int i = 0; i < GRAPHIC_NAMES.length; i++)
 		{
 			recipes.add(new ChiseledArmorInfoRecipe(guiHelper, sculptingStacks, ChiseledArmorInfoRecipeCategory.NAME,
-					GRAPHIC_NAMES[i], i == 0 ? 89 : (i == 3 ? 76 : (i == 4 ? 75 : 78)), i == 0 ? 21 : (i == 3 ? 32 : (i == 4 ? 27 : 19)),
-							i == 0 ? 187 : (i == 3 ? 186 : (i == 4 ? 183 : 186)), i == 0 ? 127 : (i == 3 ? 108 : (i == 4 ? 117 : 125)), i));
+					GRAPHIC_NAMES[i], i == 0 ? 89 : (i == 3 ? 76 : (i == 4 ? 75 : 78)), i == 0 ? 22 : (i == 3 ? 32 : (i == 4 ? 27 : 19)),
+							i == 0 ? 187 : (i == 3 ? 186 : (i == 4 ? 183 : 186)), i == 0 ? 128 : (i == 3 ? 108 : (i == 4 ? 117 : 125)), i));
 		}
 		return recipes;
 	}
