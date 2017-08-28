@@ -24,12 +24,12 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -72,7 +72,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			leftLeg = modelBiped.bipedLeftLeg;
 			villagerArms = null;
 			if (model instanceof ModelPlayer)
-				smallArms = ReflectionHelper.getPrivateValue(ModelPlayer.class, (ModelPlayer) model, "smallArms", "field_178735_y");
+				smallArms = ReflectionExtraBitManipulation.areArmsSmall((ModelPlayer) model);
 			
 			isVex = model instanceof ModelVex;
 		}

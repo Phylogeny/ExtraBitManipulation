@@ -17,6 +17,7 @@ import com.phylogeny.extrabitmanipulation.entity.EntityBit;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ModelRegistration;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.RenderLayersExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
@@ -40,6 +41,7 @@ public class ProxyClient extends ProxyCommon
 				return new RenderEntityBit(manager);
 			}
 		});
+		ReflectionExtraBitManipulation.initReflectionFieldsClient();
 	}
 	
 	@Override
