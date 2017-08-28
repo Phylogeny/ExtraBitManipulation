@@ -6,7 +6,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -15,6 +14,7 @@ import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonBase;
 import com.phylogeny.extrabitmanipulation.client.render.RenderState;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
 
@@ -48,10 +48,8 @@ public class GuiButtonArmorSlots extends GuiButtonBase
 	
 	private void setPosisionAbsolute()
 	{
-		xPosition = ReflectionHelper.getPrivateValue(GuiContainer.class, gui, "guiLeft", "field_147003_i");
-		yPosition = ReflectionHelper.getPrivateValue(GuiContainer.class, gui, "guiTop", "field_147009_r");
-		xPosition += posX;
-		yPosition += posY;
+		xPosition = ReflectionExtraBitManipulation.getGuiLeft(gui) + posX;
+		yPosition = ReflectionExtraBitManipulation.getGuiTop(gui) + posY;
 	}
 	
 	private void resetOffsets()

@@ -3,7 +3,6 @@ package com.phylogeny.extrabitmanipulation.capability.armor;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.Entity;
@@ -19,7 +18,6 @@ import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,6 +28,7 @@ import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiButtonArmorSlots;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlots;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -166,7 +165,7 @@ public class ChiseledArmorSlotsEventHandler
 				(Configs.armorButtonX.isAtDefaultValue() && Configs.armorButtonY.isAtDefaultValue()))
 			return;
 		
-		List<GuiButton> buttonList = ReflectionHelper.getPrivateValue(GuiScreen.class, event.getGui(), "buttonList", "field_146292_n");
+		List<GuiButton> buttonList = ReflectionExtraBitManipulation.getButtonList(event.getGui());
 		for (GuiButton button : buttonList)
 		{
 			if (button instanceof GuiButtonArmorSlots)

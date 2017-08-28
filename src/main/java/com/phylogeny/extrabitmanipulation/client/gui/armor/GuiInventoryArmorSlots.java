@@ -12,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import org.lwjgl.input.Keyboard;
 
@@ -27,6 +26,7 @@ import com.phylogeny.extrabitmanipulation.client.GuiHelper.IHoveringTextRenderer
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonHelp;
 import com.phylogeny.extrabitmanipulation.client.render.RenderState;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerArmorSlots;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
@@ -190,8 +190,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		player.openContainer.onContainerClosed(player);
 		GuiInventory gui = new GuiInventory(player);
 		mc.displayGuiScreen(gui);
-		ReflectionHelper.setPrivateValue(GuiInventory.class, gui, mouseX, "oldMouseX", "field_147048_u");
-		ReflectionHelper.setPrivateValue(GuiInventory.class, gui, mouseY, "oldMouseY", "field_147047_v");
+		ReflectionExtraBitManipulation.setCursorPosition(gui, mouseX, mouseY);
 	}
 	
 	@Override
