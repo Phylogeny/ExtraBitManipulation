@@ -139,7 +139,9 @@ public class ClientEventHandler
 		if (timer == null)
 			timer = Stopwatch.createStarted();
 		
-		keyThrowBitIsDown = KeyBindingsExtraBitManipulation.THROW_BIT.isKeyDown();
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
+		keyThrowBitIsDown = (ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT ?
+				KeyBindingsExtraBitManipulation.THROW_BIT : KeyBindingsExtraBitManipulation.THROW_BIT_BIT_BAG).isKeyDown();
 		if (ChiselsAndBitsAPIAccess.apiInstance.getKeyBinding(ModKeyBinding.MODE_MENU).isKeyDown()
 				|| KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown()
 				|| KeyBindingsExtraBitManipulation.EDIT_DESIGN.isKeyDown()
@@ -147,7 +149,6 @@ public class ClientEventHandler
 				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_VANITY.isKeyDown()
 				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_SLOTS_GUI.isKeyDown())
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
 			{
 				if (ItemStackHelper.isModelingToolStack(stack) && ItemStackHelper.hasKey(stack, NBTKeys.SAVED_STATES))
@@ -192,14 +193,18 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void throwBit(TickEvent.PlayerTickEvent event)
 	{
-		if (event.phase == Phase.START && keyThrowBitIsDown && timer.elapsed(TimeUnit.MILLISECONDS) > 150)
+		if (event.phase != Phase.START || !keyThrowBitIsDown)
+			return;
+		
+		ItemStack stack = ClientHelper.getHeldItemMainhand();
+		boolean isBit = ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT;
+		if (!stack.isEmpty() && (ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.BIT_BAG
+				|| (timer.elapsed(TimeUnit.MILLISECONDS) > 150 && isBit)))
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
-			if (!stack.isEmpty() && ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT)
-			{
+			if (isBit)
 				timer = Stopwatch.createStarted();
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketThrowBit());
-			}
+			
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketThrowBit());
 		}
 	}
 	
