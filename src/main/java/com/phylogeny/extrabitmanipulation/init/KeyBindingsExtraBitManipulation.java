@@ -38,9 +38,22 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
-			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT
-					|| ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.BIT_BAG;
+			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(ClientHelper.getHeldItemMainhand()) == ItemType.CHISLED_BIT;
+		}
+		
+		@Override
+		public boolean conflicts(IKeyConflictContext other)
+		{
+			return conflictsInGame(other);
+		}
+	},
+	
+	THROW_BIT_BIT_BAG("throw.bit.bitbag", Keyboard.KEY_R)
+	{
+		@Override
+		public boolean isActive()
+		{
+			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(ClientHelper.getHeldItemMainhand()) == ItemType.BIT_BAG;
 		}
 		
 		@Override
@@ -222,8 +235,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	@Override
 	public boolean conflicts(IKeyConflictContext other)
 	{
-		return other == this || other == KeyConflictContext.IN_GAME || other == SHIFT || other == CONTROL
-				|| (anyConflicts && (other == ALT || other == OPEN_BIT_MAPPING_GUI));
+		return conflictsInGame(other) || other == SHIFT || other == CONTROL || (anyConflicts && (other == ALT || other == OPEN_BIT_MAPPING_GUI));
 	}
 	
 	protected boolean conflictsInGame(IKeyConflictContext other)
