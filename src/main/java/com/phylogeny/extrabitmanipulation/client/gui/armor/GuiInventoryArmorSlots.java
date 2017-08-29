@@ -27,6 +27,7 @@ import com.phylogeny.extrabitmanipulation.client.GuiHelper.IHoveringTextRenderer
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonHelp;
 import com.phylogeny.extrabitmanipulation.client.render.RenderState;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerArmorSlots;
+import com.phylogeny.extrabitmanipulation.container.SlotChiseledArmor;
 import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
@@ -103,27 +104,22 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 	{
 		oldMouseX = mouseX;
 		oldMouseY = mouseY;
+		Slot slot = getSlotUnderMouse();
+		for (int i = 46; i < 50 && helpMode; i++)
+			((SlotChiseledArmor) inventorySlots.getSlot(i)).setDisabled(true);
+		
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		for (int i = 46; i < 50 && helpMode; i++)
+			((SlotChiseledArmor) inventorySlots.getSlot(i)).setDisabled(false);
+		
 		GuiHelper.drawHoveringTextForButtons(this, buttonList, mouseX, mouseY);
 		if (buttonJEI.isMouseOver())
 			drawCreativeTabHoveringText("Get more info on Chiseled Armor", mouseX, mouseY);
 		
-		boolean cancelStackHoverTextRender = false;
-		if (helpMode)
+		if (slot != null && helpMode && slot instanceof SlotChiseledArmor)
 		{
-			Slot slot = getSlotUnderMouse();
-			if (slot != null && slot.slotNumber > 45)
-			{
-				drawCreativeTabHoveringText("Only Chiseled Armor with items to render can be put in these slots.\n\nArmor warn here " +
-						"will render in addition to any normally worn armor, but will not confer any additional protection.", mouseX, mouseY);
-				cancelStackHoverTextRender = true;
-			}
-		}
-		if (!cancelStackHoverTextRender)
-		{
-			Slot slot = getSlotUnderMouse();
-			if (mc.player.inventory.getItemStack().isEmpty() && slot != null && slot.getHasStack())
-				renderToolTip(slot.getStack(), mouseX, mouseY);
+			drawCreativeTabHoveringText("Only Chiseled Armor with items to render can be put in these slots.\n\nArmor warn here " +
+					"will render in addition to any normally worn armor, but will not confer any additional protection.", mouseX, mouseY);
 		}
 	}
 	
