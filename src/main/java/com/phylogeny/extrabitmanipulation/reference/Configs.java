@@ -8,7 +8,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitStack;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingBoolean;
 import com.phylogeny.extrabitmanipulation.config.ConfigBitToolSettingInt;

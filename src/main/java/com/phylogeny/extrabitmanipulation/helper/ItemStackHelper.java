@@ -10,8 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;

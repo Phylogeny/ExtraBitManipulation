@@ -7,8 +7,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 
 public class PacketSyncAllArmorSlotData implements IMessage
