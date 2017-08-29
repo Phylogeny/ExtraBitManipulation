@@ -50,6 +50,11 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		helpMode = false;
 	}
 	
+	public boolean isInHelpMode()
+	{
+		return helpMode;
+	}
+	
 	private void resetGuiLeft()
 	{
 		this.guiLeft = (this.width - this.xSize) / 2;
