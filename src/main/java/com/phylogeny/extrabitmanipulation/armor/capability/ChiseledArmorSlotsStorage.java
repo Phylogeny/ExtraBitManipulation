@@ -7,7 +7,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-public class ChiseledArmorStorage implements IStorage<IChiseledArmorSlotsHandler>
+public class ChiseledArmorSlotsStorage implements IStorage<IChiseledArmorSlotsHandler>
 {
 	
 	@Override
