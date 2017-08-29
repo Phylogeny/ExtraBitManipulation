@@ -20,9 +20,7 @@ public class ContainerPlayerArmorSlots extends ContainerPlayer
 		inventorySlots.get(inventorySlots.size() - 1).xPos += 18;
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
 		for (int i = 0; i < ArmorType.values().length; i++)
-		{
 			addSlotToContainer(new SlotChiseledArmor(cap, i, 77, 8 + i * 18));
-		}
 	}
 	
 	@Override
