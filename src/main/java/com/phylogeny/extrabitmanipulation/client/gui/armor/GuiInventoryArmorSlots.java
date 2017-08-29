@@ -80,7 +80,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
 		fontRenderer.drawString(I18n.format("container.crafting"), 97, 8, 4210752);
-		if (!helpMode)
+		if (!helpMode || !JeiReferences.isJeiLoaded)
 			return;
 		
 		int color = buttonJEI.isMouseOver() ? 16777120 : -1;
@@ -137,11 +137,6 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 				RenderState.renderStateModelIntoGUI(null, ArmorType.values()[i].getIconModel(),
 						ItemStack.EMPTY, 0.4F, true, false, guiLeft + 71, guiTop + 6 + i * 18 + ICON_STACK_OFFSETS[i], 0, 0, 1);
 			}
-			if (helpMode)
-			{
-				Slot slot = inventorySlots.inventorySlots.get(46 + i);
-				drawRect(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, 1694460416);
-			}
 		}
 		GlStateManager.popMatrix();
 		if (helpMode)
@@ -177,8 +172,9 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 		else
 			super.actionPerformed(button);
 		
+		helpMode = buttonHelp.selected;
 		if (JeiReferences.isJeiLoaded)
-			buttonJEI.visible = helpMode = buttonHelp.selected;
+			buttonJEI.visible = helpMode;
 	}
 	
 	
