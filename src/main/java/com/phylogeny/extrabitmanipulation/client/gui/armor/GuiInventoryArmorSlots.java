@@ -80,7 +80,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
 		fontRendererObj.drawString(I18n.format("container.crafting"), 97, 8, 4210752);
-		if (!helpMode)
+		if (!helpMode || !JeiReferences.isJeiLoaded)
 			return;
 		
 		int color = buttonJEI.isMouseOver() ? 16777120 : -1;
@@ -140,11 +140,6 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 				RenderState.renderStateModelIntoGUI(null, ArmorType.values()[i].getIconModel(),
 						null, 0.4F, true, false, guiLeft + 71, guiTop + 6 + i * 18 + ICON_STACK_OFFSETS[i], 0, 0, 1);
 			}
-			if (helpMode)
-			{
-				Slot slot = inventorySlots.inventorySlots.get(46 + i);
-				drawRect(slot.xDisplayPosition, slot.yDisplayPosition, slot.xDisplayPosition + 16, slot.yDisplayPosition + 16, 1694460416);
-			}
 		}
 		GlStateManager.popMatrix();
 		if (helpMode)
@@ -180,8 +175,9 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		else
 			super.actionPerformed(button);
 		
+		helpMode = buttonHelp.selected;
 		if (JeiReferences.isJeiLoaded)
-			buttonJEI.visible = helpMode = buttonHelp.selected;
+			buttonJEI.visible = helpMode;
 	}
 	
 	
