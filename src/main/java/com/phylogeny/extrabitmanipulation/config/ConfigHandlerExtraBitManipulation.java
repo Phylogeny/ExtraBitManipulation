@@ -11,7 +11,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEve
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.LogHelper;

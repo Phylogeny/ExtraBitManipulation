@@ -25,8 +25,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;

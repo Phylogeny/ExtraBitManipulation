@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.capability.armor;
+package com.phylogeny.extrabitmanipulation.armor.capability;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.items.IItemHandlerModifiable;
