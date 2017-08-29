@@ -37,6 +37,7 @@ import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.BaublesReferences;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
+import com.phylogeny.extrabitmanipulation.reference.JeiReferences;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ProxyCommon implements IGuiHandler
@@ -47,6 +48,7 @@ public class ProxyCommon implements IGuiHandler
 		BlocksExtraBitManipulation.blocksInit();
 		ItemsExtraBitManipulation.itemsInit(event);
 		BaublesReferences.isBaublesLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
+		JeiReferences.isJeiLoaded = !Loader.isModLoaded(JeiReferences.MOD_ID);
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		MinecraftForge.EVENT_BUS.register(new ItemsExtraBitManipulation());

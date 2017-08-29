@@ -40,15 +40,9 @@ public class JustEnoughItemsPlugin implements IModPlugin
 		this.jeiRuntime = jeiRuntime;
 	}
 	
-	public static boolean isJeiInstalled()
-	{
-		return jeiRuntime != null;
-	}
-	
 	public static void openCategory(String categoryUid)
 	{
-		if (isJeiInstalled())
-			jeiRuntime.getRecipesGui().showCategories(Collections.<String>singletonList(categoryUid));
+		jeiRuntime.getRecipesGui().showCategories(Collections.<String>singletonList(categoryUid));
 	}
 	
 	public static String translate(String langKey)

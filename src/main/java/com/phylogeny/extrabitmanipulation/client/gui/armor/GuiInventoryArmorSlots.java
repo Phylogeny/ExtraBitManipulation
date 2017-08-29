@@ -30,6 +30,7 @@ import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.JeiReferences;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class GuiInventoryArmorSlots extends InventoryEffectRenderer
@@ -70,7 +71,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 17, guiTop + 5, "Show slot/button hover help text", "Exit help mode");
 		buttonHelp.selected = helpMode;
 		buttonJEI = new GuiButtonExt(100, guiLeft + 119, guiTop + 55, 46, 26, "");
-		buttonJEI.visible = JustEnoughItemsPlugin.isJeiInstalled() ? helpMode : false;
+		buttonJEI.visible = JeiReferences.isJeiLoaded ? helpMode : false;
 		buttonList.add(buttonHelp);
 		buttonList.add(buttonJEI);
 	}
@@ -176,7 +177,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer
 		else
 			super.actionPerformed(button);
 		
-		if (JustEnoughItemsPlugin.isJeiInstalled())
+		if (JeiReferences.isJeiLoaded)
 			buttonJEI.visible = helpMode = buttonHelp.selected;
 	}
 	
