@@ -6,7 +6,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
 
 import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
@@ -21,7 +20,7 @@ public class ContainerPlayerArmorSlots extends ContainerPlayer
 		inventorySlots.get(inventorySlots.size() - 1).xDisplayPosition += 18;
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
 		for (int i = 0; i < ArmorType.values().length; i++)
-			addSlotToContainer(new SlotItemHandler(cap, i, 77, 8 + i * 18));
+			addSlotToContainer(new SlotChiseledArmor(cap, i, 77, 8 + i * 18));
 	}
 	
 	@Override
