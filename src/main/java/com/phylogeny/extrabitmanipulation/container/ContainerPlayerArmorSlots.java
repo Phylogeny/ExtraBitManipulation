@@ -8,8 +8,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 
 public class ContainerPlayerArmorSlots extends ContainerPlayer

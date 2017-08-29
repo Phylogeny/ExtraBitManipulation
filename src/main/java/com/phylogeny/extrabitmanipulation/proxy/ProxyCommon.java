@@ -18,10 +18,10 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.capability.Storage;
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsEventHandler;
-import com.phylogeny.extrabitmanipulation.capability.armor.ChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.capability.armor.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsEventHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsStorage;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitMapping;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiChiseledArmor;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlots;
@@ -50,7 +50,7 @@ public class ProxyCommon implements IGuiHandler
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		MinecraftForge.EVENT_BUS.register(new ChiseledArmorSlotsEventHandler());
-		CapabilityManager.INSTANCE.register(IChiseledArmorSlotsHandler.class, new Storage<IChiseledArmorSlotsHandler>(), ChiseledArmorSlotsHandler.class);
+		CapabilityManager.INSTANCE.register(IChiseledArmorSlotsHandler.class, new ChiseledArmorSlotsStorage(), ChiseledArmorSlotsHandler.class);
 		PacketRegistration.registerPackets();
 		ResourceLocation name = new ResourceLocation(Reference.MOD_ID, "entity_bit");
 		EntityRegistry.registerModEntity(name, EntityBit.class, name.toString(), 0, ExtraBitManipulation.instance, 64, 3, false);

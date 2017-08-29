@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.capability.armor;
+package com.phylogeny.extrabitmanipulation.armor.capability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
