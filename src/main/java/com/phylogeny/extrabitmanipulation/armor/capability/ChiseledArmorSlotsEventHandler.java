@@ -153,7 +153,13 @@ public class ChiseledArmorSlotsEventHandler
 			}
 		}
 		if (add)
-			event.getButtonList().add(new GuiButtonArmorSlots(gui, isArmorSlots ? "Back" : "Chiseled Armor"));
+		{
+			GuiButtonArmorSlots button = new GuiButtonArmorSlots(gui, isArmorSlots ? "Back" : "Chiseled Armor");
+			if (isArmorSlots)
+				button.setHelpMode(((GuiInventoryArmorSlots) gui).isInHelpMode());
+			
+			event.getButtonList().add(button);
+		}
 	}
 	
 	@SideOnly(Side.CLIENT)
