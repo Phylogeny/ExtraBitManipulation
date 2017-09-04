@@ -1129,16 +1129,14 @@ public class BitToolSettingsHelper
 	
 	public static class ArmorBodyPartTemplateBoxData
 	{
-		private EnumFacing facingBox, facingPlacement;
+		private EnumFacing facingBox;
 		AxisAlignedBB boxTemplate;
 		
 		public ArmorBodyPartTemplateBoxData(NBTTagCompound nbt, ItemChiseledArmor armorPiece)
 		{
 			facingBox = BitAreaHelper.readFacingFromNBT(nbt, NBTKeys.ARMOR_FACING_BOX);
-			facingPlacement = BitAreaHelper.readFacingFromNBT(nbt, NBTKeys.ARMOR_FACING_PLACEMENT);
-			boxTemplate = ItemChiseledArmor.getBodyPartTemplateBox(nbt.getFloat(NBTKeys.ARMOR_YAW_PLAYER),
-					nbt.getBoolean(NBTKeys.ARMOR_USE_BIT_GRID), facingBox, facingPlacement,
-					BitAreaHelper.readBlockPosFromNBT(nbt, NBTKeys.ARMOR_POS),
+			boxTemplate = ItemChiseledArmor.getBodyPartTemplateBox(nbt.getFloat(NBTKeys.ARMOR_YAW_PLAYER), nbt.getBoolean(NBTKeys.ARMOR_USE_BIT_GRID),
+					facingBox, BitAreaHelper.readFacingFromNBT(nbt, NBTKeys.ARMOR_FACING_PLACEMENT), BitAreaHelper.readBlockPosFromNBT(nbt, NBTKeys.ARMOR_POS),
 					BitAreaHelper.readVecFromNBT(nbt, NBTKeys.ARMOR_HIT), BitToolSettingsHelper.getArmorScale(nbt),
 					BitToolSettingsHelper.getArmorMovingPart(nbt, armorPiece));
 		}
@@ -1146,11 +1144,6 @@ public class BitToolSettingsHelper
 		public EnumFacing getFacingBox()
 		{
 			return facingBox;
-		}
-		
-		public EnumFacing getFacingPlacement()
-		{
-			return facingPlacement;
 		}
 		
 		public AxisAlignedBB getBox()
