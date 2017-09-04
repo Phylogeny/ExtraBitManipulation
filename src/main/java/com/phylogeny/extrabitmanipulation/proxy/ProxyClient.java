@@ -51,12 +51,12 @@ public class ProxyClient extends ProxyCommon
 		super.init();
 		KeyBindingsExtraBitManipulation.init();
 		FMLInterModComms.sendMessage(ChiselsAndBitsReferences.MOD_ID, "initkeybindingannotations", "");
-		RenderLayersExtraBitManipulation.init();
 	}
 	
 	@Override
 	public void postinit()
 	{
+		RenderLayersExtraBitManipulation.init();
 		Configs.sculptSetBitWire.init();
 		Configs.sculptSetBitSpade.init();
 		Configs.replacementBitsUnchiselable.initDefaultReplacementBit();
