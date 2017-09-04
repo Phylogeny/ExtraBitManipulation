@@ -23,7 +23,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			return ItemStackHelper.isDesignStack(ClientHelper.getHeldItemMainhand());
+			return ItemStackHelper.isDesignStack(getHeldItemMainhandSafe());
 		}
 		
 		@Override
@@ -38,7 +38,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(ClientHelper.getHeldItemMainhand()) == ItemType.CHISLED_BIT;
+			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(getHeldItemMainhandSafe()) == ItemType.CHISLED_BIT;
 		}
 		
 		@Override
@@ -53,7 +53,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(ClientHelper.getHeldItemMainhand()) == ItemType.BIT_BAG;
+			return ChiselsAndBitsAPIAccess.apiInstance.getItemType(getHeldItemMainhandSafe()) == ItemType.BIT_BAG;
 		}
 		
 		@Override
@@ -119,7 +119,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			return ItemStackHelper.isModelingToolStack(ClientHelper.getHeldItemMainhand());
+			return ItemStackHelper.isModelingToolStack(getHeldItemMainhandSafe());
 		}
 	},
 	
@@ -134,7 +134,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			ItemStack stack = getHeldItemMainhandSafe();
 			return ItemStackHelper.isSculptingToolStack(stack) || ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isBitWrenchStack(stack);
 		}
 	},
@@ -150,7 +150,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			ItemStack stack = getHeldItemMainhandSafe();
 			return ItemStackHelper.isSculptingToolStack(stack) || ItemStackHelper.isModelingToolStack(stack) || ItemStackHelper.isChiseledArmorStack(stack);
 		}
 	},
@@ -166,7 +166,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public boolean isActive()
 		{
-			ItemStack stack = ClientHelper.getHeldItemMainhand();
+			ItemStack stack = getHeldItemMainhandSafe();
 			return ItemStackHelper.isSculptingToolStack(stack) || ItemStackHelper.isChiseledArmorStack(stack);
 		}
 		
@@ -241,6 +241,11 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	protected boolean conflictsInGame(IKeyConflictContext other)
 	{
 		return other == this || other == KeyConflictContext.IN_GAME;
+	}
+	
+	private static ItemStack getHeldItemMainhandSafe()
+	{
+		return ClientHelper.getPlayer() == null ? ItemStack.EMPTY : ClientHelper.getHeldItemMainhand();
 	}
 	
 }
