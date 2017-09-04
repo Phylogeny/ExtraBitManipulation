@@ -760,7 +760,7 @@ public class ClientEventHandler
 			if (nbt.hasKey(NBTKeys.ARMOR_HIT))
 			{
 				ArmorBodyPartTemplateBoxData boxData = new ArmorBodyPartTemplateBoxData(nbt, (ItemChiseledArmor) item);
-				renderBodyPartTemplate(playerX, playerY, playerZ, boxData.getFacingBox(), t, buffer, boxData.getFacingPlacement(), boxData.getBox(), 0.0F);
+				renderBodyPartTemplate(playerX, playerY, playerZ, boxData.getFacingBox(), t, buffer, boxData.getBox(), 0.0F);
 			}
 			if (!hitBlock)
 				return;
@@ -1194,7 +1194,7 @@ public class ClientEventHandler
 					AxisAlignedBB box = ItemChiseledArmor.getBodyPartTemplateBox(player, dir, pos, hit,
 							BitToolSettingsHelper.getArmorScale(nbt), BitToolSettingsHelper.getArmorMovingPart(nbt, (ItemChiseledArmor) item));
 					if (box != null)
-						renderBodyPartTemplate(playerX, playerY, playerZ, facingBox, t, buffer, dir, box, 1.0F);
+						renderBodyPartTemplate(playerX, playerY, playerZ, facingBox, t, buffer, box, 1.0F);
 				}
 				else
 				{
@@ -1296,18 +1296,12 @@ public class ClientEventHandler
 		}
 		return new AxisAlignedBB(x4, y4, z4, x3, y3, z3);
 	}
-
-	private void renderBodyPartTemplate(double playerX, double playerY, double playerZ, EnumFacing facingBox,
-			Tessellator t, BufferBuilder buffer, EnumFacing dir, AxisAlignedBB box, float redBlue)
+	
+	private void renderBodyPartTemplate(double playerX, double playerY, double playerZ,
+			EnumFacing facingBox, Tessellator t, BufferBuilder buffer, AxisAlignedBB box, float redBlue)
 	{
-		int offsetX = dir.getFrontOffsetX();
-		int offsetY = dir.getFrontOffsetY();
-		int offsetZ = dir.getFrontOffsetZ();
 		glStart();
-		double exp = BOUNDING_BOX_OFFSET;
-		box = box.offset(-playerX, -playerY, -playerZ).grow(exp);
-		exp *= -2;
-		box = box.expand(exp * offsetX, exp * offsetY, exp * offsetZ);
+		box = box.offset(-playerX, -playerY, -playerZ).grow(BOUNDING_BOX_OFFSET);
 		renderBoundingBox(box, redBlue, 1, redBlue, 155);
 		for (EnumFacing face : EnumFacing.VALUES)
 		{
