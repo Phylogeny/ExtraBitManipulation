@@ -1,5 +1,8 @@
 itemGroup.extrabitmanipulation=Extra Bit Manipulation
 
+command.extrabitmanipulation.vanity.failure.player=The specified entity must be a player, as only players have chiseled armor vanity slots.
+command.extrabitmanipulation.vanity.failure.capability=The vanity slots capability was not found for the specified player.
+
 keybinding.extrabitmanipulation.bitmapping=Open Modeling Tool GUI
 keybinding.extrabitmanipulation.chiseledarmor.main=Open Chiseled Armor GUI Main
 keybinding.extrabitmanipulation.chiseledarmor.vanity=Open Chiseled Armor GUI Vanity

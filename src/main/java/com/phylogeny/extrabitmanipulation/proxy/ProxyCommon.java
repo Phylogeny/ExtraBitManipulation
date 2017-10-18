@@ -35,6 +35,7 @@ import com.phylogeny.extrabitmanipulation.init.BlocksExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.BaublesReferences;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.JeiReferences;
@@ -67,6 +68,8 @@ public class ProxyCommon implements IGuiHandler
 				return new EntityBit(worldIn, position.getX(), position.getY(), position.getZ(), stackIn);
 			}
 		});
+		ReflectionExtraBitManipulation.initReflectionFieldsCommon();
+		ChiseledArmorSlotsEventHandler.addCommandTabCompletions();
 	}
 	
 	public void init()

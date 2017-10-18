@@ -3,16 +3,18 @@ package com.phylogeny.extrabitmanipulation.init;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.command.CommandReplaceItem;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class ReflectionExtraBitManipulation
 {
-	private static Field oldMouseX, oldMouseY, smallArms, buttonList;
+	private static Field oldMouseX, oldMouseY, smallArms, buttonList, shortcuts;
 	
 	public static void initReflectionFieldsClient()
 	{
@@ -20,6 +22,11 @@ public class ReflectionExtraBitManipulation
 		oldMouseY = ReflectionHelper.findField(GuiInventory.class, "oldMouseY", "field_147047_v");
 		smallArms = ReflectionHelper.findField(ModelPlayer.class, "smallArms", "field_178735_y");
 		buttonList = ReflectionHelper.findField(GuiScreen.class, "buttonList", "field_146292_n");
+	}
+	
+	public static void initReflectionFieldsCommon()
+	{
+		shortcuts = ReflectionHelper.findField(CommandReplaceItem.class, "SHORTCUTS", "field_175785_a");
 	}
 	
 	private static void setFloat(Field field, Object instance, float value)
@@ -58,6 +65,18 @@ public class ReflectionExtraBitManipulation
 		catch (IllegalArgumentException e) {}
 		catch (IllegalAccessException e) {}
 		return Collections.<GuiButton>emptyList();
+	}
+	
+	public static void addShortcutsToCommandReplaceItem(CommandReplaceItem command, Map<String, Integer> shortcutsNew)
+	{
+		try
+		{
+			Map<String, Integer> SHORTCUTS = (Map<String, Integer>) shortcuts.get(command);
+			SHORTCUTS.putAll(shortcutsNew);
+			shortcuts.set(command, SHORTCUTS);
+		}
+		catch (IllegalArgumentException e) {}
+		catch (IllegalAccessException e) {}
 	}
 	
 }
