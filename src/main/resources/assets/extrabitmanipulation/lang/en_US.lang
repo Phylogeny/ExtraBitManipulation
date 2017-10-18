@@ -1,5 +1,6 @@
 itemGroup.extrabitmanipulation=Extra Bit Manipulation
 
+command.extrabitmanipulation.vanity.failure.nbt=An NBT data tag must be specified, as only chiseled armor with items to render can be placed in vanity slots.
 command.extrabitmanipulation.vanity.failure.player=The specified entity must be a player, as only players have chiseled armor vanity slots.
 command.extrabitmanipulation.vanity.failure.capability=The vanity slots capability was not found for the specified player.
 

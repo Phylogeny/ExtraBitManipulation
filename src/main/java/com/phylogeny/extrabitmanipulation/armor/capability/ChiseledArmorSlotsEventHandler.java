@@ -163,6 +163,11 @@ public class ChiseledArmorSlotsEventHandler
 				return;
 			}
 		}
+		else
+		{
+			notifyCommandListener(event, "nbt");
+			return;
+		}
 		if (!stack.isEmpty() && !ChiseledArmorSlotsHandler.isItemValid(slot, stack))
 		{
 			notifyCommandListener(event, "commands.replaceitem.failed", slotName, 1, stack.getTextComponent());
@@ -205,7 +210,7 @@ public class ChiseledArmorSlotsEventHandler
 	
 	private void notifyCommandListener(CommandEvent event, String suffix)
 	{
-		notifyCommandListener(event, "command." + Reference.MOD_ID + ".vanity.failure." + suffix);
+		notifyCommandListener(event, "command." + Reference.MOD_ID + ".vanity.failure." + suffix, new Object[0]);
 	}
 	
 	private void notifyCommandListener(CommandEvent event, CommandException e)
