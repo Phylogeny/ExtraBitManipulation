@@ -69,7 +69,7 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 			{
 				ItemChiseledArmor armor = (ItemChiseledArmor) stack.getItem();
 				IBakedModel model = movingPartsModelMap.get(armorNbt);
-				if (model == null)
+				if (model == null && !movingPartsModelMap.containsKey(armorNbt))
 				{
 					DataChiseledArmorPiece armorPiece = new DataChiseledArmorPiece(stack.getTagCompound(),
 							ArmorType.values()[armorNbt.getInteger(NBTKeys.ARMOR_TYPE)]);
@@ -123,12 +123,16 @@ public class ChiseledArmorStackHandeler extends ItemOverrideList
 					{
 						scaleAndCenterQuads(quadsFace, quadsGeneric, bounds);
 						model = new ChiseledArmorBakedModel(quadsFace, quadsGeneric);
-						movingPartsModelMap.put(armorNbt, model);
 					}
+					else
+					{
+						model = null;
+					}
+					movingPartsModelMap.put(armorNbt, model);
 				}
-				return Configs.armorStackModelRenderMode == ArmorStackModelRenderMode.ALWAYS_CUSTOM_MODEL || (Configs.armorStackModelRenderMode.ordinal() < 2
-						&& (Configs.armorStackModelRenderMode == ArmorStackModelRenderMode.CUSTOM_MODEL_IF_HOLDING_SHIFT
-							? GuiScreen.isShiftKeyDown() : !GuiScreen.isShiftKeyDown())) ? model : armor.getItemModel();
+				return model != null && (Configs.armorStackModelRenderMode == ArmorStackModelRenderMode.ALWAYS_CUSTOM_MODEL || (Configs.armorStackModelRenderMode.ordinal() < 2
+						&& (Configs.armorStackModelRenderMode == ArmorStackModelRenderMode.CUSTOM_MODEL_IF_HOLDING_SHIFT) == GuiScreen.isShiftKeyDown()))
+						? model : armor.getItemModel();
 			}
 		}
 		return ((ItemChiseledArmor) stack.getItem()).getItemModel();
