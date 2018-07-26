@@ -178,7 +178,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	};
 	
 	protected KeyBinding keyBinding;
-	protected String description;
+	protected String description = "";
 	private int defaultKeyCode;
 	private boolean anyConflicts;
 	
@@ -224,7 +224,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	public String getText()
 	{
-		return keyBinding.isSetToDefaultValue() ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
+		return keyBinding == null || keyBinding.isSetToDefaultValue() ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
 	}
 	
 	public KeyBinding getKeyBinding()
