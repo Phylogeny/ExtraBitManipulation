@@ -29,9 +29,9 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 	public PacketChangeGlOperationList() {}
 	
 	public PacketChangeGlOperationList(NBTTagCompound nbt, String nbtKey, EntityEquipmentSlot equipmentSlot,
-			boolean mainArmor, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
+			boolean mainArmor, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists, EntityPlayer player)
 	{
-		super(nbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists);
+		super(nbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists, player);
 		this.nbtKey = nbtKey;
 	}
 	
@@ -92,7 +92,7 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 					{
 						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeGlOperationList(message.nbt, message.nbtKey,
 								message.equipmentSlot, message.mainArmor, message.partIndex, message.armorItemIndex,
-								message.selectedEntry, message.refreshLists), (EntityPlayerMP) player);
+								message.selectedEntry, message.refreshLists, player), (EntityPlayerMP) player);
 					}
 				}
 			});

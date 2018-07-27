@@ -2,6 +2,19 @@ package com.phylogeny.extrabitmanipulation.armor.capability;
 
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiButtonArmorSlots;
+import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlots;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
+import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -16,23 +29,13 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.StartTracking;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Keyboard;
-
-import com.phylogeny.extrabitmanipulation.client.ClientHelper;
-import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiButtonArmorSlots;
-import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlots;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
-import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ChiseledArmorSlotsEventHandler
 {
@@ -45,15 +48,36 @@ public class ChiseledArmorSlotsEventHandler
 	}
 	
 	@SubscribeEvent
-	public void syncDataForNewPlayers(EntityJoinWorldEvent event)
+	public void markPlayerSlotsDirty(EntityJoinWorldEvent event)
 	{
-		Entity player = event.getEntity();
-		if (!player.world.isRemote && player instanceof EntityPlayerMP)
-		{
-			IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability((EntityPlayer) player);
-			if (cap != null)
-				cap.syncAllData((EntityPlayerMP) player);
-		}
+		markPlayerSlotsDirty(event.getEntity());
+	}
+	
+	@SubscribeEvent
+	public void markPlayerSlotsDirty(StartTracking event)
+	{
+		markPlayerSlotsDirty(event.getTarget());
+	}
+	
+	private void markPlayerSlotsDirty(Entity player)
+	{
+		if (!(player instanceof EntityPlayerMP))
+			return;
+		
+		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability((EntityPlayer) player);
+		if (cap != null)
+			cap.markAllSlotsDirty();
+	}
+	
+	@SubscribeEvent
+	public void syncPlayerSlots(PlayerTickEvent event)
+	{
+		if (event.phase != Phase.END || !(event.player instanceof EntityPlayerMP))
+			return;
+		
+		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(event.player);
+		if (cap != null)
+			cap.syncAllSlots(event.player);
 	}
 	
 	@SubscribeEvent
