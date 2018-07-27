@@ -1,32 +1,39 @@
 package com.phylogeny.extrabitmanipulation.armor.capability;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.ItemStackHandler;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
-import com.phylogeny.extrabitmanipulation.packet.PacketSyncAllArmorSlotData;
+import com.phylogeny.extrabitmanipulation.packet.PacketSyncArmorSlot;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapabilityProvider, IChiseledArmorSlotsHandler
 {
+	private boolean[] syncedSlots;
+	
 	@CapabilityInject(IChiseledArmorSlotsHandler.class)
 	public static final Capability<IChiseledArmorSlotsHandler> ARMOR_SLOTS_CAP = null;
 	
 	public ChiseledArmorSlotsHandler()
 	{
 		super(ArmorType.values().length);
+		syncedSlots = new boolean[getSlots()];
 	}
 	
 	@Override
@@ -47,9 +54,43 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	}
 	
 	@Override
-	public void syncAllData(EntityPlayerMP player)
+	public void syncAllSlots(EntityPlayer player)
 	{
-		ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncAllArmorSlotData(serializeNBT()), player);
+		Collection<EntityPlayer> players = null;
+		for (int i = 0; i < getSlots(); i++)
+		{
+			if (syncedSlots[i])
+				continue;
+			
+			if (players == null)
+			{
+				players = new HashSet<>();
+				players.addAll(((WorldServer) player.world).getEntityTracker().getTrackingPlayers(player));
+				players.add(player);
+			}
+			for (EntityPlayer player2 : players)
+				ExtraBitManipulation.packetNetwork.sendTo(new PacketSyncArmorSlot(player.getUniqueID(), getStackInSlot(i), i), (EntityPlayerMP) player2);
+			
+			syncedSlots[i] = true;
+		}
+	}
+	
+	@Override
+	public void markAllSlotsDirty()
+	{
+		syncedSlots = new boolean[getSlots()];
+	}
+	
+	@Override
+	public void markSlotDirty(int index)
+	{
+		syncedSlots[index] = false;
+	}
+	
+	@Override
+	protected void onContentsChanged(int slot)
+	{
+		markSlotDirty(slot);
 	}
 	
 	@Override
