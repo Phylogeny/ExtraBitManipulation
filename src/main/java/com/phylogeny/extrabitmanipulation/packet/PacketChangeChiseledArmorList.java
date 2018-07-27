@@ -1,18 +1,24 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import javax.annotation.Nullable;
 
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiChiseledArmor;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.init.RenderLayersExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 {
@@ -22,8 +28,8 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 	
 	public PacketChangeChiseledArmorList() {}
 	
-	public PacketChangeChiseledArmorList(NBTTagCompound nbt, EntityEquipmentSlot equipmentSlot,
-			boolean mainArmor, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists)
+	public PacketChangeChiseledArmorList(NBTTagCompound nbt, EntityEquipmentSlot equipmentSlot, boolean mainArmor,
+			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists, @Nullable EntityPlayer player)
 	{
 		super(equipmentSlot, mainArmor);
 		this.nbt = nbt;
@@ -31,6 +37,12 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 		this.armorItemIndex = armorItemIndex;
 		this.selectedEntry = selectedEntry;
 		this.refreshLists = refreshLists;
+		if (player instanceof EntityPlayerMP)
+		{
+			IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
+			if (cap != null)
+				cap.markSlotDirty(3 - equipmentSlot.getIndex());
+		}
 	}
 	
 	@Override

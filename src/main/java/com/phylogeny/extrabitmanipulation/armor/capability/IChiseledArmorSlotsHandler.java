@@ -1,10 +1,13 @@
 package com.phylogeny.extrabitmanipulation.armor.capability;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 public interface IChiseledArmorSlotsHandler extends IItemHandlerModifiable
 {
-	public void syncAllData(EntityPlayerMP player);
+	void syncAllSlots(EntityPlayer player);
 	
+	void markAllSlotsDirty();
+	
+	void markSlotDirty(int index);
 }

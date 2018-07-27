@@ -1082,7 +1082,7 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 			ListOperation listOperation, ItemStack stack, NBTTagCompound nbtGlOperations)
 	{
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex), isMainArmorMode, selectedSubTabIndex - 1,
-				list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, nbtGlOperations, true));
+				list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, nbtGlOperations, true, null));
 		waitingForServerResponse = true;
 	}
 	
@@ -1099,7 +1099,7 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 		NBTTagCompound nbt = new NBTTagCompound();
 		GlOperation.saveListToNBT(nbt, key, glOperations);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeGlOperationList(nbt, key, getArmorSlot(selectedTabIndex),
-				isMainArmorMode, selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists));
+				isMainArmorMode, selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists, null));
 		waitingForServerResponse = true;
 	}
 	

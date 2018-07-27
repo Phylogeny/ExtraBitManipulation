@@ -34,9 +34,9 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 	public PacketChangeArmorItemList() {}
 	
 	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, boolean mainArmor, int partIndex, int armorItemIndex,
-			int selectedEntry, ListOperation listOperation, ItemStack stack, NBTTagCompound glOperationsNbt, boolean refreshLists)
+			int selectedEntry, ListOperation listOperation, ItemStack stack, NBTTagCompound glOperationsNbt, boolean refreshLists, EntityPlayer player)
 	{
-		super(glOperationsNbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists);
+		super(glOperationsNbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists, player);
 		this.listOperation = listOperation;
 		this.stack = stack;
 	}
@@ -117,7 +117,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 					{
 						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot, message.mainArmor,
 								message.partIndex, message.armorItemIndex, message.selectedEntry, message.listOperation,
-								message.stack, message.nbt, message.refreshLists), (EntityPlayerMP) player);
+								message.stack, message.nbt, message.refreshLists, player), (EntityPlayerMP) player);
 					}
 				}
 			});
