@@ -11,7 +11,6 @@ import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSyncArmorSlot;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -108,7 +107,7 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	public static boolean isItemValid(int slot, ItemStack stack)
 	{
 		return ItemStackHelper.isChiseledArmorStack(stack) && ((ItemChiseledArmor) stack.getItem()).armorType.ordinal() == slot
-				&& ItemStackHelper.getArmorData(ItemStackHelper.getNBTOrNew(stack)).getBoolean(NBTKeys.ARMOR_NOT_EMPTY);
+				&& ItemStackHelper.isChiseledArmorNotEmpty(stack);
 	}
 	
 	@Override

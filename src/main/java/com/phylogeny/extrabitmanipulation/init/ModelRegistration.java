@@ -1,5 +1,16 @@
 package com.phylogeny.extrabitmanipulation.init;
 
+import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ChiseledArmorBakedModel;
+import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmor;
+import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorLeggings;
+import com.phylogeny.extrabitmanipulation.block.BlockExtraBitManipulationBase;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
+import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -11,18 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ChiseledArmorBakedModel;
-import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmor;
-import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorLeggings;
-import com.phylogeny.extrabitmanipulation.block.BlockExtraBitManipulationBase;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
-import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ModelRegistration
 {
@@ -133,12 +132,17 @@ public class ModelRegistration
 	private static boolean shouldRenderEmptymodel(ItemStack stack)
 	{
 		return Configs.armorModelRenderMode == ArmorModelRenderMode.NEVER || (Configs.armorModelRenderMode == ArmorModelRenderMode.IF_EMPTY
-				&& ItemStackHelper.getArmorData(ItemStackHelper.getNBTOrNew(stack)).getBoolean(NBTKeys.ARMOR_NOT_EMPTY));
+				&& ItemStackHelper.isChiseledArmorNotEmpty(stack));
 	}
 	
 	public static enum ArmorModelRenderMode
 	{
 		IF_EMPTY, NEVER, ALWAYS;
+	}
+	
+	public static enum ArmorModelRenderWithVanityMode
+	{
+		IF_CHISELED_NOT_EMPTY, IF_CHISELED, NEVER, ALWAYS;
 	}
 	
 }

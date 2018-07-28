@@ -2,13 +2,6 @@ package com.phylogeny.extrabitmanipulation.helper;
 
 import javax.annotation.Nullable;
 
-import mod.chiselsandbits.api.ItemType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
@@ -18,6 +11,13 @@ import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+
+import mod.chiselsandbits.api.ItemType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ItemStackHelper
 {
@@ -135,6 +135,11 @@ public class ItemStackHelper
 		
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
 		return cap == null ? null : cap.getStackInSlot(3 - equipmentSlot.getIndex());
+	}
+	
+	public static boolean isChiseledArmorNotEmpty(ItemStack stack)
+	{
+		return getArmorData(getNBTOrNew(stack)).getBoolean(NBTKeys.ARMOR_NOT_EMPTY);
 	}
 	
 }
