@@ -1,0 +1,6 @@
+{
+    "parent": "extrabitmanipulation:item/chiseled_chestplate_default",
+    "textures": {
+        "layer0": "minecraft:blocks/diamond_block"
+    }
+}

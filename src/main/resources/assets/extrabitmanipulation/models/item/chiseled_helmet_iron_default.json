@@ -1,0 +1,6 @@
+{
+    "parent": "extrabitmanipulation:item/chiseled_helmet_default",
+    "textures": {
+        "layer0": "minecraft:blocks/iron_block"
+    }
+}

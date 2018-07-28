@@ -303,11 +303,9 @@ public class GuiChiseledArmor extends GuiContainer
 				armorPieces[i] = new DataChiseledArmorPiece(ItemStackHelper.getNBTOrNew(stack), ArmorType.values()[i]);
 			
 			ArmorType armorType = ArmorType.values()[i];
+			ItemChiseledArmor armorItem =  stack.getItem() instanceof ItemChiseledArmor ? (ItemChiseledArmor) stack.getItem() : getArmorItem(armorType);
 			GuiButtonTab tab = new GuiButtonTab(i * 4, guiLeft, guiTop + 23 + i * 25, 24, 25,
-					armorType.getName(), new ItemStack(armorType == ArmorType.HELMET ? ItemsExtraBitManipulation.chiseledHelmet
-							: (armorType == ArmorType.CHESTPLATE ? ItemsExtraBitManipulation.chiseledChestplate
-									: (armorType == ArmorType.LEGGINGS ? ItemsExtraBitManipulation.chiseledLeggings
-											: ItemsExtraBitManipulation.chiseledBoots))), 0, 0, 0, 0, 19, 230, 512, TEXTURE_GUI);
+					armorType.getName(), new ItemStack(armorItem), 0, 0, 0, 0, 19, 230, 512, TEXTURE_GUI);
 			tab.setHoverHelpText("Armor Piece: " + tab.getHoverText() + "\n\nEach of these 4 tabs represents a worn chiseled armor piece. " +
 					"If a tab is disabled, the corresponding armor slot is either empty or contains a different kind of armor.");
 			DataChiseledArmorPiece armorPiece = armorPieces[i];
@@ -323,11 +321,11 @@ public class GuiChiseledArmor extends GuiContainer
 			if (armorPiece == null)
 				continue;
 			
-			ArmorMovingPart[] movingParts = ((ItemChiseledArmor) stack.getItem()).MOVING_PARTS;
+			ArmorMovingPart[] movingParts = armorItem.MOVING_PARTS;
 			for (int j = 0; j < movingParts.length; j++)
 			{
 				GuiButtonTab tabSub = new GuiButtonTab(i * 4 + j + 1, guiLeft, guiTop + 147 + j * 25, 24, 25,
-						movingParts[j].getName(), 0, 0, 0, 0, 19, 230, 512, TEXTURE_GUI, movingParts[j].getIconModels());
+						movingParts[j].getName(), 0, 0, 0, 0, 19, 230, 512, TEXTURE_GUI, movingParts[j].getIconModels(armorItem.getArmorMaterial()));
 				tabSub.setHoverHelpText("Moving Part: " + tabSub.getHoverText() + "\n\nEach of these tabs represents a moving part of the armor piece " +
 						"specified by the selected armor piece tab.");
 				if (j + 1 == selectedSubTabIndex)
@@ -355,7 +353,19 @@ public class GuiChiseledArmor extends GuiContainer
 		updateButtons();
 		refreshLists(false);
 	}
-
+	
+	private ItemChiseledArmor getArmorItem(ArmorType armorType)
+	{
+		switch (armorType)
+		{
+			case HELMET:		return (ItemChiseledArmor) ItemsExtraBitManipulation.chiseledHelmetDiamond;
+			case CHESTPLATE:	return (ItemChiseledArmor) ItemsExtraBitManipulation.chiseledChestplateDiamond;
+			case LEGGINGS:		return (ItemChiseledArmor) ItemsExtraBitManipulation.chiseledLeggingsDiamond;
+			case BOOTS:			return (ItemChiseledArmor) ItemsExtraBitManipulation.chiseledBootsDiamond;
+			default:			return null;
+		}
+	}
+	
 	public static String getPointMain(String point)
 	{
 		return TextFormatting.AQUA + point + TextFormatting.RESET;

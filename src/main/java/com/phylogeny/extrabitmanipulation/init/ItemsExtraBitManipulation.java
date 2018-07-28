@@ -2,6 +2,7 @@ package com.phylogeny.extrabitmanipulation.init;
 
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -25,16 +26,24 @@ public class ItemsExtraBitManipulation
 	private static boolean clientSide;
 	public static Item diamondNugget, bitWrench, sculptingLoop, sculptingSquare, sculptingSpadeCurved, sculptingSpadeSquared, modelingTool,
 						modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead, sculptingSpadeCurvedHead,
-						sculptingSpadeSquaredHead, chiseledHelmet, chiseledChestplate, chiseledLeggings, chiseledBoots;
+						sculptingSpadeSquaredHead, chiseledHelmetDiamond, chiseledChestplateDiamond, chiseledLeggingsDiamond, chiseledBootsDiamond,
+						chiseledHelmetIron, chiseledChestplateIron, chiseledLeggingsIron, chiseledBootsIron;
 	
 	public static void itemsInit(FMLPreInitializationEvent event)
 	{
-		chiseledHelmet = new ItemChiseledArmor("chiseled_helmet", EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
-		chiseledChestplate = new ItemChiseledArmor("chiseled_chestplate", EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+		chiseledHelmetDiamond = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.DIAMOND, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
+		chiseledChestplateDiamond = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.DIAMOND, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
 				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-		chiseledLeggings = new ItemChiseledArmor("chiseled_leggings", EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+		chiseledLeggingsDiamond = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.DIAMOND, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
 				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-		chiseledBoots = new ItemChiseledArmor("chiseled_boots", EntityEquipmentSlot.FEET,
+		chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND, EntityEquipmentSlot.FEET,
+				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
+		chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.IRON, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
+		chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.IRON, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
+		chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.IRON, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
+		chiseledBootsIron = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.IRON, EntityEquipmentSlot.FEET,
 				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
 		diamondNugget = new ItemExtraBitManipulationBase("diamond_nugget");
 		bitWrench = new ItemBitWrench("bit_wrench");
@@ -75,7 +84,8 @@ public class ItemsExtraBitManipulation
 	{
 		event.getRegistry().registerAll(diamondNugget, bitWrench, sculptingLoop, sculptingSquare, sculptingSpadeCurved,
 				sculptingSpadeSquared, modelingTool, modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead,
-				sculptingSpadeCurvedHead, sculptingSpadeSquaredHead, chiseledHelmet, chiseledChestplate, chiseledLeggings, chiseledBoots,
+				sculptingSpadeCurvedHead, sculptingSpadeSquaredHead, chiseledHelmetDiamond, chiseledChestplateDiamond, chiseledLeggingsDiamond,
+				chiseledBootsDiamond, chiseledHelmetIron, chiseledChestplateIron, chiseledLeggingsIron, chiseledBootsIron,
 				(new ItemBlock(BlocksExtraBitManipulation.bodyPartTemplate)).setRegistryName(BlocksExtraBitManipulation.bodyPartTemplate.getRegistryName()));
 		
 		if (clientSide)

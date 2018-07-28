@@ -1,0 +1,6 @@
+{
+    "parent": "extrabitmanipulation:item/chiseled_leggings_default",
+    "textures": {
+        "layer0": "minecraft:blocks/diamond_block"
+    }
+}

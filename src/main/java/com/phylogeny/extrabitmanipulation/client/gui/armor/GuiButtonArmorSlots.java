@@ -7,6 +7,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -71,7 +72,7 @@ public class GuiButtonArmorSlots extends GuiButtonBase
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0, 0, -200);
 		GlStateManager.enableDepth();
-		RenderState.renderStateModelIntoGUI(null, ArmorMovingPart.HEAD.getIconModels()[0],
+		RenderState.renderStateModelIntoGUI(null, ArmorMovingPart.HEAD.getIconModels(ArmorMaterial.DIAMOND)[0],
 				ItemStack.EMPTY, hovered ? 1.0F : 0.5F, true, false, x - 8, y - 1, 0, 0, 1);
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.translate(0, 0, 500);

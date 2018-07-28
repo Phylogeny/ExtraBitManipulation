@@ -60,8 +60,11 @@ public class JustEnoughItemsPlugin implements IModPlugin
 		ModItems items = ChiselsAndBits.getItems();
 		addDescription(registry, items.itemBlockBit);
 		addDescription(registry, "designs", items.itemMirrorprint, items.itemNegativeprint, items.itemPositiveprint);
-		List<ItemStack> armorStacks = addDescription(registry, "chiseled_armor", ItemsExtraBitManipulation.chiseledHelmet,
-				ItemsExtraBitManipulation.chiseledChestplate, ItemsExtraBitManipulation.chiseledLeggings, ItemsExtraBitManipulation.chiseledBoots);
+		List<ItemStack> armorStacks = addDescription(registry, "chiseled_armor", ItemsExtraBitManipulation.chiseledHelmetDiamond,
+				ItemsExtraBitManipulation.chiseledChestplateDiamond, ItemsExtraBitManipulation.chiseledLeggingsDiamond,
+				ItemsExtraBitManipulation.chiseledBootsDiamond, ItemsExtraBitManipulation.chiseledHelmetIron,
+				ItemsExtraBitManipulation.chiseledChestplateIron, ItemsExtraBitManipulation.chiseledLeggingsIron,
+				ItemsExtraBitManipulation.chiseledBootsIron);
 		Item templateItem = Item.getItemFromBlock(BlocksExtraBitManipulation.bodyPartTemplate);
 		addDescription(registry, templateItem);
 		IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
@@ -83,10 +86,14 @@ public class JustEnoughItemsPlugin implements IModPlugin
 		registry.addRecipeCategories(new ShapeInfoRecipeCategory(guiHelper));
 		registry.addRecipeCategories(new ModelInfoRecipeCategory(guiHelper));
 		List<ItemStack> armorStacks = new ArrayList<ItemStack>();
-		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledHelmet));
-		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledChestplate));
-		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledLeggings));
-		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledBoots));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledHelmetDiamond));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledChestplateDiamond));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledLeggingsDiamond));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledBootsDiamond));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledHelmetIron));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledChestplateIron));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledLeggingsIron));
+		armorStacks.add(getStack(ItemsExtraBitManipulation.chiseledBootsIron));
 		registry.addRecipeCategories(new ChiseledArmorInfoRecipeCategory(guiHelper, armorStacks));
 	}
 	

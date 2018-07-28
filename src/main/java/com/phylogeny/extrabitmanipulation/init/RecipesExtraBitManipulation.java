@@ -26,10 +26,14 @@ public class RecipesExtraBitManipulation
 	@SubscribeEvent
 	void registerRecipes(RegistryEvent.Register<IRecipe> event)
 	{
-		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledHelmet, Items.DIAMOND_HELMET, 272);
-		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledChestplate, Items.DIAMOND_CHESTPLATE, 444);
-		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledLeggings, Items.DIAMOND_LEGGINGS, 572);
-		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledBoots, Items.DIAMOND_BOOTS, 272);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledHelmetDiamond, Items.DIAMOND_HELMET, 272);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledChestplateDiamond, Items.DIAMOND_CHESTPLATE, 444);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledLeggingsDiamond, Items.DIAMOND_LEGGINGS, 572);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledBootsDiamond, Items.DIAMOND_BOOTS, 272);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledHelmetIron, Items.IRON_HELMET, 272);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledChestplateIron, Items.IRON_CHESTPLATE, 444);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledLeggingsIron, Items.IRON_LEGGINGS, 572);
+		registerChiseledArmorRecipes(event, ItemsExtraBitManipulation.chiseledBootsIron, Items.IRON_BOOTS, 272);
 	}
 	
 	private static void registerChiseledArmorRecipes(RegistryEvent.Register<IRecipe> event, Item itemChiseled, Item itemVanilla, int bitCost)

@@ -1,0 +1,6 @@
+{
+    "parent": "extrabitmanipulation:item/chiseled_boots_default",
+    "textures": {
+        "layer0": "minecraft:blocks/diamond_block"
+    }
+}

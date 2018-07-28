@@ -1,13 +1,11 @@
 package com.phylogeny.extrabitmanipulation.init;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -28,18 +26,22 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ModelRegistration
 {
-	private static final String ARMOR_TEXTURE_PATH = Reference.MOD_ID + ":textures/armor/chiseled_armor.png";
+	private static final String ARMOR_TEXTURE_PATH_DIANOND = Reference.MOD_ID + ":textures/armor/chiseled_armor_diamond.png";
+	private static final String ARMOR_TEXTURE_PATH_IRON = Reference.MOD_ID + ":textures/armor/chiseled_armor_iron.png";
 	private static ModelChiseledArmor armorModel;
 	private static ModelChiseledArmorLeggings armorModelLeggings;
 	private static ModelBiped armorModelEmpty;
 	
 	public static void registerItemModels()
 	{
-		ArmorMovingPart.initIconModelLocations();
-		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledHelmet);
-		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledChestplate);
-		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledLeggings);
-		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledBoots);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledHelmetDiamond);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledChestplateDiamond);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledLeggingsDiamond);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledBootsDiamond);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledHelmetIron);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledChestplateIron);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledLeggingsIron);
+		registerChiseledArmorItemModel(ItemsExtraBitManipulation.chiseledBootsIron);
 		registerItemModel(ItemsExtraBitManipulation.diamondNugget);
 		registerItemModel(ItemsExtraBitManipulation.bitWrench);
 		registerItemModel(ItemsExtraBitManipulation.sculptingLoop);
@@ -63,22 +65,20 @@ public class ModelRegistration
 		armorModelEmpty.bipedLeftArm.cubeList.clear();
 		armorModelEmpty.bipedRightLeg.cubeList.clear();
 		armorModelEmpty.bipedLeftLeg.cubeList.clear();
-		List<ResourceLocation> modelLocations = new ArrayList<ResourceLocation>();
-		for (ArmorMovingPart movingPart : ArmorMovingPart.values())
-		{
-			for (ModelResourceLocation modelLocation : movingPart.getIconModelLocations())
-				modelLocations.add(modelLocation);
-		}
-		registerIsolatedModel(ItemsExtraBitManipulation.chiseledHelmet, modelLocations.toArray(new ResourceLocation[modelLocations.size()]));
+		registerIsolatedModels(ItemsExtraBitManipulation.chiseledHelmetDiamond, ArmorMovingPart.initAndGetIconModelLocations());
 	}
 	
 	@SubscribeEvent
 	public void onModelBakeEvent(ModelBakeEvent event)
 	{
-		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledHelmet);
-		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledChestplate);
-		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledLeggings);
-		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledBoots);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledHelmetDiamond);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledChestplateDiamond);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledLeggingsDiamond);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledBootsDiamond);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledHelmetIron);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledChestplateIron);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledLeggingsIron);
+		registerBakedItemModel(event, ItemsExtraBitManipulation.chiseledBootsIron);
 	}
 	
 	private static void registerBakedItemModel(ModelBakeEvent event, Item item)
@@ -106,7 +106,7 @@ public class ModelRegistration
 			return;
 		
 		registerItemModel(armorPiece, name.getResourcePath());
-		registerIsolatedModel(armorPiece, armorPiece.initItemModelLocation());
+		registerIsolatedModels(armorPiece, armorPiece.initItemModelLocation());
 		armorPiece.armorType.initIconStack(armorPiece);
 	}
 	
@@ -115,7 +115,7 @@ public class ModelRegistration
 		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(new ResourceLocation(Reference.MOD_ID, name), "inventory"));
 	}
 	
-	private static void registerIsolatedModel(Item item, ResourceLocation... resourceLocations)
+	private static void registerIsolatedModels(Item item, ResourceLocation... resourceLocations)
 	{
 		ModelLoader.registerItemVariants(item, resourceLocations);
 	}
@@ -125,9 +125,9 @@ public class ModelRegistration
 		return shouldRenderEmptymodel(stack) ? armorModelEmpty : (slot == EntityEquipmentSlot.LEGS ? armorModelLeggings : armorModel);
 	}
 	
-	public static String getArmorTexture(ItemStack stack)
+	public static String getArmorTexture(ItemStack stack, ArmorMaterial material)
 	{
-		return shouldRenderEmptymodel(stack) ? null : ARMOR_TEXTURE_PATH;
+		return shouldRenderEmptymodel(stack) ? null : (material == ArmorMaterial.DIAMOND ? ARMOR_TEXTURE_PATH_DIANOND : ARMOR_TEXTURE_PATH_IRON);
 	}
 	
 	private static boolean shouldRenderEmptymodel(ItemStack stack)
