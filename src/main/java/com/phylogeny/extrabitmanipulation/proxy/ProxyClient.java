@@ -55,7 +55,7 @@ public class ProxyClient extends ProxyCommon
 	@Override
 	public void postinit()
 	{
-		RenderLayersExtraBitManipulation.init();
+		RenderLayersExtraBitManipulation.initLayers();
 		Configs.sculptSetBitWire.init();
 		Configs.sculptSetBitSpade.init();
 		Configs.replacementBitsUnchiselable.initDefaultReplacementBit();
