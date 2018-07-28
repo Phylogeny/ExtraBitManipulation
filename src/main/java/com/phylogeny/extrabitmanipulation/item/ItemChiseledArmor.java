@@ -77,7 +77,7 @@ public class ItemChiseledArmor extends ItemArmor
 	public ItemChiseledArmor(String name, ArmorMaterial material, EntityEquipmentSlot equipmentSlot, ArmorType armorType, ArmorMovingPart... movingParts)
 	{
 		super(material, 0, equipmentSlot);
-		setRegistryName(name + "_" + material.toString().toLowerCase());
+		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 		setCreativeTab(CreativeTabExtraBitManipulation.CREATIVE_TAB);
 		this.armorType = armorType;

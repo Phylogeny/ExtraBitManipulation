@@ -38,12 +38,12 @@ public class ItemsExtraBitManipulation
 				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
 		chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND, EntityEquipmentSlot.FEET,
 				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
-		chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.IRON, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
-		chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.IRON, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+		chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet_iron", ArmorMaterial.IRON, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
+		chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate_iron", ArmorMaterial.IRON, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
 				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-		chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.IRON, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+		chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings_iron", ArmorMaterial.IRON, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
 				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-		chiseledBootsIron = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.IRON, EntityEquipmentSlot.FEET,
+		chiseledBootsIron = new ItemChiseledArmor("chiseled_boots_iron", ArmorMaterial.IRON, EntityEquipmentSlot.FEET,
 				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
 		diamondNugget = new ItemExtraBitManipulationBase("diamond_nugget");
 		bitWrench = new ItemBitWrench("bit_wrench");
