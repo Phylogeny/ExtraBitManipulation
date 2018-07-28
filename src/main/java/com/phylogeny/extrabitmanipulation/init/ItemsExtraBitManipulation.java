@@ -3,6 +3,7 @@ package com.phylogeny.extrabitmanipulation.init;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 
 import com.phylogeny.extrabitmanipulation.config.ConfigProperty;
 import com.phylogeny.extrabitmanipulation.config.ConfigRecipe;
@@ -23,7 +24,8 @@ public class ItemsExtraBitManipulation
 {
 	public static Item diamondNugget, bitWrench, sculptingLoop, sculptingSquare, sculptingSpadeCurved, sculptingSpadeSquared, modelingTool,
 	modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead, sculptingSpadeCurvedHead, sculptingSpadeSquaredHead,
-	chiseledHelmet, chiseledChestplate, chiseledLeggings, chiseledBoots;
+	chiseledHelmetDiamond, chiseledChestplateDiamond, chiseledLeggingsDiamond, chiseledBootsDiamond,
+    chiseledHelmetIron, chiseledChestplateIron, chiseledLeggingsIron, chiseledBootsIron;
 	
 	public static void itemsInit()
 	{
@@ -40,13 +42,20 @@ public class ItemsExtraBitManipulation
 		sculptingSquareHead = new ItemExtraBitManipulationBase("SculptingSquareHead");
 		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("SculptingSpadeCurvedHead");
 		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("SculptingSpadeSquaredHead");
-		chiseledHelmet = new ItemChiseledArmor("chiseled_helmet", EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
-		chiseledChestplate = new ItemChiseledArmor("chiseled_chestplate", EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
-				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-		chiseledLeggings = new ItemChiseledArmor("chiseled_leggings", EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
-				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-		chiseledBoots = new ItemChiseledArmor("chiseled_boots", EntityEquipmentSlot.FEET,
-				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
+		chiseledHelmetDiamond = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.DIAMOND, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
+        chiseledChestplateDiamond = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.DIAMOND, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+                ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
+        chiseledLeggingsDiamond = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.DIAMOND, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+                ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
+        chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND, EntityEquipmentSlot.FEET,
+                ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
+        chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet_iron", ArmorMaterial.IRON, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
+        chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate_iron", ArmorMaterial.IRON, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+                ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
+        chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings_iron", ArmorMaterial.IRON, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+                ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
+        chiseledBootsIron = new ItemChiseledArmor("chiseled_boots_iron", ArmorMaterial.IRON, EntityEquipmentSlot.FEET,
+                ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
 		registerItemAndDefaultRecipe(bitWrench, "Bit Wrench", true, false);
 		registerItemAndDefaultRecipe(sculptingLoop, "Curved Sculpting Wire", true, false);
 		registerItemAndDefaultRecipe(sculptingSquare, "Straight Sculpting Wire", true, false);
@@ -66,10 +75,14 @@ public class ItemsExtraBitManipulation
 		registerItemAndDefaultRecipe(sculptingSpadeSquaredHead, "Flat Sculpting Spade Head", true, true,
 				"nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "nuggetDiamond", "", "nuggetDiamond", "");
 		GameRegistry.register(diamondNugget);
-		GameRegistry.register(chiseledHelmet);
-		GameRegistry.register(chiseledChestplate);
-		GameRegistry.register(chiseledLeggings);
-		GameRegistry.register(chiseledBoots);
+		GameRegistry.register(chiseledHelmetDiamond);
+		GameRegistry.register(chiseledChestplateDiamond);
+		GameRegistry.register(chiseledLeggingsDiamond);
+		GameRegistry.register(chiseledBootsDiamond);
+		GameRegistry.register(chiseledHelmetIron);
+        GameRegistry.register(chiseledChestplateIron);
+        GameRegistry.register(chiseledLeggingsIron);
+        GameRegistry.register(chiseledBootsIron);
 		registerDefaultRecipe(Item.getItemFromBlock(BlocksExtraBitManipulation.bodyPartTemplate), "Bodypart Template", false, false, "minecraft:cobblestone");
 	}
 	

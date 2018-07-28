@@ -69,8 +69,10 @@ public class ProxyClient extends ProxyCommon
 			{
 				return tintIndex;
 			}
-		}, ItemsExtraBitManipulation.chiseledHelmet, ItemsExtraBitManipulation.chiseledChestplate,
-			ItemsExtraBitManipulation.chiseledLeggings, ItemsExtraBitManipulation.chiseledBoots);
+		}, ItemsExtraBitManipulation.chiseledHelmetDiamond, ItemsExtraBitManipulation.chiseledChestplateDiamond,
+			ItemsExtraBitManipulation.chiseledLeggingsDiamond, ItemsExtraBitManipulation.chiseledBootsDiamond,
+			ItemsExtraBitManipulation.chiseledHelmetIron, ItemsExtraBitManipulation.chiseledChestplateIron,
+			ItemsExtraBitManipulation.chiseledLeggingsIron, ItemsExtraBitManipulation.chiseledBootsIron);
 	}
 	
 }

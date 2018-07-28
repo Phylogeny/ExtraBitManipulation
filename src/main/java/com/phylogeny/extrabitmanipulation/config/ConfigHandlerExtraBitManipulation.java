@@ -373,10 +373,10 @@ public class ConfigHandlerExtraBitManipulation
 					"scale (which sets the scale of the bodypart templates, and of the block copies imported into the armor piece from the world).",
 					ItemChiseledArmor.SCALE_TITLES);
 			
-			Configs.armorMovingPartHelmet = getArmorMovingPart(ItemsExtraBitManipulation.chiseledHelmet);
-			Configs.armorMovingPartChestplate = getArmorMovingPart(ItemsExtraBitManipulation.chiseledChestplate);
-			Configs.armorMovingPartLeggings = getArmorMovingPart(ItemsExtraBitManipulation.chiseledLeggings);
-			Configs.armorMovingPartBoots = getArmorMovingPart(ItemsExtraBitManipulation.chiseledBoots);
+			Configs.armorMovingPartHelmet = getArmorMovingPart(ItemsExtraBitManipulation.chiseledHelmetDiamond);
+			Configs.armorMovingPartChestplate = getArmorMovingPart(ItemsExtraBitManipulation.chiseledChestplateDiamond);
+			Configs.armorMovingPartLeggings = getArmorMovingPart(ItemsExtraBitManipulation.chiseledLeggingsDiamond);
+			Configs.armorMovingPartBoots = getArmorMovingPart(ItemsExtraBitManipulation.chiseledBootsDiamond);
 			Configs.armorTabIndex = getArmorGuiInt("Selected Tab Index", 0, 0, 3);
 			Configs.armorPixelTranslation = getArmorGuiBoolean("Translation In Pixels", true);
 			Configs.armorFullIllumination = getArmorGuiBoolean("Full Illumination", false);

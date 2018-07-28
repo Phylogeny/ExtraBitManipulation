@@ -61,8 +61,11 @@ public class JustEnoughItemsPlugin extends BlankModPlugin
 		ModItems items = ChiselsAndBits.getItems();
 		addDescription(registry, "block_bit", items.itemBlockBit);
 		addDescription(registry, "designs", items.itemMirrorprint, items.itemNegativeprint, items.itemPositiveprint);
-		List<ItemStack> armorStacks = addDescription(registry, "chiseled_armor", ItemsExtraBitManipulation.chiseledHelmet,
-				ItemsExtraBitManipulation.chiseledChestplate, ItemsExtraBitManipulation.chiseledLeggings, ItemsExtraBitManipulation.chiseledBoots);
+		List<ItemStack> armorStacks = addDescription(registry, "chiseled_armor", ItemsExtraBitManipulation.chiseledHelmetDiamond,
+				ItemsExtraBitManipulation.chiseledChestplateDiamond, ItemsExtraBitManipulation.chiseledLeggingsDiamond,
+				ItemsExtraBitManipulation.chiseledBootsDiamond, ItemsExtraBitManipulation.chiseledHelmetIron,
+				ItemsExtraBitManipulation.chiseledChestplateIron, ItemsExtraBitManipulation.chiseledLeggingsIron,
+				ItemsExtraBitManipulation.chiseledBootsIron);
 		Item templateItem = Item.getItemFromBlock(BlocksExtraBitManipulation.bodyPartTemplate);
 		addDescription(registry, templateItem);
 		IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();

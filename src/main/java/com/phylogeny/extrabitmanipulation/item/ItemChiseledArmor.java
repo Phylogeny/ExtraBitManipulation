@@ -1,5 +1,6 @@
 package com.phylogeny.extrabitmanipulation.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -71,9 +72,9 @@ public class ItemChiseledArmor extends ItemArmor
 	@SideOnly(Side.CLIENT)
 	private ModelResourceLocation itemModelLocation;
 	
-	public ItemChiseledArmor(String name, EntityEquipmentSlot equipmentSlot, ArmorType armorType, ArmorMovingPart... movingParts)
+	public ItemChiseledArmor(String name, ArmorMaterial material, EntityEquipmentSlot equipmentSlot, ArmorType armorType, ArmorMovingPart... movingParts)
 	{
-		super(ArmorMaterial.DIAMOND, 0, equipmentSlot);
+		super(material, 0, equipmentSlot);
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 		setCreativeTab(CreativeTabExtraBitManipulation.CREATIVE_TAB);
@@ -117,7 +118,7 @@ public class ItemChiseledArmor extends ItemArmor
 	@Nullable
 	public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type)
 	{
-		return ModelRegistration.getArmorTexture(stack);
+		return ModelRegistration.getArmorTexture(stack, getArmorMaterial());
 	}
 	
 	@Override
@@ -595,22 +596,28 @@ public class ItemChiseledArmor extends ItemArmor
 		PELVIS(BodyPartTemplate.TORSO, 0, 1, "Pelvis"),
 		ARM_RIGHT(BodyPartTemplate.LIMB, 1, 1, "Right Arm"),
 		ARM_LEFT(BodyPartTemplate.LIMB, 2, 2, "Left Arm"),
-		LEG_RIGHT(BodyPartTemplate.LIMB, 1, 3, "Right Leg"),
+		LEG_RIGHT(BodyPartTemplate.LIMB, 1, 3, 1, "Right Leg"),
 		LEG_LEFT(BodyPartTemplate.LIMB, 2, 2, "Left Leg"),
 		FOOT_RIGHT(BodyPartTemplate.LIMB, 0, 1, "Right Foot"),
 		FOOT_LEFT(BodyPartTemplate.LIMB, 1, 2, "Left Foot");
 		
 		private BodyPartTemplate template;
-		private int partIndex, modelCount;
+		private int partIndex, modelCount, opaqueIndex;
 		private String name;
 		@SideOnly(Side.CLIENT)
-		private ModelResourceLocation[] iconModelLocations;
+		private ModelResourceLocation[] iconModelLocationsDiamond, iconModelLocationsIron;
 		
 		private ArmorMovingPart(BodyPartTemplate template, int partIndex, int modelCount, String name)
+		{
+			this(template, partIndex, modelCount, 0, name);
+		}
+		
+		private ArmorMovingPart(BodyPartTemplate template, int partIndex, int modelCount, int opaqueIndex, String name)
 		{
 			this.template = template;
 			this.partIndex = partIndex;
 			this.modelCount = modelCount;
+			this.opaqueIndex = opaqueIndex;
 			this.name = name;
 		}
 		
@@ -630,14 +637,9 @@ public class ItemChiseledArmor extends ItemArmor
 		}
 		
 		@SideOnly(Side.CLIENT)
-		public ModelResourceLocation[] getIconModelLocations()
+		public IBakedModel[] getIconModels(ArmorMaterial material)
 		{
-			return iconModelLocations;
-		}
-		
-		@SideOnly(Side.CLIENT)
-		public IBakedModel[] getIconModels()
-		{
+			ModelResourceLocation[] iconModelLocations = material == ArmorMaterial.DIAMOND ? iconModelLocationsDiamond : iconModelLocationsIron;
 			IBakedModel[] models = new IBakedModel[iconModelLocations.length];
 			for (int i = 0; i < iconModelLocations.length; i++)
 			{
@@ -647,17 +649,28 @@ public class ItemChiseledArmor extends ItemArmor
 		}
 		
 		@SideOnly(Side.CLIENT)
-		public static void initIconModelLocations()
+		public static ResourceLocation[] initAndGetIconModelLocations()
 		{
+			List<ResourceLocation> modelLocations = new ArrayList<>();
 			for (ArmorMovingPart part : ArmorMovingPart.values())
 			{
-				part.iconModelLocations = new ModelResourceLocation[part.modelCount];
-				for (int i = 0; i < part.iconModelLocations.length; i++)
+				part.iconModelLocationsDiamond = new ModelResourceLocation[part.modelCount];
+				part.iconModelLocationsIron = new ModelResourceLocation[part.modelCount];
+				for (int i = 0; i < part.modelCount; i++)
 				{
-					part.iconModelLocations[i] = new ModelResourceLocation(new ResourceLocation(Reference.MOD_ID,
-							"moving_part_" + part.name.toLowerCase().replace(" ", "_") + "_" + i), null);
+					part.iconModelLocationsDiamond[i] = createIconModelLocation(part, i, ArmorMaterial.DIAMOND);
+					part.iconModelLocationsIron[i] = createIconModelLocation(part, i, ArmorMaterial.IRON);
+					modelLocations.add(part.iconModelLocationsDiamond[i]);
+					modelLocations.add(part.iconModelLocationsIron[i]);
 				}
 			}
+			return modelLocations.toArray(new ResourceLocation[modelLocations.size()]);
+		}
+		
+		private static ModelResourceLocation createIconModelLocation(ArmorMovingPart part, int index, ArmorMaterial material)
+		{
+			return new ModelResourceLocation(new ResourceLocation(Reference.MOD_ID, "moving_part_"
+					+ (index == part.opaqueIndex ? material.toString().toLowerCase() + "_" : "") + part.name.toLowerCase().replace(" ", "_") + "_" + index), null);
 		}
 		
 	}
