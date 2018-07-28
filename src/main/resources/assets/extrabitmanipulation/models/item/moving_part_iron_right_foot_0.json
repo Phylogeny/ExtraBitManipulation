@@ -1,0 +1,6 @@
+{
+    "parent": "extrabitmanipulation:item/moving_part_right_foot_0",
+    "textures": {
+        "opaque": "minecraft:blocks/iron_block"
+    }
+}

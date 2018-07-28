@@ -44,10 +44,14 @@ public class RecipesExtraBitManipulation
 				registerRecipe(item, configRecipe.isShaped, configRecipe.useOreDictionary, configRecipe.recipe, configRecipe.getRecipeDefault());
 		}
 		RecipeSorter.register(Reference.MOD_ID + ":chiseled_armor", RecipeChiseledArmor.class, Category.SHAPELESS, "after:minecraft:shapeless");
-		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledHelmet, Items.DIAMOND_HELMET, 272);
-		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledChestplate, Items.DIAMOND_CHESTPLATE, 444);
-		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggings, Items.DIAMOND_LEGGINGS, 572);
-		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBoots, Items.DIAMOND_BOOTS, 272);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledHelmetDiamond, Items.DIAMOND_HELMET, 272);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledChestplateDiamond, Items.DIAMOND_CHESTPLATE, 444);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggingsDiamond, Items.DIAMOND_LEGGINGS, 572);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBootsDiamond, Items.DIAMOND_BOOTS, 272);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledHelmetIron, Items.IRON_HELMET, 272);
+        registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledChestplateIron, Items.IRON_CHESTPLATE, 444);
+        registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggingsIron, Items.IRON_LEGGINGS, 572);
+        registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBootsIron, Items.IRON_BOOTS, 272);
 	}
 	
 	private static void registerChiseledArmorRecipes(Item output, Item inputArmor, int bitCost)
