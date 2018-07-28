@@ -24,7 +24,7 @@ public class RenderLayersExtraBitManipulation
 {
 	private static List<LayerChiseledArmor> armorLayers = new ArrayList<LayerChiseledArmor>();
 	
-	public static void init()
+	public static void initLayers()
 	{
 		addLayerChiseledArmorToEntityRender(EntityArmorStand.class);
 		addLayerChiseledArmorToEntityRender(EntityVillager.class);
@@ -32,13 +32,17 @@ public class RenderLayersExtraBitManipulation
 		addLayerChiseledArmorToEntityRender(EntityGiantZombie.class);
 		addLayerChiseledArmorToEntityRender(EntityPigZombie.class);
 		addLayerChiseledArmorToEntityRender(EntitySkeleton.class);
-		for (RenderPlayer renderPlayer : ClientHelper.getRenderManager().getSkinMap().values())
-		{
-			LayerChiseledArmor layer = new LayerChiseledArmor(renderPlayer);
-			renderPlayer.addLayer(layer);
-			armorLayers.add(layer);
-		}
 	}
+	
+	public static void initLayersPlayer()
+    {
+	    for (RenderPlayer renderPlayer : ClientHelper.getRenderManager().getSkinMap().values())
+        {
+            LayerChiseledArmor layer = new LayerChiseledArmor(renderPlayer);
+            renderPlayer.addLayer(layer);
+            armorLayers.add(layer);
+        }
+    }
 	
 	private static <T extends EntityLivingBase> void addLayerChiseledArmorToEntityRender(Class <? extends Entity > entityClass)
 	{
