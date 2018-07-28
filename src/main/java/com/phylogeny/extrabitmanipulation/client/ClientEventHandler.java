@@ -111,6 +111,7 @@ public class ClientEventHandler
 	private boolean keyThrowBitIsDown;
 	private static double BOUNDING_BOX_OFFSET = 0.0020000000949949026D;
 	private static Map<UUID, ItemStack[]> invisibleArmorMap = new HashMap<>();
+	private static boolean playerRenderLayersInitialized;
 	
 	@SubscribeEvent
 	public void registerTextures(@SuppressWarnings("unused") TextureStitchEvent.Pre event)
@@ -145,6 +146,11 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void preventArmorRendering(RenderPlayerEvent.Pre event)
 	{
+		if (!playerRenderLayersInitialized)
+		{
+			RenderLayersExtraBitManipulation.initLayersPlayer();
+			playerRenderLayersInitialized = true;
+		}
 		if (Configs.armorModelRenderWithVanityMode == ArmorModelRenderWithVanityMode.ALWAYS)
 			return;
 		
