@@ -3,13 +3,6 @@ package com.phylogeny.extrabitmanipulation.config;
 import java.io.File;
 import java.util.Arrays;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
 import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
@@ -17,6 +10,7 @@ import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.LogHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderMode;
+import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderWithVanityMode;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
@@ -27,6 +21,13 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ConfigHandlerExtraBitManipulation
 {
@@ -405,7 +406,7 @@ public class ConfigHandlerExtraBitManipulation
 					ARMOR_SETTINGS, configFileClient, 0,
 					"Specifies when to render the default Chiseled Armor model for a given armor piece. If set to 'If Empty', it will only render for " +
 					"an armor piece if there are no non-empty itemstacks in the itemstack lists of any of its moving parts. It will never/always render, " +
-					"if set to 'Never'/'Always', respectively");
+					"if set to 'Never'/'Always', respectively.");
 			
 			Configs.armorStackModelRenderMode = getEnumValueFromStringArray("Rendered Armor Stack Models", ArmorStackModelRenderMode.class,
 					ARMOR_SETTINGS, configFileClient, 0,
@@ -434,6 +435,12 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.armorZFightingBufferTranslationFeet = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Translation - Feet",
 					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
 					"The items of both feet will be translated down by this many pixels to prevent z-fighting with the items of both legs.");
+			
+			Configs.armorModelRenderWithVanityMode = getEnumValueFromStringArray("Render Armor With Vanity Armor", ArmorModelRenderWithVanityMode.class,
+					ARMOR_SETTINGS, configFileClient, 0,
+					"Specifies when to render a normally worn armor piece while a chiseled armor piece is worn in a corresponding vanity slot. "
+					+ "'If Chiseled' will only render the normally worn piece if it is also chiseled armor. 'If Chiseled Not Empty' additionally requires "
+					+ "the piece to have some blocks/items to render. The normally worn piece will never/always render, if set to 'Never'/'Always', respectively.");
 			
 			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
 					chiseledArmorConfigFile, false, true, false,

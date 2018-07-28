@@ -1,6 +1,52 @@
 package com.phylogeny.extrabitmanipulation.client;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Cylinder;
+import org.lwjgl.util.glu.Disk;
+import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.Quadric;
+import org.lwjgl.util.glu.Sphere;
+
+import com.google.common.base.Stopwatch;
+import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
+import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
+import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper.ModelingBoxSet;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ArmorBodyPartTemplateBoxData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ArmorCollectionData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderWithVanityMode;
+import com.phylogeny.extrabitmanipulation.init.RenderLayersExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
+import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
+import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
+import com.phylogeny.extrabitmanipulation.packet.PacketCollectArmorBlocks;
+import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
+import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetCollectionBox;
+import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+import com.phylogeny.extrabitmanipulation.reference.Reference;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import mod.chiselsandbits.api.APIExceptions.CannotBeChiseled;
 import mod.chiselsandbits.api.IBitAccess;
@@ -25,6 +71,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumFacing.AxisDirection;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -34,6 +81,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,46 +89,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Cylinder;
-import org.lwjgl.util.glu.Disk;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.glu.Quadric;
-import org.lwjgl.util.glu.Sphere;
-
-import com.google.common.base.Stopwatch;
-import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
-import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu;
-import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
-import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
-import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper.ModelingBoxSet;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ArmorBodyPartTemplateBoxData;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ArmorCollectionData;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.ModelReadData;
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper.SculptingData;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.init.KeyBindingsExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.init.RenderLayersExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
-import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
-import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
-import com.phylogeny.extrabitmanipulation.packet.PacketCollectArmorBlocks;
-import com.phylogeny.extrabitmanipulation.packet.PacketCycleBitWrenchMode;
-import com.phylogeny.extrabitmanipulation.packet.PacketOpenBitMappingGui;
-import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
-import com.phylogeny.extrabitmanipulation.packet.PacketOpenInventoryGui;
-import com.phylogeny.extrabitmanipulation.packet.PacketReadBlockStates;
-import com.phylogeny.extrabitmanipulation.packet.PacketSculpt;
-import com.phylogeny.extrabitmanipulation.packet.PacketSetCollectionBox;
-import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-import com.phylogeny.extrabitmanipulation.reference.Reference;
-import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 public class ClientEventHandler
 {
@@ -102,6 +110,7 @@ public class ClientEventHandler
 	private static final int[] SHAPE_FLAT = new int[]{3, 3, 3, 6, 3, 3, 3};
 	private boolean keyThrowBitIsDown;
 	private static double BOUNDING_BOX_OFFSET = 0.0020000000949949026D;
+	private static Map<UUID, ItemStack[]> invisibleArmorMap = new HashMap<>();
 	
 	@SubscribeEvent
 	public void registerTextures(@SuppressWarnings("unused") TextureStitchEvent.Pre event)
@@ -131,6 +140,70 @@ public class ClientEventHandler
 				RenderLayersExtraBitManipulation.clearRenderMaps();
 			}
 		});
+	}
+	
+	@SubscribeEvent
+	public void preventArmorRendering(RenderPlayerEvent.Pre event)
+	{
+		if (Configs.armorModelRenderWithVanityMode == ArmorModelRenderWithVanityMode.ALWAYS)
+			return;
+		
+		EntityPlayer player = event.getEntityPlayer();
+		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
+		if (cap == null)
+			return;
+		
+		ItemStack[] armor = new ItemStack[4];
+		NonNullList<ItemStack> armorInventory = player.inventory.armorInventory;
+		boolean found = false;
+		for (int i = 0; i < 4; i++)
+		{
+			ItemStack stack = armorInventory.get(i);
+			ItemStack stackVanity = cap.getStackInSlot(3 - i);
+			if (!stackVanity.isEmpty() && !stack.isEmpty())
+			{
+				boolean hide;
+				switch (Configs.armorModelRenderWithVanityMode)
+				{
+					case IF_CHISELED:			hide = !ItemStackHelper.isChiseledArmorStack(stack);
+												break;
+					case IF_CHISELED_NOT_EMPTY:	hide = !ItemStackHelper.isChiseledArmorStack(stack) || !ItemStackHelper.isChiseledArmorNotEmpty(stack);
+												break;
+					default:					hide = true;
+				}
+				if (hide)
+				{
+					armor[i] = stack;
+					armorInventory.set(i, ItemStack.EMPTY);
+					found = true;
+				}
+			}
+		}
+		if (found)
+			invisibleArmorMap.put(player.getUniqueID(), armor);
+	}
+	
+	@SubscribeEvent
+	public void preventArmorRendering(RenderPlayerEvent.Post event)
+	{
+		if (Configs.armorModelRenderWithVanityMode == ArmorModelRenderWithVanityMode.ALWAYS)
+			return;
+		
+		EntityPlayer player = event.getEntityPlayer();
+		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
+		if (cap == null)
+			return;
+		
+		ItemStack[] armor = invisibleArmorMap.get(player.getUniqueID());
+		if (armor == null)
+			return;
+		
+		for (int i = 0; i < 4; i++)
+		{
+			if (armor[i] != null)
+				player.inventory.armorInventory.set(i, armor[i]);
+		}
+		invisibleArmorMap.remove(player.getUniqueID());
 	}
 	
 	@SubscribeEvent
