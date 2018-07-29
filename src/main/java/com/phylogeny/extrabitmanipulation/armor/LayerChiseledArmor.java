@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelEvoker;
 import net.minecraft.client.model.ModelIllager;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelRenderer;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityEvoker;
 import net.minecraft.entity.monster.EntityVindicator;
 import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityVillager;
@@ -40,7 +42,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 	private final Map<NBTTagCompound, Integer[]> movingPartsDisplayListsMap = new HashMap<NBTTagCompound, Integer[]>();
 	private final ModelRenderer head, body, villagerArms, rightLeg, leftLeg;
 	private final ModelBase model;
-	private boolean smallArms, isVindicator, isVex;
+	private boolean smallArms, isIllager, isVindicator, isEvoker, isVex;
 	
 	public LayerChiseledArmor(RenderLivingBase<? extends EntityLivingBase> livingEntityRenderer)
 	{
@@ -54,7 +56,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			leftLeg = modelVillager.leftVillagerLeg;
 			villagerArms = modelVillager.villagerArms;
 		}
-		else if (model instanceof ModelVindicator)
+		else if (model instanceof ModelIllager)
 		{
 			ModelIllager modelVillager = ((ModelIllager) model);
 			head = modelVillager.head;
@@ -62,7 +64,9 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			rightLeg = modelVillager.leg0;
 			leftLeg = modelVillager.leg1;
 			villagerArms = modelVillager.arms;
-			isVindicator = true;
+			isVindicator = model instanceof ModelVindicator;
+			isEvoker = model instanceof ModelEvoker;
+			isIllager = isVindicator || isEvoker;
 		}
 		else
 		{
@@ -125,7 +129,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 			
-			if (entity instanceof EntityVillager || entity instanceof EntityZombieVillager || entity instanceof EntityVindicator)
+			if (entity instanceof EntityVillager || entity instanceof EntityZombieVillager || entity instanceof EntityVindicator || entity instanceof EntityEvoker)
 				GlStateManager.translate(0.0F, scale * 2, 0.0F);
 			
 			GlStateManager.pushMatrix();
@@ -145,7 +149,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			GlStateManager.pushMatrix();
 			adjustForSneaking(entity);
 			adjustForChildModel();
-			boolean isPassive = !isVindicator || !((EntityVindicator) entity).isAggressive();
+			boolean isPassive = !isIllager || !(isVindicator ? ((EntityVindicator) entity).isAggressive() : ((EntityEvoker) entity).isCastingSpell());
 			GlStateManager.pushMatrix();
 			if (displayListsChestplate != null)
 			{
@@ -310,8 +314,8 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			}
 			else
 			{
-				if (isVindicator)
-					((ModelVindicator) model).getArm(handSide).postRender(scale);
+				if (isIllager)
+					((ModelIllager) model).getArm(handSide).postRender(scale);
 				else
 					((ModelBiped) model).postRenderArm(scale, handSide);
 			}

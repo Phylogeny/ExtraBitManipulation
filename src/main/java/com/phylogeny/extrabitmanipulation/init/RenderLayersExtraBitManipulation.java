@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityEvoker;
 import net.minecraft.entity.monster.EntityGiantZombie;
 import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityPigZombie;
@@ -52,6 +53,7 @@ public class RenderLayersExtraBitManipulation
 		addLayerChiseledArmorToEntityRender(EntityStray.class);
 		addLayerChiseledArmorToEntityRender(EntityVex.class);
 		addLayerChiseledArmorToEntityRender(EntityVindicator.class);
+		addLayerChiseledArmorToEntityRender(EntityEvoker.class);
 		if (Loader.isModLoaded(CustomNPCsReferences.MOD_ID))
 			MinecraftForge.EVENT_BUS.register(new RenderLayersExtraBitManipulation());
 	}
