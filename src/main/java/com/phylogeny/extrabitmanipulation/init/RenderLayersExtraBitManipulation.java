@@ -26,6 +26,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import noppes.npcs.entity.EntityCustomNpc;
+import noppes.npcs.entity.EntityNPC64x32;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler;
 import com.phylogeny.extrabitmanipulation.armor.LayerChiseledArmor;
@@ -76,6 +77,7 @@ public class RenderLayersExtraBitManipulation
 			return;
 		
 		addLayerChiseledArmorToEntityRender(EntityCustomNpc.class);
+		addLayerChiseledArmorToEntityRender(EntityNPC64x32.class);
 		layersInitializedPlayerCNPC = true;
 	}
 	
