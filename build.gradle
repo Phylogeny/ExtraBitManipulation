@@ -14,6 +14,11 @@ version = minecraft_version + "-" + version
 group = "com.phylogeny.extrabitmanipulation"
 archivesBaseName = "ExtraBitManipulation"
 
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_7
+compileJava {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_7
+}
+
 minecraft {
     version = minecraft_version + "-" + forge_version
     runDir = "run"
