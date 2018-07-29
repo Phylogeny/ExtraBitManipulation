@@ -13,9 +13,9 @@ version = minecraft_version + "-" + version
 group = "com.phylogeny.extrabitmanipulation"
 archivesBaseName = "ExtraBitManipulation"
 
-sourceCompatibility = targetCompatibility = "1.6"
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_7
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.6"
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_7
 }
 
 minecraft {
