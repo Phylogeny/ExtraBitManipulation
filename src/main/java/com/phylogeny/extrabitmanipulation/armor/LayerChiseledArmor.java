@@ -40,13 +40,24 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 {
 	private final Map<NBTTagCompound, Integer[]> movingPartsDisplayListsMap = new HashMap<NBTTagCompound, Integer[]>();
-	private final ModelRenderer head, body, villagerArms, rightLeg, leftLeg;
-	private final ModelBase model;
+	private ModelRenderer head, body, villagerArms, rightLeg, leftLeg;
+	private ModelBase model;
 	private boolean smallArms, isIllager, isVindicator, isEvoker, isVex;
+	private RenderLivingBase<? extends EntityLivingBase> livingEntityRenderer;
 	
 	public LayerChiseledArmor(RenderLivingBase<? extends EntityLivingBase> livingEntityRenderer)
 	{
-		model = livingEntityRenderer.getMainModel();
+		this.livingEntityRenderer = livingEntityRenderer;
+		updateModelAndRenderers();
+	}
+	
+	public void updateModelAndRenderers()
+	{
+		ModelBase modelNew = livingEntityRenderer.getMainModel();
+		if (modelNew == model)
+			return;
+		
+		model = modelNew;
 		if (model instanceof ModelVillager)
 		{
 			ModelVillager modelVillager = ((ModelVillager) model);
@@ -109,6 +120,7 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 	public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
 	{
+		updateModelAndRenderers();
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		ClientHelper.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
