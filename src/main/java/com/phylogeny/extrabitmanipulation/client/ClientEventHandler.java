@@ -144,7 +144,6 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void preventArmorRendering(RenderPlayerEvent.Pre event)
 	{
-		RenderLayersExtraBitManipulation.initLayersPlayer();
 		if (Configs.armorModelRenderWithVanityMode == ArmorModelRenderWithVanityMode.ALWAYS)
 			return;
 		

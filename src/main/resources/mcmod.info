@@ -12,6 +12,6 @@
   "logoFile": "assets/extrabitmanipulation/logo/ExtraBitManipulationLogo.png",
   "screenshots": [],
   "requiredMods": ["chiselsandbits"],
-  "dependencies": ["chiselsandbits", "Baubles", "galacticraftcore", "customnpcs"]
+  "dependencies": ["chiselsandbits", "Baubles", "galacticraftcore", "customnpcs", "moreplayermodels"]
 }
 ]
