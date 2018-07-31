@@ -38,7 +38,7 @@ import com.phylogeny.extrabitmanipulation.reference.CustomNPCsReferences;
 public class RenderLayersExtraBitManipulation
 {
 	private static List<LayerChiseledArmor> armorLayers = new ArrayList<LayerChiseledArmor>();
-	private static boolean layersInitializedPlayer, layersInitializedPlayerCNPC;
+	private static boolean layersInitializedPlayerCNPC;
 	
 	public static void initLayers()
 	{
@@ -56,22 +56,14 @@ public class RenderLayersExtraBitManipulation
 		addLayerChiseledArmorToEntityRender(EntityVindicator.class);
 		addLayerChiseledArmorToEntityRender(EntityEvoker.class);
 		addLayerChiseledArmorToEntityRender(EntityIllusionIllager.class);
-		if (Loader.isModLoaded(CustomNPCsReferences.MOD_ID))
-			MinecraftForge.EVENT_BUS.register(new RenderLayersExtraBitManipulation());
-	}
-	
-	public static void initLayersPlayer()
-	{
-		if (layersInitializedPlayer)
-			return;
-		
 		for (RenderPlayer renderPlayer : ClientHelper.getRenderManager().getSkinMap().values())
 		{
 			LayerChiseledArmor layer = new LayerChiseledArmor(renderPlayer);
 			renderPlayer.addLayer(layer);
 			armorLayers.add(layer);
 		}
-		layersInitializedPlayer = true;
+		if (Loader.isModLoaded(CustomNPCsReferences.MOD_ID))
+			MinecraftForge.EVENT_BUS.register(new RenderLayersExtraBitManipulation());
 	}
 	
 	@SubscribeEvent
