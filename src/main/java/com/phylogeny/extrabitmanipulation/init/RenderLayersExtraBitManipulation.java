@@ -24,7 +24,6 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import noppes.npcs.entity.EntityCustomNpc;
 import noppes.npcs.entity.EntityNPC64x32;
@@ -60,7 +59,7 @@ public class RenderLayersExtraBitManipulation
 			renderPlayer.addLayer(layer);
 			armorLayers.add(layer);
 		}
-		if (Loader.isModLoaded(CustomNPCsReferences.MOD_ID))
+		if (CustomNPCsReferences.isLoaded)
 			MinecraftForge.EVENT_BUS.register(new RenderLayersExtraBitManipulation());
 	}
 	

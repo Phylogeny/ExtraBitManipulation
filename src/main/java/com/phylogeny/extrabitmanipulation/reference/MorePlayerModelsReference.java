@@ -8,7 +8,14 @@ import net.minecraft.client.model.ModelBiped;
 public class MorePlayerModelsReference
 {
 	public static final String MOD_ID = "moreplayermodels";
-	public static final ModelBiped ARMOR_MODEL_MPM = new ModelChiseledArmorMPM();
-	public static final ModelBiped ARMOR_MODEL_LEGGINGS_MPM = new ModelChiseledArmorLeggingsMPM();
+	public static boolean isLoaded;
+	public static ModelBiped ARMOR_MODEL_MPM;
+	public static ModelBiped ARMOR_MODEL_LEGGINGS_MPM;
+	
+	public static void initModels()
+	{
+		ARMOR_MODEL_MPM = new ModelChiseledArmorMPM();
+		ARMOR_MODEL_LEGGINGS_MPM = new ModelChiseledArmorLeggingsMPM();
+	}
 	
 }

@@ -4,14 +4,10 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
-import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorMPM;
-import com.phylogeny.extrabitmanipulation.reference.MorePlayerModelsReference;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelPlayer;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class ReflectionExtraBitManipulation
@@ -24,8 +20,6 @@ public class ReflectionExtraBitManipulation
 		oldMouseY = ReflectionHelper.findField(GuiInventory.class, "oldMouseY", "field_147047_v");
 		smallArms = ReflectionHelper.findField(ModelPlayer.class, "smallArms", "field_178735_y");
 		buttonList = ReflectionHelper.findField(GuiScreen.class, "buttonList", "field_146292_n");
-		if (Loader.isModLoaded(MorePlayerModelsReference.MOD_ID))
-			ModelChiseledArmorMPM.initReflectionFieldsClient();
 	}
 	
 	private static void setFloat(Field field, Object instance, float value)
