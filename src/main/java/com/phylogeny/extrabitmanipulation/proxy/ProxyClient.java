@@ -30,6 +30,7 @@ public class ProxyClient extends ProxyCommon
 	public void preinit(FMLPreInitializationEvent event)
 	{
 		super.preinit(event);
+		ReflectionExtraBitManipulation.initReflectionFieldsClient();
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 		ModelRegistration.registerModels();
 		MinecraftForge.EVENT_BUS.register(new ModelRegistration());
@@ -42,7 +43,6 @@ public class ProxyClient extends ProxyCommon
 				return new RenderEntityBit(manager);
 			}
 		});
-		ReflectionExtraBitManipulation.initReflectionFieldsClient();
 	}
 	
 	@Override

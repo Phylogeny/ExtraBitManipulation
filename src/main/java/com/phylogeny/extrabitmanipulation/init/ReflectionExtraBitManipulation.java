@@ -4,11 +4,15 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
+import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorMPM;
+import com.phylogeny.extrabitmanipulation.reference.MorePlayerModelsReference;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelPlayer;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class ReflectionExtraBitManipulation
@@ -23,6 +27,8 @@ public class ReflectionExtraBitManipulation
 		buttonList = findField(GuiScreen.class, "buttonList", "field_146292_n");
 		guiLeft = findField(GuiContainer.class, "guiLeft", "field_147003_i");
 		guiTop = findField(GuiContainer.class, "guiTop", "field_147009_r");
+		if (Loader.isModLoaded(MorePlayerModelsReference.MOD_ID))
+			ModelChiseledArmorMPM.initReflectionFieldsClient();
 	}
 	
 	private static Field findField(Class<?> clazz, String... fieldNames)
@@ -49,8 +55,7 @@ public class ReflectionExtraBitManipulation
 		{
 			field.setFloat(instance, value);
 		}
-		catch (IllegalArgumentException e) {}
-		catch (IllegalAccessException e) {}
+		catch (IllegalArgumentException | IllegalAccessException e) {}
 	}
 	
 	public static void setCursorPosition(GuiInventory gui, float mouseX, float mouseY)
@@ -65,8 +70,7 @@ public class ReflectionExtraBitManipulation
 		{
 			return smallArms.getBoolean(model);
 		}
-		catch (IllegalArgumentException e) {}
-		catch (IllegalAccessException e) {}
+		catch (IllegalArgumentException | IllegalAccessException e) {}
 		return false;
 	}
 	
@@ -76,8 +80,7 @@ public class ReflectionExtraBitManipulation
 		{
 			return (List<GuiButton>) buttonList.get(gui);
 		}
-		catch (IllegalArgumentException e) {}
-		catch (IllegalAccessException e) {}
+		catch (IllegalArgumentException | IllegalAccessException e) {}
 		return Collections.<GuiButton>emptyList();
 	}
 	
