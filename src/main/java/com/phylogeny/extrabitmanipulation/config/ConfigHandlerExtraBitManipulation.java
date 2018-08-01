@@ -765,7 +765,7 @@ public class ConfigHandlerExtraBitManipulation
 	private static ConfigBitToolSettingInt getArmorButtonInt(String axis, int defaultValue)
 	{
 		String name = "Armor Button " + axis + " Position";
-		if (BaublesReferences.isBaublesLoaded)
+		if (BaublesReferences.isLoaded)
 		{
 			name += " With Baubles Loaded";
 			if (axis.equals("X"))

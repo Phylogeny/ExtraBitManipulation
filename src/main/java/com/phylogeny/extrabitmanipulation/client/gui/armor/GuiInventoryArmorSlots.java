@@ -78,7 +78,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 17, guiTop + 5, "Show slot/button hover help text", "Exit help mode");
 		buttonHelp.selected = helpMode;
 		buttonJEI = new GuiButtonExt(100, guiLeft + 119, guiTop + 55, 46, 26, "");
-		buttonJEI.visible = JeiReferences.isJeiLoaded ? helpMode : false;
+		buttonJEI.visible = JeiReferences.isLoaded ? helpMode : false;
 		buttonList.add(buttonHelp);
 		buttonList.add(buttonJEI);
 	}
@@ -87,7 +87,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
 		fontRendererObj.drawString(I18n.format("container.crafting"), 97, 8, 4210752);
-		if (!helpMode || !JeiReferences.isJeiLoaded)
+		if (!helpMode || !JeiReferences.isLoaded)
 			return;
 		
 		int color = buttonJEI.isMouseOver() ? 16777120 : -1;
@@ -178,7 +178,7 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 			super.actionPerformed(button);
 		
 		helpMode = buttonHelp.selected;
-		if (JeiReferences.isJeiLoaded)
+		if (JeiReferences.isLoaded)
 			buttonJEI.visible = helpMode;
 	}
 	

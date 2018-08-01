@@ -1,10 +1,10 @@
 package com.phylogeny.extrabitmanipulation.init;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ChiseledArmorBakedModel;
-import com.phylogeny.extrabitmanipulation.armor.CustomNPCsModels;
-import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmor;
-import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorLeggings;
-import com.phylogeny.extrabitmanipulation.armor.MorePlayerModelsModels;
+import com.phylogeny.extrabitmanipulation.armor.model.cnpc.CustomNPCsModels;
+import com.phylogeny.extrabitmanipulation.armor.model.mpm.MorePlayerModelsModels;
+import com.phylogeny.extrabitmanipulation.armor.model.vanilla.ModelChiseledArmor;
+import com.phylogeny.extrabitmanipulation.armor.model.vanilla.ModelChiseledArmorLeggings;
 import com.phylogeny.extrabitmanipulation.block.BlockExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;

@@ -1,13 +1,13 @@
-package com.phylogeny.extrabitmanipulation.armor;
+package com.phylogeny.extrabitmanipulation.armor.model.mpm;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
-import noppes.npcs.constants.EnumParts;
+import noppes.mpm.constants.EnumParts;
 
-public class ModelChiseledArmorLeggingsCNPC extends ModelChiseledArmorBaseCNPC
+public class ModelChiseledArmorLeggingsMPM extends ModelChiseledArmorBaseMPM
 {
 	
-	public ModelChiseledArmorLeggingsCNPC()
+	public ModelChiseledArmorLeggingsMPM()
 	{
 		super(1);
 		scale += Configs.armorZFightingBufferScaleRightLegOrFoot;

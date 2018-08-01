@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.armor;
+package com.phylogeny.extrabitmanipulation.armor.model.mpm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +8,15 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import noppes.npcs.client.model.ModelBipedAlt;
-import noppes.npcs.client.model.ModelScaleRenderer;
-import noppes.npcs.constants.EnumParts;
+import noppes.mpm.client.model.ModelBipedAlt;
+import noppes.mpm.client.model.ModelScaleRenderer;
+import noppes.mpm.constants.EnumParts;
 
-
-public class ModelChiseledArmorBaseCNPC extends ModelBipedAlt
+public class ModelChiseledArmorBaseMPM extends ModelBipedAlt
 {
 	protected float scale;
 	
-	public ModelChiseledArmorBaseCNPC(float scale)
+	public ModelChiseledArmorBaseMPM(float scale)
 	{
 		super(scale);
 		textureWidth = 86;

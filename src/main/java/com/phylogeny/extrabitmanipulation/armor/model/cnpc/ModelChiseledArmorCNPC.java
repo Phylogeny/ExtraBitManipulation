@@ -1,15 +1,15 @@
-package com.phylogeny.extrabitmanipulation.armor;
+package com.phylogeny.extrabitmanipulation.armor.model.cnpc;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import net.minecraft.client.model.ModelRenderer;
-import noppes.mpm.client.model.ModelScaleRenderer;
-import noppes.mpm.constants.EnumParts;
+import noppes.npcs.client.model.ModelScaleRenderer;
+import noppes.npcs.constants.EnumParts;
 
-public class ModelChiseledArmorMPM extends ModelChiseledArmorBaseMPM
+public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 {
 	
-	public ModelChiseledArmorMPM()
+	public ModelChiseledArmorCNPC()
 	{
 		super(1);
 		float angle90 = (float) Math.toRadians(90);

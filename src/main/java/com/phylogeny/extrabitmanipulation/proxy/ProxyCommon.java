@@ -49,8 +49,8 @@ public class ProxyCommon implements IGuiHandler
 	{
 		BlocksExtraBitManipulation.blocksInit();
 		ItemsExtraBitManipulation.itemsInit();
-		BaublesReferences.isBaublesLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
-		JeiReferences.isJeiLoaded = Loader.isModLoaded(JeiReferences.MOD_ID);
+		BaublesReferences.isLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
+		JeiReferences.isLoaded = Loader.isModLoaded(JeiReferences.MOD_ID);
 		MorePlayerModelsReference.isLoaded = Loader.isModLoaded(MorePlayerModelsReference.MOD_ID);
 		CustomNPCsReferences.isLoaded = Loader.isModLoaded(CustomNPCsReferences.MOD_ID);
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
