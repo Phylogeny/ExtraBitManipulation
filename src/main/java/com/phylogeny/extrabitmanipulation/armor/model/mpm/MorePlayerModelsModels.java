@@ -1,4 +1,4 @@
-package com.phylogeny.extrabitmanipulation.armor;
+package com.phylogeny.extrabitmanipulation.armor.model.mpm;
 
 import net.minecraft.client.model.ModelBiped;
 
