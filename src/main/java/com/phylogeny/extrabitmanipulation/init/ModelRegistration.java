@@ -1,8 +1,10 @@
 package com.phylogeny.extrabitmanipulation.init;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ChiseledArmorBakedModel;
+import com.phylogeny.extrabitmanipulation.armor.CustomNPCsModels;
 import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmor;
 import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorLeggings;
+import com.phylogeny.extrabitmanipulation.armor.MorePlayerModelsModels;
 import com.phylogeny.extrabitmanipulation.block.BlockExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
@@ -62,15 +64,15 @@ public class ModelRegistration
 		armorModelEmpty = new ModelBiped();
 		if (MorePlayerModelsReference.isLoaded)
 		{
-			MorePlayerModelsReference.initModels();
-			armorModelMPM = MorePlayerModelsReference.ARMOR_MODEL_MPM;
-			armorModelLeggingsMPM = MorePlayerModelsReference.ARMOR_MODEL_LEGGINGS_MPM;
+			MorePlayerModelsModels.initModels();
+			armorModelMPM = MorePlayerModelsModels.ARMOR_MODEL_MPM;
+			armorModelLeggingsMPM = MorePlayerModelsModels.ARMOR_MODEL_LEGGINGS_MPM;
 		}
 		if (CustomNPCsReferences.isLoaded)
 		{
-			CustomNPCsReferences.initModels();
-			armorModelCNPC = CustomNPCsReferences.ARMOR_MODEL_CNPC;
-			armorModelLeggingsCNPC = CustomNPCsReferences.ARMOR_MODEL_LEGGINGS_CNPC;
+			CustomNPCsModels.initModels();
+			armorModelCNPC = CustomNPCsModels.ARMOR_MODEL_CNPC;
+			armorModelLeggingsCNPC = CustomNPCsModels.ARMOR_MODEL_LEGGINGS_CNPC;
 		}
 		armorModelEmpty.bipedHead.cubeList.clear();
 		armorModelEmpty.bipedBody.cubeList.clear();
@@ -138,7 +140,7 @@ public class ModelRegistration
 		if (shouldRenderEmptymodel(stack))
 			return armorModelEmpty;
 		
-		if (CustomNPCsReferences.isCustomNPC(entity))
+		if (CustomNPCsReferences.isLoaded && CustomNPCsModels.isCustomNPC(entity))
 			return slot == EntityEquipmentSlot.LEGS ? armorModelLeggingsCNPC : armorModelCNPC;
 		
 		return (!MorePlayerModelsReference.isLoaded || !(entity instanceof EntityPlayer) ?
