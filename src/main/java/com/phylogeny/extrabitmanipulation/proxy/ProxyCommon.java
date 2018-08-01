@@ -50,14 +50,10 @@ public class ProxyCommon implements IGuiHandler
 	{
 		BlocksExtraBitManipulation.blocksInit();
 		ItemsExtraBitManipulation.itemsInit(event);
-		BaublesReferences.isBaublesLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
-		JeiReferences.isJeiLoaded = Loader.isModLoaded(JeiReferences.MOD_ID);
-		if (Loader.isModLoaded(MorePlayerModelsReference.MOD_ID))
-			MorePlayerModelsReference.isLoaded = true;
-		
-		if (Loader.isModLoaded(CustomNPCsReferences.MOD_ID))
-			CustomNPCsReferences.isLoaded = true;
-		
+		BaublesReferences.isLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
+		JeiReferences.isLoaded = Loader.isModLoaded(JeiReferences.MOD_ID);
+		MorePlayerModelsReference.isLoaded = Loader.isModLoaded(MorePlayerModelsReference.MOD_ID);
+		CustomNPCsReferences.isLoaded = Loader.isModLoaded(CustomNPCsReferences.MOD_ID);
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		MinecraftForge.EVENT_BUS.register(new ItemsExtraBitManipulation());

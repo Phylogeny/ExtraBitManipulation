@@ -1,55 +1,59 @@
-package com.phylogeny.extrabitmanipulation.armor;
-
-import com.phylogeny.extrabitmanipulation.reference.Configs;
+package com.phylogeny.extrabitmanipulation.armor.model.vanilla;
 
 import net.minecraft.client.model.ModelRenderer;
-import noppes.npcs.client.model.ModelScaleRenderer;
-import noppes.npcs.constants.EnumParts;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.EntityZombieVillager;
+import net.minecraft.util.math.MathHelper;
 
-public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.Utility;
+
+public class ModelChiseledArmor extends ModelChiseledArmorBase
 {
 	
-	public ModelChiseledArmorCNPC()
+	public ModelChiseledArmor()
 	{
-		super(1);
+		super();
 		float angle90 = (float) Math.toRadians(90);
 		float angle180 = (float) Math.toRadians(180);
 		float angle270 = (float) Math.toRadians(270);
 		
 		//Head
-		bipedHeadwear = createScaledModel(0, 0, EnumParts.HEAD);
-		bipedHead = createScaledModel(0, 0, EnumParts.HEAD);
+		bipedHeadwear = new ModelRenderer(this, 0, 0);
+		bipedHead = new ModelRenderer(this, 0, 0);
 		bipedHead.addBox(-5.0F, -9.0F, -5.0F, 10, 1, 10, scale);
-		ModelScaleRenderer headFront1 = new ModelScaleRenderer(this, 44, 0, EnumParts.HEAD);
+		ModelRenderer headFront1 = new ModelRenderer(this, 44, 0);
 		headFront1.addBox(-5.0F, -8.0F, -4.0F, 1, 3, 9, scale);
 		setRotationAngles(headFront1, 0.0F, angle270, 0.0F);
-		ModelScaleRenderer headFront2 = new ModelScaleRenderer(this, 0, 0, EnumParts.HEAD);
+		ModelRenderer headFront2 = new ModelRenderer(this, 0, 0);
 		headFront2.setRotationPoint(-1.0F, -5.0F, -5.0F);
 		headFront2.addBox(0.0F, 0.0F, 0.0F, 2, 2, 1, scale);
-		ModelScaleRenderer headBack1 = new ModelScaleRenderer(this, 44, 0, EnumParts.HEAD);
+		ModelRenderer headBack1 = new ModelRenderer(this, 44, 0);
 		headBack1.addBox(-5.0F, -8.0F, -4.0F, 1, 3, 9, scale);
 		setRotationAngles(headBack1, 0.0F, angle90, 0.0F);
-		ModelScaleRenderer headBack2 = new ModelScaleRenderer(this, 31, 0, EnumParts.HEAD);
+		ModelRenderer headBack2 = new ModelRenderer(this, 31, 0);
 		headBack2.setRotationPoint(-5.0F, -5.0F, 4.0F);
 		headBack2.addBox(0.0F, 0.0F, 0.0F, 10, 3, 1, scale);
-		ModelScaleRenderer headBack3 = new ModelScaleRenderer(this, 0, 4, EnumParts.HEAD);
+		ModelRenderer headBack3 = new ModelRenderer(this, 0, 4);
 		headBack3.setRotationPoint(-2.0F, -2.0F, 4.0F);
 		headBack3.addBox(0.0F, 0.0F, 0.0F, 4, 1, 1, scale);
-		ModelScaleRenderer headRight1 = new ModelScaleRenderer(this, 44, 0, EnumParts.HEAD);
+		ModelRenderer headRight1 = new ModelRenderer(this, 44, 0);
 		headRight1.addBox(-5.0F, -8.0F, -4.0F, 1, 3, 9, scale);
-		ModelScaleRenderer headRight2 = new ModelScaleRenderer(this, 0, 12, EnumParts.HEAD);
+		ModelRenderer headRight2 = new ModelRenderer(this, 0, 12);
 		headRight2.setRotationPoint(4.0F, -5.0F, -5.0F);
 		headRight2.addBox(0.0F, 0.0F, 0.0F, 1, 1, 5, scale);
-		ModelScaleRenderer headRight3 = new ModelScaleRenderer(this, 26, 12, EnumParts.HEAD);
+		ModelRenderer headRight3 = new ModelRenderer(this, 26, 12);
 		headRight3.setRotationPoint(4.0F, -5.0F, 0.0F);
 		headRight3.addBox(0.0F, 0.0F, 0.0F, 1, 2, 4, scale);
-		ModelScaleRenderer headLeft1 = new ModelScaleRenderer(this, 44, 0, EnumParts.HEAD);
+		ModelRenderer headLeft1 = new ModelRenderer(this, 44, 0);
 		headLeft1.addBox(-5.0F, -8.0F, -4.0F, 1, 3, 9, scale);
 		setRotationAngles(headLeft1, 0.0F, angle180, 0.0F);
-		ModelScaleRenderer headLeft2 = new ModelScaleRenderer(this, 13, 12, EnumParts.HEAD);
+		ModelRenderer headLeft2 = new ModelRenderer(this, 13, 12);
 		headLeft2.setRotationPoint(-5.0F, -5.0F, -5.0F);
 		headLeft2.addBox(0.0F, 0.0F, 0.0F, 1, 1, 5, scale);
-		ModelScaleRenderer headLeft3 = new ModelScaleRenderer(this, 37, 12, EnumParts.HEAD);
+		ModelRenderer headLeft3 = new ModelRenderer(this, 37, 12);
 		headLeft3.setRotationPoint(-5.0F, -5.0F, 0.0F);
 		headLeft3.addBox(0.0F, 0.0F, 0.0F, 1, 2, 4, scale);
 		bipedHead.addChild(headFront1);
@@ -65,7 +69,7 @@ public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 		bipedHead.addChild(headLeft3);
 		
 		//Body
-		bipedBody = createScaledModel(64, 52, EnumParts.BODY);
+		bipedBody = new ModelRenderer(this, 64, 52);
 		bipedBody.addBox(-5.0F, -1.0F, 2.0F, 10, 11, 1, scale);
 		ModelRenderer bodyRight = new ModelRenderer(this, 64, 30);
 		bodyRight.addBox(-5.0F, 4.0F, -2.0F, 1, 6, 4, scale);
@@ -99,7 +103,7 @@ public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 		bipedBody.addChild(bodyFront5);
 		
 		//Right Arm
-		bipedRightArm = createScaledModel(0, 0, EnumParts.ARM_RIGHT);
+		bipedRightArm = new ModelRenderer(this, 0, 0);
 		bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 		ModelRenderer armRightTop = new ModelRenderer(this, 0, 22);
 		armRightTop.setRotationPoint(-5.0F, 8.0F, 0.0F);
@@ -133,7 +137,7 @@ public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 		bipedRightArm.addChild(armRightSide);
 		
 		//Left Arm
-		bipedLeftArm = createScaledModel(0, 30, EnumParts.ARM_LEFT);
+		bipedLeftArm = new ModelRenderer(this, 0, 30);
 		bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 		bipedLeftArm.addBox(-2.0F, -3.0F, -3.0F, 6, 1, 6, scale);
 		ModelRenderer armLeftFront1 = new ModelRenderer(this, 25, 31);
@@ -157,11 +161,9 @@ public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 		bipedLeftArm.addChild(armLeftBack2);
 		bipedLeftArm.addChild(armLeftSide);
 		
-		scale += Configs.armorZFightingBufferScaleRightLegOrFoot;
-		
 		//Right Foot
 		float scale2 = scale + Configs.armorZFightingBufferScaleRightLegOrFoot;
-		bipedRightLeg = createScaledModel(16, 57, EnumParts.LEG_RIGHT);
+		bipedRightLeg = new ModelRenderer(this, 16, 57);
 		bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 		bipedRightLeg.addBox(-3.0F, 11.0F, -3.0F, 6, 1, 6, scale2);
 		ModelRenderer footRightFront = new ModelRenderer(this, 0, 57);
@@ -185,7 +187,7 @@ public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 		bipedRightLeg.addChild(footRightSide2);
 		
 		//Left Foot
-		bipedLeftLeg = createScaledModel(16, 57, EnumParts.LEG_LEFT);
+		bipedLeftLeg = new ModelRenderer(this, 16, 57);
 		bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 		bipedLeftLeg.addBox(-3.0F, 11.0F, -3.0F, 6, 1, 6, scale);
 		ModelRenderer footLeftFront = new ModelRenderer(this, 0, 57);
@@ -207,6 +209,59 @@ public class ModelChiseledArmorCNPC extends ModelChiseledArmorBaseCNPC
 		bipedLeftLeg.addChild(footLeftBack);
 		bipedLeftLeg.addChild(footLeftSide1);
 		bipedLeftLeg.addChild(footLeftSide2);
+	}
+	
+	@Override
+	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity)
+	{
+		if (entity instanceof EntityArmorStand)
+		{
+			EntityArmorStand entityArmorStand = (EntityArmorStand) entity;
+			bipedHead.rotateAngleX = 0.017453292F * entityArmorStand.getHeadRotation().getX();
+			bipedHead.rotateAngleY = 0.017453292F * entityArmorStand.getHeadRotation().getY();
+			bipedHead.rotateAngleZ = 0.017453292F * entityArmorStand.getHeadRotation().getZ();
+			bipedHead.setRotationPoint(0.0F, 1.0F, 0.0F);
+			bipedBody.rotateAngleX = 0.017453292F * entityArmorStand.getBodyRotation().getX();
+			bipedBody.rotateAngleY = 0.017453292F * entityArmorStand.getBodyRotation().getY();
+			bipedBody.rotateAngleZ = 0.017453292F * entityArmorStand.getBodyRotation().getZ();
+			bipedLeftArm.rotateAngleX = 0.017453292F * entityArmorStand.getLeftArmRotation().getX();
+			bipedLeftArm.rotateAngleY = 0.017453292F * entityArmorStand.getLeftArmRotation().getY();
+			bipedLeftArm.rotateAngleZ = 0.017453292F * entityArmorStand.getLeftArmRotation().getZ();
+			bipedRightArm.rotateAngleX = 0.017453292F * entityArmorStand.getRightArmRotation().getX();
+			bipedRightArm.rotateAngleY = 0.017453292F * entityArmorStand.getRightArmRotation().getY();
+			bipedRightArm.rotateAngleZ = 0.017453292F * entityArmorStand.getRightArmRotation().getZ();
+			bipedLeftLeg.rotateAngleX = 0.017453292F * entityArmorStand.getLeftLegRotation().getX();
+			bipedLeftLeg.rotateAngleY = 0.017453292F * entityArmorStand.getLeftLegRotation().getY();
+			bipedLeftLeg.rotateAngleZ = 0.017453292F * entityArmorStand.getLeftLegRotation().getZ();
+			bipedLeftLeg.setRotationPoint(1.9F, 11.0F, 0.0F);
+			bipedRightLeg.rotateAngleX = 0.017453292F * entityArmorStand.getRightLegRotation().getX();
+			bipedRightLeg.rotateAngleY = 0.017453292F * entityArmorStand.getRightLegRotation().getY();
+			bipedRightLeg.rotateAngleZ = 0.017453292F * entityArmorStand.getRightLegRotation().getZ();
+			bipedRightLeg.setRotationPoint(-1.9F, 11.0F, 0.0F);
+			copyModelAngles(bipedHead, bipedHeadwear);
+			return;
+		}
+		bipedHead.offsetY = entity instanceof EntityZombieVillager ? -Utility.PIXEL_F * 2 : 0.0F;
+		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entity);
+		if (entity instanceof EntityZombie)
+		{
+			boolean flag = entity instanceof EntityZombie && ((EntityZombie) entity).isArmsRaised();
+			float f = MathHelper.sin(this.swingProgress * (float) Math.PI);
+			float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - swingProgress)) * (float) Math.PI);
+			bipedRightArm.rotateAngleZ = 0.0F;
+			bipedLeftArm.rotateAngleZ = 0.0F;
+			bipedRightArm.rotateAngleY = -(0.1F - f * 0.6F);
+			bipedLeftArm.rotateAngleY = 0.1F - f * 0.6F;
+			float f2 = -(float) Math.PI / (flag ? 1.5F : 2.25F);
+			bipedRightArm.rotateAngleX = f2;
+			bipedLeftArm.rotateAngleX = f2;
+			bipedRightArm.rotateAngleX += f * 1.2F - f1 * 0.4F;
+			bipedLeftArm.rotateAngleX += f * 1.2F - f1 * 0.4F;
+			bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+			bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+			bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+			bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+		}
 	}
 	
 }
