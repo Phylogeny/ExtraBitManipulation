@@ -9,11 +9,14 @@ import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.MorePlayerModelsReference;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
@@ -21,15 +24,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ModelRegistration
 {
 	private static final String ARMOR_TEXTURE_PATH_DIANOND = Reference.MOD_ID + ":textures/armor/chiseled_armor_diamond.png";
 	private static final String ARMOR_TEXTURE_PATH_IRON = Reference.MOD_ID + ":textures/armor/chiseled_armor_iron.png";
-	private static ModelChiseledArmor armorModel;
-	private static ModelChiseledArmorLeggings armorModelLeggings;
-	private static ModelBiped armorModelEmpty;
+	private static ModelBiped armorModelEmpty, armorModel, armorModelLeggings, armorModelMPM, armorModelLeggingsMPM;
 	
 	public static void registerItemModels()
 	{
@@ -58,6 +60,11 @@ public class ModelRegistration
 		armorModel = new ModelChiseledArmor();
 		armorModelLeggings = new ModelChiseledArmorLeggings();
 		armorModelEmpty = new ModelBiped();
+		if (Loader.isModLoaded(MorePlayerModelsReference.MOD_ID))
+		{
+			armorModelMPM = MorePlayerModelsReference.ARMOR_MODEL_MPM;
+			armorModelLeggingsMPM = MorePlayerModelsReference.ARMOR_MODEL_LEGGINGS_MPM;
+		}
 		armorModelEmpty.bipedHead.cubeList.clear();
 		armorModelEmpty.bipedBody.cubeList.clear();
 		armorModelEmpty.bipedRightArm.cubeList.clear();
@@ -119,9 +126,11 @@ public class ModelRegistration
 		ModelLoader.registerItemVariants(item, resourceLocations);
 	}
 	
-	public static ModelBiped getArmorModel(ItemStack stack, EntityEquipmentSlot slot)
+	public static ModelBiped getArmorModel(ItemStack stack, EntityEquipmentSlot slot, EntityLivingBase entity)
 	{
-		return shouldRenderEmptymodel(stack) ? armorModelEmpty : (slot == EntityEquipmentSlot.LEGS ? armorModelLeggings : armorModel);
+		return shouldRenderEmptymodel(stack) ? armorModelEmpty : (armorModelMPM == null || !(entity instanceof EntityPlayer) ?
+			(slot == EntityEquipmentSlot.LEGS ? armorModelLeggings : armorModel) :
+				(slot == EntityEquipmentSlot.LEGS ? armorModelLeggingsMPM : armorModelMPM));
 	}
 	
 	public static String getArmorTexture(ItemStack stack, ArmorMaterial material)

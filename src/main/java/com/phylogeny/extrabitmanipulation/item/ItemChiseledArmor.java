@@ -114,7 +114,7 @@ public class ItemChiseledArmor extends ItemArmor
 	@Nullable
 	public ModelBiped getArmorModel(EntityLivingBase entity, ItemStack stack, EntityEquipmentSlot slot, ModelBiped modeldefault)
 	{
-		return ModelRegistration.getArmorModel(stack, slot);
+		return ModelRegistration.getArmorModel(stack, slot, entity);
 	}
 	
 	@Override
