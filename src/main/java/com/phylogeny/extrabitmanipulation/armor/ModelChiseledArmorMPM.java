@@ -1,12 +1,8 @@
 package com.phylogeny.extrabitmanipulation.armor;
 
 import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.Utility;
 
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.monster.EntityZombieVillager;
 import noppes.mpm.client.model.ModelScaleRenderer;
 import noppes.mpm.constants.EnumParts;
 
@@ -211,40 +207,6 @@ public class ModelChiseledArmorMPM extends ModelChiseledArmorBaseMPM
 		bipedLeftLeg.addChild(footLeftBack);
 		bipedLeftLeg.addChild(footLeftSide1);
 		bipedLeftLeg.addChild(footLeftSide2);
-	}
-	
-	@Override
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity)
-	{
-		if (entity instanceof EntityArmorStand)
-		{
-			EntityArmorStand entityArmorStand = (EntityArmorStand) entity;
-			bipedHead.rotateAngleX = 0.017453292F * entityArmorStand.getHeadRotation().getX();
-			bipedHead.rotateAngleY = 0.017453292F * entityArmorStand.getHeadRotation().getY();
-			bipedHead.rotateAngleZ = 0.017453292F * entityArmorStand.getHeadRotation().getZ();
-			bipedHead.setRotationPoint(0.0F, 1.0F, 0.0F);
-			bipedBody.rotateAngleX = 0.017453292F * entityArmorStand.getBodyRotation().getX();
-			bipedBody.rotateAngleY = 0.017453292F * entityArmorStand.getBodyRotation().getY();
-			bipedBody.rotateAngleZ = 0.017453292F * entityArmorStand.getBodyRotation().getZ();
-			bipedLeftArm.rotateAngleX = 0.017453292F * entityArmorStand.getLeftArmRotation().getX();
-			bipedLeftArm.rotateAngleY = 0.017453292F * entityArmorStand.getLeftArmRotation().getY();
-			bipedLeftArm.rotateAngleZ = 0.017453292F * entityArmorStand.getLeftArmRotation().getZ();
-			bipedRightArm.rotateAngleX = 0.017453292F * entityArmorStand.getRightArmRotation().getX();
-			bipedRightArm.rotateAngleY = 0.017453292F * entityArmorStand.getRightArmRotation().getY();
-			bipedRightArm.rotateAngleZ = 0.017453292F * entityArmorStand.getRightArmRotation().getZ();
-			bipedLeftLeg.rotateAngleX = 0.017453292F * entityArmorStand.getLeftLegRotation().getX();
-			bipedLeftLeg.rotateAngleY = 0.017453292F * entityArmorStand.getLeftLegRotation().getY();
-			bipedLeftLeg.rotateAngleZ = 0.017453292F * entityArmorStand.getLeftLegRotation().getZ();
-			bipedLeftLeg.setRotationPoint(1.9F, 11.0F, 0.0F);
-			bipedRightLeg.rotateAngleX = 0.017453292F * entityArmorStand.getRightLegRotation().getX();
-			bipedRightLeg.rotateAngleY = 0.017453292F * entityArmorStand.getRightLegRotation().getY();
-			bipedRightLeg.rotateAngleZ = 0.017453292F * entityArmorStand.getRightLegRotation().getZ();
-			bipedRightLeg.setRotationPoint(-1.9F, 11.0F, 0.0F);
-			copyModelAngles(bipedHead, bipedHeadwear);
-			return;
-		}
-		bipedHead.offsetY = entity instanceof EntityZombieVillager ? -Utility.PIXEL_F * 2 : 0.0F;
-		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entity);
 	}
 	
 }
