@@ -35,8 +35,10 @@ import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.PacketRegistration;
 import com.phylogeny.extrabitmanipulation.init.RecipesExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.BaublesReferences;
+import com.phylogeny.extrabitmanipulation.reference.CustomNPCsReferences;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 import com.phylogeny.extrabitmanipulation.reference.JeiReferences;
+import com.phylogeny.extrabitmanipulation.reference.MorePlayerModelsReference;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
 public class ProxyCommon implements IGuiHandler
@@ -48,6 +50,12 @@ public class ProxyCommon implements IGuiHandler
 		ItemsExtraBitManipulation.itemsInit();
 		BaublesReferences.isBaublesLoaded = Loader.isModLoaded(BaublesReferences.MOD_ID);
 		JeiReferences.isJeiLoaded = Loader.isModLoaded(JeiReferences.MOD_ID);
+		if (Loader.isModLoaded(MorePlayerModelsReference.MOD_ID))
+			MorePlayerModelsReference.isLoaded = true;
+		
+		if (Loader.isModLoaded(CustomNPCsReferences.MOD_ID))
+			CustomNPCsReferences.isLoaded = true;
+		
 		ConfigHandlerExtraBitManipulation.setUpConfigs(event.getModConfigurationDirectory());
 		MinecraftForge.EVENT_BUS.register(new ConfigHandlerExtraBitManipulation());
 		MinecraftForge.EVENT_BUS.register(new ChiseledArmorSlotsEventHandler());

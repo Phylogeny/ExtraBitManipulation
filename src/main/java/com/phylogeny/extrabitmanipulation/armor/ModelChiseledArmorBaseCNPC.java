@@ -8,15 +8,16 @@ import com.phylogeny.extrabitmanipulation.reference.Configs;
 
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import noppes.mpm.client.model.ModelBipedAlt;
-import noppes.mpm.client.model.ModelScaleRenderer;
-import noppes.mpm.constants.EnumParts;
+import noppes.npcs.client.model.ModelBipedAlt;
+import noppes.npcs.client.model.ModelScaleRenderer;
+import noppes.npcs.constants.EnumParts;
 
-public class ModelChiseledArmorBaseMPM extends ModelBipedAlt
+
+public class ModelChiseledArmorBaseCNPC extends ModelBipedAlt
 {
 	protected float scale;
 	
-	public ModelChiseledArmorBaseMPM(float scale)
+	public ModelChiseledArmorBaseCNPC(float scale)
 	{
 		super(scale);
 		textureWidth = 86;

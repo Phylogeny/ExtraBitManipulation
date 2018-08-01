@@ -1,14 +1,17 @@
 package com.phylogeny.extrabitmanipulation.init;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ChiseledArmorBakedModel;
+import com.phylogeny.extrabitmanipulation.armor.CustomNPCsModels;
 import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmor;
 import com.phylogeny.extrabitmanipulation.armor.ModelChiseledArmorLeggings;
+import com.phylogeny.extrabitmanipulation.armor.MorePlayerModelsModels;
 import com.phylogeny.extrabitmanipulation.block.BlockExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
 import com.phylogeny.extrabitmanipulation.item.ItemExtraBitManipulationBase;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.CustomNPCsReferences;
 import com.phylogeny.extrabitmanipulation.reference.MorePlayerModelsReference;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
 
@@ -24,14 +27,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ModelRegistration
 {
 	private static final String ARMOR_TEXTURE_PATH_DIANOND = Reference.MOD_ID + ":textures/armor/chiseled_armor_diamond.png";
 	private static final String ARMOR_TEXTURE_PATH_IRON = Reference.MOD_ID + ":textures/armor/chiseled_armor_iron.png";
-	private static ModelBiped armorModelEmpty, armorModel, armorModelLeggings, armorModelMPM, armorModelLeggingsMPM;
+	private static ModelBiped armorModelEmpty, armorModel, armorModelLeggings, armorModelMPM, armorModelLeggingsMPM, armorModelCNPC, armorModelLeggingsCNPC;
 	
 	public static void registerModels()
 	{
@@ -60,10 +62,17 @@ public class ModelRegistration
 		armorModel = new ModelChiseledArmor();
 		armorModelLeggings = new ModelChiseledArmorLeggings();
 		armorModelEmpty = new ModelBiped();
-		if (Loader.isModLoaded(MorePlayerModelsReference.MOD_ID))
+		if (MorePlayerModelsReference.isLoaded)
 		{
-			armorModelMPM = MorePlayerModelsReference.ARMOR_MODEL_MPM;
-			armorModelLeggingsMPM = MorePlayerModelsReference.ARMOR_MODEL_LEGGINGS_MPM;
+			MorePlayerModelsModels.initModels();
+			armorModelMPM = MorePlayerModelsModels.ARMOR_MODEL_MPM;
+			armorModelLeggingsMPM = MorePlayerModelsModels.ARMOR_MODEL_LEGGINGS_MPM;
+		}
+		if (CustomNPCsReferences.isLoaded)
+		{
+			CustomNPCsModels.initModels();
+			armorModelCNPC = CustomNPCsModels.ARMOR_MODEL_CNPC;
+			armorModelLeggingsCNPC = CustomNPCsModels.ARMOR_MODEL_LEGGINGS_CNPC;
 		}
 		armorModelEmpty.bipedHead.cubeList.clear();
 		armorModelEmpty.bipedBody.cubeList.clear();
@@ -128,8 +137,14 @@ public class ModelRegistration
 	
 	public static ModelBiped getArmorModel(ItemStack stack, EntityEquipmentSlot slot, EntityLivingBase entity)
 	{
-		return shouldRenderEmptymodel(stack) ? armorModelEmpty : (armorModelMPM == null || !(entity instanceof EntityPlayer) ?
-			(slot == EntityEquipmentSlot.LEGS ? armorModelLeggings : armorModel) :
+		if (shouldRenderEmptymodel(stack))
+			return armorModelEmpty;
+		
+		if (CustomNPCsReferences.isLoaded && CustomNPCsModels.isCustomNPC(entity))
+			return slot == EntityEquipmentSlot.LEGS ? armorModelLeggingsCNPC : armorModelCNPC;
+		
+		return (!MorePlayerModelsReference.isLoaded || !(entity instanceof EntityPlayer) ?
+				(slot == EntityEquipmentSlot.LEGS ? armorModelLeggings : armorModel) :
 				(slot == EntityEquipmentSlot.LEGS ? armorModelLeggingsMPM : armorModelMPM));
 	}
 	
