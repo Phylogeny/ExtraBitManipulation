@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
@@ -24,15 +25,21 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapabilityProvider, IChiseledArmorSlotsHandler
 {
-	private boolean[] syncedSlots;
+	public static final int COUNT_TYPES = 4;
+	public static final int COUNT_SETS = 4;
+	public static final int COUNT_SLOTS_TOTAL = COUNT_TYPES * COUNT_SETS;
+	private boolean[] syncedSlots, hasArmorSet, hasArmorType;
+	private boolean hasArmor;
 	
 	@CapabilityInject(IChiseledArmorSlotsHandler.class)
 	public static final Capability<IChiseledArmorSlotsHandler> ARMOR_SLOTS_CAP = null;
 	
 	public ChiseledArmorSlotsHandler()
 	{
-		super(ArmorType.values().length);
-		syncedSlots = new boolean[getSlots()];
+		super(COUNT_SLOTS_TOTAL);
+		syncedSlots = new boolean[COUNT_SLOTS_TOTAL];
+		hasArmorSet = new boolean[COUNT_SETS];
+		hasArmorType = new boolean[COUNT_TYPES];
 	}
 	
 	@Override
@@ -56,7 +63,7 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	public void syncAllSlots(EntityPlayer player)
 	{
 		Collection<EntityPlayer> players = null;
-		for (int i = 0; i < getSlots(); i++)
+		for (int i = 0; i < COUNT_SLOTS_TOTAL; i++)
 		{
 			if (syncedSlots[i])
 				continue;
@@ -77,7 +84,7 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	@Override
 	public void markAllSlotsDirty()
 	{
-		syncedSlots = new boolean[getSlots()];
+		syncedSlots = new boolean[COUNT_SLOTS_TOTAL];
 	}
 	
 	@Override
@@ -90,6 +97,69 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	protected void onContentsChanged(int slot)
 	{
 		markSlotDirty(slot);
+		int index = slot / COUNT_TYPES;
+		hasArmorSet[index] = false;
+		int start = index * COUNT_TYPES;
+		for (int i = start; i < start + COUNT_TYPES; i++)
+		{
+			if (!stacks.get(i).isEmpty())
+			{
+				hasArmorSet[index] = true;
+				break;
+			}
+		}
+		hasArmor = false;
+		for (boolean setHasArmor : hasArmorSet)
+		{
+			if (setHasArmor)
+			{
+				hasArmor = true;
+				break;
+			}
+		}
+		index = slot % COUNT_TYPES;
+		hasArmorType[index] = !stacks.get(index).isEmpty();
+	}
+	
+	public static int findNextArmorSetIndex(int startIndex)
+	{
+		int indexNext = startIndex;
+		do
+		{
+			indexNext = (indexNext + 1) % (ChiseledArmorSlotsHandler.COUNT_TYPES + 1);
+			if (setHasArmor(indexNext))
+				return indexNext;
+		}
+		while (indexNext != startIndex);
+		return -1;
+	}
+	
+	public static boolean setHasArmor(int index)
+	{
+		for (ArmorType armorType : ArmorType.values())
+		{
+			if (ItemStackHelper.isChiseledArmorStack(ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), armorType, index)))
+				return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean hasArmor()
+	{
+		return hasArmor;
+	}
+	
+	@Override
+	public boolean hasArmorSet(int indexSet)
+	{
+		return hasArmorSet[indexSet];
+	}
+	
+	@Override
+	public boolean hasArmorType(int indexType)
+	{
+		return hasArmorType[indexType];
 	}
 	
 	@Override
@@ -101,12 +171,12 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	@Override
 	public void setSize(int size)
 	{
-		super.setSize(ArmorType.values().length);
+		super.setSize(COUNT_SLOTS_TOTAL);
 	}
 	
 	public static boolean isItemValid(int slot, ItemStack stack)
 	{
-		return ItemStackHelper.isChiseledArmorStack(stack) && ((ItemChiseledArmor) stack.getItem()).armorType.ordinal() == slot
+		return ItemStackHelper.isChiseledArmorStack(stack) && ((ItemChiseledArmor) stack.getItem()).armorType.ordinal() == slot % COUNT_TYPES
 				&& ItemStackHelper.isChiseledArmorNotEmpty(stack);
 	}
 	

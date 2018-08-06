@@ -10,4 +10,10 @@ public interface IChiseledArmorSlotsHandler extends IItemHandlerModifiable
 	void markAllSlotsDirty();
 	
 	void markSlotDirty(int index);
+	
+	boolean hasArmor();
+	
+	boolean hasArmorSet(int indexSet);
+	
+	boolean hasArmorType(int indexType);
 }

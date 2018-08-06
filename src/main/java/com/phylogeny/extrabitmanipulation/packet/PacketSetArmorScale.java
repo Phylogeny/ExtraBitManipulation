@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -15,16 +14,17 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 
-public class PacketSetArmorScale extends PacketEquipmentSlot
+public class PacketSetArmorScale extends PacketArmorSlot
 {
 	private int scale;
 	
 	public PacketSetArmorScale() {}
 	
-	public PacketSetArmorScale(int scale, @Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
+	public PacketSetArmorScale(int scale, @Nullable ArmorType armorType, int indexArmorSet)
 	{
-		super(equipmentSlot, mainArmor);
+		super(armorType, indexArmorSet);
 		this.scale = scale;
 	}
 	
@@ -54,9 +54,9 @@ public class PacketSetArmorScale extends PacketEquipmentSlot
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.armorType, message.indexArmorSet);
 					if (ItemStackHelper.isChiseledArmorStack(stack))
-						BitToolSettingsHelper.setArmorScale(player, stack, message.scale, null, message.equipmentSlot, message.mainArmor);
+						BitToolSettingsHelper.setArmorScale(player, stack, message.scale, null, message.armorType, message.indexArmorSet);
 				}
 			});
 			return null;

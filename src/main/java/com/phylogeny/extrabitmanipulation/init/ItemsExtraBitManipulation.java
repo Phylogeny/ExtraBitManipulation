@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.init;
 
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
@@ -42,19 +41,19 @@ public class ItemsExtraBitManipulation
 		sculptingSquareHead = new ItemExtraBitManipulationBase("sculpting_square_head");
 		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("sculpting_spade_curved_head");
 		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("sculpting_spade_squared_head");
-		chiseledHelmetDiamond = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.DIAMOND, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
-        chiseledChestplateDiamond = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.DIAMOND, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+		chiseledHelmetDiamond = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.DIAMOND, ArmorType.HELMET, ArmorMovingPart.HEAD);
+        chiseledChestplateDiamond = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.DIAMOND, ArmorType.CHESTPLATE,
                 ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-        chiseledLeggingsDiamond = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.DIAMOND, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+        chiseledLeggingsDiamond = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.DIAMOND, ArmorType.LEGGINGS,
                 ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-        chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND, EntityEquipmentSlot.FEET,
+        chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND,
                 ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
-        chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet_iron", ArmorMaterial.IRON, EntityEquipmentSlot.HEAD, ArmorType.HELMET, ArmorMovingPart.HEAD);
-        chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate_iron", ArmorMaterial.IRON, EntityEquipmentSlot.CHEST, ArmorType.CHESTPLATE,
+        chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet_iron", ArmorMaterial.IRON, ArmorType.HELMET, ArmorMovingPart.HEAD);
+        chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate_iron", ArmorMaterial.IRON, ArmorType.CHESTPLATE,
                 ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-        chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings_iron", ArmorMaterial.IRON, EntityEquipmentSlot.LEGS, ArmorType.LEGGINGS,
+        chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings_iron", ArmorMaterial.IRON, ArmorType.LEGGINGS,
                 ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-        chiseledBootsIron = new ItemChiseledArmor("chiseled_boots_iron", ArmorMaterial.IRON, EntityEquipmentSlot.FEET,
+        chiseledBootsIron = new ItemChiseledArmor("chiseled_boots_iron", ArmorMaterial.IRON,
                 ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
 		registerItemAndDefaultRecipe(bitWrench, "Bit Wrench", true, false);
 		registerItemAndDefaultRecipe(sculptingLoop, "Curved Sculpting Wire", true, false);

@@ -14,7 +14,6 @@ import com.phylogeny.extrabitmanipulation.config.ConfigShapeRender;
 import com.phylogeny.extrabitmanipulation.config.ConfigShapeRenderPair;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderMode;
-import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderWithVanityMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketThrowBit.BitBagBitSelectionMode;
 
 import mod.chiselsandbits.api.IBitBrush;
@@ -25,7 +24,6 @@ public class Configs
 {
 	//CHISELED ARMOR SETTINGS
 		public static ArmorModelRenderMode armorModelRenderMode;
-		public static ArmorModelRenderWithVanityMode armorModelRenderWithVanityMode;
 		public static ArmorStackModelRenderMode armorStackModelRenderMode;
 		public static ArmorButtonVisibiltyMode armorButtonVisibiltyMode;
 		public static boolean armorSlotsGuiExitToMainInventory;

@@ -1,5 +1,10 @@
 package com.phylogeny.extrabitmanipulation.client.gui.button;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
@@ -13,7 +18,7 @@ public class GuiButtonBase extends GuiButton
 {
 	public boolean selected;
 	private boolean silent, helpMode;
-	private String hoverText, hoverTextSelected, hoverHelpText;
+	private List<String> hoverText, hoverTextSelected, hoverHelpText;
 	private SoundEvent soundSelect, soundDeselect;
 	
 	public GuiButtonBase(int buttonId, int x, int y, int width, int height, String text, String hoverText)
@@ -25,7 +30,7 @@ public class GuiButtonBase extends GuiButton
 			String hoverText, @Nullable SoundEvent soundSelect, @Nullable SoundEvent soundDeselect)
 	{
 		super(buttonId, x, y, widthIn, heightIn, text);
-		this.hoverText = hoverTextSelected = hoverText;
+		this.hoverText = hoverTextSelected = removeEmptyLines(Collections.singletonList(hoverText));
 		this.soundSelect = soundSelect;
 		this.soundDeselect = soundDeselect;
 	}
@@ -56,24 +61,40 @@ public class GuiButtonBase extends GuiButton
 		mouseDragged(mc, mouseX, mouseY);
 	}
 	
-	public String getHoverText()
+	public List<String> getHoverText()
 	{
 		return helpMode ? hoverHelpText : (selected ? hoverTextSelected : hoverText);
 	}
 	
-	public void setHoverText(String text)
+	private List<String> removeEmptyLines(List<String> lines)
 	{
-		hoverText = text;
+		List<String> linesNew = new ArrayList<>();
+		for (String line : lines)
+		{
+			if (!line.isEmpty())
+				linesNew.add(line);
+		}
+		return linesNew;
 	}
 	
-	public void setHoverTextSelected(String text)
+	private List<String> textToLines(String[] text)
 	{
-		hoverTextSelected = text;
+		return removeEmptyLines(Arrays.<String>asList(text));
 	}
 	
-	public void setHoverHelpText(String text)
+	public void setHoverText(String... text)
 	{
-		hoverHelpText = text;
+		hoverText = textToLines(text);
+	}
+	
+	public void setHoverTextSelected(String... text)
+	{
+		hoverTextSelected = textToLines(text);
+	}
+	
+	public void setHoverHelpText(String... text)
+	{
+		hoverHelpText = textToLines(text);
 	}
 	
 	public void setHelpMode(boolean helpMode)

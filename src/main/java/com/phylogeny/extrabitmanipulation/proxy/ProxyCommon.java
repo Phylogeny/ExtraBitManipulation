@@ -94,12 +94,12 @@ public class ProxyCommon implements IGuiHandler
 	}
 	
 	@Override
-	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
+	public Object getServerGuiElement(int id, EntityPlayer player, World world, int indexArmorSet, int unused1, int unused2)
 	{
 		if (openBitMappingGui(id, player.getHeldItemMainhand()))
 			return createBitMappingContainer(player);
 		
-		if (id == GuiIDs.CHISELED_ARMOR_MIAN.getID() || id == GuiIDs.CHISELED_ARMOR_VANITY.getID())
+		if (id == GuiIDs.CHISELED_ARMOR.getID())
 			return createArmorContainer(player);
 		
 		if (id == GuiIDs.CHISELED_ARMOR_SLOTS.getID())
@@ -109,14 +109,13 @@ public class ProxyCommon implements IGuiHandler
 	}
 	
 	@Override
-	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
+	public Object getClientGuiElement(int id, EntityPlayer player, World world, int indexArmorSet, int unused1, int unused2)
 	{
 		if (openBitMappingGui(id, player.getHeldItemMainhand()))
 			return new GuiBitMapping(player, ItemStackHelper.isDesignStack(player.getHeldItemMainhand()));
 		
-		boolean isMain = id == GuiIDs.CHISELED_ARMOR_MIAN.getID();
-		if (isMain || id == GuiIDs.CHISELED_ARMOR_VANITY.getID())
-			return new GuiChiseledArmor(player, isMain);
+		if (id == GuiIDs.CHISELED_ARMOR.getID())
+			return new GuiChiseledArmor(player, indexArmorSet);
 		
 		if (id == GuiIDs.CHISELED_ARMOR_SLOTS.getID())
 			return new GuiInventoryArmorSlots(createArmorSlotsContainer(player));

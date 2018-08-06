@@ -44,6 +44,7 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.CreativeTabExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.helper.BitAreaHelper;
@@ -73,9 +74,9 @@ public class ItemChiseledArmor extends ItemArmor
 	private ModelResourceLocation itemModelLocation;
 	
 	@SuppressWarnings("null")
-	public ItemChiseledArmor(String name, ArmorMaterial material, EntityEquipmentSlot equipmentSlot, ArmorType armorType, ArmorMovingPart... movingParts)
+	public ItemChiseledArmor(String name, ArmorMaterial material, ArmorType armorType, ArmorMovingPart... movingParts)
 	{
-		super(material, 0, equipmentSlot);
+		super(material, 0, armorType.getEquipmentSlot());
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 		setCreativeTab(CreativeTabExtraBitManipulation.CREATIVE_TAB);
@@ -527,22 +528,29 @@ public class ItemChiseledArmor extends ItemArmor
 		ItemBitToolBase.addKeybindReminders(tooltip, KeyBindingsExtraBitManipulation.SHIFT, KeyBindingsExtraBitManipulation.CONTROL);
 	}
 	
-	public static enum ArmorType
+	public static enum ArmorType// TODO @ check ArmorType.values
 	{
-		HELMET("Helmet", 1),
-		CHESTPLATE("Chestplate", 3),
-		LEGGINGS("Leggings", 3),
-		BOOTS("Boots", 2);
+		HELMET("Helmet", EntityEquipmentSlot.HEAD, 1),
+		CHESTPLATE("Chestplate", EntityEquipmentSlot.CHEST, 3),
+		LEGGINGS("Leggings", EntityEquipmentSlot.LEGS, 3),
+		BOOTS("Boots", EntityEquipmentSlot.FEET, 2);
 		
 		private String name;
 		private int movingpartCount;
+		private EntityEquipmentSlot equipmentSlot;
 		@SideOnly(Side.CLIENT)
 		private ItemStack iconStack;
 		
 		private ArmorType(String name, int movingpartCount)
 		{
+			this(name, null, movingpartCount);
+		}
+		
+		private ArmorType(String name, @Nullable EntityEquipmentSlot equipmentSlot, int movingpartCount)
+		{
 			this.name = name;
 			this.movingpartCount = movingpartCount;
+			this.equipmentSlot = equipmentSlot;
 		}
 		
 		public String getName()
@@ -555,6 +563,11 @@ public class ItemChiseledArmor extends ItemArmor
 			return movingpartCount;
 		}
 		
+		public @Nullable EntityEquipmentSlot getEquipmentSlot()
+		{
+			return equipmentSlot;
+		}
+		
 		@SideOnly(Side.CLIENT)
 		public void initIconStack(Item item)
 		{
@@ -565,6 +578,11 @@ public class ItemChiseledArmor extends ItemArmor
 		public IBakedModel getIconModel()
 		{
 			return ClientHelper.getRenderItem().getItemModelWithOverrides(iconStack, null, ClientHelper.getPlayer());
+		}
+		
+		public int getSlotIndex(int indexArmorSet)
+		{
+			return ordinal() + (indexArmorSet - 1) * ChiseledArmorSlotsHandler.COUNT_TYPES;
 		}
 		
 	}

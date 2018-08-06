@@ -8,13 +8,13 @@ import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHa
 import com.phylogeny.extrabitmanipulation.item.ItemBitToolBase;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 import mod.chiselsandbits.api.ItemType;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -119,15 +119,15 @@ public class ItemStackHelper
 		return armorNbt.getCompoundTag(NBTKeys.ARMOR_DATA);
 	}
 	
-	public static ItemStack getChiseledArmorStack(EntityPlayer player, @Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
+	public static ItemStack getChiseledArmorStack(EntityPlayer player, @Nullable ArmorType armorType, int indexArmorSet)
 	{
-		if (equipmentSlot == null)
+		if (armorType == null)
 			return player.getHeldItemMainhand();
-		else if (mainArmor)
-			return player.getItemStackFromSlot(equipmentSlot);
+		else if (indexArmorSet == 0)
+			return player.getItemStackFromSlot(armorType.getEquipmentSlot());
 		
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
-		return cap == null ? ItemStack.EMPTY : cap.getStackInSlot(3 - equipmentSlot.getIndex());
+		return cap == null ? ItemStack.EMPTY : cap.getStackInSlot(armorType.getSlotIndex(indexArmorSet));
 	}
 	
 	public static boolean isChiseledArmorNotEmpty(ItemStack stack)
