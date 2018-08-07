@@ -10,7 +10,6 @@ import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -571,18 +570,18 @@ public class BitToolSettingsHelper
 	
 	public static void setArmorScale(EntityPlayer player, ItemStack stack, int scale, @Nullable ConfigBitToolSettingInt armorScale)
 	{
-		setArmorScale(player, stack, scale, armorScale, null, false);
+		setArmorScale(player, stack, scale, armorScale, null, 0);
 	}
 	
 	public static void setArmorScale(EntityPlayer player, ItemStack stack, int scale,
-			@Nullable ConfigBitToolSettingInt armorScale, @Nullable EntityEquipmentSlot slot, boolean mainArmor)
+			@Nullable ConfigBitToolSettingInt armorScale, @Nullable ArmorType armorType, int indexArmorSet)
 	{
 		World world = player.world;
 		if (armorScale == null || armorScale.isPerTool())
 		{
 			if (world.isRemote)
 			{
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorScale(scale, slot, mainArmor));
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorScale(scale, armorType, indexArmorSet));
 			}
 			setInt(player, stack, scale, NBTKeys.ARMOR_SCALE);
 		}
@@ -607,18 +606,18 @@ public class BitToolSettingsHelper
 	
 	public static void setArmorMovingPart(EntityPlayer player, ItemStack stack, ItemChiseledArmor armorPiece, int partIndex)
 	{
-		setArmorMovingPart(player, stack, partIndex, getArmorMovingPartConfig(armorPiece.armorType), null, false);
+		setArmorMovingPart(player, stack, partIndex, getArmorMovingPartConfig(armorPiece.armorType), null, 0);
 	}
 	
 	public static void setArmorMovingPart(EntityPlayer player, ItemStack stack, int partIndex,
-			@Nullable ConfigBitToolSettingInt armorMovingPart, @Nullable EntityEquipmentSlot slot, boolean mainArmor)
+			@Nullable ConfigBitToolSettingInt armorMovingPart, @Nullable ArmorType armorType, int indexArmorSet)
 	{
 		World world = player.world;
 		if (armorMovingPart == null || armorMovingPart.isPerTool())
 		{
 			if (world.isRemote)
 			{
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMovingPart(partIndex, slot, mainArmor));
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMovingPart(partIndex, armorType, indexArmorSet));
 			}
 			setInt(player, stack, partIndex, NBTKeys.ARMOR_MOVING_PART);
 		}

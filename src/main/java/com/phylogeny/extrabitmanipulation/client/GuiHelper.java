@@ -103,7 +103,7 @@ public class GuiHelper
 			
 			if (button.isMouseOver() && button.visible)
 			{
-				String text = ((GuiButtonBase) button).getHoverText();
+				List<String> text = ((GuiButtonBase) button).getHoverText();
 				if (!text.isEmpty())
 					gui.drawHoveringText(text, mouseX, mouseY);
 				

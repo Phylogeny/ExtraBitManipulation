@@ -164,9 +164,4 @@ public class ModelRegistration
 		IF_EMPTY, NEVER, ALWAYS;
 	}
 	
-	public static enum ArmorModelRenderWithVanityMode
-	{
-		IF_CHISELED_NOT_EMPTY, IF_CHISELED, NEVER, ALWAYS;
-	}
-	
 }

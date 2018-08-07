@@ -14,28 +14,43 @@ public class GuiButtonTab extends GuiButtonBase
 {
 	private ItemStack iconStack = ItemStack.EMPTY;
 	private float u, v;
-	private int uWidth, vHeight, uOriginTab, vOriginTab, textureSize;
+	private boolean isLeft;
+	private int uWidth, vHeight, uOriginTab, vOriginTab, textureSize, offsetUp;
 	private ResourceLocation texture;
 	private IBakedModel[] iconModels;
 	
-	public GuiButtonTab(int buttonId, int x, int y, int width, int height, String hoverText, float u, float v, int uWidth,
-			int vHeight, int uOriginTab, int vOriginTab, int textureSize, ResourceLocation texture, IBakedModel... iconModels)
+	public GuiButtonTab(int buttonId, int x, int y, int width, int height, String hoverText, boolean isLeft,
+			int uOriginTab, int vOriginTab, int uSelectedOffset, int textureSize, ResourceLocation texture, IBakedModel... iconModels)
 	{
-		this(buttonId, x, y, width, height, hoverText, ItemStack.EMPTY, u, v, uWidth, vHeight, uOriginTab, vOriginTab, textureSize, texture);
+		this(buttonId, x, y, width, height, hoverText, isLeft, 0, 0, 0, 0, uOriginTab, vOriginTab, uSelectedOffset, textureSize, texture, iconModels);
+	}
+	
+	public GuiButtonTab(int buttonId, int x, int y, int width, int height, String hoverText, boolean isLeft,
+			ItemStack iconStack, int uOriginTab, int vOriginTab, int uSelectedOffset, int textureSize, ResourceLocation texture)
+	{
+		this(buttonId, x, y, width, height, hoverText, isLeft, iconStack, 0, 0, 0, 0, uOriginTab, vOriginTab, uSelectedOffset, textureSize, texture);
+	}
+	
+	public GuiButtonTab(int buttonId, int x, int y, int width, int height, String hoverText, boolean isLeft, float u, float v, int uWidth,
+			int vHeight, int uOriginTab, int vOriginTab, int uSelectedOffset, int textureSize, ResourceLocation texture, IBakedModel... iconModels)
+	{
+		this(buttonId, x, y, width, height, hoverText, isLeft, ItemStack.EMPTY, u, v, uWidth, vHeight, uOriginTab, vOriginTab, uSelectedOffset, textureSize, texture);
 		this.iconModels = iconModels;
 	}
 	
-	public GuiButtonTab(int buttonId, int x, int y, int width, int height, String hoverText, ItemStack iconStack, float u,
-			float v, int uWidth, int vHeight, int uOriginTab, int vOriginTab, int textureSize, ResourceLocation texture)
+	public GuiButtonTab(int buttonId, int x, int y, int width, int height, String hoverText, boolean isLeft, ItemStack iconStack, float u,
+			float v, int uWidth, int vHeight, int uOriginTab, int vOriginTab, int offsetUp, int textureSize, ResourceLocation texture)
 	{
 		super(buttonId, x, y, width, height, "", hoverText);
 		this.u = u;
 		this.v = v;
 		this.uWidth = uWidth;
 		this.vHeight = vHeight;
+		this.isLeft = isLeft;
 		this.iconStack = iconStack;
 		this.uOriginTab = uOriginTab;
 		this.vOriginTab = vOriginTab;
+		this.offsetUp = offsetUp;
 		this.textureSize = textureSize;
 		this.texture = texture;
 		setSilent(true);
@@ -57,19 +72,22 @@ public class GuiButtonTab extends GuiButtonBase
 		int u = uOriginTab;
 		if (selected && enabled)
 		{
-			x -= 2;
 			u += 25;
+			x += isLeft ? -2 : -3;
 		}
 		else
 		{
 			width -= 5;
 		}
-		drawScaledCustomSizeModalRect(x, y, u, vOriginTab, width, height, width, height, textureSize, textureSize);
+		drawScaledCustomSizeModalRect(x, y - offsetUp, u, vOriginTab, width, height + offsetUp, width, height + offsetUp, textureSize, textureSize);
 		if (uWidth > 0 && vHeight > 0)
 		{
 			ClientHelper.bindTexture(texture);
 			drawScaledCustomSizeModalRect(this.x + 4 + getOffsetX(), y + 4, this.u, v, uWidth, vHeight, 19, 18, textureSize, textureSize);
 		}
+		if (!displayString.isEmpty())
+			mc.fontRenderer.drawString(displayString, x + width / 2 - 1 - mc.fontRenderer.getStringWidth(displayString) / 2,
+					y + (height - 8) / 2 + 1, enabled ? 4210752 : 13027014, false);
 	}
 
 	private int getOffsetX()

@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -15,16 +14,17 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 
-public class PacketSetArmorMovingPart extends PacketEquipmentSlot
+public class PacketSetArmorMovingPart extends PacketArmorSlot
 {
 	private int partIndex;
 	
 	public PacketSetArmorMovingPart() {}
 	
-	public PacketSetArmorMovingPart(int partIndex, @Nullable EntityEquipmentSlot equipmentSlot, boolean mainArmor)
+	public PacketSetArmorMovingPart(int partIndex, @Nullable ArmorType armorType, int indexArmorSet)
 	{
-		super(equipmentSlot, mainArmor);
+		super(armorType, indexArmorSet);
 		this.partIndex = partIndex;
 	}
 	
@@ -54,9 +54,9 @@ public class PacketSetArmorMovingPart extends PacketEquipmentSlot
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.armorType, message.indexArmorSet);
 					if (ItemStackHelper.isChiseledArmorStack(stack))
-						BitToolSettingsHelper.setArmorMovingPart(player, stack, message.partIndex, null, message.equipmentSlot, false);
+						BitToolSettingsHelper.setArmorMovingPart(player, stack, message.partIndex, null, message.armorType, 0);
 				}
 			});
 			return null;

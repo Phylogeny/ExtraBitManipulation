@@ -440,7 +440,7 @@ public class GuiBitMapping extends GuiContainer
 					vHeight = 36;
 				}
 				GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25,
-						TAB_HOVER_TEXT[i], iconStack, u, v, uWidth, vHeight, 141, 219, 256, GUI_TEXTURE);
+						TAB_HOVER_TEXT[i], true, iconStack, u, v, uWidth, vHeight, 141, 219, 25, 256, GUI_TEXTURE);
 				if (i == savedTab)
 					tab.selected = true;
 				
@@ -700,14 +700,14 @@ public class GuiBitMapping extends GuiContainer
 			
 			GuiButtonBase buttonBase = (GuiButtonBase) button;
 			if (button.isMouseOver() && button.visible)
-				drawHoveringText(Arrays.<String>asList(new String[] {buttonBase.getHoverText()}), mouseX, mouseY, mc.fontRenderer);
+				drawHoveringText(buttonBase.getHoverText(), mouseX, mouseY, mc.fontRenderer);
 		}
 		if (!designMode)
 		{
 			for (int i = 0; i < tabButtons.length; i++)
 			{
 				if (tabButtons[i].isMouseOver())
-					drawHoveringText(Arrays.<String>asList(new String[] {tabButtons[i].getHoverText()}), mouseX, mouseY, mc.fontRenderer);
+					drawHoveringText(tabButtons[i].getHoverText(), mouseX, mouseY, mc.fontRenderer);
 			}
 		}
 		GlStateManager.enableLighting();

@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,6 +23,7 @@ import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.container.ContainerPlayerInventory;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
@@ -33,10 +33,10 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 	
 	public PacketChangeArmorItemList() {}
 	
-	public PacketChangeArmorItemList(EntityEquipmentSlot equipmentSlot, boolean mainArmor, int partIndex, int armorItemIndex,
+	public PacketChangeArmorItemList(ArmorType armorType, int indexArmorSet, int partIndex, int armorItemIndex,
 			int selectedEntry, ListOperation listOperation, ItemStack stack, NBTTagCompound glOperationsNbt, boolean refreshLists, EntityPlayer player)
 	{
-		super(glOperationsNbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists, player);
+		super(glOperationsNbt, armorType, indexArmorSet, partIndex, armorItemIndex, selectedEntry, refreshLists, player);
 		this.listOperation = listOperation;
 		this.stack = stack;
 	}
@@ -70,7 +70,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 				public void run()
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().player : ClientHelper.getPlayer();
-					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.armorType, message.indexArmorSet);
 					if (!ItemStackHelper.isChiseledArmorStack(stack))
 						return;
 					
@@ -115,7 +115,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 					message.finalizeDataChange(message, stack, nbt, data, serverSide, true, add, glListRemovalIndex);
 					if (serverSide)
 					{
-						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.equipmentSlot, message.mainArmor,
+						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.armorType, message.indexArmorSet,
 								message.partIndex, message.armorItemIndex, message.selectedEntry, message.listOperation,
 								message.stack, message.nbt, message.refreshLists, player), (EntityPlayerMP) player);
 					}

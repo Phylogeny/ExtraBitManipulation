@@ -15,12 +15,11 @@ import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
+public class PacketChangeChiseledArmorList extends PacketArmorSlot
 {
 	protected int partIndex, armorItemIndex, selectedEntry;
 	protected boolean refreshLists;
@@ -28,20 +27,20 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 	
 	public PacketChangeChiseledArmorList() {}
 	
-	public PacketChangeChiseledArmorList(NBTTagCompound nbt, EntityEquipmentSlot equipmentSlot, boolean mainArmor,
+	public PacketChangeChiseledArmorList(NBTTagCompound nbt, ArmorType armorType, int indexArmorSet,
 			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists, @Nullable EntityPlayer player)
 	{
-		super(equipmentSlot, mainArmor);
+		super(armorType, indexArmorSet);
 		this.nbt = nbt;
 		this.partIndex = partIndex;
 		this.armorItemIndex = armorItemIndex;
 		this.selectedEntry = selectedEntry;
 		this.refreshLists = refreshLists;
-		if (player instanceof EntityPlayerMP)
+		if (indexArmorSet > 0 && player instanceof EntityPlayerMP)
 		{
 			IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
 			if (cap != null)
-				cap.markSlotDirty(3 - equipmentSlot.getIndex());
+				cap.markSlotDirty(armorType.getSlotIndex(indexArmorSet));
 		}
 	}
 	
@@ -82,7 +81,7 @@ public class PacketChangeChiseledArmorList extends PacketEquipmentSlot
 		if (nbt.hasKey(NBTKeys.ARMOR_DATA))
 			return;
 		
-		new DataChiseledArmorPiece(ArmorType.values()[5 - message.equipmentSlot.ordinal()]).saveToNBT(nbt);
+		new DataChiseledArmorPiece(message.armorType).saveToNBT(nbt);
 		stack.setTagCompound(nbt);
 	}
 	

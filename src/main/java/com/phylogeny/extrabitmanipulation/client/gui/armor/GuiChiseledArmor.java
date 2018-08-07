@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,6 +35,7 @@ import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation.GlOperationType;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonHelp;
@@ -51,6 +51,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ListOperation;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeGlOperationList;
+import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
 import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -84,6 +85,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private GuiListGlOperation[] globalPostGlLists = new GuiListGlOperation[4];
 	private DataChiseledArmorPiece[] armorPieces = new DataChiseledArmorPiece[4];
 	private GuiButtonTab[][] tabButtons = new GuiButtonTab[4][4];
+	private GuiButtonTab[] tabButtonsArmorSet = new GuiButtonTab[5];
 	private GuiListGlOperation emptyGlList;
 	private GuiButtonSelectTextured buttonFullIlluminationOff, buttonFullIlluminationOn, buttonPlayerFollowCursor, buttonPlayerRotate, buttonScalePixel,
 									buttonScaleMeter, buttonItemAdd, buttonItemDelete, buttonGlAdd, buttonGlDelete, buttonGlMoveUp, buttonGlMoveDown,
@@ -92,8 +94,8 @@ public class GuiChiseledArmor extends GuiContainer
 	private GuiButtonHelp buttonHelp;
 	private AxisAlignedBB boxPlayer, boxArmorItem, boxGlOperation, boxTitleItems, boxTitleGlOperations;
 	private AxisAlignedBB[] boxesData = new AxisAlignedBB[4];
-	private boolean playerBoxClicked, isMainArmorMode;
-	private int selectedTabIndex, selectedSubTabIndex, mouseInitialX, mouseInitialY;
+	private boolean playerBoxClicked;
+	private int indexArmorSet,selectedTabIndex, selectedSubTabIndex, mouseInitialX, mouseInitialY;
 	private float playerScale;
 	private Vec3d playerRotation, playerTranslation, playerTranslationInitial;
 	private ItemStack copiedArmorItem = ItemStack.EMPTY;
@@ -101,11 +103,11 @@ public class GuiChiseledArmor extends GuiContainer
 	private NBTTagCompound copiedGlOperation;
 	private boolean waitingForServerResponse;
 	
-	public GuiChiseledArmor(EntityPlayer player, boolean openForMainArmor)
+	public GuiChiseledArmor(EntityPlayer player, int indexArmorSet)
 	{
 		super(ProxyCommon.createArmorContainer(player));
-		isMainArmorMode = openForMainArmor;
-		xSize = 328;
+		this.indexArmorSet = indexArmorSet;
+		xSize = 352;
 		ySize = 230;
 		selectedSubTabIndex = 1;
 		int index = BitToolSettingsHelper.getArmorTabIndex();
@@ -270,7 +272,7 @@ public class GuiChiseledArmor extends GuiContainer
 		buttonAddRotation = createButtonAddGlOperation(109, y, TEXTURE_ROTATION, 0);
 		buttonAddTranslation = createButtonAddGlOperation(170, y, TEXTURE_TRANSLATION, 1);
 		buttonAddScale = createButtonAddGlOperation(231, y, TEXTURE_SCALE, 2);
-		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 17, guiTop + 5, "Show more explanatory hover text", "Exit help mode");
+		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 41, guiTop + 5, "Show more explanatory hover text", "Exit help mode");
 		buttonScale = new GuiButtonSelect(100, guiLeft + 178, guiTop + 127, 17, 12, "", "Armor piece scale", -5111553, -5111553);
 		buttonScale.setTextOffsetX(1);
 		buttonScale.setHoverHelpText("This is the scale of the selected armor piece. Just as all newly imported blocks are scaled by this amount " +
@@ -305,8 +307,8 @@ public class GuiChiseledArmor extends GuiContainer
 			ArmorType armorType = ArmorType.values()[i];
 			ItemChiseledArmor armorItem =  stack.getItem() instanceof ItemChiseledArmor ? (ItemChiseledArmor) stack.getItem() : getArmorItem(armorType);
 			GuiButtonTab tab = new GuiButtonTab(i * 4, guiLeft, guiTop + 23 + i * 25, 24, 25,
-					armorType.getName(), new ItemStack(armorItem), 0, 0, 0, 0, 19, 230, 512, TEXTURE_GUI);
-			tab.setHoverHelpText("Armor Piece: " + tab.getHoverText() + "\n\nEach of these 4 tabs represents a worn chiseled armor piece. " +
+					armorType.getName(), true, new ItemStack(armorItem), 19, 230, 0, 512, TEXTURE_GUI);
+			tab.setHoverHelpText("Armor Piece: " + armorType.getName() + "\n\nEach of these 4 tabs represents a worn chiseled armor piece. " +
 					"If a tab is disabled, the corresponding armor slot is either empty or contains a different kind of armor.");
 			DataChiseledArmorPiece armorPiece = armorPieces[i];
 			tab.enabled = armorPiece != null;
@@ -325,8 +327,8 @@ public class GuiChiseledArmor extends GuiContainer
 			for (int j = 0; j < movingParts.length; j++)
 			{
 				GuiButtonTab tabSub = new GuiButtonTab(i * 4 + j + 1, guiLeft, guiTop + 147 + j * 25, 24, 25,
-						movingParts[j].getName(), 0, 0, 0, 0, 19, 230, 512, TEXTURE_GUI, movingParts[j].getIconModels(armorItem.getArmorMaterial()));
-				tabSub.setHoverHelpText("Moving Part: " + tabSub.getHoverText() + "\n\nEach of these tabs represents a moving part of the armor piece " +
+						movingParts[j].getName(), true, 19, 230, 0, 512, TEXTURE_GUI, movingParts[j].getIconModels(armorItem.getArmorMaterial()));
+				tabSub.setHoverHelpText("Moving Part: " + movingParts[j].getName() + "\n\nEach of these tabs represents a moving part of the armor piece " +
 						"specified by the selected armor piece tab.");
 				if (j + 1 == selectedSubTabIndex)
 					tabSub.selected = true;
@@ -349,6 +351,35 @@ public class GuiChiseledArmor extends GuiContainer
 				
 				armorItemGlLists[i][j] = armorItemGlList;
 			}
+		}
+		for (int i = 0; i < ChiseledArmorSlotsHandler.COUNT_SETS + 1; i++)
+		{
+			String hoverText = i == 0 ? "Main Armor Set" : "Vanity Armor Set " + i;
+			GuiButtonTab tab = new GuiButtonTab(1100 + i, guiLeft + xSize - 24, guiTop + 23 + i * 25, 24, 25,
+					hoverText, false, ItemStack.EMPTY, 183, 230, 3, 512, TEXTURE_GUI);
+			tab.enabled = false;
+			for (ArmorType armorType : ArmorType.values())
+			{
+				if (ItemStackHelper.isChiseledArmorStack(ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), armorType, i)))
+				{
+					tab.enabled = true;
+					break;
+				}
+			}
+			tab.selected = i == indexArmorSet;
+			if (i == 0)
+			{
+				tab.displayString = "M";
+				tab.setHoverHelpText(hoverText, " ", "The players standard set of armor.");
+			}
+			else
+			{
+				tab.displayString = "V" + i;
+				tab.setHoverHelpText(hoverText, " ", "Armor worn in a vanity slot, which will render " +
+				TextFormatting.BLUE + (i < 2 ? "in place of" : "in addition to") + TextFormatting.WHITE + " the main armor.");
+			}
+			tabButtonsArmorSet[i] = tab;
+			buttonList.add(tab);
 		}
 		updateButtons();
 		refreshLists(false);
@@ -386,14 +417,14 @@ public class GuiChiseledArmor extends GuiContainer
 		return TextFormatting.UNDERLINE + text + TextFormatting.RESET;
 	}
 	
-	private EntityEquipmentSlot getArmorSlot(int index)
+	private ArmorType getArmorSlot(int index)
 	{
-		return EntityEquipmentSlot.values()[5 - index];
+		return ArmorType.values()[index];
 	}
 	
 	private ItemStack getArmorStack(int index)
 	{
-		return ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), getArmorSlot(index), isMainArmorMode);
+		return ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), getArmorSlot(index), indexArmorSet);
 	}
 	
 	private GuiListGlOperation createGuiListGlOperation(DataChiseledArmorPiece armorPiece)
@@ -931,7 +962,7 @@ public class GuiChiseledArmor extends GuiContainer
 					ItemStack stack = getArmorStack(indexTab);
 					BitToolSettingsHelper.setArmorMovingPart(mc.player, stack, indexSubTab - 1,
 							BitToolSettingsHelper.getArmorMovingPartConfig(((ItemChiseledArmor) stack.getItem()).armorType),
-							getArmorSlot(indexTab), isMainArmorMode);
+							getArmorSlot(indexTab), indexArmorSet);
 				}
 			}
 			updateButtons();
@@ -985,8 +1016,16 @@ public class GuiChiseledArmor extends GuiContainer
 		else if (button == buttonScale)
 		{
 			BitToolSettingsHelper.setArmorScale(mc.player, getArmorStack(selectedTabIndex),
-				(Integer.parseInt(buttonScale.displayString.substring(2)) / 2 + 1) % 3, Configs.armorScale, getArmorSlot(selectedTabIndex), isMainArmorMode);
+				(Integer.parseInt(buttonScale.displayString.substring(2)) / 2 + 1) % 3, Configs.armorScale, getArmorSlot(selectedTabIndex), indexArmorSet);
 			updateButtons();
+		}
+		else if (button.id >= 1100 && button.id <= 1100 + ChiseledArmorSlotsHandler.COUNT_TYPES)
+		{
+			int index = button.id - 1100;
+			if (ChiseledArmorSlotsHandler.setHasArmor(index))
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui(index));
+			else
+				button.enabled = false;
 		}
 		else
 		{
@@ -1082,7 +1121,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private void setArmorItemListData(GuiListArmorItem list, int selectedArmorItem,
 			ListOperation listOperation, ItemStack stack, NBTTagCompound nbtGlOperations)
 	{
-		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex), isMainArmorMode, selectedSubTabIndex - 1,
+		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeArmorItemList(getArmorSlot(selectedTabIndex), indexArmorSet, selectedSubTabIndex - 1,
 				list.getSelectListEntryIndex(), selectedArmorItem, listOperation, stack, nbtGlOperations, true, null));
 		waitingForServerResponse = true;
 	}
@@ -1100,7 +1139,7 @@ public class GuiChiseledArmor extends GuiContainer
 		NBTTagCompound nbt = new NBTTagCompound();
 		GlOperation.saveListToNBT(nbt, key, glOperations);
 		ExtraBitManipulation.packetNetwork.sendToServer(new PacketChangeGlOperationList(nbt, key, getArmorSlot(selectedTabIndex),
-				isMainArmorMode, selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists, null));
+				indexArmorSet, selectedSubTabIndex - 1, getSelectedGuiListArmorItem().getSelectListEntryIndex(), selectedGlOperation, refreshLists, null));
 		waitingForServerResponse = true;
 	}
 	
