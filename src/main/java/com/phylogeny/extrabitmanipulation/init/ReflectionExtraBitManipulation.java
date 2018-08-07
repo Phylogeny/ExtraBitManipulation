@@ -72,8 +72,7 @@ public class ReflectionExtraBitManipulation
 			SHORTCUTS.putAll(shortcutsNew);
 			shortcuts.set(command, SHORTCUTS);
 		}
-		catch (IllegalArgumentException e) {}
-		catch (IllegalAccessException e) {}
+		catch (IllegalArgumentException | IllegalAccessException e) {}
 	}
 	
 }
