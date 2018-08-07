@@ -697,7 +697,8 @@ public class GuiBitMapping extends GuiContainer
 				continue;
 			
 			GuiButtonBase buttonBase = (GuiButtonBase) button;
-			if (button.isMouseOver() && button.visible) drawHoveringText(buttonBase.getHoverText(), mouseX, mouseY, mc.fontRendererObj);
+			if (button.isMouseOver() && button.visible) 
+				drawHoveringText(buttonBase.getHoverText(), mouseX, mouseY, mc.fontRendererObj);
 		}
 		if (!designMode)
 		{

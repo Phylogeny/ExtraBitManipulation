@@ -47,7 +47,7 @@ public class ContainerPlayerArmorSlots extends ContainerPlayer
 		
 		public SlotNull()
 		{
-			super(new InventoryBasic("", false, 1), 0, 0, 0);
+			super(new InventoryBasic("", false, 1), 0, -10000, -10000);
 		}
 		
 		@Override
@@ -58,6 +58,12 @@ public class ContainerPlayerArmorSlots extends ContainerPlayer
 		
 		@Override
 		public boolean canBeHovered()
+		{
+			return false;
+		}
+		
+		@Override
+		public boolean isItemValid(ItemStack stack)
 		{
 			return false;
 		}
