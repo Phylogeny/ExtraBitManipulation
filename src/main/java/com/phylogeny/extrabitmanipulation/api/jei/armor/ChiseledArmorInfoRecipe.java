@@ -23,8 +23,8 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		for (int i = 0; i < GRAPHIC_NAMES.length; i++)
 		{
 			recipes.add(new ChiseledArmorInfoRecipe(sculptingStacks, ChiseledArmorInfoRecipeCategory.NAME,
-					GRAPHIC_NAMES[i], i == 0 ? 79 : (i == 3 ? 10 : (i == 4 ? 75 : 78)), i == 0 ? 22 : (i == 3 ? 54 : (i == 4 ? 30 : 24)),
-							i == 0 ? 177 : (i == 3 ? 111 : (i == 4 ? 176 : 176)), i == 0 ? 128 : (i == 3 ? 124 : (i == 4 ? 114 : 120)), i));
+					GRAPHIC_NAMES[i], i == 0 ? 79 : (i == 3 ? 10 : (i == 4 ? 75 : 78)), i == 0 ? 22 : (i == 3 ? 54 : (i == 4 ? 43 : 24)),
+							i == 0 ? 177 : (i == 3 ? 111 : (i == 4 ? 176 : 176)), i == 0 ? 128 : (i == 3 ? 124 : (i == 4 ? 101 : 120)), i));
 		}
 		return recipes;
 	}
@@ -61,8 +61,7 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		{
 			xPos = 15;
 			yPos = 26;
-			text = text.replaceFirst("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_VANITY.getKeyBinding().getDisplayName())
-					.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.getKeyBinding().getDisplayName());
+			text = text.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.getKeyBinding().getDisplayName());
 			wrapWidth = 153;
 			List<String> strings = minecraft.fontRendererObj.listFormattedStringToWidth(text, wrapWidth);
 			String lastLine = "";

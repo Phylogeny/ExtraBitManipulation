@@ -103,7 +103,7 @@ public class GuiHelper
 			
 			if (button.isMouseOver() && button.visible)
 			{
-				String text = ((GuiButtonBase) button).getHoverText();
+				List<String> text = ((GuiButtonBase) button).getHoverText();
 				if (!text.isEmpty())
 					hoveringTextRenderer.render(text, mouseX, mouseY);
 				
@@ -184,7 +184,7 @@ public class GuiHelper
 	
 	public static interface IHoveringTextRenderer
 	{
-		public void render(String text, int mouseX, int mouseY);
+		public void render(List<String> text, int mouseX, int mouseY);
 	}
 	
 }

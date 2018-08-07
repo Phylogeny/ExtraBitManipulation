@@ -63,7 +63,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
-	OPEN_CHISELED_ARMOR_GUI_MAIN("chiseledarmor.main", Keyboard.KEY_G)
+	OPEN_CHISELED_ARMOR_GUI_MAIN("chiseledarmor", Keyboard.KEY_G)
 	{
 		@Override
 		public boolean isActive()
@@ -75,27 +75,6 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		public boolean conflicts(IKeyConflictContext other)
 		{
 			return conflictsInGame(other);
-		}
-	},
-	
-	OPEN_CHISELED_ARMOR_GUI_VANITY("chiseledarmor.vanity", Keyboard.KEY_G)
-	{
-		@Override
-		public boolean isActive()
-		{
-			return true;
-		}
-		
-		@Override
-		public boolean conflicts(IKeyConflictContext other)
-		{
-			return conflictsInGame(other);
-		}
-		
-		@Override
-		protected KeyModifier getModifier()
-		{
-			return KeyModifier.SHIFT;
 		}
 	},
 	

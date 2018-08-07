@@ -10,7 +10,6 @@ import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlot
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.ChiselsAndBitsReferences;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.Reference;
@@ -103,7 +102,7 @@ public class ChiseledArmorSlotsEventHandler
 		if (cap == null)
 			return;
 		
-		for (int i = 0; i < ArmorType.values().length; i++)
+		for (int i = 0; i < cap.getSlots(); i++)
 		{
 			if (cap.getStackInSlot(i) != null)
 			{

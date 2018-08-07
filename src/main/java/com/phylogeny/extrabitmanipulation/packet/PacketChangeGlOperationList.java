@@ -3,7 +3,6 @@ package com.phylogeny.extrabitmanipulation.packet;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,6 +19,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
 public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
@@ -28,10 +28,10 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 	
 	public PacketChangeGlOperationList() {}
 	
-	public PacketChangeGlOperationList(NBTTagCompound nbt, String nbtKey, EntityEquipmentSlot equipmentSlot,
-			boolean mainArmor, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists, EntityPlayer player)
+	public PacketChangeGlOperationList(NBTTagCompound nbt, String nbtKey, ArmorType armorType,
+			int indexArmorSet, int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists, EntityPlayer player)
 	{
-		super(nbt, equipmentSlot, mainArmor, partIndex, armorItemIndex, selectedEntry, refreshLists, player);
+		super(nbt, armorType, indexArmorSet, partIndex, armorItemIndex, selectedEntry, refreshLists, player);
 		this.nbtKey = nbtKey;
 	}
 	
@@ -62,7 +62,7 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 				public void run()
 				{
 					EntityPlayer player = serverSide ? ctx.getServerHandler().playerEntity : ClientHelper.getPlayer();
-					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.equipmentSlot, message.mainArmor);
+					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.armorType, message.indexArmorSet);
 					if (!ItemStackHelper.isChiseledArmorStack(stack))
 						return;
 					
@@ -91,7 +91,7 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 					if (serverSide)
 					{
 						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeGlOperationList(message.nbt, message.nbtKey,
-								message.equipmentSlot, message.mainArmor, message.partIndex, message.armorItemIndex,
+								message.armorType, message.indexArmorSet, message.partIndex, message.armorItemIndex,
 								message.selectedEntry, message.refreshLists, player), (EntityPlayerMP) player);
 					}
 				}

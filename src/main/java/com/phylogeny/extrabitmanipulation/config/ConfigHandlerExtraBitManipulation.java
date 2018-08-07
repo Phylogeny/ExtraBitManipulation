@@ -11,7 +11,6 @@ import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderMode;
-import com.phylogeny.extrabitmanipulation.init.ModelRegistration.ArmorModelRenderWithVanityMode;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemSculptingTool;
@@ -419,12 +418,6 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.armorZFightingBufferTranslationFeet = Utility.PIXEL_F * configFileClient.getFloat("Z-Fighting Buffer Translation - Feet",
 					ARMOR_SETTINGS, 0.05F, 0.0F, Float.MAX_VALUE,
 					"The items of both feet will be translated down by this many pixels to prevent z-fighting with the items of both legs.");
-			
-			Configs.armorModelRenderWithVanityMode = getEnumValueFromStringArray("Render Armor With Vanity Armor", ArmorModelRenderWithVanityMode.class,
-					ARMOR_SETTINGS, configFileClient, 0,
-					"Specifies when to render a normally worn armor piece while a chiseled armor piece is worn in a corresponding vanity slot. "
-					+ "'If Chiseled' will only render the normally worn piece if it is also chiseled armor. 'If Chiseled Not Empty' additionally requires "
-					+ "the piece to have some blocks/items to render. The normally worn piece will never/always render, if set to 'Never'/'Always', respectively.");
 			
 			Configs.armorTargetBits = getBitToolSettingBoolean("Target Bits", DATA_CATAGORY_ARMOR,
 					chiseledArmorConfigFile, false, true, false,

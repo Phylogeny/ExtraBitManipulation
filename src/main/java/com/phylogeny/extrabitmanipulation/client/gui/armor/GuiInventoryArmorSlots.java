@@ -1,16 +1,17 @@
 package com.phylogeny.extrabitmanipulation.client.gui.armor;
 
 import java.io.IOException;
+import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import org.lwjgl.input.Keyboard;
@@ -74,9 +75,9 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		buttonList.clear();
 		super.initGui();
 		resetGuiLeft();
-		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 17, guiTop + 5, "Show slot/button hover help text", "Exit help mode");
+		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize / 2 + 10, guiTop + 10, "Show slot/button hover help text", "Exit help mode");
 		buttonHelp.selected = helpMode;
-		buttonJEI = new GuiButtonExt(100, guiLeft + 119, guiTop + 55, 46, 26, "");
+		buttonJEI = new GuiButtonExt(100, guiLeft + xSize / 2 - 7, guiTop - 27, 46, 26, "");
 		buttonJEI.visible = JeiReferences.isLoaded ? helpMode : false;
 		buttonList.add(buttonHelp);
 		buttonList.add(buttonJEI);
@@ -85,16 +86,16 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
-		fontRendererObj.drawString(I18n.format("container.crafting"), 97, 8, 4210752);
 		if (!helpMode || !JeiReferences.isLoaded)
 			return;
 		
 		int color = buttonJEI.isMouseOver() ? 16777120 : -1;
-		fontRendererObj.drawString("JEI", 123, 59, color);
-		fontRendererObj.drawString("Info", 122, 69, color);
+		int centerX = xSize / 2;
+		fontRendererObj.drawString("JEI", centerX + -3, -23, color);
+		fontRendererObj.drawString("Info", centerX + -4, -13, color);
 		ClientHelper.bindTexture(IMAGE);
-		int x = 143;
-		int y = 58;
+		int x = centerX + 17;
+		int y = -24;
 		GuiHelper.drawTexturedRect(x, y, x + 18.5, y + 20);
 	}
 	
@@ -104,11 +105,11 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		oldMouseX = mouseX;
 		oldMouseY = mouseY;
 		Slot slot = getSlotUnderMouse();
-		for (int i = 46; i < 50 && helpMode; i++)
+		for (int i = 46; i < 62 && helpMode; i++)
 			((SlotChiseledArmor) inventorySlots.getSlot(i)).setDisabled(true);
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		for (int i = 46; i < 50 && helpMode; i++)
+		for (int i = 46; i < 62 && helpMode; i++)
 			((SlotChiseledArmor) inventorySlots.getSlot(i)).setDisabled(false);
 		
 		GuiHelper.drawHoveringTextForButtons(this, buttonList, mouseX, mouseY);
@@ -117,8 +118,9 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		
 		if (slot != null && helpMode && slot instanceof SlotChiseledArmor)
 		{
-			drawCreativeTabHoveringText("Only Chiseled Armor with items to render can be put in these slots.\n\nArmor warn here " +
-					"will render in addition to any normally worn armor, but will not confer any additional protection.", mouseX, mouseY);
+			drawCreativeTabHoveringText("Only Chiseled Armor with items to render can be put in these slots.\n\nArmor warn here will render " +
+					TextFormatting.BLUE + (slot.slotNumber < 50 ? "in place of" : "in addition to") + TextFormatting.WHITE + 
+					" any normally worn armor, but will not confer any additional protection.", mouseX, mouseY);
 		}
 	}
 	
@@ -134,24 +136,30 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 		RenderHelper.enableGUIStandardItemLighting();
 		GlStateManager.enableDepth();
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(mc.thePlayer);
-		for (int i = 0; i < ArmorType.values().length; i++)
+		for (int i = 0; i < ChiseledArmorSlotsHandler.COUNT_SETS; i++)
 		{
-			if (cap == null || cap.getStackInSlot(i) == null)
+			for (int j = 0; j <ChiseledArmorSlotsHandler.COUNT_TYPES; j++)
 			{
-				RenderState.renderStateModelIntoGUI(null, ArmorType.values()[i].getIconModel(),
-						null, 0.4F, true, false, guiLeft + 71, guiTop + 6 + i * 18 + ICON_STACK_OFFSETS[i], 0, 0, 1);
+				if (cap == null || cap.getStackInSlot(j * ChiseledArmorSlotsHandler.COUNT_TYPES + i) == null)
+				{
+					RenderState.renderStateModelIntoGUI(null, ArmorType.values()[i].getIconModel(),
+							null, 0.4F, true, false, guiLeft + 71 + 18 * j + (j == 0 ? 0 : 21), guiTop + 6 + i * 18 + ICON_STACK_OFFSETS[i], 0, 0, 1);
+				}
 			}
 		}
 		GlStateManager.popMatrix();
 		if (helpMode)
 		{
 			int x, y;
-			for (int i = 0; i < ArmorType.values().length; i++)
+			for (int i = 0; i < ChiseledArmorSlotsHandler.COUNT_SETS; i++)
 			{
-				Slot slot = inventorySlots.inventorySlots.get(46 + i);
-				x = guiLeft + slot.xDisplayPosition;
-				y = guiTop + slot.yDisplayPosition;
-				drawRect(x, y, x + 16, y + 16, GuiChiseledArmor.HELP_TEXT_BACKGROUNG_COLOR);
+				for (int j = 0; j < ChiseledArmorSlotsHandler.COUNT_TYPES; j++)
+				{
+					Slot slot = inventorySlots.inventorySlots.get(46 + i * ChiseledArmorSlotsHandler.COUNT_TYPES + j);
+					x = guiLeft + slot.xDisplayPosition;
+					y = guiTop + slot.yDisplayPosition;
+					drawRect(x, y, x + 16, y + 16, GuiChiseledArmor.HELP_TEXT_BACKGROUNG_COLOR);
+				}
 			}
 		}
 	}
@@ -192,9 +200,9 @@ public class GuiInventoryArmorSlots extends InventoryEffectRenderer implements I
 	}
 	
 	@Override
-	public void render(String text, int mouseX, int mouseY)
+	public void render(List<String> text, int mouseX, int mouseY)
 	{
-		drawCreativeTabHoveringText(text, mouseX, mouseY);
+		drawHoveringText(text, mouseX, mouseY);
 	}
 	
 }
