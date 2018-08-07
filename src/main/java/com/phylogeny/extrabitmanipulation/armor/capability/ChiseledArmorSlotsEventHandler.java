@@ -29,6 +29,7 @@ import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
@@ -50,13 +51,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ChiseledArmorSlotsEventHandler
 {
-	private static final String[] SLOT_TYPES = new String[]{"head", "chest", "legs", "feet"};
 	private static final Map<String, Integer> COMMAND_VANITY_SLOTS = Maps.newHashMap();
 	
 	static
 	{
-		for (int i = 0; i < SLOT_TYPES.length; i++)
-			COMMAND_VANITY_SLOTS.put("slot.vanity." + SLOT_TYPES[i], i);
+		for (int i = 0; i < ChiseledArmorSlotsHandler.COUNT_SLOTS_TOTAL; i++)
+		{
+			COMMAND_VANITY_SLOTS.put("slot.vanity.set" + i / ChiseledArmorSlotsHandler.COUNT_TYPES +
+					"." + EntityEquipmentSlot.values()[5 - i % ChiseledArmorSlotsHandler.COUNT_TYPES].toString().toLowerCase(), i);
+		}
 	}
 	
 	public static void addCommandTabCompletions()
