@@ -61,7 +61,7 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 		{
 			xPos = 15;
 			yPos = 26;
-			text = text.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.getKeyBinding().getDisplayName());
+			text = text.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.getKeyBinding().getDisplayName());
 			wrapWidth = 153;
 			List<String> strings = minecraft.fontRendererObj.listFormattedStringToWidth(text, wrapWidth);
 			String lastLine = "";

@@ -63,7 +63,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		}
 	},
 	
-	OPEN_CHISELED_ARMOR_GUI_MAIN("chiseledarmor", Keyboard.KEY_G)
+	OPEN_CHISELED_ARMOR_GUI("chiseledarmor", Keyboard.KEY_G)
 	{
 		@Override
 		public boolean isActive()

@@ -197,7 +197,7 @@ public class ClientEventHandler
 		if (ChiselsAndBitsAPIAccess.apiInstance.getKeyBinding(ModKeyBinding.MODE_MENU).isKeyDown()
 				|| KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown()
 				|| KeyBindingsExtraBitManipulation.EDIT_DESIGN.isKeyDown()
-				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.isKeyDown()
+				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.isKeyDown()
 				|| KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_SLOTS_GUI.isKeyDown())
 		{
 			if (KeyBindingsExtraBitManipulation.OPEN_BIT_MAPPING_GUI.isKeyDown())
@@ -210,7 +210,7 @@ public class ClientEventHandler
 				if (stack != null && stack.hasTagCompound() && ItemStackHelper.isDesignStack(stack))
 					openBitMappingGui();
 			}
-			else if (KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.isKeyDown())
+			else if (KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.isKeyDown())
 			{
 				int indexFirst = ChiseledArmorSlotsHandler.findNextArmorSetIndex(ChiseledArmorSlotsHandler.COUNT_SETS);
 				if (indexFirst >= 0)
