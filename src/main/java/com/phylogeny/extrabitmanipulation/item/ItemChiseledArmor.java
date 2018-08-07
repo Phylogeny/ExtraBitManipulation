@@ -528,7 +528,7 @@ public class ItemChiseledArmor extends ItemArmor
 		ItemBitToolBase.addKeybindReminders(tooltip, KeyBindingsExtraBitManipulation.SHIFT, KeyBindingsExtraBitManipulation.CONTROL);
 	}
 	
-	public static enum ArmorType// TODO @ check ArmorType.values
+	public static enum ArmorType
 	{
 		HELMET("Helmet", EntityEquipmentSlot.HEAD, 1),
 		CHESTPLATE("Chestplate", EntityEquipmentSlot.CHEST, 3),
