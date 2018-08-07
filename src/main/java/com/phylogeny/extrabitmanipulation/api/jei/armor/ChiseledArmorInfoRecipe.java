@@ -78,7 +78,7 @@ public class ChiseledArmorInfoRecipe extends InfoRecipeBase
 			{
 				if (imageIndex == 3)
 				{
-					text = text.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI_MAIN.getKeyBinding().getDisplayName());
+					text = text.replace("@", KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.getKeyBinding().getDisplayName());
 					wrapWidth = 73;
 					yPos += 3;
 				}
