@@ -1,9 +1,11 @@
 package com.phylogeny.extrabitmanipulation.armor.capability;
 
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
 
+import com.google.common.collect.Maps;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiButtonArmorSlots;
 import com.phylogeny.extrabitmanipulation.client.gui.armor.GuiInventoryArmorSlots;
@@ -17,14 +19,25 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.CommandReplaceItem;
+import net.minecraft.command.CommandResultStats;
+import net.minecraft.command.EntityNotFoundException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -38,6 +51,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ChiseledArmorSlotsEventHandler
 {
+	private static final Map<String, Integer> COMMAND_VANITY_SLOTS = Maps.newHashMap();
+	
+	static
+	{
+		for (int i = 0; i < ChiseledArmorSlotsHandler.COUNT_SLOTS_TOTAL; i++)
+		{
+			COMMAND_VANITY_SLOTS.put("slot.vanity.set" + i / ChiseledArmorSlotsHandler.COUNT_TYPES +
+					"." + EntityEquipmentSlot.values()[5 - i % ChiseledArmorSlotsHandler.COUNT_TYPES].toString().toLowerCase(), i);
+		}
+	}
+	
+	public static void addCommandTabCompletions()
+	{
+		ReflectionExtraBitManipulation.addShortcutsToCommandReplaceItem(new CommandReplaceItem(), COMMAND_VANITY_SLOTS);
+	}
 	
 	@SubscribeEvent
 	public void onEntityConstruct(AttachCapabilitiesEvent.Entity event)
@@ -112,6 +140,111 @@ public class ChiseledArmorSlotsEventHandler
 				cap.setStackInSlot(i, null);
 			}
 		}
+	}
+	
+	@SubscribeEvent
+	public void vanitySlotCommandAccess(CommandEvent event)
+	{
+		if (!(event.getCommand() instanceof CommandReplaceItem))
+			return;
+		
+		String[] args = event.getParameters();
+		if (args.length < 4 || !"entity".equals(args[0]))
+			return;
+		
+		int i = 2;
+		String slotName = args[i];
+		if (!slotName.contains("vanity"))
+			return;
+		
+		event.setCanceled(true);
+		if (!COMMAND_VANITY_SLOTS.containsKey(slotName))
+		{
+			notifyCommandListener(event, "commands.generic.parameter.invalid", slotName);
+			return;
+		}
+		ICommandSender sender = event.getSender();
+		int slot = COMMAND_VANITY_SLOTS.get(args[i++]);
+		Item item;
+		try
+		{
+			item = CommandBase.getItemByText(sender, args[i++]);
+		}
+		catch (NumberInvalidException e)
+		{
+			notifyCommandListener(event, e);
+			return;
+		}
+		ItemStack stack = new ItemStack(item);
+		if (args.length > i)
+		{
+			String nbtTagJson = CommandBase.buildString(args, args.length > 5 ? 6 : 4);
+			try
+			{
+				stack.setTagCompound(JsonToNBT.getTagFromJson(nbtTagJson));
+			}
+			catch (NBTException e)
+			{
+				notifyCommandListener(event, "commands.replaceitem.tagError", e.getMessage());
+				return;
+			}
+		}
+		else
+		{
+			notifyCommandListener(event, "nbt");
+			return;
+		}
+		if (stack.getItem() == null)
+			stack = null;
+        
+		if (stack != null && !ChiseledArmorSlotsHandler.isItemValid(slot, stack))
+		{
+			notifyCommandListener(event, "commands.replaceitem.failed", slotName, 1, stack.getTextComponent());
+			return;
+		}
+		Entity entity;
+		try
+		{
+			entity = CommandBase.getEntity(sender.getServer(), sender, args[1]);
+		}
+		catch (CommandException e)
+		{
+			notifyCommandListener(event, e);
+			return;
+		}
+		if (!(entity instanceof EntityPlayer))
+		{
+			notifyCommandListener(event, "player");
+			return;
+		}
+		EntityPlayer player = (EntityPlayer) entity;
+		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
+		if (cap == null)
+		{
+			notifyCommandListener(event, "capability");
+			return;
+		}
+		sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, 0);
+		player.openContainer.detectAndSendChanges();
+		cap.setStackInSlot(slot, stack);
+		player.openContainer.detectAndSendChanges();
+		sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, 1);
+		notifyCommandListener(event, "commands.replaceitem.success", slotName, 1, stack == null ? "Air" : stack.getTextComponent());
+	}
+	
+	private void notifyCommandListener(CommandEvent event, String suffix)
+	{
+		notifyCommandListener(event, "command." + Reference.MOD_ID + ".vanity.failure." + suffix, new Object[0]);
+	}
+	
+	private void notifyCommandListener(CommandEvent event, CommandException e)
+	{
+		notifyCommandListener(event, e.getMessage(), e.getErrorObjects());
+	}
+	
+	private void notifyCommandListener(CommandEvent event, String translationKey, Object... translationArgs)
+	{
+		CommandBase.notifyCommandListener(event.getSender(), event.getCommand(), translationKey, translationArgs);
 	}
 	
 	@SideOnly(Side.CLIENT)
