@@ -1173,6 +1173,7 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 			}
 		}
 		BitToolSettingsHelper.setArmorTabIndex(selectedTabIndex);
+		BitToolSettingsHelper.setArmorSetTabIndex(indexArmorSet);
 		boolean preSelected = BitToolSettingsHelper.getArmorPixelTranslation();
 		buttonScalePixel.selected = preSelected;
 		buttonScaleMeter.selected = !preSelected;
