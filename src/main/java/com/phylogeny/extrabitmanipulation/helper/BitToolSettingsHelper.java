@@ -668,6 +668,19 @@ public class BitToolSettingsHelper
 	}
 	
 	@SideOnly(Side.CLIENT)
+	public static int getArmorSetTabIndex()
+	{
+		return Configs.armorSetTabIndex.getValue();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void setArmorSetTabIndex(int armorSetTabIndex)
+	{
+		setIntProperty(ClientHelper.getWorld(), ConfigHandlerExtraBitManipulation.chiseledArmorConfigFile,
+				Configs.armorSetTabIndex, ConfigHandlerExtraBitManipulation.DATA_CATAGORY_ARMOR, armorSetTabIndex);
+	}
+	
+	@SideOnly(Side.CLIENT)
 	public static boolean getArmorPixelTranslation()
 	{
 		return Configs.armorPixelTranslation.getValue();

@@ -95,7 +95,7 @@ public class ProxyCommon implements IGuiHandler
 	}
 	
 	@Override
-	public Object getServerGuiElement(int id, EntityPlayer player, World world, int indexArmorSet, int unused1, int unused2)
+	public Object getServerGuiElement(int id, EntityPlayer player, World world, int unused0, int unused1, int unused2)
 	{
 		if (openBitMappingGui(id, player.getHeldItemMainhand()))
 			return createBitMappingContainer(player);
@@ -110,13 +110,13 @@ public class ProxyCommon implements IGuiHandler
 	}
 	
 	@Override
-	public Object getClientGuiElement(int id, EntityPlayer player, World world, int indexArmorSet, int unused1, int unused2)
+	public Object getClientGuiElement(int id, EntityPlayer player, World world, int unused0, int unused1, int unused2)
 	{
 		if (openBitMappingGui(id, player.getHeldItemMainhand()))
 			return new GuiBitMapping(player, ItemStackHelper.isDesignStack(player.getHeldItemMainhand()));
 		
 		if (id == GuiIDs.CHISELED_ARMOR.getID())
-			return new GuiChiseledArmor(player, indexArmorSet);
+			return new GuiChiseledArmor(player);
 		
 		if (id == GuiIDs.CHISELED_ARMOR_SLOTS.getID())
 			return new GuiInventoryArmorSlots(createArmorSlotsContainer(player));

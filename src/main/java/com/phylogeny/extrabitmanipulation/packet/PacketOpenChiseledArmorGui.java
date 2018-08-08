@@ -11,27 +11,16 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
-public class PacketOpenChiseledArmorGui extends PacketArmorSet
+public class PacketOpenChiseledArmorGui implements IMessage
 {
 	
 	public PacketOpenChiseledArmorGui() {}
 	
-	public PacketOpenChiseledArmorGui(int indexArmorSet)
-	{
-		super(indexArmorSet);
-	}
+	@Override
+	public void toBytes(ByteBuf buffer) {}
 	
 	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		super.toBytes(buffer);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		super.fromBytes(buffer);
-	}
+	public void fromBytes(ByteBuf buffer) {}
 	
 	public static class Handler implements IMessageHandler<PacketOpenChiseledArmorGui, IMessage>
 	{
@@ -45,7 +34,7 @@ public class PacketOpenChiseledArmorGui extends PacketArmorSet
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().playerEntity;
-					player.openGui(ExtraBitManipulation.instance, GuiIDs.CHISELED_ARMOR.getID(), player.worldObj, message.indexArmorSet, 0, 0);
+					player.openGui(ExtraBitManipulation.instance, GuiIDs.CHISELED_ARMOR.getID(), player.worldObj, 0, 0, 0);
 				}
 			});
 			return null;

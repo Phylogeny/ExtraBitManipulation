@@ -212,9 +212,8 @@ public class ClientEventHandler
 			}
 			else if (KeyBindingsExtraBitManipulation.OPEN_CHISELED_ARMOR_GUI.isKeyDown())
 			{
-				int indexFirst = ChiseledArmorSlotsHandler.findNextArmorSetIndex(ChiseledArmorSlotsHandler.COUNT_SETS);
-				if (indexFirst >= 0)
-					ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui(indexFirst));
+				if (ChiseledArmorSlotsHandler.findNextArmorSetIndex(ChiseledArmorSlotsHandler.COUNT_SETS) >= 0)
+					ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui());
 				else
 					ClientHelper.printChatMessageWithDeletion("You must be wearing at least one piece of Chiseled Armor to open the Chiseled Armor GUI.");
 			}

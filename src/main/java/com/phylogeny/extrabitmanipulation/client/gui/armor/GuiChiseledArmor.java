@@ -104,14 +104,15 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 	private NBTTagCompound copiedGlOperation;
 	private boolean waitingForServerResponse;
 	
-	public GuiChiseledArmor(EntityPlayer player, int indexArmorSet)
+	public GuiChiseledArmor(EntityPlayer player)
 	{
 		super(ProxyCommon.createArmorContainer(player));
-		this.indexArmorSet = indexArmorSet;
+		int index = BitToolSettingsHelper.getArmorSetTabIndex();
+		indexArmorSet = setHasArmor(index) ? index : ChiseledArmorSlotsHandler.findNextArmorSetIndex(ChiseledArmorSlotsHandler.COUNT_SETS);
 		xSize = 352;
 		ySize = 230;
 		selectedSubTabIndex = 1;
-		int index = BitToolSettingsHelper.getArmorTabIndex();
+		index = BitToolSettingsHelper.getArmorTabIndex();
 		selectedTabIndex = ItemStackHelper.isChiseledArmorStack(getArmorStack(index)) ? index : -1;
 		resetRotationAndScale();
 		playerTranslation = Vec3d.ZERO;
@@ -363,15 +364,7 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 			String hoverText = i == 0 ? "Main Armor Set" : "Vanity Armor Set " + i;
 			GuiButtonTab tab = new GuiButtonTab(1100 + i, guiLeft + xSize - 24, guiTop + 23 + i * 25, 24, 25,
 					hoverText, false, null, 183, 230, 3, 512, TEXTURE_GUI);
-			tab.enabled = false;
-			for (ArmorType armorType : ArmorType.values())
-			{
-				if (ItemStackHelper.isChiseledArmorStack(ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), armorType, i)))
-				{
-					tab.enabled = true;
-					break;
-				}
-			}
+			tab.enabled = setHasArmor(i);
 			tab.selected = i == indexArmorSet;
 			if (i == 0)
 			{
@@ -389,6 +382,16 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 		}
 		updateButtons();
 		refreshLists(false);
+	}
+	
+	private boolean setHasArmor(int indexSet)
+	{
+		for (ArmorType armorType : ArmorType.values())
+		{
+			if (ItemStackHelper.isChiseledArmorStack(ItemStackHelper.getChiseledArmorStack(ClientHelper.getPlayer(), armorType, indexSet)))
+				return true;
+		}
+		return false;
 	}
 	
 	private ItemChiseledArmor getArmorItem(ArmorType armorType)
@@ -1032,7 +1035,10 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 		{
 			int index = button.id - 1100;
 			if (ChiseledArmorSlotsHandler.setHasArmor(index))
-				ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui(index));
+			{
+				BitToolSettingsHelper.setArmorSetTabIndex(index);
+				ExtraBitManipulation.packetNetwork.sendToServer(new PacketOpenChiseledArmorGui());
+			}
 			else
 				button.enabled = false;
 		}
@@ -1173,6 +1179,7 @@ public class GuiChiseledArmor extends GuiContainer implements IHoveringTextRende
 			}
 		}
 		BitToolSettingsHelper.setArmorTabIndex(selectedTabIndex);
+		BitToolSettingsHelper.setArmorSetTabIndex(indexArmorSet);
 		boolean preSelected = BitToolSettingsHelper.getArmorPixelTranslation();
 		buttonScalePixel.selected = preSelected;
 		buttonScaleMeter.selected = !preSelected;
