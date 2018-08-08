@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import com.phylogeny.extrabitmanipulation.armor.ChiseledArmorStackHandeler.ArmorStackModelRenderMode;
 import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsEventHandler.ArmorButtonVisibiltyMode;
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.LogHelper;
@@ -394,6 +395,7 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.armorMovingPartLeggings = getArmorMovingPart(ItemsExtraBitManipulation.chiseledLeggingsDiamond);
 			Configs.armorMovingPartBoots = getArmorMovingPart(ItemsExtraBitManipulation.chiseledBootsDiamond);
 			Configs.armorTabIndex = getArmorGuiInt("Selected Tab Index", 0, 0, 3);
+			Configs.armorSetTabIndex = getArmorGuiInt("Selected Set Tab Index", 0, 0, ChiseledArmorSlotsHandler.COUNT_SETS);
 			Configs.armorPixelTranslation = getArmorGuiBoolean("Translation In Pixels", true);
 			Configs.armorFullIllumination = getArmorGuiBoolean("Full Illumination", false);
 			Configs.armorLookAtCursor = getArmorGuiBoolean("Look At Cursor", true);

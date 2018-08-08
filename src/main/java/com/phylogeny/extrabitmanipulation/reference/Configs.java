@@ -37,6 +37,7 @@ public class Configs
 		public static ConfigBitToolSettingInt armorMovingPartLeggings;
 		public static ConfigBitToolSettingInt armorMovingPartBoots;
 		public static ConfigBitToolSettingInt armorTabIndex;
+		public static ConfigBitToolSettingInt armorSetTabIndex;
 		public static ConfigBitToolSettingBoolean armorTargetBits;
 		public static ConfigBitToolSettingBoolean armorPixelTranslation;
 		public static ConfigBitToolSettingBoolean armorFullIllumination;
