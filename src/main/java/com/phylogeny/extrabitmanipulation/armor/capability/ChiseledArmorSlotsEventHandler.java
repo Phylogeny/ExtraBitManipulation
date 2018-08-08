@@ -195,7 +195,7 @@ public class ChiseledArmorSlotsEventHandler
 		}
 		if (stack.getItem() == null)
 			stack = null;
-        
+		
 		if (stack != null && !ChiseledArmorSlotsHandler.isItemValid(slot, stack))
 		{
 			notifyCommandListener(event, "commands.replaceitem.failed", slotName, 1, stack.getTextComponent());

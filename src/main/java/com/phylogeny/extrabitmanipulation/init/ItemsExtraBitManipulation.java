@@ -24,7 +24,7 @@ public class ItemsExtraBitManipulation
 	public static Item diamondNugget, bitWrench, sculptingLoop, sculptingSquare, sculptingSpadeCurved, sculptingSpadeSquared, modelingTool,
 	modelingToolHead, bitWrenchHead, sculptingLoopHead, sculptingSquareHead, sculptingSpadeCurvedHead, sculptingSpadeSquaredHead,
 	chiseledHelmetDiamond, chiseledChestplateDiamond, chiseledLeggingsDiamond, chiseledBootsDiamond,
-    chiseledHelmetIron, chiseledChestplateIron, chiseledLeggingsIron, chiseledBootsIron;
+	chiseledHelmetIron, chiseledChestplateIron, chiseledLeggingsIron, chiseledBootsIron;
 	
 	public static void itemsInit()
 	{
@@ -42,19 +42,19 @@ public class ItemsExtraBitManipulation
 		sculptingSpadeCurvedHead = new ItemExtraBitManipulationBase("SculptingSpadeCurvedHead");
 		sculptingSpadeSquaredHead = new ItemExtraBitManipulationBase("SculptingSpadeSquaredHead");
 		chiseledHelmetDiamond = new ItemChiseledArmor("chiseled_helmet", ArmorMaterial.DIAMOND, ArmorType.HELMET, ArmorMovingPart.HEAD);
-        chiseledChestplateDiamond = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.DIAMOND, ArmorType.CHESTPLATE,
-                ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-        chiseledLeggingsDiamond = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.DIAMOND, ArmorType.LEGGINGS,
-                ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-        chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND,
-                ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
-        chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet_iron", ArmorMaterial.IRON, ArmorType.HELMET, ArmorMovingPart.HEAD);
-        chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate_iron", ArmorMaterial.IRON, ArmorType.CHESTPLATE,
-                ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
-        chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings_iron", ArmorMaterial.IRON, ArmorType.LEGGINGS,
-                ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
-        chiseledBootsIron = new ItemChiseledArmor("chiseled_boots_iron", ArmorMaterial.IRON,
-                ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
+		chiseledChestplateDiamond = new ItemChiseledArmor("chiseled_chestplate", ArmorMaterial.DIAMOND, ArmorType.CHESTPLATE,
+				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
+		chiseledLeggingsDiamond = new ItemChiseledArmor("chiseled_leggings", ArmorMaterial.DIAMOND, ArmorType.LEGGINGS,
+				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
+		chiseledBootsDiamond = new ItemChiseledArmor("chiseled_boots", ArmorMaterial.DIAMOND,
+				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
+		chiseledHelmetIron = new ItemChiseledArmor("chiseled_helmet_iron", ArmorMaterial.IRON, ArmorType.HELMET, ArmorMovingPart.HEAD);
+		chiseledChestplateIron = new ItemChiseledArmor("chiseled_chestplate_iron", ArmorMaterial.IRON, ArmorType.CHESTPLATE,
+				ArmorMovingPart.TORSO, ArmorMovingPart.ARM_RIGHT, ArmorMovingPart.ARM_LEFT);
+		chiseledLeggingsIron = new ItemChiseledArmor("chiseled_leggings_iron", ArmorMaterial.IRON, ArmorType.LEGGINGS,
+				ArmorMovingPart.PELVIS, ArmorMovingPart.LEG_RIGHT, ArmorMovingPart.LEG_LEFT);
+		chiseledBootsIron = new ItemChiseledArmor("chiseled_boots_iron", ArmorMaterial.IRON,
+				ArmorType.BOOTS, ArmorMovingPart.FOOT_RIGHT, ArmorMovingPart.FOOT_LEFT);
 		registerItemAndDefaultRecipe(bitWrench, "Bit Wrench", true, false);
 		registerItemAndDefaultRecipe(sculptingLoop, "Curved Sculpting Wire", true, false);
 		registerItemAndDefaultRecipe(sculptingSquare, "Straight Sculpting Wire", true, false);
@@ -79,9 +79,9 @@ public class ItemsExtraBitManipulation
 		GameRegistry.register(chiseledLeggingsDiamond);
 		GameRegistry.register(chiseledBootsDiamond);
 		GameRegistry.register(chiseledHelmetIron);
-        GameRegistry.register(chiseledChestplateIron);
-        GameRegistry.register(chiseledLeggingsIron);
-        GameRegistry.register(chiseledBootsIron);
+		GameRegistry.register(chiseledChestplateIron);
+		GameRegistry.register(chiseledLeggingsIron);
+		GameRegistry.register(chiseledBootsIron);
 		registerDefaultRecipe(Item.getItemFromBlock(BlocksExtraBitManipulation.bodyPartTemplate), "Bodypart Template", false, false, "minecraft:cobblestone");
 	}
 	
