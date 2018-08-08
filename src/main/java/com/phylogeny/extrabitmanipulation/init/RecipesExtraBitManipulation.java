@@ -49,9 +49,9 @@ public class RecipesExtraBitManipulation
 		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggingsDiamond, Items.DIAMOND_LEGGINGS, 572);
 		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBootsDiamond, Items.DIAMOND_BOOTS, 272);
 		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledHelmetIron, Items.IRON_HELMET, 272);
-        registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledChestplateIron, Items.IRON_CHESTPLATE, 444);
-        registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggingsIron, Items.IRON_LEGGINGS, 572);
-        registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBootsIron, Items.IRON_BOOTS, 272);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledChestplateIron, Items.IRON_CHESTPLATE, 444);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledLeggingsIron, Items.IRON_LEGGINGS, 572);
+		registerChiseledArmorRecipes(ItemsExtraBitManipulation.chiseledBootsIron, Items.IRON_BOOTS, 272);
 	}
 	
 	private static void registerChiseledArmorRecipes(Item output, Item inputArmor, int bitCost)
