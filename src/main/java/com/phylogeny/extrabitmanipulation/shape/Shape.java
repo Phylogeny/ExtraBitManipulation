@@ -81,7 +81,7 @@ public abstract class Shape
 		AxisAlignedBB box = getIntersectingBox(blockBounds, getBoundingBox());
 		float s = Configs.bitSpawnBoxContraction;
 		if (s > 0)
-			box = box.expand(-(box.maxX - box.minX) * s, -(box.maxY - box.minY) * s, -(box.maxZ - box.minZ) * s);
+			box = box.grow(-(box.maxX - box.minX) * s, -(box.maxY - box.minY) * s, -(box.maxZ - box.minZ) * s);
 		
 		double d0 = world.rand.nextFloat() * (box.maxX - box.minX) + box.minX;
 		double d1 = world.rand.nextFloat() * (box.maxY - box.minY) + box.minY;

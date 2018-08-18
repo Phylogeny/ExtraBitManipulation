@@ -1759,7 +1759,7 @@ public class ClientEventHandler
 			if (invertDirection && Configs.translationScalePeriod > 1)
 				amount += 0.5;
 			
-			box = box.expand(-amount * invOffsetX, -amount * invOffsetY, -amount * invOffsetZ);
+			box = box.grow(-amount * invOffsetX, -amount * invOffsetY, -amount * invOffsetZ);
 		}
 		else if (Configs.translationDistance > 0)
 		{
