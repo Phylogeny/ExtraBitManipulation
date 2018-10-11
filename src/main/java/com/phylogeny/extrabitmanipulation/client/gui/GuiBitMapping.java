@@ -440,7 +440,7 @@ public class GuiBitMapping extends GuiContainer
 					vHeight = 36;
 				}
 				GuiButtonTab tab = new GuiButtonTab(i, guiLeft, guiTop + 21 + i * 25, 24, 25,
-						TAB_HOVER_TEXT[i], true, iconStack, u, v, uWidth, vHeight, 141, 219, 25, 256, GUI_TEXTURE);
+						TAB_HOVER_TEXT[i], true, iconStack, u, v, uWidth, vHeight, 141, 219, 0, 256, GUI_TEXTURE);
 				if (i == savedTab)
 					tab.selected = true;
 				
