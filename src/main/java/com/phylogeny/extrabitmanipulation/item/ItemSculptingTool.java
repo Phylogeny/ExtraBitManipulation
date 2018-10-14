@@ -118,7 +118,7 @@ public class ItemSculptingTool extends ItemBitToolBase
 	
 	public NBTTagCompound initialize(ItemStack stack, SculptingData sculptingData)
 	{
-		NBTTagCompound nbt = BitToolSettingsHelper.initNBT(stack);
+		NBTTagCompound nbt = ItemStackHelper.initNBT(stack);
 		initInt(nbt, NBTKeys.REMAINING_USES, ((ConfigProperty) Configs.itemPropertyMap.get(this)).maxDamage);
 		initInt(nbt, NBTKeys.SCULPT_MODE, sculptingData.getSculptMode());
 		initInt(nbt, NBTKeys.SCULPT_SEMI_DIAMETER, sculptingData.getSemiDiameter());

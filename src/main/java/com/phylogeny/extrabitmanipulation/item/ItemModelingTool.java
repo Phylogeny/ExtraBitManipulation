@@ -60,7 +60,7 @@ public class ItemModelingTool extends ItemBitToolBase
 	
 	public NBTTagCompound initialize(ItemStack stack, ModelReadData modelingData)
 	{
-		NBTTagCompound nbt = BitToolSettingsHelper.initNBT(stack);
+		NBTTagCompound nbt = ItemStackHelper.initNBT(stack);
 		initInt(nbt, NBTKeys.MODEL_AREA_MODE, modelingData.getAreaMode());
 		initInt(nbt, NBTKeys.MODEL_SNAP_MODE, modelingData.getSnapMode());
 		initBoolean(nbt, NBTKeys.MODEL_GUI_OPEN, modelingData.getGuiOpen());

@@ -1,27 +1,8 @@
 package com.phylogeny.extrabitmanipulation.helper;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import mod.chiselsandbits.api.IBitBrush;
-import mod.chiselsandbits.api.IChiselAndBitsAPI;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -61,6 +42,24 @@ import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 import com.phylogeny.extrabitmanipulation.reference.Utility;
 import com.phylogeny.extrabitmanipulation.shape.Shape;
 
+import io.netty.buffer.ByteBuf;
+import mod.chiselsandbits.api.IBitBrush;
+import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class BitToolSettingsHelper
 {
 	
@@ -73,72 +72,19 @@ public class BitToolSettingsHelper
 		return directionTexts;
 	}
 	
-	public static NBTTagCompound initNBT(ItemStack stack)
-	{
-		if (!stack.hasTagCompound())
-			stack.setTagCompound(new NBTTagCompound());
-		
-		return stack.getTagCompound();
-	}
-	
-	private static int getInt(NBTTagCompound nbt, int intValue, String key)
-	{
-		if (nbt != null && nbt.hasKey(key))
-			intValue = nbt.getInteger(key);
-		
-		return intValue;
-	}
-	
-	private static void setInt(EntityPlayer player, ItemStack stack, int intValue, String key)
-	{
-		NBTTagCompound nbt = initNBT(stack);
-		nbt.setInteger(key, intValue);
-		player.inventoryContainer.detectAndSendChanges();
-	}
-	
-	private static boolean getBoolean(NBTTagCompound nbt, boolean booleanValue, String key)
-	{
-		if (nbt != null && nbt.hasKey(key))
-			booleanValue = nbt.getBoolean(key);
-		
-		return booleanValue;
-	}
-	
-	private static void setBoolean(EntityPlayer player, ItemStack stack, boolean booleanValue, String key)
-	{
-		NBTTagCompound nbt = initNBT(stack);
-		nbt.setBoolean(key, booleanValue);
-		player.inventoryContainer.detectAndSendChanges();
-	}
-	
-	private static ItemStack getStack(NBTTagCompound nbt, ItemStack stack, String key)
-	{
-		if (nbt != null && nbt.hasKey(key))
-			stack = ItemStackHelper.loadStackFromNBT(nbt, key);
-		
-		return stack;
-	}
-	
-	private static void setStack(EntityPlayer player, ItemStack stack, ItemStack stackToSet, String key)
-	{
-		NBTTagCompound nbt = initNBT(stack);
-		ItemStackHelper.saveStackToNBT(nbt, stackToSet, key);
-		player.inventoryContainer.detectAndSendChanges();
-	}
-	
 	private static int getInt(ConfigBitToolSettingInt config, NBTTagCompound nbt, String nbtKey)
 	{
-		return config.isPerTool() ? getInt(nbt, config.getDefaultValue(), nbtKey) : config.getValue();
+		return config.isPerTool() ? ItemStackHelper.getInt(nbt, config.getDefaultValue(), nbtKey) : config.getValue();
 	}
 	
 	private static boolean getBoolean(ConfigBitToolSettingBoolean config, NBTTagCompound nbt, String nbtKey)
 	{
-		return config.isPerTool() ? getBoolean(nbt, config.getDefaultValue(), nbtKey) : config.getValue();
+		return config.isPerTool() ? ItemStackHelper.getBoolean(nbt, config.getDefaultValue(), nbtKey) : config.getValue();
 	}
 	
 	private static ItemStack getStack(ConfigBitStack config, NBTTagCompound nbt, String nbtKey)
 	{
-		return config.isPerTool() ? getStack(nbt, config.getDefaultValue(), nbtKey) : config.getValue();
+		return config.isPerTool() ? ItemStackHelper.getStack(nbt, nbtKey) : config.getValue();
 	}
 	
 	private static void setIntProperty(World world, Configuration configFile, ConfigBitToolSettingInt config, String catagory, int value)
@@ -211,7 +157,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, mode, NBTKeys.MODEL_AREA_MODE);
+				ItemStackHelper.setInt(player, stack, mode, NBTKeys.MODEL_AREA_MODE);
 			}
 		}
 		else if (world.isRemote)
@@ -237,7 +183,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, mode, NBTKeys.MODEL_SNAP_MODE);
+				ItemStackHelper.setInt(player, stack, mode, NBTKeys.MODEL_SNAP_MODE);
 			}
 		}
 		else if (world.isRemote)
@@ -263,7 +209,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setBoolean(player, stack, isOpen, NBTKeys.MODEL_GUI_OPEN);
+				ItemStackHelper.setBoolean(player, stack, isOpen, NBTKeys.MODEL_GUI_OPEN);
 			}
 		}
 		else if (world.isRemote)
@@ -289,7 +235,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, mode, NBTKeys.SCULPT_MODE);
+				ItemStackHelper.setInt(player, stack, mode, NBTKeys.SCULPT_MODE);
 			}
 		}
 		else if (world.isRemote)
@@ -315,7 +261,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, direction, NBTKeys.DIRECTION);
+				ItemStackHelper.setInt(player, stack, direction, NBTKeys.DIRECTION);
 			}
 		}
 		else if (world.isRemote)
@@ -343,7 +289,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, shapeType, NBTKeys.SHAPE_TYPE);
+				ItemStackHelper.setInt(player, stack, shapeType, NBTKeys.SHAPE_TYPE);
 			}
 		}
 		else if (world.isRemote)
@@ -370,7 +316,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setBoolean(player, stack, isTargeted, NBTKeys.TARGET_BIT_GRID_VERTEXES);
+				ItemStackHelper.setBoolean(player, stack, isTargeted, NBTKeys.TARGET_BIT_GRID_VERTEXES);
 			}
 		}
 		else if (world.isRemote)
@@ -396,7 +342,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, semiDiameter, NBTKeys.SCULPT_SEMI_DIAMETER);
+				ItemStackHelper.setInt(player, stack, semiDiameter, NBTKeys.SCULPT_SEMI_DIAMETER);
 			}
 		}
 		else if (world.isRemote)
@@ -423,7 +369,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setBoolean(player, stack, hollowShape, NBTKeys.SCULPT_HOLLOW_SHAPE);
+				ItemStackHelper.setBoolean(player, stack, hollowShape, NBTKeys.SCULPT_HOLLOW_SHAPE);
 			}
 		}
 		else if (world.isRemote)
@@ -449,7 +395,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setBoolean(player, stack, openEnds, NBTKeys.OPEN_ENDS);
+				ItemStackHelper.setBoolean(player, stack, openEnds, NBTKeys.OPEN_ENDS);
 			}
 		}
 		else if (world.isRemote)
@@ -475,7 +421,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, wallThickness, NBTKeys.WALL_THICKNESS);
+				ItemStackHelper.setInt(player, stack, wallThickness, NBTKeys.WALL_THICKNESS);
 			}
 		}
 		else if (world.isRemote)
@@ -501,7 +447,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setStack(player, stack, bit == null ? null : bit.getItemStack(1), NBTKeys.SET_BIT);
+				ItemStackHelper.setStack(player, stack, bit == null ? null : bit.getItemStack(1), NBTKeys.SET_BIT);
 			}
 		}
 		else if (world.isRemote)
@@ -527,7 +473,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setBoolean(player, stack, offsetShape, NBTKeys.OFFSET_SHAPE);
+				ItemStackHelper.setBoolean(player, stack, offsetShape, NBTKeys.OFFSET_SHAPE);
 			}
 		}
 		else if (world.isRemote)
@@ -553,7 +499,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setInt(player, stack, mode, NBTKeys.ARMOR_MODE);
+				ItemStackHelper.setInt(player, stack, mode, NBTKeys.ARMOR_MODE);
 			}
 		}
 		else if (world.isRemote)
@@ -583,7 +529,7 @@ public class BitToolSettingsHelper
 			{
 				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorScale(scale, armorType, indexArmorSet));
 			}
-			setInt(player, stack, scale, NBTKeys.ARMOR_SCALE);
+			ItemStackHelper.setInt(player, stack, scale, NBTKeys.ARMOR_SCALE);
 		}
 		else if (world.isRemote)
 		{
@@ -619,7 +565,7 @@ public class BitToolSettingsHelper
 			{
 				ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetArmorMovingPart(partIndex, armorType, indexArmorSet));
 			}
-			setInt(player, stack, partIndex, NBTKeys.ARMOR_MOVING_PART);
+			ItemStackHelper.setInt(player, stack, partIndex, NBTKeys.ARMOR_MOVING_PART);
 		}
 		else if (world.isRemote)
 		{
@@ -644,7 +590,7 @@ public class BitToolSettingsHelper
 			}
 			else
 			{
-				setBoolean(player, stack, isTargeted, NBTKeys.ARMOR_TARGET_BITS);
+				ItemStackHelper.setBoolean(player, stack, isTargeted, NBTKeys.ARMOR_TARGET_BITS);
 			}
 		}
 		else if (world.isRemote)

@@ -22,6 +22,56 @@ import net.minecraft.nbt.NBTTagCompound;
 public class ItemStackHelper
 {
 	
+	public static NBTTagCompound initNBT(ItemStack stack)
+	{
+		if (!stack.hasTagCompound())
+			stack.setTagCompound(new NBTTagCompound());
+		
+		return stack.getTagCompound();
+	}
+	
+	public static int getInt(NBTTagCompound nbt, int intValue, String key)
+	{
+		if (nbt != null && nbt.hasKey(key))
+			intValue = nbt.getInteger(key);
+		
+		return intValue;
+	}
+	
+	public static void setInt(EntityPlayer player, ItemStack stack, int intValue, String key)
+	{
+		NBTTagCompound nbt = initNBT(stack);
+		nbt.setInteger(key, intValue);
+		player.inventoryContainer.detectAndSendChanges();
+	}
+	
+	public static boolean getBoolean(NBTTagCompound nbt, boolean booleanValue, String key)
+	{
+		if (nbt != null && nbt.hasKey(key))
+			booleanValue = nbt.getBoolean(key);
+		
+		return booleanValue;
+	}
+	
+	public static void setBoolean(EntityPlayer player, ItemStack stack, boolean booleanValue, String key)
+	{
+		NBTTagCompound nbt = initNBT(stack);
+		nbt.setBoolean(key, booleanValue);
+		player.inventoryContainer.detectAndSendChanges();
+	}
+	
+	public static ItemStack getStack(@Nullable NBTTagCompound nbt, String key)
+	{
+		return nbt != null ? loadStackFromNBT(nbt, key) : ItemStack.EMPTY;
+	}
+	
+	public static void setStack(EntityPlayer player, ItemStack stack, ItemStack stackToSet, String key)
+	{
+		NBTTagCompound nbt = initNBT(stack);
+		saveStackToNBT(nbt, stackToSet, key);
+		player.inventoryContainer.detectAndSendChanges();
+	}
+	
 	public static void saveStackToNBT(NBTTagCompound nbt, ItemStack stack, String key)
 	{
 		NBTTagCompound nbt2 = new NBTTagCompound();
