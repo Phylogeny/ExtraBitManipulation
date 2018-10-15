@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
@@ -13,15 +12,9 @@ import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
-public class PacketOpenBitMappingGui implements IMessage
+public class PacketOpenBitMappingGui extends PacketEmpty
 {
 	public PacketOpenBitMappingGui() {}
-	
-	@Override
-	public void toBytes(ByteBuf buffer) {}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer) {}
 	
 	public static class Handler implements IMessageHandler<PacketOpenBitMappingGui, IMessage>
 	{

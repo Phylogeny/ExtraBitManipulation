@@ -1,7 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,16 +23,9 @@ import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
 import com.phylogeny.extrabitmanipulation.entity.EntityBit;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 
-public class PacketThrowBit implements IMessage
+public class PacketThrowBit extends PacketEmpty
 {
-	
 	public PacketThrowBit() {}
-	
-	@Override
-	public void toBytes(ByteBuf buffer) {}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer) {}
 	
 	public static class Handler implements IMessageHandler<PacketThrowBit, IMessage>
 	{

@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
@@ -12,15 +11,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 
-public class PacketClearStackBitMappings implements IMessage
+public class PacketClearStackBitMappings extends PacketEmpty
 {
 	public PacketClearStackBitMappings() {}
-	
-	@Override
-	public void toBytes(ByteBuf buffer) {}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer) {}
 	
 	public static class Handler implements IMessageHandler<PacketClearStackBitMappings, IMessage>
 	{
