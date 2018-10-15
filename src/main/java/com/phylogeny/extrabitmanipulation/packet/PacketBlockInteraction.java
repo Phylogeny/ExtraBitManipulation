@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketBlockInteraction implements IMessage
+public abstract class PacketBlockInteraction implements IMessage
 {
 	protected BlockPos pos;
 	protected EnumFacing side;

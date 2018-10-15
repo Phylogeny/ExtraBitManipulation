@@ -3,7 +3,7 @@ package com.phylogeny.extrabitmanipulation.packet;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketArmorSet implements IMessage
+public abstract class PacketArmorSet implements IMessage
 {
 	protected int indexArmorSet;
 	

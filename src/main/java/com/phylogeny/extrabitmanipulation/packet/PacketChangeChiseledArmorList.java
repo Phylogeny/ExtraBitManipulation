@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class PacketChangeChiseledArmorList extends PacketArmorSlotInt
+public abstract class PacketChangeChiseledArmorList extends PacketArmorSlotInt
 {
 	protected int armorItemIndex, selectedEntry;
 	protected boolean refreshLists;

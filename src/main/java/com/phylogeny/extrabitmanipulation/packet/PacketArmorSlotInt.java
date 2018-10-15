@@ -9,7 +9,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-public class PacketArmorSlotInt extends PacketArmorSlot
+public abstract class PacketArmorSlotInt extends PacketArmorSlot
 {
 	protected int value;
 	

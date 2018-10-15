@@ -7,7 +7,7 @@ import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 
 import io.netty.buffer.ByteBuf;
 
-public class PacketArmorSlot extends PacketArmorSet
+public abstract class PacketArmorSlot extends PacketArmorSet
 {
 	protected ArmorType armorType;
 	

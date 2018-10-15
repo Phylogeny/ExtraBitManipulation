@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketBitMapIO implements IMessage
+public abstract class PacketBitMapIO implements IMessage
 {
 	protected String nbtKey;
 	protected boolean saveStatesById;
