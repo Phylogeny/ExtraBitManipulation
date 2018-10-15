@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
@@ -13,27 +12,13 @@ import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
-public class PacketSetWrechMode implements IMessage
+public class PacketSetWrechMode extends PacketInt
 {
-	private int mode;
-	
 	public PacketSetWrechMode() {}
 	
 	public PacketSetWrechMode(int mode)
 	{
-		this.mode = mode;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeInt(mode);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		mode = buffer.readInt();
+		super(mode);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetWrechMode, IMessage>
@@ -52,7 +37,7 @@ public class PacketSetWrechMode implements IMessage
 					if (ItemStackHelper.isBitWrenchStack(stack))
 					{
 						((ItemBitWrench) stack.getItem()).initialize(stack);
-						ItemStackHelper.getNBT(stack).setInteger(NBTKeys.WRENCH_MODE, message.mode);
+						ItemStackHelper.getNBT(stack).setInteger(NBTKeys.WRENCH_MODE, message.value);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}

@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetSemiDiameter implements IMessage
+public class PacketSetSemiDiameter extends PacketInt
 {
-	private int semiDiameter;
-	
 	public PacketSetSemiDiameter() {}
 	
 	public PacketSetSemiDiameter(int semiDiameter)
 	{
-		this.semiDiameter = semiDiameter;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeInt(semiDiameter);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		semiDiameter = buffer.readInt();
+		super(semiDiameter);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetSemiDiameter, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetSemiDiameter implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setSemiDiameter(player, player.getHeldItemMainhand(), message.semiDiameter, null);
+					BitToolSettingsHelper.setSemiDiameter(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

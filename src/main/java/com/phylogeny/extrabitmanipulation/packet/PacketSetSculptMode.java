@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetSculptMode implements IMessage
+public class PacketSetSculptMode extends PacketInt
 {
-	private int mode;
-	
 	public PacketSetSculptMode() {}
 	
 	public PacketSetSculptMode(int mode)
 	{
-		this.mode = mode;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeInt(mode);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		mode = buffer.readInt();
+		super(mode);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetSculptMode, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetSculptMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setSculptMode(player, player.getHeldItemMainhand(), message.mode, null);
+					BitToolSettingsHelper.setSculptMode(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

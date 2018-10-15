@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetWallThickness implements IMessage
+public class PacketSetWallThickness extends PacketInt
 {
-	private int wallThickness;
-	
 	public PacketSetWallThickness() {}
 	
 	public PacketSetWallThickness(int wallThickness)
 	{
-		this.wallThickness = wallThickness;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeInt(wallThickness);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		wallThickness = buffer.readInt();
+		super(wallThickness);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetWallThickness, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetWallThickness implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setWallThickness(player, player.getHeldItemMainhand(), message.wallThickness, null);
+					BitToolSettingsHelper.setWallThickness(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

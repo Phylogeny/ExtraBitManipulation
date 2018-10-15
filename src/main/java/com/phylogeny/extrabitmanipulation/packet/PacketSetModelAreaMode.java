@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetModelAreaMode implements IMessage
+public class PacketSetModelAreaMode extends PacketInt
 {
-	private int mode;
-	
 	public PacketSetModelAreaMode() {}
 	
 	public PacketSetModelAreaMode(int mode)
 	{
-		this.mode = mode;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeInt(mode);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		mode = buffer.readInt();
+		super(mode);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetModelAreaMode, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetModelAreaMode implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setModelAreaMode(player, player.getHeldItemMainhand(), message.mode, null);
+					BitToolSettingsHelper.setModelAreaMode(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetDirection implements IMessage
+public class PacketSetDirection extends PacketInt
 {
-	private int direction;
-	
 	public PacketSetDirection() {}
 	
 	public PacketSetDirection(int direction)
 	{
-		this.direction = direction;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeInt(direction);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		direction = buffer.readInt();
+		super(direction);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetDirection, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetDirection implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setDirection(player, player.getHeldItemMainhand(), message.direction, null);
+					BitToolSettingsHelper.setDirection(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;
