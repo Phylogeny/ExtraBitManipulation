@@ -19,9 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class PacketChangeChiseledArmorList extends PacketArmorSlot
+public class PacketChangeChiseledArmorList extends PacketArmorSlotInt
 {
-	protected int partIndex, armorItemIndex, selectedEntry;
+	protected int armorItemIndex, selectedEntry;
 	protected boolean refreshLists;
 	protected NBTTagCompound nbt = new NBTTagCompound();
 	
@@ -30,9 +30,8 @@ public class PacketChangeChiseledArmorList extends PacketArmorSlot
 	public PacketChangeChiseledArmorList(NBTTagCompound nbt, ArmorType armorType, int indexArmorSet,
 			int partIndex, int armorItemIndex, int selectedEntry, boolean refreshLists, @Nullable EntityPlayer player)
 	{
-		super(armorType, indexArmorSet);
+		super(armorType, indexArmorSet, partIndex);
 		this.nbt = nbt;
-		this.partIndex = partIndex;
 		this.armorItemIndex = armorItemIndex;
 		this.selectedEntry = selectedEntry;
 		this.refreshLists = refreshLists;
@@ -49,7 +48,6 @@ public class PacketChangeChiseledArmorList extends PacketArmorSlot
 	{
 		super.toBytes(buffer);
 		ByteBufUtils.writeTag(buffer, nbt);
-		buffer.writeInt(partIndex);
 		buffer.writeInt(armorItemIndex);
 		buffer.writeInt(selectedEntry);
 		buffer.writeBoolean(refreshLists);
@@ -60,7 +58,6 @@ public class PacketChangeChiseledArmorList extends PacketArmorSlot
 	{
 		super.fromBytes(buffer);
 		nbt = ByteBufUtils.readTag(buffer);
-		partIndex = buffer.readInt();
 		armorItemIndex = buffer.readInt();
 		selectedEntry = buffer.readInt();
 		refreshLists = buffer.readBoolean();

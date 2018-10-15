@@ -73,7 +73,7 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 					if (message.nbtKey.equals(NBTKeys.ARMOR_GL_OPERATIONS))
 					{
 						NBTTagList movingParts = data.getTagList(NBTKeys.ARMOR_PART_DATA, NBT.TAG_LIST);
-						NBTBase nbtBase = movingParts.get(message.partIndex);
+						NBTBase nbtBase = movingParts.get(message.value);
 						if (nbtBase.getId() != NBT.TAG_LIST)
 							return;
 						
@@ -91,7 +91,7 @@ public class PacketChangeGlOperationList extends PacketChangeChiseledArmorList
 					if (serverSide)
 					{
 						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeGlOperationList(message.nbt, message.nbtKey,
-								message.armorType, message.indexArmorSet, message.partIndex, message.armorItemIndex,
+								message.armorType, message.indexArmorSet, message.value, message.armorItemIndex,
 								message.selectedEntry, message.refreshLists, player), (EntityPlayerMP) player);
 					}
 				}

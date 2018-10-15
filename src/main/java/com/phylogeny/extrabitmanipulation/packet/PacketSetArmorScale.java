@@ -1,8 +1,9 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
-
 import javax.annotation.Nullable;
+
+import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -12,34 +13,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
-
-public class PacketSetArmorScale extends PacketArmorSlot
+public class PacketSetArmorScale extends PacketArmorSlotInt
 {
-	private int scale;
-	
 	public PacketSetArmorScale() {}
 	
 	public PacketSetArmorScale(int scale, @Nullable ArmorType armorType, int indexArmorSet)
 	{
-		super(armorType, indexArmorSet);
-		this.scale = scale;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		super.toBytes(buffer);
-		buffer.writeInt(scale);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		super.fromBytes(buffer);
-		scale = buffer.readInt();
+		super(armorType, indexArmorSet, scale);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetArmorScale, IMessage>
@@ -54,9 +34,9 @@ public class PacketSetArmorScale extends PacketArmorSlot
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					ItemStack stack = ItemStackHelper.getChiseledArmorStack(player, message.armorType, message.indexArmorSet);
-					if (ItemStackHelper.isChiseledArmorStack(stack))
-						BitToolSettingsHelper.setArmorScale(player, stack, message.scale, null, message.armorType, message.indexArmorSet);
+					ItemStack stack = getArmorStack(player, message);
+					if (!stack.isEmpty())
+						BitToolSettingsHelper.setArmorScale(player, stack, message.value, null, message.armorType, message.indexArmorSet);
 				}
 			});
 			return null;

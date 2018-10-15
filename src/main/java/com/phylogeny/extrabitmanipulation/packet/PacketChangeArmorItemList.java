@@ -78,7 +78,7 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 					NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
 					NBTTagCompound data = message.getData(nbt, serverSide);
 					NBTTagList movingParts = data.getTagList(NBTKeys.ARMOR_PART_DATA, NBT.TAG_LIST);
-					NBTBase nbtBase = movingParts.get(message.partIndex);
+					NBTBase nbtBase = movingParts.get(message.value);
 					if (nbtBase.getId() != NBT.TAG_LIST)
 						return;
 					
@@ -110,13 +110,13 @@ public class PacketChangeArmorItemList extends PacketChangeChiseledArmorList
 						itemList.removeTag(message.armorItemIndex);
 						glListRemovalIndex = message.armorItemIndex;
 					}
-					movingParts.set(message.partIndex, itemList);
+					movingParts.set(message.value, itemList);
 					DataChiseledArmorPiece.setPartData(data, movingParts);
 					message.finalizeDataChange(message, stack, nbt, data, serverSide, true, add, glListRemovalIndex);
 					if (serverSide)
 					{
 						ExtraBitManipulation.packetNetwork.sendTo(new PacketChangeArmorItemList(message.armorType, message.indexArmorSet,
-								message.partIndex, message.armorItemIndex, message.selectedEntry, message.listOperation,
+								message.value, message.armorItemIndex, message.selectedEntry, message.listOperation,
 								message.stack, message.nbt, message.refreshLists, player), (EntityPlayerMP) player);
 					}
 				}
