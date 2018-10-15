@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
@@ -12,27 +11,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemBitWrench;
 
-public class PacketCycleBitWrenchMode implements IMessage
+public class PacketCycleBitWrenchMode extends PacketBoolean
 {
-	private boolean forward;
-	
 	public PacketCycleBitWrenchMode() {}
 	
 	public PacketCycleBitWrenchMode(boolean forward)
 	{
-		this.forward = forward;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(forward);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		forward = buffer.readBoolean();
+		super(forward);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketCycleBitWrenchMode, IMessage>
@@ -49,7 +34,7 @@ public class PacketCycleBitWrenchMode implements IMessage
 					EntityPlayer player = ctx.getServerHandler().player;
 					ItemStack stack = player.getHeldItemMainhand();
 					if (ItemStackHelper.isBitWrenchStack(stack))
-						((ItemBitWrench) stack.getItem()).cycleModes(stack, message.forward);
+						((ItemBitWrench) stack.getItem()).cycleModes(stack, message.value);
 				}
 			});
 			return null;

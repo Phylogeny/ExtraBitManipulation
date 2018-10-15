@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetModelGuiOpen implements IMessage
+public class PacketSetModelGuiOpen extends PacketBoolean
 {
-	private boolean openGui;
-	
 	public PacketSetModelGuiOpen() {}
 	
-	public PacketSetModelGuiOpen(boolean openEnds)
+	public PacketSetModelGuiOpen(boolean openGui)
 	{
-		this.openGui = openEnds;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(openGui);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		openGui = buffer.readBoolean();
+		super(openGui);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetModelGuiOpen, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetModelGuiOpen implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setModelGuiOpen(player, player.getHeldItemMainhand(), message.openGui, null);
+					BitToolSettingsHelper.setModelGuiOpen(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

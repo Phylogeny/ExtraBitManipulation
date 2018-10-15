@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -11,27 +10,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.reference.GuiIDs;
 
-public class PacketOpenInventoryGui implements IMessage
+public class PacketOpenInventoryGui extends PacketBoolean
 {
-	private boolean openVanilla;
-	
 	public PacketOpenInventoryGui() {}
 	
 	public PacketOpenInventoryGui(boolean openVanilla)
 	{
-		this.openVanilla = openVanilla;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(openVanilla);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		openVanilla = buffer.readBoolean();
+		super(openVanilla);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketOpenInventoryGui, IMessage>
@@ -47,7 +32,7 @@ public class PacketOpenInventoryGui implements IMessage
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
 					player.openContainer.onContainerClosed(player);
-					if (message.openVanilla)
+					if (message.value)
 						player.openContainer = player.inventoryContainer;
 					else
 						player.openGui(ExtraBitManipulation.instance, GuiIDs.CHISELED_ARMOR_SLOTS.getID(), player.world, 0, 0, 0);

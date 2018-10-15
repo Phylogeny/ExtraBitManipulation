@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetTargetBitGridVertexes implements IMessage
+public class PacketSetTargetBitGridVertexes extends PacketBoolean
 {
-	private boolean targetBitGridVertexes;
-	
 	public PacketSetTargetBitGridVertexes() {}
 	
 	public PacketSetTargetBitGridVertexes(boolean targetBitGridVertexes)
 	{
-		this.targetBitGridVertexes = targetBitGridVertexes;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(targetBitGridVertexes);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		targetBitGridVertexes = buffer.readBoolean();
+		super(targetBitGridVertexes);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetTargetBitGridVertexes, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetTargetBitGridVertexes implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setBitGridTargeted(player, player.getHeldItemMainhand(), message.targetBitGridVertexes, null);
+					BitToolSettingsHelper.setBitGridTargeted(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

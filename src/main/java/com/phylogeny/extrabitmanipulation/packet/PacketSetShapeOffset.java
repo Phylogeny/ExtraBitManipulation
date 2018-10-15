@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetShapeOffset implements IMessage
+public class PacketSetShapeOffset extends PacketBoolean
 {
-	private boolean offsetShape;
-	
 	public PacketSetShapeOffset() {}
 	
 	public PacketSetShapeOffset(boolean offsetShape)
 	{
-		this.offsetShape = offsetShape;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(offsetShape);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		offsetShape = buffer.readBoolean();
+		super(offsetShape);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetShapeOffset, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetShapeOffset implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setShapeOffset(player, player.getHeldItemMainhand(), message.offsetShape, null);
+					BitToolSettingsHelper.setShapeOffset(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;

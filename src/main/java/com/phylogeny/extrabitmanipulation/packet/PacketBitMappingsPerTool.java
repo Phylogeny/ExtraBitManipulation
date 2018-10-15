@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,27 +12,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
 
-public class PacketBitMappingsPerTool implements IMessage
+public class PacketBitMappingsPerTool extends PacketBoolean
 {
-	protected boolean perTool;
-	
 	public PacketBitMappingsPerTool() {}
 	
 	public PacketBitMappingsPerTool(boolean perTool)
 	{
-		this.perTool = perTool;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(perTool);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		perTool = buffer.readBoolean();
+		super(perTool);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketBitMappingsPerTool, IMessage>
@@ -52,7 +37,7 @@ public class PacketBitMappingsPerTool implements IMessage
 					if (ItemStackHelper.isModelingToolStack(stack))
 					{
 						NBTTagCompound nbt = ItemStackHelper.getNBT(stack);
-						nbt.setBoolean(NBTKeys.BIT_MAPS_PER_TOOL, message.perTool);
+						nbt.setBoolean(NBTKeys.BIT_MAPS_PER_TOOL, message.value);
 						player.inventoryContainer.detectAndSendChanges();
 					}
 				}

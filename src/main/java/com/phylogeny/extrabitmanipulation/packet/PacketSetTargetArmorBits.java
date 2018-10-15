@@ -1,6 +1,5 @@
 package com.phylogeny.extrabitmanipulation.packet;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -10,27 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 
-public class PacketSetTargetArmorBits implements IMessage
+public class PacketSetTargetArmorBits extends PacketBoolean
 {
-	private boolean targetBits;
-	
 	public PacketSetTargetArmorBits() {}
 	
 	public PacketSetTargetArmorBits(boolean targetBits)
 	{
-		this.targetBits = targetBits;
-	}
-	
-	@Override
-	public void toBytes(ByteBuf buffer)
-	{
-		buffer.writeBoolean(targetBits);
-	}
-	
-	@Override
-	public void fromBytes(ByteBuf buffer)
-	{
-		targetBits = buffer.readBoolean();
+		super(targetBits);
 	}
 	
 	public static class Handler implements IMessageHandler<PacketSetTargetArmorBits, IMessage>
@@ -45,7 +30,7 @@ public class PacketSetTargetArmorBits implements IMessage
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
-					BitToolSettingsHelper.setArmorBitsTargeted(player, player.getHeldItemMainhand(), message.targetBits, null);
+					BitToolSettingsHelper.setArmorBitsTargeted(player, player.getHeldItemMainhand(), message.value, null);
 				}
 			});
 			return null;
