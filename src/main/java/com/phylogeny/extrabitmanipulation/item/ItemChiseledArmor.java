@@ -22,6 +22,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -608,41 +609,89 @@ public class ItemChiseledArmor extends ItemArmor
 		
 	}
 	
-	public static enum ArmorMovingPart
+	public static enum ModelMovingPart
 	{
-		HEAD(BodyPartTemplate.HEAD, 0, 1, "Head"),
-		TORSO(BodyPartTemplate.TORSO, 0, 2, "Torso"),
-		PELVIS(BodyPartTemplate.TORSO, 0, 1, "Pelvis"),
-		ARM_RIGHT(BodyPartTemplate.LIMB, 1, 1, "Right Arm"),
-		ARM_LEFT(BodyPartTemplate.LIMB, 2, 2, "Left Arm"),
-		LEG_RIGHT(BodyPartTemplate.LIMB, 1, 3, 1, "Right Leg"),
-		LEG_LEFT(BodyPartTemplate.LIMB, 2, 2, "Left Leg"),
-		FOOT_RIGHT(BodyPartTemplate.LIMB, 0, 1, "Right Foot"),
-		FOOT_LEFT(BodyPartTemplate.LIMB, 1, 2, "Left Foot");
+		HEAD(BodyPartTemplate.HEAD, 6, 12, "Head"),
+		BODY(BodyPartTemplate.TORSO, 1, 13, "Body"),
+		ARM_RIGHT(BodyPartTemplate.LIMB, 3, 17, "Right Arm"),
+		ARM_LEFT(BodyPartTemplate.LIMB, 2, 16, "Left Arm"),
+		LEG_RIGHT(BodyPartTemplate.LIMB, 5, 19, "Right Leg"),
+		LEG_LEFT(BodyPartTemplate.LIMB, 4, 18, "Left Leg");
 		
 		private BodyPartTemplate template;
-		private int partIndex, modelCount, opaqueIndex;
+		private int partIndexOverlay, partIndexNoppes;
 		private String name;
-		@SideOnly(Side.CLIENT)
-		private ModelResourceLocation[] iconModelLocationsDiamond, iconModelLocationsIron;
 		
-		private ArmorMovingPart(BodyPartTemplate template, int partIndex, int modelCount, String name)
-		{
-			this(template, partIndex, modelCount, 0, name);
-		}
-		
-		private ArmorMovingPart(BodyPartTemplate template, int partIndex, int modelCount, int opaqueIndex, String name)
+		private ModelMovingPart(BodyPartTemplate template, int partIndexOverlay, int partIndexNoppes, String name)
 		{
 			this.template = template;
-			this.partIndex = partIndex;
-			this.modelCount = modelCount;
-			this.opaqueIndex = opaqueIndex;
+			this.partIndexOverlay = partIndexOverlay;
+			this.partIndexNoppes = partIndexNoppes;
 			this.name = name;
 		}
 		
 		public BodyPartTemplate getBodyPartTemplate()
 		{
 			return template;
+		}
+		
+		public int getPartIndexNoppes()
+		{
+			return partIndexNoppes;
+		}
+		
+		public String getName()
+		{
+			return name;
+		}
+		
+		public String getOverlayName()
+		{
+			return EnumPlayerModelParts.values()[partIndexOverlay].getName().getFormattedText();
+		}
+		
+	}
+	
+	public static enum ArmorMovingPart
+	{
+		HEAD(ModelMovingPart.HEAD, 0, 1, "Head"),
+		TORSO(ModelMovingPart.BODY, 0, 2, "Torso"),
+		PELVIS(ModelMovingPart.BODY, 0, 1, "Pelvis"),
+		ARM_RIGHT(ModelMovingPart.ARM_RIGHT, 1, 1, "Right Arm"),
+		ARM_LEFT(ModelMovingPart.ARM_LEFT, 2, 2, "Left Arm"),
+		LEG_RIGHT(ModelMovingPart.LEG_RIGHT, 1, 3, 1, "Right Leg"),
+		LEG_LEFT(ModelMovingPart.LEG_LEFT, 2, 2, "Left Leg"),
+		FOOT_RIGHT(ModelMovingPart.LEG_RIGHT, 0, 1, "Right Foot"),
+		FOOT_LEFT(ModelMovingPart.LEG_LEFT, 1, 2, "Left Foot");
+		
+		private ModelMovingPart modelPart;
+		private int partIndex, modelCount, opaqueIndex;
+		private String name;
+		@SideOnly(Side.CLIENT)
+		private ModelResourceLocation[] iconModelLocationsDiamond, iconModelLocationsIron;
+		
+		private ArmorMovingPart(ModelMovingPart modelPart, int partIndex, int modelCount, String name)
+		{
+			this(modelPart, partIndex, modelCount, 0, name);
+		}
+		
+		private ArmorMovingPart(ModelMovingPart modelPart, int partIndex, int modelCount, int opaqueIndex, String name)
+		{
+			this.modelPart = modelPart;
+			this.partIndex = partIndex;
+			this.modelCount = modelCount;
+			this.opaqueIndex = opaqueIndex;
+			this.name = name;
+		}
+		
+		public ModelMovingPart getModelMovingPart()
+		{
+			return modelPart;
+		}
+		
+		public BodyPartTemplate getBodyPartTemplate()
+		{
+			return modelPart.getBodyPartTemplate();
 		}
 		
 		public int getPartIndex()

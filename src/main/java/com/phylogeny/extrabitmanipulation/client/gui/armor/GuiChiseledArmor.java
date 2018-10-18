@@ -35,6 +35,7 @@ import com.phylogeny.extrabitmanipulation.armor.ArmorItem;
 import com.phylogeny.extrabitmanipulation.armor.DataChiseledArmorPiece;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation;
 import com.phylogeny.extrabitmanipulation.armor.GlOperation.GlOperationType;
+import com.phylogeny.extrabitmanipulation.armor.ModelPartConcealer;
 import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.client.GuiHelper;
@@ -42,16 +43,19 @@ import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonHelp;
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonSelect;
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonSelectTextured;
 import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonTab;
+import com.phylogeny.extrabitmanipulation.client.gui.button.GuiButtonTextured;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.init.ItemsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorMovingPart;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ModelMovingPart;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeArmorItemList.ListOperation;
 import com.phylogeny.extrabitmanipulation.packet.PacketChangeGlOperationList;
 import com.phylogeny.extrabitmanipulation.packet.PacketOpenChiseledArmorGui;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetModelPartConcealed;
 import com.phylogeny.extrabitmanipulation.proxy.ProxyCommon;
 import com.phylogeny.extrabitmanipulation.reference.Configs;
 import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
@@ -85,6 +89,7 @@ public class GuiChiseledArmor extends GuiContainer
 	private GuiListGlOperation[] globalPostGlLists = new GuiListGlOperation[4];
 	private DataChiseledArmorPiece[] armorPieces = new DataChiseledArmorPiece[4];
 	private GuiButtonTab[][] tabButtons = new GuiButtonTab[4][4];
+	private GuiButtonTextured[][][] concealmentCheckBoxes = new GuiButtonTextured[4][3][2];
 	private GuiButtonTab[] tabButtonsArmorSet = new GuiButtonTab[5];
 	private GuiListGlOperation emptyGlList;
 	private GuiButtonSelectTextured buttonFullIlluminationOff, buttonFullIlluminationOn, buttonPlayerFollowCursor, buttonPlayerRotate, buttonScalePixel,
@@ -188,7 +193,7 @@ public class GuiChiseledArmor extends GuiContainer
 	public void initGui()
 	{
 		super.initGui();
-		int left = guiLeft + 213;
+		int left = guiLeft + 223;
 		int top = guiTop + 130;
 		boxPlayer = new AxisAlignedBB(left, top, -1, left + 85, top + 92, 1);
 		left = guiLeft + 91;
@@ -228,7 +233,7 @@ public class GuiChiseledArmor extends GuiContainer
 		buttonGlItems.selected = true;
 		buttonGlPre = createButtonGlobalGl(100, 239, 11, "Before");
 		buttonGlPost = createButtonGlobalGl(100, 278, 11, "After");
-		int x = 301;
+		int x = 311;
 		String prefix = "The player model will ";
 		buttonFullIlluminationOff = createButtonToggled(x, 140, TEXTURE_ILLUMINATION_OFF, "Standard illumination",
 				prefix + "render with its faces darkened based on rotation, as it does in-world.");
@@ -243,7 +248,6 @@ public class GuiChiseledArmor extends GuiContainer
 				prefix + "bend and twist to look at the cursor. In this mode, the model cannot be rotated, but" + suffix1 + suffix2);
 		buttonPlayerRotate = createButtonToggled(x, 200, TEXTURE_PLAYER_ROTATE, "Left-click & drag to rotate", prefix + "only look forward. " +
 				"In this mode, the model" + suffix1 + "\n" + getPointMain("3") + " Rotated by left-clicking and dragging." + suffix2);
-		x = 311;
 		prefix = "The x/y/z data of translation operations will display in";
 		buttonScalePixel = createButtonToggled(x, 67, TEXTURE_SCALE_PIXEL, "Translation data in pixels",
 				prefix + " 1/16 meters, i.e. pixels.\n\n" + getPointExample() + " 2 = 2/16 of a meter");
@@ -256,16 +260,16 @@ public class GuiChiseledArmor extends GuiContainer
 				"armor piece is not 1:1, a GL scale operation will be added to its GL operations list automatically.");
 		buttonItemDelete = createButtonListInteraction(60, y, TEXTURE_DELETE, "Remove item",
 				"Removes the selected slot from" + text);
-		buttonGlAdd = createButtonListInteraction(97, y, TEXTURE_ADD, "",
+		buttonGlAdd = createButtonListInteraction(107, y, TEXTURE_ADD, "",
 				"Opens a selection screen, where the chosen GL operation is added to the list above, under the selected operation.");
-		buttonGlDelete = createButtonListInteraction(111, y, TEXTURE_DELETE, "",
+		buttonGlDelete = createButtonListInteraction(121, y, TEXTURE_DELETE, "",
 				"Removes the selected GL operation from the list above.");
 		text = "Moves the selected GL operation @ in the list above. This is important, as changing the order of operations can have a significant effect." +
 				"\n\n" + getPointExample() + " translating in the x or z axis can result in a translation is any absolute " +
 				"direction, if performed after rotating in the y axis.";
-		buttonGlMoveUp = createButtonListInteraction(134, y, TEXTURE_MOVE_UP, "Move GL operation up",
+		buttonGlMoveUp = createButtonListInteraction(144, y, TEXTURE_MOVE_UP, "Move GL operation up",
 				text.replace("@", "up"));
-		buttonGlMoveDown = createButtonListInteraction(148, y, TEXTURE_MOVE_DOWN, "Move GL operation down",
+		buttonGlMoveDown = createButtonListInteraction(158, y, TEXTURE_MOVE_DOWN, "Move GL operation down",
 				text.replace("@", "down"));
 		buttonGlMoveUp.setRightOffsetX(0.5F, false);
 		buttonGlMoveDown.setRightOffsetX(0.5F, true);
@@ -274,7 +278,7 @@ public class GuiChiseledArmor extends GuiContainer
 		buttonAddTranslation = createButtonAddGlOperation(170, y, TEXTURE_TRANSLATION, 1);
 		buttonAddScale = createButtonAddGlOperation(231, y, TEXTURE_SCALE, 2);
 		buttonHelp = new GuiButtonHelp(100, buttonList, guiLeft + xSize - 41, guiTop + 5, "Show more explanatory hover text", "Exit help mode");
-		buttonScale = new GuiButtonSelect(100, guiLeft + 178, guiTop + 127, 17, 12, "", "Armor piece scale", -5111553, -5111553);
+		buttonScale = new GuiButtonSelect(100, guiLeft + 188, guiTop + 127, 17, 12, "", "Armor piece scale", -5111553, -5111553);
 		buttonScale.setTextOffsetX(1);
 		buttonScale.setHoverHelpText("This is the scale of the selected armor piece. Just as all newly imported blocks are scaled by this amount " +
 				"when collecting them in-world, all newly added slots to any of the selected armor pieces' moving parts are likewise scaled by this amount.");
@@ -336,6 +340,29 @@ public class GuiChiseledArmor extends GuiContainer
 				
 				tabButtons[i][j + 1] = tabSub;
 				buttonList.add(tabSub);
+				for (int k = 0; k < 2; k++)
+				{
+					ModelMovingPart part = movingParts[j].getModelMovingPart();
+					String name, textOverlay;
+					int offsetX;
+					if (k == 0)
+					{
+						name = part.getName();
+						textOverlay = "";
+						offsetX = 0;
+					}
+					else
+					{
+						name = part.getOverlayName();
+						textOverlay = " Overlay";
+						offsetX = 14;
+					}
+					GuiButtonTextured checkBox = GuiButtonTextured.createCheckBox(1200 + j + concealmentCheckBoxes[0].length * k, guiLeft + 29 + offsetX, guiTop + 153 + j * 25, 12, 12,
+							"Hide player model " + name);
+					checkBox.setHoverHelpText("Model Moving Part" + textOverlay + ": " + name +
+							"\n\nPrevents the player model's corresponding moving part" + textOverlay.toLowerCase() + " from rendering when the armor piece is worn in a vanity slot.");
+					buttonList.add(concealmentCheckBoxes[i][j][k] = checkBox);
+				}
 			}
 			globalPreGlLists[i] = createGuiListGlOperation(armorPiece, GlOperationListType.GLOBAL_PRE);
 			globalPostGlLists[i] = createGuiListGlOperation(armorPiece, GlOperationListType.GLOBAL_POST);
@@ -709,6 +736,22 @@ public class GuiChiseledArmor extends GuiContainer
 					tab.renderIconStack();
 			}
 		}
+		if (buttonHelp.selected)
+		{
+			for (GuiButtonTextured[][] checkBoxes : concealmentCheckBoxes)
+			{
+				for (int i = 0; i < checkBoxes.length; i++)
+				{
+					GuiButtonTextured[] checkBoxs2 = checkBoxes[i];
+					for (int j = 0; j < checkBoxs2.length; j++)
+					{
+						GuiButtonTextured checkBox = checkBoxs2[j];
+						if (checkBox != null && checkBox.visible)
+							drawRect(checkBox.x - (j == 1 || i == selectedSubTabIndex - 1 ? 4 : 2), checkBox.y - 1, checkBox.x + checkBox.width + (j == 0 ? -2 : 1), checkBox.y + checkBox.height + 3, HELP_TEXT_BACKGROUNG_COLOR);
+					}
+				}
+			}
+		}
 		GlStateManager.popMatrix();
 		glScissorBox(boxArmorItem);
 		int x, y;
@@ -744,7 +787,7 @@ public class GuiChiseledArmor extends GuiContainer
 		drawModalRectWithCustomSizedTexture(i + 24, j, 0, 0, xSize, ySize, 512, 512);
 		GlStateManager.pushMatrix();
 		glScissorBox(boxPlayer);
-		int x = i + 256;
+		int x = i + 266;
 		int y = j + 216;
 		GlStateManager.translate(x, y, 0);
 		GlStateManager.scale(playerScale, playerScale, playerScale);
@@ -1033,6 +1076,15 @@ public class GuiChiseledArmor extends GuiContainer
 			else
 				button.enabled = false;
 		}
+		else if (button.id >= 1200 && button.id < 1200 + concealmentCheckBoxes[0].length * 2)
+		{
+			GuiButtonTextured checkBox = ((GuiButtonTextured) button);
+			int partIndex = button.id - 1200;
+			int len = concealmentCheckBoxes[0].length;
+			ExtraBitManipulation.packetNetwork.sendToServer(new PacketSetModelPartConcealed(getArmorSlot(selectedTabIndex),
+					indexArmorSet, getModelMovingPart(partIndex % len), partIndex / len == 1, checkBox.selected));
+			checkBox.selected ^= true;
+		}
 		else
 		{
 			super.actionPerformed(button);
@@ -1154,10 +1206,11 @@ public class GuiChiseledArmor extends GuiContainer
 		for (int i = 0; i < tabButtons.length; i++)
 		{
 			tabButtons[i][0].selected = i == selectedTabIndex;
+			NBTTagCompound nbt = ItemStackHelper.getNBTOrNew(getArmorStack(i));
 			if (i == selectedTabIndex)
 			{
-				selectedSubTabIndex = BitToolSettingsHelper.getArmorMovingPart(ItemStackHelper.getNBTOrNew(getArmorStack(i)),
-						(ItemChiseledArmor) getArmorStack(i).getItem()).getPartIndex() + 1;
+				int subTab = BitToolSettingsHelper.getArmorMovingPart(nbt, (ItemChiseledArmor) getArmorStack(i).getItem()).getPartIndex();
+				selectedSubTabIndex = subTab + 1;
 			}
 			for (int j = 1; j < tabButtons[i].length; j++)
 			{
@@ -1166,6 +1219,26 @@ public class GuiChiseledArmor extends GuiContainer
 				{
 					tabButtons[i][j].selected = j == selectedSubTabIndex;
 					tabButtons[i][j].visible = i == selectedTabIndex;
+				}
+			}
+			for (int j = 0; j < concealmentCheckBoxes[i].length; j++)
+			{
+				GuiButtonTextured[] checkBoxes = concealmentCheckBoxes[i][j];
+				if (checkBoxes == null)
+					continue;
+				
+				for (int k = 0; k < checkBoxes.length; k++)
+				{
+					GuiButtonTextured checkBox = checkBoxes[k];
+					if (checkBox == null)
+						continue;
+					
+					checkBox.visible = i == selectedTabIndex;
+					if (i == selectedTabIndex)
+					{
+						ModelPartConcealer modelPartConcealer = ModelPartConcealer.loadFromNBT(nbt);
+						checkBox.selected = modelPartConcealer != null && modelPartConcealer.contains(getModelMovingPart(j), k == 1);
+					}
 				}
 			}
 		}
@@ -1189,6 +1262,11 @@ public class GuiChiseledArmor extends GuiContainer
 			text += " at " + buttonScale.displayString + " scale";
 		
 		buttonItemAdd.setHoverText(text);
+	}
+
+	private ModelMovingPart getModelMovingPart(int subTabIndex)
+	{
+		return getArmorItem(ArmorType.values()[selectedTabIndex]).MOVING_PARTS[subTabIndex].getModelMovingPart();
 	}
 	
 	private static enum GlOperationListType

@@ -91,7 +91,7 @@ public class ProxyCommon implements IGuiHandler
 	
 	public static ContainerPlayerInventory createArmorContainer(EntityPlayer player)
 	{
-		return new ContainerPlayerInventory(player, 38, 148);
+		return new ContainerPlayerInventory(player, 57, 148);
 	}
 	
 	public static ContainerPlayerArmorSlots createArmorSlotsContainer(EntityPlayer player)

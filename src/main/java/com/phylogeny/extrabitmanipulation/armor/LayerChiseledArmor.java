@@ -7,9 +7,21 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
+import com.phylogeny.extrabitmanipulation.client.ClientHelper;
+import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
+import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
+import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
+import com.phylogeny.extrabitmanipulation.reference.Configs;
+import com.phylogeny.extrabitmanipulation.reference.CustomNPCsReferences;
+import com.phylogeny.extrabitmanipulation.reference.MorePlayerModelsReference;
+import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
-//import net.minecraft.client.model.ModelEvoker;
 import net.minecraft.client.model.ModelIllager;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelRenderer;
@@ -29,20 +41,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 
-import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
-import com.phylogeny.extrabitmanipulation.client.ClientHelper;
-import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.init.ReflectionExtraBitManipulation;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
-import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
-import com.phylogeny.extrabitmanipulation.reference.Configs;
-import com.phylogeny.extrabitmanipulation.reference.NBTKeys;
-
 public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 {
 	private final Map<NBTTagCompound, List<Integer>> movingPartsDisplayListsMap = new HashMap<NBTTagCompound, List<Integer>>();
-	private ModelRenderer head, body, villagerArms, rightLeg, leftLeg;
+	private ModelRenderer head, body, villagerArms, rightLeg, leftLeg, rightArm, leftArm;
 	private ModelBase model;
 	private boolean smallArms, isIllager, isVex;
 	private RenderLivingBase<? extends EntityLivingBase> livingEntityRenderer;
@@ -50,13 +52,13 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 	public LayerChiseledArmor(RenderLivingBase<? extends EntityLivingBase> livingEntityRenderer)
 	{
 		this.livingEntityRenderer = livingEntityRenderer;
-		updateModelAndRenderers();
+		updateModelAndRenderers(false);
 	}
 	
-	public void updateModelAndRenderers()
+	public void updateModelAndRenderers(boolean force)
 	{
 		ModelBase modelNew = livingEntityRenderer.getMainModel();
-		if (modelNew == model)
+		if (!force && modelNew == model)
 			return;
 		
 		model = modelNew;
@@ -71,12 +73,14 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		}
 		else if (model instanceof ModelIllager)
 		{
-			ModelIllager modelVillager = ((ModelIllager) model);
-			head = modelVillager.head;
-			body = modelVillager.body;
-			rightLeg = modelVillager.leg0;
-			leftLeg = modelVillager.leg1;
-			villagerArms = modelVillager.arms;
+			ModelIllager modelIllager = ((ModelIllager) model);
+			head = modelIllager.head;
+			body = modelIllager.body;
+			rightLeg = modelIllager.leg0;
+			leftLeg = modelIllager.leg1;
+			villagerArms = modelIllager.arms;
+			rightArm = modelIllager.rightArm;
+			leftArm = modelIllager.leftArm;
 			isIllager = true;
 		}
 		else
@@ -86,6 +90,8 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 			body = modelBiped.bipedBody;
 			rightLeg = modelBiped.bipedRightLeg;
 			leftLeg = modelBiped.bipedLeftLeg;
+			rightArm = modelBiped.bipedRightArm;
+			leftArm = modelBiped.bipedLeftArm;
 			villagerArms = null;
 			if (model instanceof ModelPlayer)
 				smallArms = ReflectionExtraBitManipulation.areArmsSmall((ModelPlayer) model);
@@ -116,15 +122,27 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		}
 	}
 	
+	public static boolean isPlayerModelAlt(EntityLivingBase entity, float partialTicks)
+	{
+		if (entity instanceof EntityPlayer || (!MorePlayerModelsReference.isLoaded && !CustomNPCsReferences.isLoaded))
+			return false;
+		
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		return entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks == player.prevPosX + (player.posX - player.prevPosX) * partialTicks
+				&& entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks == player.prevPosY + (player.posY - player.prevPosY) * partialTicks
+				&& entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks == player.prevPosZ + (player.posZ - player.prevPosZ) * partialTicks;
+	}
+	
 	@Override
 	public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
 	{
-		updateModelAndRenderers();
+		updateModelAndRenderers(false);
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		ClientHelper.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		IChiseledArmorSlotsHandler cap = entity instanceof EntityPlayer ? ChiseledArmorSlotsHandler.getCapability((EntityPlayer) entity) : null;
+		EntityLivingBase entityCap = isPlayerModelAlt(entity, partialTicks) ? Minecraft.getMinecraft().player : entity;
+		IChiseledArmorSlotsHandler cap = entityCap instanceof EntityPlayer ? ChiseledArmorSlotsHandler.getCapability((EntityPlayer) entityCap) : null;
 		List<Integer> displayListsHelmet = getStackDisplayLists(entity, scale, ArmorType.HELMET);
 		List<Integer> displayListsSlotHelmet = getSlotStackDisplayLists(entity, scale, cap, ArmorType.HELMET);
 		if (displayListsHelmet != null || displayListsSlotHelmet != null)
@@ -340,31 +358,17 @@ public class LayerChiseledArmor implements LayerRenderer<EntityLivingBase>
 		}
 		else
 		{
+			ModelRenderer modelArm = handSide == EnumHandSide.RIGHT ? rightArm : leftArm;
 			if (smallArms)
 			{
-				ModelBiped modelBiped = (ModelBiped) model;
-				float f = 0.5F;
-				ModelRenderer modelArm;
-				if (handSide == EnumHandSide.RIGHT)
-				{
-					modelArm = modelBiped.bipedRightArm;
-					f *= -1;
-				}
-				else
-				{
-					modelArm = modelBiped.bipedLeftArm;
-				}
+				float f = handSide == EnumHandSide.RIGHT ? -0.5F : 0.5F;
 				modelArm.rotationPointX += f;
-				modelBiped.postRenderArm(scale, handSide);
+				((ModelBiped) model).postRenderArm(scale, handSide);
 				modelArm.rotationPointX -= f;
 			}
 			else
-			{
-				if (isIllager)
-					((ModelIllager) model).getArm(handSide).postRender(scale);
-				else
-					((ModelBiped) model).postRenderArm(scale, handSide);
-			}
+				modelArm.postRender(scale);
+			
 			armOffset = 1;
 		}
 		renderArmorPiece(displayList, scale, (handSide == EnumHandSide.LEFT ? -armOffset : armOffset) * scale, 6);

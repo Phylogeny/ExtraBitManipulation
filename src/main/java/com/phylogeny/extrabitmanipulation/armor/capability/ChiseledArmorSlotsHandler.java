@@ -7,15 +7,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
+import com.phylogeny.extrabitmanipulation.armor.ModelPartConcealer;
 import com.phylogeny.extrabitmanipulation.client.ClientHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor;
 import com.phylogeny.extrabitmanipulation.item.ItemChiseledArmor.ArmorType;
 import com.phylogeny.extrabitmanipulation.packet.PacketSyncArmorSlot;
 
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
@@ -30,6 +33,7 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	public static final int COUNT_SLOTS_TOTAL = COUNT_TYPES * COUNT_SETS;
 	private boolean[] syncedSlots, hasArmorSet, hasArmorType;
 	private boolean hasArmor;
+	private ModelPartConcealer modelPartConcealer;
 	
 	@CapabilityInject(IChiseledArmorSlotsHandler.class)
 	public static final Capability<IChiseledArmorSlotsHandler> ARMOR_SLOTS_CAP = null;
@@ -94,7 +98,14 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 	}
 	
 	@Override
-	protected void onContentsChanged(int slot)
+	@Nullable
+	public ModelPartConcealer getAndApplyModelPartConcealer(ModelBiped model)
+	{
+		return modelPartConcealer == null ? null : modelPartConcealer.copy().applyToModel(model);
+	}
+	
+	@Override
+	public void onContentsChanged(int slot)
 	{
 		markSlotDirty(slot);
 		int index = slot / COUNT_TYPES;
@@ -119,6 +130,17 @@ public class ChiseledArmorSlotsHandler extends ItemStackHandler implements ICapa
 		}
 		index = slot % COUNT_TYPES;
 		hasArmorType[index] = !stacks.get(index).isEmpty();
+		ModelPartConcealer modelPartConcealer = new ModelPartConcealer();
+		for (int i = 0; i < COUNT_SLOTS_TOTAL && !modelPartConcealer.isFull(); i++)
+		{
+			ItemStack stack = stacks.get(i);
+			NBTTagCompound nbt = stack.getTagCompound();
+			if (nbt == null)
+				continue;
+			
+			modelPartConcealer.merge(ModelPartConcealer.loadFromNBT(nbt));
+		}
+		this.modelPartConcealer = !modelPartConcealer.isEmpty() ? modelPartConcealer : null;
 	}
 	
 	public static int findNextArmorSetIndex(int startIndex)

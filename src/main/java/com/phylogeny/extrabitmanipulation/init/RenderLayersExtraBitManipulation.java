@@ -37,6 +37,8 @@ import com.phylogeny.extrabitmanipulation.reference.CustomNPCsReferences;
 public class RenderLayersExtraBitManipulation
 {
 	private static List<LayerChiseledArmor> armorLayers = new ArrayList<LayerChiseledArmor>();
+	private static List<LayerChiseledArmor> armorLayersMob = new ArrayList<LayerChiseledArmor>();
+	private static List<LayerChiseledArmor> armorLayersPlayer = new ArrayList<LayerChiseledArmor>();
 	private static boolean layersInitializedPlayerCNPC;
 	
 	public static void initLayers()
@@ -55,12 +57,14 @@ public class RenderLayersExtraBitManipulation
 		addLayerChiseledArmorToEntityRender(EntityVindicator.class);
 		addLayerChiseledArmorToEntityRender(EntityEvoker.class);
 		addLayerChiseledArmorToEntityRender(EntityIllusionIllager.class);
+		armorLayers.addAll(armorLayersMob);
 		for (RenderPlayer renderPlayer : ClientHelper.getRenderManager().getSkinMap().values())
 		{
 			LayerChiseledArmor layer = new LayerChiseledArmor(renderPlayer);
 			renderPlayer.addLayer(layer);
-			armorLayers.add(layer);
+			armorLayersPlayer.add(layer);
 		}
+		armorLayers.addAll(armorLayersPlayer);
 		if (CustomNPCsReferences.isLoaded)
 			MinecraftForge.EVENT_BUS.register(new RenderLayersExtraBitManipulation());
 	}
@@ -81,7 +85,7 @@ public class RenderLayersExtraBitManipulation
 		Render<T> renderer = ClientHelper.getRenderManager().getEntityClassRenderObject(entityClass);
 		LayerChiseledArmor layer = new LayerChiseledArmor((RenderLivingBase<T>) renderer);
 		((RenderLivingBase<T>) renderer).addLayer(layer);
-		armorLayers.add(layer);
+		armorLayersMob.add(layer);
 	}
 	
 	public static void clearRenderMaps()
@@ -96,6 +100,12 @@ public class RenderLayersExtraBitManipulation
 		ChiseledArmorStackHandeler.removeFromModelMap(nbt);
 		for (LayerChiseledArmor layer : armorLayers)
 			layer.removeFromDisplayListsMap(nbt);
+	}
+	
+	public static void forceUpdateModels(boolean isPlayerModel)
+	{
+		for (LayerChiseledArmor layer : isPlayerModel ? armorLayersPlayer : armorLayersMob)
+			layer.updateModelAndRenderers(true);
 	}
 	
 }

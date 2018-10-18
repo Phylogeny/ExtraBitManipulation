@@ -55,7 +55,6 @@ import com.phylogeny.extrabitmanipulation.helper.BitIOHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitInventoryHelper;
 import com.phylogeny.extrabitmanipulation.helper.BitToolSettingsHelper;
 import com.phylogeny.extrabitmanipulation.helper.ItemStackHelper;
-import com.phylogeny.extrabitmanipulation.init.SoundsExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool;
 import com.phylogeny.extrabitmanipulation.item.ItemModelingTool.BitCount;
 import com.phylogeny.extrabitmanipulation.packet.PacketAddBitMapping;
@@ -74,8 +73,6 @@ import com.phylogeny.extrabitmanipulation.reference.Reference;
 public class GuiBitMapping extends GuiContainer
 {
 	public static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/guis/modeling_tool.png");
-	public static final ResourceLocation BOX_CHECKED = new ResourceLocation(Reference.MOD_ID, "textures/guis/box_checked.png");
-	public static final ResourceLocation BOX_UNCHECKED = new ResourceLocation(Reference.MOD_ID, "textures/guis/box_unchecked.png");
 	public static final ResourceLocation SETTINGS_MAIN = new ResourceLocation(Reference.MOD_ID, "textures/guis/settings_main.png");
 	public static final ResourceLocation SETTINGS_BACK = new ResourceLocation(Reference.MOD_ID, "textures/guis/settings_back.png");
 	private IChiselAndBitsAPI api;
@@ -383,8 +380,7 @@ public class GuiBitMapping extends GuiContainer
 		{
 			buttonSettings = new GuiButtonTextured(7, guiLeft + 237, guiTop + 6, 12, 12, "Bit Mapping Settings", SETTINGS_BACK, SETTINGS_MAIN, null, null);
 			buttonSettings.setHoverTextSelected("Back To Preview");
-			buttonBitMapPerTool = new GuiButtonTextured(8, guiLeft + 143, guiTop + 26, 12, 12, "Save/access mappings per tool or per client config",
-					BOX_CHECKED, BOX_UNCHECKED, SoundsExtraBitManipulation.boxCheck, SoundsExtraBitManipulation.boxUncheck);
+			buttonBitMapPerTool = GuiButtonTextured.createCheckBox(8, guiLeft + 143, guiTop + 26, 12, 12, "Save/access mappings per tool or per client config");
 			if (showSettings)
 				buttonSettings.selected = true;
 			

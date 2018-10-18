@@ -15,6 +15,8 @@ import org.lwjgl.util.glu.Sphere;
 import com.google.common.base.Stopwatch;
 import com.phylogeny.extrabitmanipulation.ExtraBitManipulation;
 import com.phylogeny.extrabitmanipulation.api.ChiselsAndBitsAPIAccess;
+import com.phylogeny.extrabitmanipulation.armor.LayerChiseledArmor;
+import com.phylogeny.extrabitmanipulation.armor.ModelPartConcealer;
 import com.phylogeny.extrabitmanipulation.armor.capability.ChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.armor.capability.IChiseledArmorSlotsHandler;
 import com.phylogeny.extrabitmanipulation.client.gui.GuiBitToolSettingsMenu;
@@ -55,12 +57,15 @@ import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import mod.chiselsandbits.api.ItemType;
 import mod.chiselsandbits.api.ModKeyBinding;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -79,7 +84,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -109,6 +114,7 @@ public class ClientEventHandler
 	private boolean keyThrowBitIsDown;
 	private static double BOUNDING_BOX_OFFSET = 0.0020000000949949026D;
 	private static Map<UUID, ItemStack[]> invisibleArmorMap = new HashMap<>();
+	private static Map<UUID, ModelPartConcealer> concealedModelPartsMap = new HashMap<>();
 	
 	@SubscribeEvent
 	public void registerTextures(@SuppressWarnings("unused") TextureStitchEvent.Pre event)
@@ -141,11 +147,16 @@ public class ClientEventHandler
 	}
 	
 	@SubscribeEvent
-	public void preventArmorRendering(RenderPlayerEvent.Pre event)
+	public void preventArmorAndPlayerModelPartRendering(RenderLivingEvent.Pre event)
 	{
-		EntityPlayer player = event.getEntityPlayer();
+		boolean isPlayerModelAlt = LayerChiseledArmor.isPlayerModelAlt(event.getEntity(), event.getPartialRenderTick());
+		Entity entity = isPlayerModelAlt ? Minecraft.getMinecraft().player : event.getEntity();
+		if (!(entity instanceof EntityPlayer))
+			return;
+		
+		EntityPlayer player = (EntityPlayer) entity;
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
-		if (cap == null)
+		if (cap == null || !cap.hasArmor())
 			return;
 		
 		ItemStack[] armor = new ItemStack[4];
@@ -153,6 +164,9 @@ public class ClientEventHandler
 		boolean found = false;
 		for (int i = 0; i < 4; i++)
 		{
+			if (!cap.hasArmorSet(i))
+				continue;
+			
 			ItemStack stack = armorInventory.get(i);
 			ItemStack stackVanity = cap.getStackInSlot(3 - i);
 			if (!stackVanity.isEmpty() && !stack.isEmpty())
@@ -164,26 +178,52 @@ public class ClientEventHandler
 		}
 		if (found)
 			invisibleArmorMap.put(player.getUniqueID(), armor);
+		
+		ModelBase model = event.getRenderer().getMainModel();
+		if (!(model instanceof ModelBiped))
+			return;
+		
+		ModelPartConcealer modelPartConcealer = cap.getAndApplyModelPartConcealer((ModelBiped) model);
+		if (modelPartConcealer != null && !modelPartConcealer.isEmpty())
+		{
+			concealedModelPartsMap.put(player.getUniqueID(), modelPartConcealer);
+			RenderLayersExtraBitManipulation.forceUpdateModels(!isPlayerModelAlt);
+		}
 	}
 	
 	@SubscribeEvent
-	public void preventArmorRendering(RenderPlayerEvent.Post event)
+	public void preventArmorAndPlayerModelPartRendering(RenderLivingEvent.Post event)
 	{
-		EntityPlayer player = event.getEntityPlayer();
+		boolean isPlayerModelAlt = LayerChiseledArmor.isPlayerModelAlt(event.getEntity(), event.getPartialRenderTick());
+		Entity entity = isPlayerModelAlt ? Minecraft.getMinecraft().player : event.getEntity();
+		if (!(entity instanceof EntityPlayer))
+			return;
+		
+		EntityPlayer player = (EntityPlayer) entity;
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
 		if (cap == null)
 			return;
 		
 		ItemStack[] armor = invisibleArmorMap.get(player.getUniqueID());
-		if (armor == null)
+		if (armor != null)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (armor[i] != null)
+					player.inventory.armorInventory.set(i, armor[i]);
+			}
+			invisibleArmorMap.remove(player.getUniqueID());
+		}
+		ModelPartConcealer modelPartConcealer = concealedModelPartsMap.get(player.getUniqueID());
+		if (modelPartConcealer == null)
 			return;
 		
-		for (int i = 0; i < 4; i++)
-		{
-			if (armor[i] != null)
-				player.inventory.armorInventory.set(i, armor[i]);
-		}
-		invisibleArmorMap.remove(player.getUniqueID());
+		ModelBase model = event.getRenderer().getMainModel();
+		if (model instanceof ModelBiped)
+			modelPartConcealer.restoreModelPartVisiblity((ModelBiped) model);
+		
+		concealedModelPartsMap.remove(player.getUniqueID());
+		RenderLayersExtraBitManipulation.forceUpdateModels(!isPlayerModelAlt);
 	}
 	
 	@SubscribeEvent

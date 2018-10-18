@@ -30,6 +30,7 @@ import com.phylogeny.extrabitmanipulation.packet.PacketSetEndsOpen;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetHollowShape;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelAreaMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelGuiOpen;
+import com.phylogeny.extrabitmanipulation.packet.PacketSetModelPartConcealed;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetModelSnapMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSculptMode;
 import com.phylogeny.extrabitmanipulation.packet.PacketSetSemiDiameter;
@@ -95,6 +96,7 @@ public class PacketRegistration
 		registerPacket(PacketChangeArmorItemList.Handler.class, PacketChangeArmorItemList.class, Side.BOTH);
 		registerPacket(PacketSyncArmorSlot.Handler.class, PacketSyncArmorSlot.class, Side.CLIENT);
 		registerPacket(PacketOpenInventoryGui.Handler.class, PacketOpenInventoryGui.class, Side.SERVER);
+		registerPacket(PacketSetModelPartConcealed.Handler.class, PacketSetModelPartConcealed.class, Side.SERVER);
 	}
 	
 	private static void registerPacket(Class handler, Class packet, Side side)

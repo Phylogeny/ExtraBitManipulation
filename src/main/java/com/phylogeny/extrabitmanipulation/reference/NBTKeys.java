@@ -38,6 +38,8 @@ public class NBTKeys
 	public static final String ARMOR_NOT_EMPTY = "notEmpty";
 	public static final String ARMOR_DATA = "data";
 	public static final String ARMOR_PART_DATA = "partData";
+	public static final String ARMOR_CONCEALED_MODEL_PARTS = "concealedParts";
+	public static final String ARMOR_CONCEALED_MODEL_PART_OVERLAYS = "concealedOverlays";
 	public static final String ARMOR_ITEM = "armorItem";
 	public static final String ARMOR_GL_OPERATIONS = "glOperations";
 	public static final String ARMOR_GL_OPERATIONS_PRE = "glOperationsPre";
