@@ -152,7 +152,7 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public String getText()
 		{
-			return keyBinding.getKeyCode() == Keyboard.KEY_NONE ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
+			return keyBinding == null || keyBinding.getKeyCode() == Keyboard.KEY_NONE ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
 		}
 	};
 	
