@@ -91,6 +91,7 @@ public class Configs
 		
 	//THROWN BITS
 		public static BitBagBitSelectionMode bitBagBitSelectionMode;
+		public static boolean thrownBitsEnabled;
 		public static boolean disableIgniteEntities;
 		public static boolean disableIgniteBlocks;
 		public static boolean disableExtinguishEntities;

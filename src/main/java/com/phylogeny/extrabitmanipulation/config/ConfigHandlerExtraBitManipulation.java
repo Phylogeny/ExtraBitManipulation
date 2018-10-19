@@ -612,6 +612,9 @@ public class ConfigHandlerExtraBitManipulation
 			Configs.thrownBitInaccuracy = getThrownBitInaccuracy(1.0F, false);
 			Configs.thrownBitInaccuracyBitBag = getThrownBitInaccuracy(10.0F, true);
 			
+			Configs.thrownBitsEnabled = configFileServer.getBoolean("Enabled", THROWN_BIT_PROPERTIES, true,
+					"Enables the ability to throw bits by pressing its corresponding keybind. (default = enabled)");
+			
 			Configs.bitBagBitSelectionMode = getEnumValueFromStringArray("Bit Bag Thrown Bit Selection", BitBagBitSelectionMode.class,
 					THROWN_BIT_PROPERTIES, configFileServer, 0,
 					"Specifies how bits are selected from a Bit bag to be thrown in the world. The bits will either be selected randomly, sytematically " +

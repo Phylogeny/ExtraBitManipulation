@@ -46,7 +46,7 @@ public class GuiConfigExtraBitManipulation extends GuiConfig
 		addToolSettingsDummyElements(ConfigHandlerExtraBitManipulation.configFileServer, configElementsServer);
 		
 		addChildElementsToDummyElement(ConfigHandlerExtraBitManipulation.configFileServer, ConfigHandlerExtraBitManipulation.THROWN_BIT_PROPERTIES,
-				"Configures the damage amount, disabling of damage, entity burn time (for lava bits), velocity, and inaccuracy of thrown bits",
+				"Configures the enabling, damage amount, disabling of damage, entity burn time (for lava bits), velocity, and inaccuracy of thrown bits",
 				configElementsServer, ServerEntry.class);
 		
 		List<IConfigElement> configElementsToolData = new ArrayList<IConfigElement>();

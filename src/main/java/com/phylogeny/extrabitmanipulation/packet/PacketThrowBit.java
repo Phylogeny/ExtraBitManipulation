@@ -8,9 +8,11 @@ import mod.chiselsandbits.api.ItemType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -39,6 +41,13 @@ public class PacketThrowBit extends PacketEmpty
 				public void run()
 				{
 					EntityPlayer player = ctx.getServerHandler().player;
+					if (!Configs.thrownBitsEnabled)
+					{
+						MinecraftServer server = player.getServer();
+						player.sendMessage(new TextComponentString("Bit throwing is disabled"
+								+ (server != null && (server.isDedicatedServer() || server.getPlayerList().getPlayers().size() > 1) ? " on this server." : ".")));
+						return;
+					}
 					ItemStack stack = player.getHeldItemMainhand();
 					boolean isBit = ChiselsAndBitsAPIAccess.apiInstance.getItemType(stack) == ItemType.CHISLED_BIT;
 					if (!isBit)
