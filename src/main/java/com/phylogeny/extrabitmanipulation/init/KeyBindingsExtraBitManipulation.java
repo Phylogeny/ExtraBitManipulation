@@ -152,13 +152,12 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 		@Override
 		public String getText()
 		{
-			return keyBinding == null || keyBinding.getKeyCode() == Keyboard.KEY_NONE ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
+			return keyBinding.getKeyCode() == Keyboard.KEY_NONE ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
 		}
 	};
 	
 	protected KeyBinding keyBinding;
 	protected String description = "";
-	private int defaultKeyCode;
 	private boolean anyConflicts;
 	
 	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode)
@@ -169,8 +168,9 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	private KeyBindingsExtraBitManipulation(String description, int defaultKeyCode, boolean anyConflicts)
 	{
 		this.description = description;
-		this.defaultKeyCode = defaultKeyCode;
 		this.anyConflicts = anyConflicts;
+		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(),
+				this, getModifier(), defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 	}
 	
 	public boolean isKeyDown()
@@ -196,14 +196,12 @@ public enum KeyBindingsExtraBitManipulation implements IKeyConflictContext
 	
 	private void registerKeyBinding()
 	{
-		keyBinding = new KeyBinding("keybinding." + Reference.GROUP_ID + "." + description.toLowerCase(),
-				this, getModifier(), defaultKeyCode, "itemGroup." + Reference.MOD_ID);
 		ClientRegistry.registerKeyBinding(keyBinding);
 	}
 	
 	public String getText()
 	{
-		return keyBinding == null || keyBinding.isSetToDefaultValue() ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
+		return keyBinding.isSetToDefaultValue() ? description.toUpperCase() : ("[" + keyBinding.getDisplayName() + "]");
 	}
 	
 	public KeyBinding getKeyBinding()
