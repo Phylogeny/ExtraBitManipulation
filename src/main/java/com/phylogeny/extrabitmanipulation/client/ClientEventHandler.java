@@ -156,7 +156,7 @@ public class ClientEventHandler
 		
 		EntityPlayer player = (EntityPlayer) entity;
 		IChiseledArmorSlotsHandler cap = ChiseledArmorSlotsHandler.getCapability(player);
-		if (cap == null || !cap.hasArmor())
+		if (cap == null || !cap.hasArmor() || !cap.hasArmorSet(0))
 			return;
 		
 		ItemStack[] armor = new ItemStack[4];
@@ -164,9 +164,6 @@ public class ClientEventHandler
 		boolean found = false;
 		for (int i = 0; i < 4; i++)
 		{
-			if (!cap.hasArmorSet(i))
-				continue;
-			
 			ItemStack stack = armorInventory.get(i);
 			ItemStack stackVanity = cap.getStackInSlot(3 - i);
 			if (!stackVanity.isEmpty() && !stack.isEmpty())
